@@ -1,0 +1,6 @@
+PySide6>=6.6
+httpx>=0.27
+Pillow>=10
+# Opcionales (modo IA del upscaling; instalar con: python scripts\setup_vendor.py --ai)
+# realesrgan-ncnn-vulkan
+# waifu2x-ncnn-vulkan

@@ -218,3 +218,41 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ===== ExtractorFanarts: cachés, temporales y basura del proyecto =====
+# Dependencias regenerables (python scripts\setup_vendor.py [--ai])
+vendor/
+vendor_broken/
+
+# Caché de wheels descargados por el instalador sin pip
+.wheels/
+
+# Temporales de instalación y diagnósticos
+.tmp/
+.pipcache/
+.acl-recovery/
+
+# Temporales del upscaling IA (se crean dentro de las carpetas de salida)
+.ai_tmp/
+
+# Descargas parciales (el cliente escribe <archivo>.part antes de reemplazar)
+*.part
+
+# Salidas y bases de datos de las pruebas locales
+.e2e_out/
+.e2e_history.db
+.test_history.db
+.prueba_*/
+
+# Empaquetado (PyInstaller) y logs
+build/
+dist/
+*.spec
+*.log
+
+# Basura del sistema operativo y editores
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
