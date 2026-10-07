@@ -16,11 +16,19 @@ if not exist "%EXE%" (
   exit /b 1
 )
 
-REM Tus claves: se leen desde aqui (nunca van dentro del .exe)
-if not exist "dist\ExtractorFanarts\config_local.py" (
+REM Tus claves: se leen desde aqui (nunca van dentro del .exe).
+REM Se copian si falta el archivo O si lo que hay es la plantilla vacia
+REM (cada recompilacion borra dist\ y deja la plantilla).
+set "COPIAR="
+if not exist "dist\ExtractorFanarts\config_local.py" set "COPIAR=1"
+if exist "dist\ExtractorFanarts\config_local.py" (
+  findstr /C:"PLANTILLA-VACIA" "dist\ExtractorFanarts\config_local.py" >nul 2>&1
+  if not errorlevel 1 set "COPIAR=1"
+)
+if defined COPIAR (
   if exist "app\config_local.py" (
     copy /y "app\config_local.py" "dist\ExtractorFanarts\config_local.py" >nul
-    echo [ok] config_local.py copiado junto al ejecutable
+    echo [ok] tus claves copiadas junto al ejecutable
   ) else (
     echo [aviso] no tienes app\config_local.py; la app arrancara sin claves
   )

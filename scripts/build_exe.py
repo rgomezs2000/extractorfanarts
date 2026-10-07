@@ -45,7 +45,9 @@ EXCLUIR = [
     "tkinter", "matplotlib", "numpy", "pandas", "scipy", "IPython", "pytest",
 ]
 
-PLANTILLA_CONFIG = '''"""Ajustes y credenciales locales de ExtractorFanarts.
+PLANTILLA_CONFIG = '''# PLANTILLA-VACIA: este archivo solo es un ejemplo, sin claves.
+# Escribe aquí tus credenciales, o ejecuta ejecutar.bat (copia las tuyas).
+"""Ajustes y credenciales locales de ExtractorFanarts.
 
 Este archivo vive JUNTO AL EJECUTABLE (o en ~/.extractorfanarts/config_local.py).
 Cualquier constante en MAYÚSCULAS sobreescribe app/config.py.
@@ -151,6 +153,24 @@ def _crear_plantilla(destino: Path) -> None:
         print(f"[aviso] no se pudo crear la plantilla: {exc}")
 
 
+def _copiar_config_usuario(destino: Path) -> None:
+    """Copia TUS claves (app/config_local.py) junto al ejecutable para poder probarlo.
+
+    ⚠️ Ese archivo NO debe viajar en el .zip del release: `scripts/release.py` lo
+    sustituye por la plantilla limpia antes de comprimir (y lo restaura después).
+    """
+    origen = ROOT / "app" / "config_local.py"
+    if not origen.is_file():
+        return
+    try:
+        destino.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(origen, destino / "config_local.py")
+        print("[ok] tus claves copiadas junto al ejecutable (dist\\...\\config_local.py)")
+        print("     ⚠️  no compartas ese archivo: el release usa la plantilla vacía")
+    except OSError as exc:
+        print(f"[aviso] no se pudo copiar tu config_local.py: {exc}")
+
+
 def _signtool() -> Path | None:
     """Localiza signtool.exe (viene con el Windows SDK)."""
     encontrado = shutil.which("signtool")
@@ -252,7 +272,10 @@ def main() -> int:
         return codigo
 
     destino = ROOT / "dist" / (NOMBRE if not onefile else "")
-    _crear_plantilla(ROOT / "dist" / NOMBRE if onefile else destino)
+    carpeta_dist = ROOT / "dist" / NOMBRE if not onefile else ROOT / "dist"
+    _crear_plantilla(carpeta_dist)
+    # Cada compilación borra dist\: se vuelven a copiar tus claves para poder probar
+    _copiar_config_usuario(carpeta_dist)
 
     # La carpeta build/ contiene un ejecutable INTERMEDIO e incompleto: si alguien
     # lo ejecuta por error falla con "Failed to load Python DLL ... _internal\python312.dll".
@@ -262,7 +285,6 @@ def main() -> int:
         shutil.rmtree(intermedio, ignore_errors=True)
         print("[ok] carpeta intermedia build/ eliminada")
 
-    carpeta_dist = ROOT / "dist" / NOMBRE if not onefile else ROOT / "dist"
     ejecutable = _ruta_ejecutable(carpeta_dist)
     print()
     print("=" * 74)

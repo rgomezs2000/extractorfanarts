@@ -67,21 +67,79 @@ def _hash_sha256(archivo: Path) -> str:
     return resumen.hexdigest()
 
 
+def _plantilla_limpia() -> str:
+    """Plantilla de config_local.py sin claves (la que va en el paquete)."""
+    try:
+        import importlib.util as _util
+
+        especificacion = _util.spec_from_file_location(
+            "build_exe", ROOT / "scripts" / "build_exe.py")
+        if especificacion is not None and especificacion.loader is not None:
+            modulo = _util.module_from_spec(especificacion)
+            especificacion.loader.exec_module(modulo)
+            return modulo.PLANTILLA_CONFIG
+    except Exception as exc:  # noqa: BLE001
+        print(f"[aviso] no se pudo leer la plantilla de build_exe: {exc}")
+    return ("# PLANTILLA-VACIA\n"
+            '"""Tus credenciales aqui (RULE34_API_KEY, PIXIV_REFRESH_TOKEN, ...)."""\n')
+
+
+def _contiene_claves(texto: str) -> bool:
+    import re
+
+    return bool(re.search(r'^\s*[A-Z][A-Z0-9_]*\s*=\s*"[^"]{4,}"', texto, re.MULTILINE))
+
+
+def _verificar_sin_claves(archivo: Path) -> bool:
+    """Comprueba que el .zip no lleve credenciales dentro."""
+    try:
+        with zipfile.ZipFile(archivo) as zf:
+            for nombre in zf.namelist():
+                if nombre.endswith("config_local.py"):
+                    if _contiene_claves(zf.read(nombre).decode("utf-8", "ignore")):
+                        print("[ERROR] el paquete contiene CLAVES en config_local.py; no lo publiques")
+                        return False
+        return True
+    except Exception as exc:  # noqa: BLE001
+        print(f"[aviso] no se pudo verificar el paquete: {exc}")
+        return True
+
+
 def crear_zip(etiqueta: str) -> Path | None:
     if not PAQUETE.is_dir():
         print(f"[error] no existe {PAQUETE}. Compila primero:  python scripts\\build_exe.py")
         return None
     _copiar_avisos()
 
+    # Tus claves viven junto al ejecutable para probarlo, pero NO deben salir en el
+    # release: se sustituye el archivo por la plantilla durante el empaquetado y se
+    # restaura al terminar.
+    ruta_config = PAQUETE / "config_local.py"
+    original = ruta_config.read_bytes() if ruta_config.is_file() else None
+    if original is not None:
+        if _contiene_claves(original.decode("utf-8", "ignore")):
+            ruta_config.write_text(_plantilla_limpia(), encoding="utf-8")
+            print("[ok] config_local.py del paquete sustituido por la plantilla vacía")
+        else:
+            print("[info] config_local.py ya era la plantilla (sin claves)")
+
     sufijo = SISTEMAS.get(sys.platform, sys.platform)
     destino = DIST / f"ExtractorFanarts-{etiqueta}-{sufijo}.zip"
     print(f"[info] comprimiendo {PAQUETE.name} …")
-    with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-        for ruta in sorted(PAQUETE.rglob("*")):
-            if ruta.is_file():
-                zf.write(ruta, ruta.relative_to(DIST))
+    try:
+        with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+            for ruta in sorted(PAQUETE.rglob("*")):
+                if ruta.is_file():
+                    zf.write(ruta, ruta.relative_to(DIST))
+    finally:
+        if original is not None:          # deja tus claves donde estaban
+            ruta_config.write_bytes(original)
     mb = destino.stat().st_size / (1024 * 1024)
     print(f"[ok] {destino}  ({mb:.0f} MB)")
+
+    if not _verificar_sin_claves(destino):
+        print("[aviso] revisa el paquete antes de subirlo a un release")
+        return None
 
     # Huella SHA-256 para que los usuarios puedan verificar la descarga
     huella = _hash_sha256(destino)
