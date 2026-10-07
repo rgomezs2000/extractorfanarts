@@ -33,6 +33,9 @@ PACKAGES: dict[str, str | None] = {
     "certifi": None,  # última versión
     "typing_extensions": None,  # última versión
     "pillow": None,  # mejora de calidad (Lanczos/WebP)
+    "curl_cffi": None,  # transporte con huella de navegador (Cloudflare)
+    "cffi": None,       # dependencia de curl_cffi (extensión _cffi_backend)
+    "pycparser": None,  # dependencia de cffi
 }
 
 # Motores IA opcionales (modo IA del upscaling). Se instalan con: --ai
@@ -98,10 +101,17 @@ def install_ai_engines(target: Path) -> None:
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     target = Path(args[0]) if args else ROOT / "vendor2"
+    # --only=paquete1,paquete2 → instala solo esos paquetes (útil para añadir uno nuevo)
+    solo: set[str] | None = None
+    for arg in sys.argv[1:]:
+        if arg.startswith("--only="):
+            solo = {p.strip() for p in arg.split("=", 1)[1].split(",") if p.strip()}
     target.mkdir(parents=True, exist_ok=True)
     WHEEL_DIR.mkdir(exist_ok=True)
 
     for package, version in PACKAGES.items():
+        if solo and package not in solo:
+            continue
         try:
             info = _json(f"https://pypi.org/pypi/{package}/json")
         except Exception as exc:

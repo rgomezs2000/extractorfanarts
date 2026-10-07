@@ -9,17 +9,21 @@ Reglas de UI:
 """
 from __future__ import annotations
 
+import logging
+
 from PySide6.QtCore import QByteArray, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QFileDialog, QGroupBox, QHBoxLayout, QLabel,
-    QLineEdit, QListWidget, QMainWindow, QProgressBar, QPushButton,
-    QSlider, QStackedWidget, QVBoxLayout, QWidget,
+    QLineEdit, QListWidget, QMainWindow, QMessageBox, QProgressBar, QPushButton,
+    QSlider, QSpinBox, QStackedWidget, QVBoxLayout, QWidget,
 )
 
 from .. import config
 from ..controllers.main_controller import MainController
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
+
+logger = logging.getLogger("extractorfanarts")
 
 TIPOS = ("Red social", "Booru", "Wiki fandom")
 
@@ -29,6 +33,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.controller = controller
         self.setWindowTitle(f"{config.APP_NAME} — archivo personal de fanarts")
+        self._muestra_recibida = False
         self._build_ui()
         self._connect()
         self._set_tipo(TIPOS[0])
@@ -67,6 +72,12 @@ class MainWindow(QMainWindow):
         v.addWidget(self.ed_usuario)
         v.addWidget(self.ed_keyword)
         v.addWidget(self.ed_hashtag)
+        self.ed_instancia = QLineEdit()
+        self.ed_instancia.setPlaceholderText(
+            "Instancia (opcional): ej. baraag.net · Misskey: ej. misskey.io — "
+            "si escribes @usuario@instancia se usa esa automáticamente"
+        )
+        v.addWidget(self.ed_instancia)
 
         self.page_booru = QWidget()
         v = QVBoxLayout(self.page_booru)
@@ -112,9 +123,9 @@ class MainWindow(QMainWindow):
         self.chk_mejorar = QCheckBox("Mejorar calidad (upscale IA/Lanczos)")
         self.chk_mejorar.setChecked(config.ENHANCE_DEFAULT_ON)
         self.chk_mejorar.setToolTip(
-            "Controla SOLO el upscaling. El guardado en .webp se aplica SIEMPRE "
-            "(el original nunca se conserva). Reglas: <700px→4x · 700-799px→3x · "
-            "800-1500px→2x · 1501-1599px→1x · ≥1600px solo WebP."
+            "Controla SOLO el upscaling y la definición. El guardado en .webp se aplica "
+            "SIEMPRE (el original nunca se conserva). Reglas: <700px→4x · 700-799px→3x · "
+            "800-1500px→2x · 1501-1599px→1x · 1600px+→2x, con tope de 8K (7680 px)."
         )
         self.chk_ia = QCheckBox("Modo IA (waifu2x/Real-ESRGAN)")
         self.chk_ia.setToolTip(
@@ -144,6 +155,31 @@ class MainWindow(QMainWindow):
         fl3.addWidget(self.lbl_calidad_val)
         fl3.addStretch(1)
         ov.addLayout(fl3)
+
+        # Límite de cantidad de descargas
+        fl4 = QHBoxLayout()
+        self.chk_limite = QCheckBox("Limitar cantidad de descargas")
+        self.chk_limite.setToolTip(
+            "Si se marca, se descarga solo la cantidad indicada. Si no, se "
+            "descarga todo lo encontrado (hasta el tope de seguridad de config.py)."
+        )
+        self.spin_cantidad = QSpinBox()
+        self.spin_cantidad.setRange(1, 1000)
+        self.spin_cantidad.setValue(50)
+        self.spin_cantidad.setEnabled(False)
+        self.chk_limite.toggled.connect(self.spin_cantidad.setEnabled)
+        fl4.addWidget(self.chk_limite)
+        fl4.addWidget(QLabel("Cantidad:"))
+        fl4.addWidget(self.spin_cantidad)
+        self.chk_sidecar = QCheckBox("Guardar metadatos .json")
+        self.chk_sidecar.setChecked(config.WRITE_SIDECAR_JSON)
+        self.chk_sidecar.setToolTip(
+            "Guarda un archivo .json junto a cada imagen con autoría, origen y "
+            "licencia. Desactivado: solo se guarda la imagen."
+        )
+        fl4.addWidget(self.chk_sidecar)
+        fl4.addStretch(1)
+        ov.addLayout(fl4)
         root.addWidget(self.filtros_box)
 
         # Carpeta de salida
@@ -189,6 +225,12 @@ class MainWindow(QMainWindow):
         self.progress.setVisible(False)
         root.addWidget(self.progress)
 
+        # Estatus de conexión (última petición/respuesta)
+        self.lbl_conexion = QLabel("Conexión: —")
+        self.lbl_conexion.setStyleSheet("color: #444444;")
+        self.lbl_conexion.setToolTip("Última actividad HTTP: peticiones, respuestas y pausas")
+        root.addWidget(self.lbl_conexion)
+
         self.statusBar().showMessage("Listo")
 
     # ------------------------------------------------------------------ conexiones
@@ -204,8 +246,10 @@ class MainWindow(QMainWindow):
         c.results_ready.connect(self._on_results)
         c.sample_ready.connect(self._on_sample)
         c.progress_changed.connect(self._on_progress)
-        c.error.connect(lambda m: self.statusBar().showMessage(f"⚠ {m}"))
+        c.error.connect(self._on_error)
         c.state_changed.connect(self._on_state)
+        c.job_finished.connect(self._on_job_finished)
+        c.http_event.connect(self._on_http_event)
 
     # ------------------------------------------------------------------ dinámica
     def _set_tipo(self, tipo: str) -> None:
@@ -223,11 +267,103 @@ class MainWindow(QMainWindow):
             self.stack.setCurrentWidget(self.page_wiki)
 
     def _elegir_carpeta(self) -> None:
-        carpeta = QFileDialog.getExistingDirectory(
-            self, "Elegir carpeta de salida", self.ed_carpeta.text()
+        try:
+            carpeta = QFileDialog.getExistingDirectory(
+                self, "Elegir carpeta de salida", self.ed_carpeta.text()
+            )
+            if carpeta:
+                self.ed_carpeta.setText(carpeta)
+        except Exception as exc:
+            logger.exception("excepcion en _elegir_carpeta")
+            QMessageBox.critical(self, "Error", f"Error inesperado: {exc}")
+
+    # ------------------------------------------------------------------ diálogos
+    def _on_error(self, mensaje: str) -> None:
+        """Error fatal: diálogo crítico + detalle en el log."""
+        logger.error("%s", mensaje)
+        QMessageBox.critical(
+            self,
+            "Error",
+            f"{mensaje}\n\nLos detalles están en el log (consola y archivo .log).",
         )
-        if carpeta:
-            self.ed_carpeta.setText(carpeta)
+
+    def _on_http_event(self, mensaje: str) -> None:
+        """Estatus de conexión en vivo: peticiones, respuestas, pausas y errores."""
+        try:
+            corto = mensaje if len(mensaje) <= 150 else mensaje[:147] + "…"
+            self.lbl_conexion.setText(f"Conexión: {corto}")
+            self.lbl_conexion.setToolTip(mensaje)
+            problema = any(
+                marca in mensaje
+                for marca in ("CAPTCHA", "HTTP 4", "HTTP 5", "⏸", "bloqueo", "pausa")
+            )
+            self.lbl_conexion.setStyleSheet(
+                "color: #b00020;" if problema else "color: #1b5e20;"
+            )
+        except Exception:
+            logger.exception("excepcion en _on_http_event")
+
+    def _on_job_finished(self, resumen: dict) -> None:
+        """Diálogos de resultado: descargas y avisos cuando nada pasó los filtros."""
+        try:
+            # Si esta búsqueda no trajo imagen de ejemplo, no dejar la anterior a medias
+            if not self._muestra_recibida:
+                self.lbl_muestra.clear()
+                self.lbl_muestra.setText(
+                    "(no se pudo cargar la imagen de ejemplo de esta búsqueda)"
+                )
+            tipo = resumen.get("tipo")
+            estado = resumen.get("estado", "")
+            descartados = resumen.get("descartados") or {}
+            encontrados = resumen.get("encontrados", 0)
+
+            # Nada pasó los filtros: explicar el porqué (evita el "no hace nada")
+            if estado == "sin resultados" or (tipo == "busqueda" and resumen.get("total", 0) == 0
+                                              and (descartados or encontrados == 0)):
+                if encontrados:
+                    texto = (f"Se encontraron {encontrados} resultados, pero ninguno pasó "
+                             "los filtros del proyecto.")
+                else:
+                    texto = "La búsqueda no devolvió resultados para esos filtros."
+                if descartados:
+                    detalle = "\n".join(f"• {k}: {v}" for k, v in sorted(descartados.items()))
+                    texto += f"\n\nDescartados por:\n{detalle}"
+                if any("rating" in clave for clave in descartados):
+                    texto += ('\n\nSugerencia: si quieres contenido adulto, marca '
+                              '"Permitir contenido adulto" en Opciones.')
+                if any("pago" in clave for clave in descartados):
+                    texto += ("\nLos resultados que enlazan plataformas de pago se descartan "
+                              "siempre (criterio ético/legal del proyecto).")
+                if descartados and resumen.get("limitar"):
+                    texto += ("\n\nNota: tienes activo \"Limitar cantidad de descargas\"; "
+                              "la búsqueda solo pidió esa cantidad.")
+                QMessageBox.information(self, "Sin resultados", texto)
+                return
+
+            if tipo != "descarga":
+                return
+            if estado == "completada":
+                texto = (
+                    f"Se descargaron {resumen.get('guardados', 0)} de "
+                    f"{resumen.get('total', 0)} archivos."
+                )
+                if resumen.get("fallas"):
+                    texto += f"\nCon {resumen['fallas']} fallo(s)."
+                texto += f"\n\nCarpeta: {resumen.get('carpeta', '')}"
+                QMessageBox.information(self, "Descarga completada", texto)
+            elif estado == "cancelada":
+                QMessageBox.information(
+                    self, "Descarga cancelada", "La descarga fue cancelada por el usuario."
+                )
+            elif estado == "error":
+                detalle = resumen.get("error") or "Error desconocido"
+                QMessageBox.critical(
+                    self, "Error en la descarga",
+                    f"{detalle}\n\nDetalles en el log (consola y archivo .log).",
+                )
+        except Exception as exc:
+            logger.exception("excepcion en _on_job_finished")
+            QMessageBox.critical(self, "Error", f"Error inesperado: {exc}")
 
     # ------------------------------------------------------------------ acciones
     def _settings(self) -> dict:
@@ -235,6 +371,7 @@ class MainWindow(QMainWindow):
             "tipo": self.cmb_tipo.currentText(),
             "plataforma": self.cmb_plataforma.currentText(),
             "usuario": self.ed_usuario.text(),
+            "instancia": self.ed_instancia.text(),
             "keyword": self.ed_keyword.text(),
             "hashtag": self.ed_hashtag.text(),
             "tags": self.ed_tags.text(),
@@ -247,6 +384,9 @@ class MainWindow(QMainWindow):
             "mejorar": self.chk_mejorar.isChecked(),
             "modo_ia": self.chk_ia.isChecked(),
             "calidad_webp": self.sld_calidad.value(),
+            "limitar": self.chk_limite.isChecked(),
+            "cantidad": self.spin_cantidad.value(),
+            "sidecar_json": self.chk_sidecar.isChecked(),
         }
 
     def _validar(self, s: dict) -> str | None:
@@ -264,52 +404,93 @@ class MainWindow(QMainWindow):
         return None
 
     def _on_buscar(self) -> None:
-        if self.controller.is_busy():
-            return
-        s = self._settings()
-        error = self._validar(s)
-        if error:
-            self.statusBar().showMessage(f"⚠ {error}")
-            return
-        self.lst_resultados.clear()
-        self.controller.buscar(s)
+        try:
+            if self.controller.is_busy():
+                return
+            s = self._settings()
+            error = self._validar(s)
+            if error:
+                self.statusBar().showMessage(f"⚠ {error}")
+                return
+            self._preparar_busqueda_nueva()
+            self.controller.buscar(s)
+        except Exception as exc:
+            logger.exception("excepcion en _on_buscar")
+            QMessageBox.critical(self, "Error", f"Error inesperado: {exc}\n\nDetalles en el log.")
 
     def _on_descargar(self) -> None:
-        if self.controller.is_busy():
-            self.controller.cancelar()  # el botón actúa como Cancelar
-            return
-        s = self._settings()
-        error = self._validar(s)
-        if error:
-            self.statusBar().showMessage(f"⚠ {error}")
-            return
-        self.lst_resultados.clear()
-        self.controller.descargar(s)
+        try:
+            if self.controller.is_busy():
+                self.controller.cancelar()  # el botón actúa como Cancelar
+                return
+            s = self._settings()
+            error = self._validar(s)
+            if error:
+                self.statusBar().showMessage(f"⚠ {error}")
+                return
+            # Confirmación antes de iniciar la descarga
+            detalle = (
+                f"Plataforma: {s['plataforma']}\n"
+                f"Carpeta: {s['carpeta'] or config.DEFAULT_OUTPUT_DIR}\n"
+                f"Límite: {s['cantidad']} archivos\n" if s["limitar"]
+                else f"Plataforma: {s['plataforma']}\n"
+                     f"Carpeta: {s['carpeta'] or config.DEFAULT_OUTPUT_DIR}\n"
+                     f"Límite: sin límite (todo lo encontrado)\n"
+            )
+            respuesta = QMessageBox.question(
+                self,
+                "Iniciar descarga",
+                f"¿Deseas iniciar la descarga?\n\n{detalle}",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
+            )
+            if respuesta != QMessageBox.Yes:
+                self.statusBar().showMessage("Descarga no iniciada")
+                return
+            self._preparar_busqueda_nueva()
+            self.controller.descargar(s)
+        except Exception as exc:
+            logger.exception("excepcion en _on_descargar")
+            QMessageBox.critical(self, "Error", f"Error inesperado: {exc}\n\nDetalles en el log.")
 
     def _on_limpiar(self) -> None:
-        if self.controller.is_busy():
-            return  # bloqueado mientras se descarga
-        for w in (self.ed_usuario, self.ed_keyword, self.ed_hashtag,
-                  self.ed_tags, self.ed_fandom, self.ed_character, self.ed_wiki_url):
-            w.clear()
-        self.lst_resultados.clear()
-        self.lbl_muestra.setText("(aquí se mostrará una imagen de ejemplo de la búsqueda)")
-        self.progress.setVisible(False)
-        self.controller.limpiar()
-        self.statusBar().showMessage("Formulario limpio")
+        try:
+            if self.controller.is_busy():
+                return  # bloqueado mientras se descarga
+            for w in (self.ed_usuario, self.ed_keyword, self.ed_hashtag, self.ed_instancia,
+                      self.ed_tags, self.ed_fandom, self.ed_character, self.ed_wiki_url):
+                w.clear()
+            self.lst_resultados.clear()
+            self.lbl_muestra.setText("(aquí se mostrará una imagen de ejemplo de la búsqueda)")
+            self.progress.setVisible(False)
+            self.controller.limpiar()
+            self.statusBar().showMessage("Formulario limpio")
+        except Exception as exc:
+            logger.exception("excepcion en _on_limpiar")
+            QMessageBox.critical(self, "Error", f"Error inesperado: {exc}\n\nDetalles en el log.")
 
     # ------------------------------------------------------------------ slots del controlador
+    def _preparar_busqueda_nueva(self) -> None:
+        """Al iniciar una búsqueda/descarga: limpia resultados y la imagen anterior."""
+        self.lst_resultados.clear()
+        self._muestra_recibida = False
+        self.lbl_muestra.clear()
+        self.lbl_muestra.setText("(buscando imagen de ejemplo…)")
+        self.progress.setValue(0)
+
     def _on_results(self, items: list) -> None:
         self.lst_resultados.addItems(items)
 
     def _on_sample(self, data: bytes) -> None:
         pix = QPixmap()
         if pix.loadFromData(QByteArray(data)):
+            self._muestra_recibida = True
             scaled = pix.scaled(
                 self.lbl_muestra.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
             self.lbl_muestra.setPixmap(scaled)
         else:
+            self.lbl_muestra.clear()
             self.lbl_muestra.setText("(no se pudo mostrar la imagen de ejemplo)")
 
     def _on_progress(self, done: int, total: int) -> None:

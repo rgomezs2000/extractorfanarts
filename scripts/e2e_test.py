@@ -30,6 +30,10 @@ config.MIN_REQUEST_INTERVAL = 0.5
 from PySide6.QtCore import QTimer  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 from app.controllers.main_controller import MainController  # noqa: E402
+from app.logging_setup import setup_logging  # noqa: E402
+
+LOG_DIR = _ROOT / ".e2e_logs"
+setup_logging(LOG_DIR)
 
 OUT = _ROOT / ".e2e_out"
 SETTINGS = {
@@ -38,12 +42,15 @@ SETTINGS = {
     "tags": "hatsune_miku",
     "usuario": "", "keyword": "", "hashtag": "",
     "fandom": "", "character": "", "wiki_url": "",
-    "carpeta": str(OUT),
+    "carpeta": str(OUT / "nueva" / "subcarpeta"),  # NO existe: debe crearse sola
     "solo_liberado": False,
     "permitir_adulto": False,
     "mejorar": False,       # upscaling DESACTIVADO: debe convertir igualmente a .webp
     "modo_ia": False,
     "calidad_webp": 85,
+    "limitar": True,        # límite de cantidad activo
+    "cantidad": 2,          # descargar máximo 2
+    "sidecar_json": False,  # NO generar archivos .json (por defecto)
 }
 
 
@@ -88,13 +95,22 @@ def main() -> int:
             pass
     imgs = [f for f in files1 if not f.endswith(".json")]
     todos_webp = bool(imgs) and all(f.endswith(".webp") for f in imgs)
+    log_tail = []
+    log_file = LOG_DIR / "app.log"
+    if log_file.exists():
+        lineas = log_file.read_text(encoding="utf-8").splitlines()
+        log_tail = lineas[-5:]
     resumen = {
         "pasadas_completadas": state["runs"],
         "archivos_creados": files1,
         "sidecars_json": [f for f in files1 if f.endswith(".json")],
+        "json_generados": len([f for f in files1 if f.endswith(".json")]),
+        "solo_imagenes_webp": [f for f in files1 if f.endswith(".webp")],
         "sobrescritos_en_2da_pasada": len(changed),
         "todos_webp": todos_webp,
         "mejoras_aplicadas": mejoras,
+        "log_existe": log_file.exists(),
+        "log_tail": log_tail,
     }
     print(json.dumps(resumen, ensure_ascii=False, indent=2), flush=True)
     c.shutdown()

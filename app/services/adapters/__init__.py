@@ -4,6 +4,7 @@ from __future__ import annotations
 from ... import config
 from .base import SearchAdapter, split_tags
 from .booru import BooruAdapter
+from .fediverso import FediversoAdapter
 from .mastodon import MastodonAdapter
 from .misskey import MisskeyAdapter
 from .bluesky import BlueskyAdapter
@@ -11,6 +12,7 @@ from .deviantart import DeviantArtAdapter
 from .tumblr import TumblrAdapter
 from .twitter import XAdapter
 from .pinterest import PinterestAdapter
+from .pixiv import PixivAdapter
 from .newgrounds import NewgroundsAdapter
 from .mediawiki import MediaWikiAdapter
 
@@ -20,17 +22,19 @@ BOORU_ADAPTERS: dict[str, SearchAdapter] = {
 }
 
 # Redes sociales
-SOCIAL_ADAPTERS: dict[str, SearchAdapter] = {}
-for instance in config.MASTODON_INSTANCES:
-    SOCIAL_ADAPTERS[f"Mastodon · {instance}"] = MastodonAdapter(instance)
-for instance in config.MISSKEY_INSTANCES:
-    SOCIAL_ADAPTERS[f"Misskey · {instance}"] = MisskeyAdapter(instance)
-SOCIAL_ADAPTERS["Bluesky"] = BlueskyAdapter()
-SOCIAL_ADAPTERS["DeviantArt"] = DeviantArtAdapter()
-SOCIAL_ADAPTERS["Tumblr"] = TumblrAdapter()
-SOCIAL_ADAPTERS["X (Twitter)"] = XAdapter()
-SOCIAL_ADAPTERS["Pinterest"] = PinterestAdapter()
-SOCIAL_ADAPTERS["Newgrounds"] = NewgroundsAdapter()
+# El fediverso es una sola entrada que sirve para CUALQUIER instancia de
+# Mastodon/Misskey/CherryPick (la instancia se elige en la UI o se deduce del
+# propio handle @usuario@instancia).
+SOCIAL_ADAPTERS: dict[str, SearchAdapter] = {
+    "Fediverso (Mastodon/Misskey/CherryPick)": FediversoAdapter(),
+    "Bluesky": BlueskyAdapter(),
+    "DeviantArt": DeviantArtAdapter(),
+    "Tumblr": TumblrAdapter(),
+    "X (Twitter)": XAdapter(),
+    "Pinterest": PinterestAdapter(),
+    "Pixiv": PixivAdapter(),
+    "Newgrounds": NewgroundsAdapter(),
+}
 
 # Wikis de fandom
 WIKI_ADAPTERS: dict[str, SearchAdapter] = {
@@ -52,4 +56,5 @@ def adapter_for(kind: str, platform: str) -> SearchAdapter | None:
 __all__ = [
     "SearchAdapter", "split_tags",
     "BOORU_ADAPTERS", "SOCIAL_ADAPTERS", "WIKI_ADAPTERS", "adapter_for",
+    "FediversoAdapter", "MastodonAdapter", "MisskeyAdapter",
 ]

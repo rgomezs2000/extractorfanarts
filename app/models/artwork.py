@@ -21,12 +21,19 @@ class Artwork:
     created_at: str | None = None
     content_text: str | None = None   # texto del post/descripción (para filtros)
     source_field: str | None = None   # campo "source" de los boorus
+    animacion: dict | None = None     # animaciones (p. ej. ugoira de Pixiv)
     raw: dict = field(default_factory=dict)
 
     def summary(self) -> str:
-        author = self.author or "desconocido"
-        ntags = len(self.tags)
-        return f"{author} — {self.site} ({ntags} tags)"
+        """Etiqueta corta y distinguible para la lista de resultados."""
+        autor = self.author or "desconocido"
+        sitio = self.site.replace("Wiki: ", "", 1)
+        nombre = (self.site_id or "").strip()
+        if len(nombre) > 46:
+            nombre = nombre[:43] + "…"
+        if nombre:
+            return f"{nombre} — {autor} ({sitio})"
+        return f"{autor} ({sitio})"
 
 
 @dataclass
@@ -35,6 +42,7 @@ class SearchQuery:
 
     kind: str = "social"       # "social" | "booru" | "wiki"
     platform: str = ""         # clave de la plataforma en el registro de adaptadores
+    instance: str = ""         # instancia del fediverso elegida (Mastodon/Misskey)
     usuario: str = ""          # @usuario (redes sociales)
     keyword: str = ""          # palabra clave (redes sociales)
     hashtag: str = ""          # #hashtag (redes sociales)

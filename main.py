@@ -11,20 +11,29 @@ from PySide6.QtWidgets import QApplication
 
 from app import config
 from app.controllers.main_controller import MainController
+from app.logging_setup import setup_logging
 from app.views.main_window import MainWindow
 
 
 def main() -> int:
-    app = QApplication(sys.argv)
-    app.setApplicationName(config.APP_NAME)
-    app.setStyle("Fusion")
+    setup_logging()  # log a consola + archivo .log
 
-    controller = MainController()
-    window = MainWindow(controller)
-    window.resize(980, 760)
-    window.show()
+    try:
+        app = QApplication(sys.argv)
+        app.setApplicationName(config.APP_NAME)
+        app.setStyle("Fusion")
 
-    return app.exec()
+        controller = MainController()
+        window = MainWindow(controller)
+        window.resize(980, 760)
+        window.show()
+
+        return app.exec()
+    except Exception:
+        import logging
+
+        logging.getLogger("extractorfanarts").exception("error fatal al iniciar la aplicación")
+        return 1
 
 
 if __name__ == "__main__":

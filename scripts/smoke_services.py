@@ -45,11 +45,13 @@ def main() -> int:
         except Exception as exc:
             resultados["safebooru"] = {"ok": False, "error": str(exc)}
 
-        # 2) Mastodon: timeline de hashtag público
+        # 2) Fediverso: timeline de hashtag público (cualquier instancia)
         try:
-            q = SearchQuery(kind="social", platform=f"Mastodon · {config.MASTODON_INSTANCES[0]}",
-                            hashtag="art", limit=3)
-            arts = adapter_for("social", q.platform).search(client, q)
+            plataforma = "Fediverso (Mastodon/Misskey/CherryPick)"
+            q = SearchQuery(kind="social", platform=plataforma,
+                            hashtag="art", limit=3,
+                            instance=config.MASTODON_INSTANCES[0])
+            arts = adapter_for("social", plataforma).search(client, q)
             kept, rejected = filters.apply_filters(arts, limit=3)
             resultados["mastodon"] = {
                 "ok": True,

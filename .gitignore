@@ -234,6 +234,7 @@ vendor_broken/
 
 # Temporales del upscaling IA (se crean dentro de las carpetas de salida)
 .ai_tmp/
+.tmp_upscale/
 
 # Descargas parciales (el cliente escribe <archivo>.part antes de reemplazar)
 *.part
@@ -243,12 +244,19 @@ vendor_broken/
 .e2e_history.db
 .test_history.db
 .prueba_*/
+.diag_logs/
+.e2e_logs/
+.logtest*/
 
 # Empaquetado (PyInstaller) y logs
 build/
 dist/
 *.spec
 *.log
+logs/
+
+# Credenciales locales (nunca se suben al repositorio)
+app/config_local.py
 
 # Basura del sistema operativo y editores
 Thumbs.db

@@ -39,14 +39,14 @@ def _auth_params(site_cfg: dict) -> dict:
     if kind == "GELBOORU":
         if not config.GELBOORU_API_KEY or not config.GELBOORU_USER_ID:
             raise ConfigError(
-                "Gelbooru requiere API key y user ID: complétalos en app/config.py "
+                "Gelbooru requiere API key y user ID: escríbelos en app/config_local.py "
                 "(https://gelbooru.com/index.php?page=account&s=options)"
             )
         return {"api_key": config.GELBOORU_API_KEY, "user_id": config.GELBOORU_USER_ID}
     if kind == "RULE34":
         if not config.RULE34_API_KEY or not config.RULE34_USER_ID:
             raise ConfigError(
-                "Rule34.xxx requiere API key y user ID: complétalos en app/config.py "
+                "Rule34.xxx requiere API key y user ID: escríbelos en app/config_local.py "
                 "(https://rule34.xxx/index.php?page=account&s=options)"
             )
         return {"api_key": config.RULE34_API_KEY, "user_id": config.RULE34_USER_ID}
