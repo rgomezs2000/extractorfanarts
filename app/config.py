@@ -175,7 +175,12 @@ ALLOW_ADULT_RATINGS = ["general", "sensitive"]
 REQUIRE_FREE_LICENSE = False
 
 MAX_RESULTS_PER_SOURCE = 100
-MAX_PREVIEW_BYTES = 8 * 1024 * 1024  # tope para la imagen de ejemplo
+MAX_PREVIEW_BYTES = 8 * 1024 * 1024  # tope para cada imagen de ejemplo
+
+# Galería de ejemplo (carrusel): cuántas miniaturas se descargan por búsqueda.
+# Son miniaturas (preview_url), no las imágenes completas: mantén un número bajo
+# para no cargar los servidores ni tardar demasiado.
+MUESTRAS_GALERIA = 8
 
 # Requisito: si el archivo destino ya existe, se sobreescribe.
 OVERWRITE_EXISTING = True

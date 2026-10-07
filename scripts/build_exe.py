@@ -151,15 +151,68 @@ def _crear_plantilla(destino: Path) -> None:
         print(f"[aviso] no se pudo crear la plantilla: {exc}")
 
 
-def _probar(destino: Path) -> int:
-    if sys.platform.startswith("win"):
-        ejecutable = destino / f"{NOMBRE}.exe"
-    elif sys.platform == "darwin":
-        ejecutable = destino / f"{NOMBRE}.app" / "Contents" / "MacOS" / NOMBRE
-        if not ejecutable.exists():
-            ejecutable = destino / NOMBRE
+def _signtool() -> Path | None:
+    """Localiza signtool.exe (viene con el Windows SDK)."""
+    encontrado = shutil.which("signtool")
+    if encontrado:
+        return Path(encontrado)
+    for base in (Path(r"C:\Program Files (x86)\Windows Kits\10\bin"),
+                 Path(r"C:\Program Files\Windows Kits\10\bin")):
+        if base.is_dir():
+            candidatos = sorted(base.glob("*/x64/signtool.exe"))
+            if candidatos:
+                return candidatos[-1]
+    return None
+
+
+def _firmar(ejecutable: Path) -> int:
+    """Firma el .exe para que Windows deje de mostrar SmartScreen.
+
+    Necesita un certificado de firma de código (se compra a una CA; los
+    autofirmados NO quitan SmartScreen). Configúralo con variables de entorno:
+        EF_CERT_PFX          ruta al archivo .pfx
+        EF_CERT_PASSWORD     contraseña del .pfx
+      o bien
+        EF_CERT_THUMBPRINT   huella SHA-1 de un certificado instalado en Windows
+    """
+    if not sys.platform.startswith("win"):
+        print("[aviso] la firma solo aplica en Windows")
+        return 1
+    herramienta = _signtool()
+    if herramienta is None:
+        print("[error] no se encontró signtool.exe (instala el Windows SDK)")
+        return 1
+
+    base = [str(herramienta), "sign", "/fd", "sha256", "/td", "sha256",
+            "/tr", "http://timestamp.digicert.com"]
+    pfx = os.environ.get("EF_CERT_PFX", "").strip()
+    clave = os.environ.get("EF_CERT_PASSWORD", "")
+    huella = os.environ.get("EF_CERT_THUMBPRINT", "").strip()
+    if pfx:
+        extra = ["/f", pfx] + (["/p", clave] if clave else [])
+    elif huella:
+        extra = ["/sha1", huella]
     else:
-        ejecutable = destino / NOMBRE
+        print("[error] define EF_CERT_PFX (+ EF_CERT_PASSWORD) o EF_CERT_THUMBPRINT")
+        print("        (un certificado autofirmado NO elimina el aviso de SmartScreen)")
+        return 1
+
+    print(f"[info] firmando {ejecutable.name} …")
+    return subprocess.call(base + extra + [str(ejecutable)], cwd=str(ROOT))
+
+
+def _ruta_ejecutable(destino: Path) -> Path:
+    """Ruta del ejecutable dentro de una carpeta dist (o del .app en macOS)."""
+    if sys.platform.startswith("win"):
+        return destino / f"{NOMBRE}.exe"
+    if sys.platform == "darwin":
+        app = destino / f"{NOMBRE}.app" / "Contents" / "MacOS" / NOMBRE
+        return app if app.exists() else destino / NOMBRE
+    return destino / NOMBRE
+
+
+def _probar(destino: Path) -> int:
+    ejecutable = _ruta_ejecutable(destino)
     if not ejecutable.exists():
         print(f"[aviso] no se encontró el ejecutable para probar en {destino}")
         return 1
@@ -175,6 +228,7 @@ def main() -> int:
     onefile = "--onefile" in sys.argv
     consola = "--consola" in sys.argv
     probar = "--probar" in sys.argv
+    firmar = "--firmar" in sys.argv
 
     if not _pyinstaller_disponible():
         print("[error] falta PyInstaller. Instálalo con:")
@@ -199,13 +253,30 @@ def main() -> int:
 
     destino = ROOT / "dist" / (NOMBRE if not onefile else "")
     _crear_plantilla(ROOT / "dist" / NOMBRE if onefile else destino)
-    print(f"\n[ok] paquete generado en: {ROOT / 'dist'}")
+
+    # La carpeta build/ contiene un ejecutable INTERMEDIO e incompleto: si alguien
+    # lo ejecuta por error falla con "Failed to load Python DLL ... _internal\python312.dll".
+    # Se elimina para que nadie pueda confundirse (y para no ocupar espacio).
+    intermedio = ROOT / "build"
+    if intermedio.is_dir():
+        shutil.rmtree(intermedio, ignore_errors=True)
+        print("[ok] carpeta intermedia build/ eliminada")
+
+    carpeta_dist = ROOT / "dist" / NOMBRE if not onefile else ROOT / "dist"
+    ejecutable = _ruta_ejecutable(carpeta_dist)
+    print()
+    print("=" * 74)
+    print(f"  LISTO -> {ejecutable}")
+    print()
+    print("  Ejecuta SIEMPRE ese archivo (el de dist\\).")
+    print("  NUNCA ejecutes build\\ExtractorFanarts\\ExtractorFanarts.exe:")
+    print("  es un paso intermedio incompleto y da error de 'Python DLL'.")
+    print("=" * 74)
 
     if probar:
-        return _probar(ROOT / "dist" / NOMBRE)
-    print("     Pruébalo con:  " + str(ROOT / "dist" / NOMBRE / f"{NOMBRE}.exe")
-          if sys.platform.startswith("win") else
-          "     Pruébalo ejecutando el binario de dist/")
+        return _probar(carpeta_dist)
+    if firmar:
+        return _firmar(ejecutable)
     return 0
 
 

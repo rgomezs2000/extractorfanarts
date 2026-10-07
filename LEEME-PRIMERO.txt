@@ -1,0 +1,57 @@
+========================================================================
+ ExtractorFanarts - LEEME PRIMERO
+========================================================================
+
+1) COMO ABRIRLO (aviso de Windows)
+-----------------------------------
+Al ejecutar ExtractorFanarts.exe puede aparecer un aviso azul:
+"Windows protegio su PC".
+
+Es NORMAL: el programa no esta firmado digitalmente (los certificados de
+firma de codigo cuestan dinero). NO es un virus.
+
+  -> Pulsa "Mas informacion"  y luego  "Ejecutar de todas formas".
+
+Si Windows lo bloquea del todo:
+  -> Clic derecho en el .exe -> Propiedades -> marca "Desbloquear" -> Aceptar.
+
+Verifica la descarga con el archivo .sha256 que acompana al paquete:
+  PowerShell:  Get-FileHash .\ExtractorFanarts-*.zip -Algorithm SHA256
+
+2) TUS CLAVES (opcional, pero recomendable)
+-------------------------------------------
+El ejecutable NO incluye ninguna credencial. Para usar plataformas que
+necesitan clave (Rule34, DeviantArt, Pixiv, X, Pinterest, Tumblr...) crea un
+archivo de texto llamado exactamente  config_local.py  EN LA MISMA CARPETA
+que ExtractorFanarts.exe  y escribe dentro, por ejemplo:
+
+    RULE34_API_KEY = "tu_clave"
+    RULE34_USER_ID = "tu_id"
+    CF_CLEARANCE = "valor_de_la_cookie"
+    CF_USER_AGENT = "tu user-agent"
+    PIXIV_REFRESH_TOKEN = "tu_token"
+
+Tambien se lee desde:  C:\Users\<tu_usuario>\.extractorfanarts\config_local.py
+(el archivo config_local.py que viene en el paquete es solo una plantilla).
+
+Plataformas sin claves: Fediverso (Mastodon/Misskey/CherryPick), Bluesky,
+Safebooru, Danbooru y las wikis de Fandom.
+
+3) DONDE SE GUARDA TODO
+-----------------------
+  Imagenes :  C:\Users\<tu_usuario>\Documents\ExtractorFanarts\
+  Registros:  C:\Users\<tu_usuario>\.extractorfanarts\logs\app.log
+  Historial:  C:\Users\<tu_usuario>\.extractorfanarts\historial.db
+
+Si algo falla, revisa el .log: ahi aparece exactamente que respondio cada
+servidor. Tambien puedes ejecutar  ExtractorFanarts.exe --selftest  y se
+generara un archivo selftest.txt con el diagnostico.
+
+4) USO RESPONSABLE
+------------------
+Herramienta para archivo personal de contenido al que tengas acceso legitimo.
+Respeta los terminos de servicio de cada plataforma y los derechos de autor.
+Las imagenes se guardan siempre en .webp (el original no se conserva).
+
+Componentes de terceros y sus licencias: THIRD-PARTY-NOTICES.txt
+========================================================================

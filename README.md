@@ -190,9 +190,22 @@ python scripts\diag_conexion.py Safebooru     # control sin claves
 
 ## Comportamiento de la UI
 
-- **Buscar:** consulta la plataforma y muestra los resultados + **una imagen de ejemplo**.
-  La imagen de ejemplo se **limpia al iniciar cada búsqueda** y se muestra la de esa
-  búsqueda; si no se puede cargar, lo indica — nunca queda la de la búsqueda anterior.
+- **Buscar:** consulta la plataforma y muestra los resultados + una **galería de ejemplo**
+  en forma de **carrusel alineado**: contador centrado, imagen grande con flechas `◀` `▶`
+  y **tira de miniaturas exactamente del mismo ancho que la imagen** (clic en una para
+  saltar a ella).
+  - **Una casilla por CADA resultado** de la búsqueda o descarga: si hay 50 resultados,
+    el carrusel muestra `1 / 50` … `50 / 50` (las casillas sin cargar aparecen en gris
+    con su número).
+  - **Carga bajo demanda:** al buscar se traen las primeras `MUESTRAS_GALERIA = 8`
+    (4 si es una descarga) y el resto **solo cuando llegas a ellas**, para no lanzar
+    decenas de peticiones de golpe.
+  - **Clic sobre la imagen** → visor ampliado **dentro de la misma ventana** (estilo
+    *fancybox*, sin abrir otra ventana): **rueda** = zoom (hasta 800 %), **arrastrar** =
+    mover, **doble clic** = ajustar, `←`/`→` = cambiar de imagen, `Esc` o clic fuera = cerrar.
+  - Se **recarga (vacía) en cada búsqueda o descarga**; si una miniatura falla lo indica
+    (`⚠️`) sin quedarse con la anterior.
+  - Widget: [app/views/galeria.py](app/views/galeria.py).
 - **Descargar:** busca y descarga todo a la carpeta de salida (se sobreescribe si el
   archivo ya existe); durante la descarga el botón se convierte en **Cancelar** y el
   formulario y **Limpiar** quedan bloqueados.
@@ -359,6 +372,142 @@ Notas importantes:
 - **Linux**: conviene compilar en una distribución antigua (o contenedor) para que
   el binario funcione en más sistemas; alternativamente puede empaquetarse como
   AppImage.
+
+## Windows: SmartScreen, antivirus y firma
+
+Al ejecutar por primera vez el `.exe` recién compilado, Windows puede mostrar
+**"Windows protegió su PC"** (SmartScreen). Es lo normal en un ejecutable **sin
+firmar digitalmente** — no significa que tenga virus.
+
+**Para ejecutarlo de todas formas:** *Más información* → **Ejecutar de todas formas**.
+Si sigue bloqueado: clic derecho en el `.exe` → *Propiedades* → marca **Desbloquear** → *Aceptar*.
+
+**Para que no vuelva a aparecer** hay que **firmar** el ejecutable con un certificado
+de firma de código (se compra a una CA; los autofirmados no sirven para esto):
+
+```powershell
+# con un archivo .pfx
+$env:EF_CERT_PFX = "C:\ruta\certificado.pfx"
+$env:EF_CERT_PASSWORD = "tu_contraseña"
+python scripts\build_exe.py --firmar
+
+# o con un certificado ya instalado en Windows
+$env:EF_CERT_THUMBPRINT = "HU3LL4..."
+python scripts\build_exe.py --firmar
+```
+
+En GitHub Actions, si defines los secretos `WINDOWS_CERT_PFX_BASE64` (el `.pfx` en
+base64) y `WINDOWS_CERT_PASSWORD`, el workflow firma automáticamente el paquete de
+Windows. Un certificado **EV** obtiene reputación inmediata en SmartScreen.
+
+> ⚠️ **No ejecutes nunca el `.exe` de `build\`.** Esa carpeta contiene un paso
+> intermedio incompleto y falla con *"Failed to load Python DLL … _internal\python312.dll"*.
+> El ejecutable bueno es **`dist\ExtractorFanarts\ExtractorFanarts.exe`** (o haz doble
+> clic en `ejecutar.bat`). La compilación borra `build\` automáticamente al terminar.
+
+### Crear un certificado
+
+**A) Autofirmado (gratis) — para tu equipo y para probar el flujo de firma**
+
+```powershell
+# opción recomendada: doble clic en  crear_certificado.bat
+#   (se ejecuta desde el Explorador, sin pasar por Python)
+
+# equivalentes:
+python scripts\hacer_certificado.py --simular   # muestra los comandos, sin ejecutar nada
+python scripts\hacer_certificado.py             # crea certs\codigo.pfx y certs\codigo.cer
+python scripts\hacer_certificado.py --confiar   # + marcarlo de confianza en TU usuario
+
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\hacer_certificado.ps1
+```
+
+> ⚠️ **Si falla con *"No existe ninguna unidad con el nombre 'Cert'"*:** no es tu
+> Windows, es que el **Python de la Microsoft Store** lanza sus procesos hijos en un
+> contenedor (MSIX) que **no puede leer el registro de certificados**; entonces el
+> módulo `Microsoft.PowerShell.Security` no carga y desaparecen `Cert:\` y
+> `ConvertTo-SecureString`. Solución: usa **`crear_certificado.bat`** (doble clic) o
+> PowerShell normal. Compruébalo con `Test-Path Cert:\CurrentUser\My` → debe dar `True`.
+
+Luego firma:
+
+```powershell
+# opción recomendada: doble clic en  firmar.bat
+#   (localiza signtool solo y lee la clave de certs\clave.txt)
+
+# o por línea de comandos:
+$env:EF_CERT_PFX = "$PWD\certs\codigo.pfx"
+$env:EF_CERT_PASSWORD = (Get-Content certs\clave.txt)
+python scripts\build_exe.py --firmar
+```
+
+> Igual que con el certificado, la **firma también conviene hacerla sin Python**
+> (doble clic en `firmar.bat`): `signtool` necesita crear un contenedor de claves y el
+> contenedor del Python de la Store puede denegarlo con *"Acceso denegado"*.
+
+- Sirve para que **tu PC** reconozca al editor (deja de decir "Editor desconocido").
+- **No elimina SmartScreen** en los equipos de otras personas.
+- `--confiar` muestra un diálogo de Windows pidiendo confirmación (acepta).
+- 🔐 `certs/`, `*.pfx` y `*.cer` están en `.gitignore`: **la clave privada no se sube nunca**.
+
+Si tu consola es un entorno restringido (sandbox/IDE) el script no podrá tocar el
+almacén de certificados: ábrelo en un **PowerShell normal** — o pega los comandos que
+el propio script imprime.
+
+**B) Certificado de una CA (de pago) — para distribuir sin avisos**
+
+| Tipo | Precio aprox. | SmartScreen | Requisito |
+|---|---|---|---|
+| OV (organización) | 200–400 €/año | reputación progresiva | clave privada en **token/HSM** (desde 2023) |
+| EV (validación extendida) | 400–700 €/año | **inmediata** | token/HSM |
+| **Azure Trusted Signing** (Microsoft) | ~10 €/mes | progresiva | **sin token**, integrable en GitHub Actions |
+
+Proveedores: DigiCert, Sectigo, SSL.com, Certum, GlobalSign. Como la clave ya no puede
+estar en un `.pfx` suelto, la firma se hace con su servicio en la nube (DigiCert
+KeyLocker, SSL.com eSigner, Sectigo Cloud) o con **Azure Trusted Signing** en CI.
+
+**C) Sin certificado** (lo habitual en proyectos abiertos): publica en GitHub Releases
+e incluye el **`LEEME-PRIMERO.txt`** (ya se añade al paquete) explicando el aviso, junto
+con el archivo **`.sha256`** para que cada usuario verifique su descarga:
+
+```powershell
+Get-FileHash .\ExtractorFanarts-v0.1.0-windows.zip -Algorithm SHA256
+```
+
+## Publicar un release (con el compilado)
+
+**Opción A — automática (recomendada).** Al subir una etiqueta `v*`, GitHub Actions
+compila **Windows + macOS + Linux** y crea el Release con los tres `.zip` adjuntos:
+
+```powershell
+git add -A
+git commit -m "release v0.1.0"
+git push
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.0
+```
+
+Resultado en unos minutos: `https://github.com/rgomezs2000/extractorfanarts/releases`
+
+**Opción B — local (sube el `.zip` ya compilado en tu equipo):**
+
+```powershell
+python scripts\release.py              # crea dist\ExtractorFanarts-v0.1.0-windows.zip
+gh release create v0.1.0 "dist\ExtractorFanarts-v0.1.0-windows.zip" ^
+   --title "ExtractorFanarts v0.1.0" --generate-notes
+```
+*(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
+
+**Opción C — a mano desde la web:** *Releases → Draft a new release* → etiqueta
+`v0.1.0` (crear al publicar) → adjuntar el `.zip`.
+
+Notas:
+
+- `dist/`, `build/` y `vendor/` están en `.gitignore`: **los binarios no se suben al
+  repositorio**, solo se adjuntan al Release (por eso el repo pesa unos pocos KB).
+- El paquete incluye `THIRD-PARTY-NOTICES.txt` con las licencias de los componentes
+  redistribuidos (Qt/PySide6 LGPL v3, Pillow, httpx, curl_cffi, motores IA…).
+- Tamaño del paquete de Windows: ~132 MB comprimido (Qt + motores IA).
+- La versión de la etiqueta se toma de `APP_VERSION` (`app/config.py`); se puede
+  forzar con `python scripts\release.py --version 0.2.0`.
 
 ## Estructura (MVC)
 

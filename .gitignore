@@ -264,3 +264,9 @@ Desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# Certificados de firma (clave privada: NUNCA versionar)
+certs/
+*.pfx
+*.cer
+*.pvk

@@ -71,7 +71,8 @@ class _JobSignals(QObject):
     status = Signal(str)
     progress = Signal(int, int)
     results = Signal(list)
-    sample = Signal(bytes)
+    galeria_total = Signal(int)         # cuántas imágenes tendrá el carrusel
+    galeria_item = Signal(int, bytes)   # (posición 1..n, datos de la miniatura)
     http = Signal(str)          # estatus de conexión (peticiones/respuestas)
     resumen = Signal(dict)      # resumen final de la operación
     done = Signal(bool, str)    # (cancelado, motivo)
@@ -99,7 +100,8 @@ class MainController(QObject):
     status_changed = Signal(str)
     progress_changed = Signal(int, int)
     results_ready = Signal(list)
-    sample_ready = Signal(bytes)
+    galeria_total_ready = Signal(int)
+    galeria_item_ready = Signal(int, bytes)
     finished = Signal(str)
     error = Signal(str)
     state_changed = Signal(str)  # "idle" | "running"
@@ -113,6 +115,7 @@ class MainController(QObject):
         self._busy = False
         self._store = DownloadStore(config.DB_PATH)
         self.results: list[Artwork] = []
+        self._token_galeria = 0
 
     # ------------------------------------------------------------------ API pública
     def is_busy(self) -> bool:
@@ -138,10 +141,49 @@ class MainController(QObject):
             if self._busy:
                 return  # Limpiar está bloqueado mientras se descarga
             self.results = []
+            self._token_galeria += 1     # anula miniaturas pendientes
             self.status_changed.emit("Formulario limpio")
         except Exception:
             logger.exception("excepcion en limpiar()")
             self.error.emit("Error interno al limpiar (ver log).")
+
+    def solicitar_miniatura(self, posicion: int) -> None:
+        """Carga (en segundo plano) la miniatura de un resultado concreto.
+
+        La galería la pide solo cuando el usuario llega a esa imagen, de modo que
+        puede mostrar todos los resultados sin lanzar todas las peticiones a la vez.
+        """
+        try:
+            obras = list(self.results or [])
+            if not (1 <= posicion <= len(obras)):
+                return
+            obra = obras[posicion - 1]
+            url = obra.preview_url or obra.url
+            if not url:
+                self.galeria_item_ready.emit(posicion, b"")
+                return
+            token = self._token_galeria
+
+            def tarea(_sig) -> None:
+                cliente = PoliteClient(
+                    cancel_event=None,
+                    min_interval=config.MIN_REQUEST_INTERVAL,
+                    block_pause=config.BLOCK_PAUSE_SECONDS,
+                )
+                datos = b""
+                try:
+                    datos = cliente.get_bytes(url, max_bytes=config.MAX_PREVIEW_BYTES)
+                except Exception:
+                    logger.debug("miniatura %d no disponible", posicion, exc_info=True)
+                finally:
+                    cliente.close()
+                if token == self._token_galeria:      # sigue siendo la búsqueda actual
+                    self.galeria_item_ready.emit(posicion, datos)
+
+            logger.debug("galería: cargando miniatura %d bajo demanda", posicion)
+            self._pool.start(_Job(tarea))
+        except Exception:
+            logger.exception("excepcion en solicitar_miniatura()")
 
     def shutdown(self) -> None:
         self._store.close()
@@ -162,11 +204,13 @@ class MainController(QObject):
             self._busy = True
             self.state_changed.emit("running")
             self._cancel = threading.Event()
+            self._token_galeria += 1     # las miniaturas anteriores ya no valen
             job = _Job(lambda sig: self._run(sig, settings, download, self._cancel))
             job.signals.status.connect(self.status_changed)
             job.signals.progress.connect(self.progress_changed)
             job.signals.results.connect(self.results_ready)
-            job.signals.sample.connect(self.sample_ready)
+            job.signals.galeria_total.connect(self.galeria_total_ready)
+            job.signals.galeria_item.connect(self.galeria_item_ready)
             job.signals.http.connect(self.http_event)
             job.signals.resumen.connect(self.job_finished)
             job.signals.error.connect(self.error)
@@ -245,13 +289,26 @@ class MainController(QObject):
             else:
                 sig.status.emit(f"Resultados: {len(kept)} aceptados")
 
-            # Imagen de ejemplo de la búsqueda (solo una: la primera)
+            # Galería: una casilla por CADA resultado; se cargan ya las primeras
+            # y el resto cuando el usuario llega a ellas (bajo demanda).
             if kept:
-                preview = kept[0].preview_url or kept[0].url
-                try:
-                    sig.sample.emit(client.get_bytes(preview, max_bytes=config.MAX_PREVIEW_BYTES))
-                except Exception:
-                    logger.debug("no se pudo cargar la imagen de ejemplo", exc_info=True)
+                limite = config.MUESTRAS_GALERIA if not download \
+                    else min(4, config.MUESTRAS_GALERIA)
+                sig.galeria_total.emit(len(kept))
+                for posicion, obra in enumerate(kept[:limite], 1):
+                    url = obra.preview_url or obra.url
+                    if not url:
+                        sig.galeria_item.emit(posicion, b"")
+                        continue
+                    try:
+                        datos = client.get_bytes(url, max_bytes=config.MAX_PREVIEW_BYTES)
+                    except Exception:
+                        logger.debug("no se pudo cargar la miniatura %d", posicion,
+                                     exc_info=True)
+                        datos = b""
+                    sig.galeria_item.emit(posicion, datos)
+                logger.info("galería: %d casillas (%d miniaturas cargadas de inicio)",
+                            len(kept), min(limite, len(kept)))
 
             if not download:
                 sig.status.emit("Búsqueda completada. Presiona Descargar para guardar los archivos.")

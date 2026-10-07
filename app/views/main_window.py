@@ -1,18 +1,19 @@
 """Vista principal de escritorio (PySide6): formulario de filtros, botones
-Buscar / Descargar↔Cancelar / Limpiar, imagen de ejemplo y resultados.
+Buscar / Descargar↔Cancelar / Limpiar, galería de ejemplo (carrusel) y resultados.
 
 Reglas de UI:
   - Limpiar limpia el formulario (sin descargas) y queda BLOQUEADO mientras se descarga.
   - Descargar se convierte en Cancelar durante la descarga.
   - Al cancelar se restaura todo como estaba, sin restablecer el formulario,
-    y la imagen de ejemplo se mantiene.
+    y la galería se mantiene.
+  - La galería se recarga (se vacía) en cada búsqueda o descarga nueva, y al pulsar
+    una imagen se abre el visor ampliado DENTRO de la ventana (estilo fancybox).
 """
 from __future__ import annotations
 
 import logging
 
-from PySide6.QtCore import QByteArray, Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox, QComboBox, QFileDialog, QGroupBox, QHBoxLayout, QLabel,
     QLineEdit, QListWidget, QMainWindow, QMessageBox, QProgressBar, QPushButton,
@@ -22,6 +23,7 @@ from PySide6.QtWidgets import (
 from .. import config
 from ..controllers.main_controller import MainController
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
+from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
 
 logger = logging.getLogger("extractorfanarts")
 
@@ -35,6 +37,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(f"🎨 {config.APP_NAME} — archivo personal de fanarts")
         self._muestra_recibida = False
         self._tarea = "descargar"
+        self._lightbox: Lightbox | None = None
         self._build_ui()
         self._connect()
         self._set_tipo(TIPOS[0])
@@ -217,16 +220,14 @@ class MainWindow(QMainWindow):
         root.addLayout(botones)
 
         # Resultados
-        self.lbl_muestra = QLabel("🖼️ (aquí se mostrará una imagen de ejemplo de la búsqueda)")
-        self.lbl_muestra.setAlignment(Qt.AlignCenter)
-        self.lbl_muestra.setMinimumSize(420, 280)
-        self.lbl_muestra.setStyleSheet("border: 1px solid #999; background: #f5f5f5;")
+        self.galeria = GaleriaWidget()
+        self.galeria.setMinimumHeight(320)
         self.lst_resultados = QListWidget()
         self.lst_resultados.setMinimumHeight(120)
 
         res_box = QGroupBox("🖼️ Resultados")
         rv = QVBoxLayout(res_box)
-        rv.addWidget(self.lbl_muestra)
+        rv.addWidget(self.galeria, 1)
         rv.addWidget(QLabel("📋 Resultados encontrados:"))
         rv.addWidget(self.lst_resultados)
         root.addWidget(res_box, 1)
@@ -256,7 +257,10 @@ class MainWindow(QMainWindow):
         c = self.controller
         c.status_changed.connect(lambda m: self.statusBar().showMessage(m))
         c.results_ready.connect(self._on_results)
-        c.sample_ready.connect(self._on_sample)
+        c.galeria_total_ready.connect(self._on_galeria_total)
+        c.galeria_item_ready.connect(self._on_galeria_item)
+        self.galeria.pedir_lightbox.connect(self._abrir_lightbox)
+        self.galeria.pedir_imagen.connect(c.solicitar_miniatura)
         c.progress_changed.connect(self._on_progress)
         c.error.connect(self._on_error)
         c.state_changed.connect(self._on_state)
@@ -318,12 +322,9 @@ class MainWindow(QMainWindow):
     def _on_job_finished(self, resumen: dict) -> None:
         """Diálogos de resultado: descargas y avisos cuando nada pasó los filtros."""
         try:
-            # Si esta búsqueda no trajo imagen de ejemplo, no dejar la anterior a medias
+            # Si esta búsqueda no trajo imágenes, no dejar las anteriores a medias
             if not self._muestra_recibida:
-                self.lbl_muestra.clear()
-                self.lbl_muestra.setText(
-                    "(no se pudo cargar la imagen de ejemplo de esta búsqueda)"
-                )
+                self.galeria.poner_mensaje(MENSAJE_VACIO)
             tipo = resumen.get("tipo")
             estado = resumen.get("estado", "")
             descartados = resumen.get("descartados") or {}
@@ -475,7 +476,7 @@ class MainWindow(QMainWindow):
                       self.ed_tags, self.ed_fandom, self.ed_character, self.ed_wiki_url):
                 w.clear()
             self.lst_resultados.clear()
-            self.lbl_muestra.setText("🖼️ (aquí se mostrará una imagen de ejemplo de la búsqueda)")
+            self.galeria.limpiar()
             self.progress.setVisible(False)
             self.controller.limpiar()
             self.statusBar().showMessage("Formulario limpio")
@@ -488,24 +489,33 @@ class MainWindow(QMainWindow):
         """Al iniciar una búsqueda/descarga: limpia resultados y la imagen anterior."""
         self.lst_resultados.clear()
         self._muestra_recibida = False
-        self.lbl_muestra.clear()
-        self.lbl_muestra.setText("⏳ (buscando imagen de ejemplo…)")
+        self.galeria.limpiar(MENSAJE_BUSCANDO)
         self.progress.setValue(0)
 
     def _on_results(self, items: list) -> None:
         self.lst_resultados.addItems(items)
 
-    def _on_sample(self, data: bytes) -> None:
-        pix = QPixmap()
-        if pix.loadFromData(QByteArray(data)):
+    def _on_galeria_total(self, total: int) -> None:
+        """El controlador anuncia cuántas imágenes tendrá el carrusel."""
+        self.galeria.definir_total(total)
+
+    def _on_galeria_item(self, posicion: int, datos: bytes) -> None:
+        """Llega una miniatura: se añade al carrusel (la primera se muestra ya)."""
+        if self.galeria.agregar(posicion, datos):
             self._muestra_recibida = True
-            scaled = pix.scaled(
-                self.lbl_muestra.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-            self.lbl_muestra.setPixmap(scaled)
-        else:
-            self.lbl_muestra.clear()
-            self.lbl_muestra.setText("⚠️ (no se pudo mostrar la imagen de ejemplo)")
+
+    def _abrir_lightbox(self, indice: int) -> None:
+        """Visor ampliado dentro de la ventana (estilo fancybox)."""
+        if not self.galeria.total():
+            return
+        if self._lightbox is None:
+            self._lightbox = Lightbox(self.galeria)
+        self._lightbox.abrir(indice)
+
+    def resizeEvent(self, evento):  # noqa: N802
+        super().resizeEvent(evento)
+        if self._lightbox is not None and self._lightbox.isVisible():
+            self._lightbox.setGeometry(self.rect())
 
     def _on_progress(self, done: int, total: int) -> None:
         self.progress.setVisible(True)

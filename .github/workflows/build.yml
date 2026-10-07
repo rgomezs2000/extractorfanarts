@@ -1,12 +1,20 @@
-name: Compilar ejecutables (Windows, macOS, Linux)
+name: Compilar y publicar release (Windows, macOS, Linux)
 
-# PyInstaller no compila cruzado: cada sistema genera el suyo. Este flujo los
-# compila los tres en paralelo y sube los paquetes como artefactos.
+# Dos formas de usarlo:
+#   1) Manual:  Actions → "Run workflow"  → sube los paquetes como artefactos.
+#   2) Release: sube una etiqueta v*  → compila los 3 sistemas y crea el Release
+#      con los .zip adjuntos y las notas generadas automáticamente.
+#
+#   git tag v0.1.0
+#   git push origin v0.1.0
 
 on:
   workflow_dispatch:
   push:
     tags: ["v*"]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -42,11 +50,32 @@ jobs:
         continue-on-error: true
         run: python scripts/setup_vendor.py vendor --solo-ia
 
-      - name: Comprobar el entorno antes de empaquetar
+      - name: Autocomprobación antes de empaquetar
         run: python main.py --selftest
 
       - name: Compilar
-        run: python scripts/build_exe.py --probar
+        run: python scripts/build_exe.py
+
+      - name: Firmar el ejecutable (opcional; solo si hay certificado)
+        if: ${{ matrix.os == 'windows-latest' && secrets.WINDOWS_CERT_PFX_BASE64 != '' }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $pfx = Join-Path $env:RUNNER_TEMP "certificado.pfx"
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_PFX_BASE64 }}"))
+          $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue |
+                      Sort-Object FullName | Select-Object -Last 1
+          if (-not $signtool) { Write-Host "::warning::no se encontró signtool"; exit 0 }
+          & $signtool.FullName sign /f $pfx /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
+              /fd sha256 /td sha256 /tr http://timestamp.digicert.com `
+              "dist\ExtractorFanarts\ExtractorFanarts.exe"
+          Remove-Item $pfx -Force
+
+      - name: Añadir avisos de licencias y LEEME al paquete
+        shell: bash
+        run: |
+          cp THIRD-PARTY-NOTICES.txt dist/ExtractorFanarts/ 2>/dev/null || true
+          cp LEEME-PRIMERO.txt dist/ExtractorFanarts/ 2>/dev/null || true
 
       - name: Subir artefacto
         uses: actions/upload-artifact@v4
@@ -54,4 +83,43 @@ jobs:
           name: ${{ matrix.artefacto }}
           path: dist/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
+
+  release:
+    name: Publicar release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: paquetes
+
+      - name: Empaquetar cada sistema en un .zip
+        run: |
+          cd paquetes
+          for d in */; do
+            nombre="${d%/}"
+            # -y conserva los enlaces simbólicos (imprescindible en el .app de macOS)
+            (cd "$nombre" && zip -qry "../${nombre}.zip" .)
+          done
+          ls -lh *.zip
+
+      - name: Generar huellas SHA-256 (para verificar la descarga)
+        run: |
+          cd paquetes
+          for z in *.zip; do
+            sha256sum "$z" > "$z.sha256"
+            cat "$z.sha256"
+          done
+
+      - name: Crear el Release con los paquetes adjuntos
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            paquetes/*.zip
+            paquetes/*.sha256
+          generate_release_notes: true
+          draft: false
+          fail_on_unmatched_files: true

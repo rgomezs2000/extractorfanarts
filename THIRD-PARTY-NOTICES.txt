@@ -1,0 +1,53 @@
+THIRD-PARTY NOTICES — ExtractorFanarts
+======================================
+
+Este programa empaqueta y distribuye componentes de terceros. Se listan aquí con
+sus licencias para cumplir con sus condiciones de redistribución. Las licencias
+completas están en los repositorios oficiales de cada proyecto.
+
+INTERFAZ GRÁFICA
+----------------
+PySide6 y shiboken6 — The Qt Company — GNU LGPL v3
+  https://www.qt.io/licensing  ·  https://www.gnu.org/licenses/lgpl-3.0.html
+  Se distribuyen como bibliotecas dinámicas (Qt6*.dll / libQt6*.so / frameworks),
+  en su propio directorio, SIN modificaciones y enlazadas dinámicamente con la
+  aplicación. Esto permite sustituirlas por versiones compatibles (LGPL §4), que es
+  el requisito para distribuir software que las usa.
+
+RED / HTTP
+----------
+httpx, httpcore        — Encode — BSD 3-Clause
+h11, anyio, sniffio    — varios autores — MIT
+idna                   — Kim Davies — BSD 3-Clause
+certifi                — Kenneth Reitz — Mozilla Public License 2.0
+curl_cffi              — yifeikong — MIT (incluye libcurl/curl-impersonate: MIT)
+cffi                   — Armin Rigo / PyPy — MIT
+pycparser              — Eli Bendersky — BSD 3-Clause
+
+IMAGEN
+------
+Pillow                 — Jeffrey A. Clark y colaboradores — MIT-CMU (PIL License)
+
+MOTORES DE IA (opcionales, si se incluyen en el paquete)
+--------------------------------------------------------
+Real-ESRGAN (realesrgan-ncnn-vulkan)
+  — Xintao Wang y colaboradores — BSD 3-Clause
+  Modelos de IA de Real-ESRGAN — BSD 3-Clause (ver repositorio oficial)
+  https://github.com/xinntao/Real-ESRGAN
+waifu2x-ncnn-vulkan
+  — nihui — MIT
+  Modelos de waifu2x — MIT (ver repositorio oficial)
+  https://github.com/nihui/waifu2x-ncnn-vulkan
+Los modelos son datos entrenados por sus autores; revisa sus condiciones si vas a
+redistribuirlos o usarlos comercialmente.
+
+EMPAQUETADO (solo en el proceso de compilación, no se distribuye)
+-----------------------------------------------------------------
+PyInstaller — MIT · pyinstaller-hooks-contrib — Apache 2.0
+pefile — MIT · pywin32-ctypes — BSD 3-Clause · altgraph — MIT
+
+USO RESPONSABLE
+---------------
+Esta herramienta es para archivo personal de contenido al que tengas acceso
+legítimo. Respeta los términos de servicio de cada plataforma, los derechos de
+autor de las obras y las licencias indicadas arriba.
