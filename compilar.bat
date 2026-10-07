@@ -1,0 +1,64 @@
+@echo off
+REM ============================================================
+REM  Compila ExtractorFanarts en un .exe para Windows
+REM  NO usa pip: las dependencias se instalan en .\vendor
+REM  (asi se evita el error de rutas largas de la Microsoft Store)
+REM ============================================================
+setlocal
+cd /d "%~dp0"
+
+echo ============================================================
+echo   ExtractorFanarts - compilacion para Windows
+echo ============================================================
+echo.
+
+python --version >nul 2>&1
+if errorlevel 1 (
+  echo [ERROR] No se encontro Python en el PATH.
+  echo         Instala Python desde https://www.python.org/downloads/
+  echo         y marca la casilla "Add python.exe to PATH".
+  echo.
+  pause
+  exit /b 1
+)
+
+echo [1/3] Dependencias de la aplicacion (PySide6, httpx, Pillow, curl_cffi)...
+if exist "vendor\PySide6" (
+  echo       ya estan en .\vendor
+) else (
+  python scripts\setup_vendor.py vendor
+  if errorlevel 1 goto error
+)
+
+echo [2/3] PyInstaller (para empaquetar)...
+if exist "vendor\PyInstaller" (
+  echo       ya esta en .\vendor
+) else (
+  python scripts\setup_vendor.py vendor --only=pyinstaller,pyinstaller-hooks-contrib,altgraph,packaging,setuptools,pefile,pywin32-ctypes
+  if errorlevel 1 goto error
+)
+
+echo [3/3] Compilando el ejecutable...
+echo.
+python scripts\build_exe.py
+if errorlevel 1 goto error
+
+echo.
+echo ============================================================
+echo   LISTO
+echo   Ejecutable: dist\ExtractorFanarts\ExtractorFanarts.exe
+echo.
+echo   Antes de ejecutarlo, copia tu app\config_local.py a
+echo   dist\ExtractorFanarts\config_local.py (tus claves van ahi,
+echo   nunca dentro del .exe).
+echo ============================================================
+echo.
+pause
+exit /b 0
+
+:error
+echo.
+echo [ERROR] La compilacion fallo. Revisa el mensaje de arriba.
+echo.
+pause
+exit /b 1

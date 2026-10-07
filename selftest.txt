@@ -1,0 +1,18 @@
+ExtractorFanarts 0.1.0
+  python      : 3.12.10
+  congelado   : False
+  log         : C:\Users\usuario\.extractorfanarts\logs
+  carpeta base: C:\Users\usuario\Documents\ExtractorFanarts
+  icono       : C:\Users\usuario\source\repos\extractorfanarts\assets\icon.ico
+  PySide6     : OK (Qt 6.11.2)
+  httpx       : OK
+  PIL         : OK
+  certifi     : OK
+  curl_cffi   : OK (transporte con huella de navegador)
+  adaptadores : 13 boorus, 8 redes, 1 wikis
+  motor IA    : sí (realesrgan-ncnn-vulkan.exe)
+  escritura   : FALLO ([Errno 13] Permission denied: 'C:\\Users\\usuario\\Documents\\ExtractorFanarts\\.escritura_ok')
+  interfaz    : OK (ventana construida en segundo plano)
+  controles   : 🔍 Buscar | ⬇️ Descargar | 🧹 Limpiar | 🔢 Limitar cantidad de descargas
+
+RESULTADO: 1 problema(s)
