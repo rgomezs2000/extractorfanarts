@@ -22,8 +22,10 @@ TRANSPARENCIA: el alfa se separa, se reescala aparte y se recompone (sin halos).
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from .. import config
@@ -169,21 +171,33 @@ def _lanczos_upscale(path: Path, tamano: tuple[int, int]) -> Path:
 
 # ------------------------------------------------------------------ IA (opcional)
 def _find_ai_exe() -> Path | None:
+    """Localiza el motor IA (Windows .exe o binario de macOS/Linux)."""
     names = ("realesrgan-ncnn-vulkan", "waifu2x-ncnn-vulkan")
     if config.AI_EXE_OVERRIDE:
         p = Path(config.AI_EXE_OVERRIDE)
         if p.exists():
             return p
     for name in names:
-        found = shutil.which(name + ".exe") or shutil.which(name)
-        if found:
-            return Path(found)
+        for candidato in (name, name + ".exe"):
+            encontrado = shutil.which(candidato)
+            if encontrado:
+                return Path(encontrado)
     root = Path(__file__).resolve().parents[2]  # app/services -> raíz del proyecto
-    vendor = root / "vendor"
-    if vendor.is_dir():
+    candidatos_raiz = [root / "vendor"]
+    if getattr(sys, "frozen", False):
+        candidatos_raiz.append(Path(sys.executable).resolve().parent / "vendor")
+        interior = getattr(sys, "_MEIPASS", None)
+        if interior:
+            candidatos_raiz.append(Path(interior) / "vendor")
+    for base in candidatos_raiz:
+        if not base.is_dir():
+            continue
         for name in names:
-            for p in vendor.rglob(f"{name}*.exe"):
-                return p
+            for p in base.rglob(f"{name}*"):
+                if not p.is_file() or p.suffix.lower() in (".param", ".bin", ".txt", ".md"):
+                    continue
+                if p.suffix.lower() == ".exe" or os.access(p, os.X_OK):
+                    return p
     return None
 
 

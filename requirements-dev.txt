@@ -1,0 +1,2 @@
+# Dependencias solo para DESARROLLO / empaquetado (no las necesita el usuario final)
+PyInstaller>=6.0

@@ -1,15 +1,22 @@
 """Instalador local de dependencias sin pip: descarga los wheels desde PyPI y
-los extrae en ./vendor. Útil cuando pip no está disponible o falla.
+los extrae en ./vendor. Funciona en Windows, macOS y Linux (elige los wheels y
+los motores IA de la plataforma en la que se ejecuta).
 
 Uso:
-    python scripts/setup_vendor.py [carpeta_destino]   # por defecto: vendor2
+    python scripts/setup_vendor.py [carpeta_destino] [--ai] [--only=pkg1,pkg2]
 
-Después de ejecutarlo, la aplicación usa ./vendor (ver main.py). Si usas otro
-destino, renombra la carpeta a `vendor` o ajusta main.py.
+  --ai              instala también los motores de IA (Real-ESRGAN / waifu2x)
+  --only=a,b        instala solo esos paquetes (para añadir uno nuevo sin tocar
+                    lo ya instalado)
+
+Sin carpeta de destino usa ./vendor2 (útil para reconstruir); lo normal es:
+    python scripts/setup_vendor.py vendor
 """
 from __future__ import annotations
 
 import json
+import platform
+import stat
 import sys
 import urllib.request
 import zipfile
@@ -18,7 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WHEEL_DIR = ROOT / ".wheels"
 
-# Versiones compatibles (resueltas por pip el 2026-10-06, Python 3.12 / win_amd64)
+# Versiones compatibles (resueltas con pip; se ajustan por plataforma al elegir)
 PACKAGES: dict[str, str | None] = {
     "shiboken6": "6.11.2",
     "PySide6": "6.11.2",
@@ -29,114 +36,192 @@ PACKAGES: dict[str, str | None] = {
     "h11": "0.16.0",
     "anyio": "4.15.1",
     "idna": "3.20",
-    "sniffio": None,  # última versión
-    "certifi": None,  # última versión
-    "typing_extensions": None,  # última versión
-    "pillow": None,  # mejora de calidad (Lanczos/WebP)
-    "curl_cffi": None,  # transporte con huella de navegador (Cloudflare)
-    "cffi": None,       # dependencia de curl_cffi (extensión _cffi_backend)
-    "pycparser": None,  # dependencia de cffi
+    "sniffio": None,
+    "certifi": None,
+    "typing_extensions": None,
+    "pillow": None,        # mejora de calidad (Lanczos/WebP)
+    "curl_cffi": None,     # transporte con huella de navegador (Cloudflare)
+    "cffi": None,          # dependencia de curl_cffi (extensión _cffi_backend)
+    "pycparser": None,     # dependencia de cffi
+    # Solo para empaquetar (scripts/build_exe.py)
+    "pyinstaller": None,
+    "pyinstaller-hooks-contrib": None,
+    "altgraph": None,
+    "packaging": None,
+    "pefile": None,          # Windows
+    "pywin32-ctypes": None,  # Windows
 }
 
-# Motores IA opcionales (modo IA del upscaling). Se instalan con: --ai
-# Descarga los binarios oficiales autónomos (exe + modelos) desde GitHub Releases.
+# Motores IA opcionales (binarios oficiales, autónomos: ejecutable + modelos).
 AI_GITHUB: dict[str, str] = {
     "realesrgan-ncnn-vulkan": "xinntao/Real-ESRGAN",
     "waifu2x-ncnn-vulkan": "nihui/waifu2x-ncnn-vulkan",
 }
 
 
+# ------------------------------------------------------------------ plataforma
+def _etiquetas_sistema() -> tuple[list[str], list[str]]:
+    """(marcadores de sistema en el nombre del wheel, arquitecturas preferidas)."""
+    maquina = platform.machine().lower()
+    if sys.platform.startswith("win"):
+        return ["win_amd64", "win32"], ["amd64"]
+    if sys.platform == "darwin":
+        if maquina in ("arm64", "aarch64"):
+            return ["macosx"], ["universal2", "arm64", "x86_64"]
+        return ["macosx"], ["universal2", "x86_64", "arm64"]
+    return (["manylinux", "linux_x86_64", "linux_aarch64"],
+            [maquina or "x86_64"])
+
+
+def _etiquetas_ia() -> tuple[str, ...]:
+    """Palabras clave del ZIP de motores IA según la plataforma."""
+    if sys.platform.startswith("win"):
+        return ("windows",)
+    if sys.platform == "darwin":
+        return ("macos",)
+    return ("ubuntu", "linux")
+
+
+def _puntuar_wheel(nombre: str) -> int:
+    if not nombre.endswith(".whl"):
+        return -1
+    bajo = nombre.lower()
+    tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
+    sistema, arquitecturas = _etiquetas_sistema()
+
+    es_any = "py3-none-any" in bajo
+    tiene_plataforma = any(s in bajo for s in sistema)
+    if not (es_any or tiene_plataforma):
+        return -1
+
+    puntos = 0
+    if tag in bajo:
+        puntos += 8
+    elif "abi3" in bajo:
+        puntos += 6
+    elif es_any or "py3-none-" in bajo:
+        # Puro para cualquier Python; puede llevar etiqueta de plataforma
+        # (p. ej. pyinstaller-6.x-py3-none-win_amd64.whl)
+        puntos += 4
+    else:
+        return -1
+    for indice, arquitectura in enumerate(arquitecturas):
+        if arquitectura in bajo:
+            puntos += len(arquitecturas) - indice
+    return puntos
+
+
+def pick_wheel(files: list[dict]) -> dict | None:
+    """Elige el mejor wheel para ESTA plataforma y versión de Python."""
+    mejores = [f for f in files if _puntuar_wheel(f["filename"]) > 0]
+    if not mejores:
+        return None
+    return max(mejores, key=lambda f: _puntuar_wheel(f["filename"]))
+
+
+# ------------------------------------------------------------------ utilidades
 def _json(url: str) -> dict:
     with urllib.request.urlopen(url, timeout=60) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def pick_wheel(files: list[dict]) -> dict | None:
-    tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
-    for f in files:
-        name = f["filename"]
-        if name.endswith(".whl") and "win_amd64" in name and tag in name:
-            return f
-    for f in files:
-        name = f["filename"]
-        if name.endswith(".whl") and "win_amd64" in name and "abi3" in name:
-            return f
-    for f in files:
-        name = f["filename"]
-        if name.endswith(".whl") and ("win_amd64" in name or "py3-none-any" in name):
-            return f
-    return None
+def _marcar_ejecutables(directorio: Path) -> None:
+    """En macOS/Linux los binarios extraídos necesitan permiso de ejecución."""
+    if sys.platform.startswith("win"):
+        return
+    nombres = tuple(AI_GITHUB)
+    for ruta in directorio.rglob("*"):
+        if not ruta.is_file():
+            continue
+        if not ruta.name.startswith(nombres):
+            continue
+        if ruta.suffix.lower() in (".param", ".bin", ".md", ".txt"):
+            continue
+        try:
+            ruta.chmod(ruta.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+            print(f"[ok] permiso de ejecución: {ruta.name}")
+        except OSError as exc:
+            print(f"[aviso] no se pudo marcar {ruta}: {exc}")
 
 
 def install_ai_engines(target: Path) -> None:
-    """Descarga y extrae los motores IA (Real-ESRGAN / waifu2x) desde GitHub."""
-    for name, repo in AI_GITHUB.items():
+    """Descarga y extrae los motores IA de ESTA plataforma desde GitHub."""
+    etiquetas = _etiquetas_ia()
+    for nombre, repo in AI_GITHUB.items():
         try:
-            rels = _json(f"https://api.github.com/repos/{repo}/releases?per_page=15")
+            releases = _json(f"https://api.github.com/repos/{repo}/releases?per_page=15")
             asset = None
-            for rel in rels:
-                for a in rel.get("assets", []):
-                    n = (a.get("name") or "").lower()
-                    if "windows" in n and n.endswith(".zip"):
-                        asset = a
+            for release in releases:
+                for candidato in release.get("assets", []):
+                    archivo = (candidato.get("name") or "").lower()
+                    if archivo.endswith(".zip") and any(e in archivo for e in etiquetas):
+                        asset = candidato
                         break
                 if asset is not None:
                     break
             if asset is None:
-                print(f"[omitido] {name}: sin asset windows en los releases")
+                print(f"[omitido] {nombre}: sin binario para {sys.platform} ({etiquetas})")
                 continue
-            zp = WHEEL_DIR / asset["name"]
-            if not zp.exists():
-                print(f"[descargando] {name}: {asset['name']} …")
-                urllib.request.urlretrieve(asset["browser_download_url"], zp)
+            paquete = WHEEL_DIR / asset["name"]
+            if not paquete.exists():
+                print(f"[descargando] {nombre}: {asset['name']} …")
+                urllib.request.urlretrieve(asset["browser_download_url"], paquete)
             else:
-                print(f"[cache] {zp.name}")
-            with zipfile.ZipFile(zp) as zf:
+                print(f"[cache] {paquete.name}")
+            with zipfile.ZipFile(paquete) as zf:
                 zf.extractall(target)
-            print(f"[ok] {name}")
-        except Exception as exc:
-            print(f"[omitido] {name}: {exc}")
+            print(f"[ok] {nombre}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[omitido] {nombre}: {exc}")
+    _marcar_ejecutables(target)
 
 
+# ------------------------------------------------------------------ principal
 def main() -> int:
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    target = Path(args[0]) if args else ROOT / "vendor2"
-    # --only=paquete1,paquete2 → instala solo esos paquetes (útil para añadir uno nuevo)
+    argumentos = [a for a in sys.argv[1:] if not a.startswith("--")]
+    target = Path(argumentos[0]) if argumentos else ROOT / "vendor2"
     solo: set[str] | None = None
     for arg in sys.argv[1:]:
         if arg.startswith("--only="):
             solo = {p.strip() for p in arg.split("=", 1)[1].split(",") if p.strip()}
+
     target.mkdir(parents=True, exist_ok=True)
     WHEEL_DIR.mkdir(exist_ok=True)
+    print(f"[info] plataforma: {sys.platform} / {platform.machine()} · "
+          f"python {sys.version_info.major}.{sys.version_info.minor}")
 
-    for package, version in PACKAGES.items():
-        if solo and package not in solo:
+    instalados = 0
+    solo_ia = "--solo-ia" in sys.argv
+    for paquete, version in PACKAGES.items():
+        if solo_ia:
+            break
+        if solo and paquete not in solo:
             continue
         try:
-            info = _json(f"https://pypi.org/pypi/{package}/json")
-        except Exception as exc:
-            print(f"[omitido] {package}: {exc}")
+            info = _json(f"https://pypi.org/pypi/{paquete}/json")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[omitido] {paquete}: {exc}")
             continue
         ver = version or info["info"]["version"]
-        files = info["releases"].get(ver, [])
-        wheel = pick_wheel(files)
+        wheel = pick_wheel(info["releases"].get(ver, []))
         if wheel is None:
-            print(f"[ERROR] sin wheel para {package} {ver}")
-            return 1
-        wheel_path = WHEEL_DIR / wheel["filename"]
-        if not wheel_path.exists():
+            print(f"[omitido] {paquete} {ver}: sin wheel para esta plataforma")
+            continue
+        ruta_wheel = WHEEL_DIR / wheel["filename"]
+        if not ruta_wheel.exists():
             print(f"[descargando] {wheel['filename']} …")
-            urllib.request.urlretrieve(wheel["url"], wheel_path)
+            urllib.request.urlretrieve(wheel["url"], ruta_wheel)
         else:
-            print(f"[cache] {wheel_path.name}")
-        with zipfile.ZipFile(wheel_path) as zf:
+            print(f"[cache] {ruta_wheel.name}")
+        with zipfile.ZipFile(ruta_wheel) as zf:
             zf.extractall(target)
-        print(f"[ok] {package} {ver}")
+        print(f"[ok] {paquete} {ver}")
+        instalados += 1
 
     if "--ai" in sys.argv:
         install_ai_engines(target)
 
-    print(f"\nInstalado en {target}")
+    print(f"\nInstalado en {target} ({instalados} paquetes)")
     return 0
 
 

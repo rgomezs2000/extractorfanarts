@@ -271,6 +271,46 @@ python scripts\diag_conexion.py Safebooru     # control sin claves
 5. Deduplicación por hash **dentro de cada búsqueda** (cada Descargar re-descarga
    todo y sobreescribe los archivos existentes).
 
+## Empaquetar como ejecutable (Windows / macOS / Linux)
+
+**PyInstaller no compila cruzado**: cada sistema operativo genera su propio ejecutable.
+
+| Sistema | Comando (en ese sistema) |
+|---|---|
+| Windows (`.exe`) | `python scripts\build_exe.py --probar` |
+| macOS (`.app`) | igual, ejecutado en un Mac |
+| Linux (binario) | igual, ejecutado en Linux |
+
+Para obtener **los tres a la vez** usa el workflow incluido
+[.github/workflows/build.yml](.github/workflows/build.yml): compila en
+Windows + macOS + Linux en paralelo y sube los paquetes como artefactos.
+
+Requisitos en la máquina que compila:
+```powershell
+python -m pip install PySide6 httpx Pillow curl_cffi pyinstaller
+# o, sin pip:  python scripts\setup_vendor.py vendor --ai
+```
+
+Opciones de `build_exe.py`: `--onefile` (un solo archivo), `--consola` (mantiene la
+consola además de la ventana), `--probar` (ejecuta `--selftest` del resultado).
+
+Notas importantes:
+
+- **Las credenciales NO se empaquetan.** `config_local.py` se busca **junto al
+  ejecutable** o en `~/.extractorfanarts/config_local.py`; el build deja una
+  plantilla al lado del binario. Así tus claves nunca entran en el paquete.
+- **Registros y base de datos** viven en `~/.extractorfanarts/` (logs + historial),
+  fuera del paquete.
+- **Tamaño**: el paquete `onedir` ronda los cientos de MB porque incluye Qt
+  (PySide6) y los binarios de IA (Real-ESRGAN/waifu2x con sus modelos).
+- **macOS**: un `.app` sin firmar muestra *"no se puede abrir"* → clic derecho →
+  **Abrir**, o `xattr -dr com.apple.quarantine ExtractorFanarts.app`. Para
+  distribuirlo a terceros hace falta un certificado de Apple (Developer ID) y
+  notarización.
+- **Linux**: conviene compilar en una distribución antigua (o contenedor) para que
+  el binario funcione en más sistemas; alternativamente puede empaquetarse como
+  AppImage.
+
 ## Estructura (MVC)
 
 ```

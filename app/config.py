@@ -254,16 +254,62 @@ FREE_LICENSE_HINTS = (
 )
 
 # ------------------------------------------------------------------ overrides locales (credenciales)
-# Si existe app/config_local.py (IGNORADO por git), sus constantes en MAYÚSCULAS
-# sobreescriben las de este archivo. Es la forma recomendada de poner tus claves
-# sin riesgo de subirlas al repositorio: edita solo app/config_local.py.
-try:
-    from . import config_local as _config_local
-except ImportError:
-    _config_local = None
+# Archivo config_local.py (IGNORADO por git) con tus claves y ajustes: cualquier
+# constante en MAYÚSCULAS sobreescribe las de este archivo.
+#
+# Se busca en este orden (el primero que exista gana), lo que permite usarlo
+# tanto en desarrollo como con la app empaquetada (.exe/.app/binario):
+#   1) junto al ejecutable (o junto a main.py en desarrollo)
+#   2) dentro del paquete empaquetado (por si se incluyó una plantilla)
+#   3) en la carpeta de usuario:  ~/.extractorfanarts/config_local.py
+import importlib.util as _importlib_util
+import sys as _sys
+
+
+def _cargar_config_local():
+    candidatos = []
+    if getattr(_sys, "frozen", False):
+        candidatos.append(Path(_sys.executable).resolve().parent / "config_local.py")
+        interior = getattr(_sys, "_MEIPASS", None)
+        if interior:
+            candidatos.append(Path(interior) / "config_local.py")
+    else:
+        candidatos.append(Path(__file__).resolve().parent / "config_local.py")
+    candidatos.append(Path.home() / ".extractorfanarts" / "config_local.py")
+
+    for ruta in candidatos:
+        try:
+            if not ruta.is_file():
+                continue
+            especificacion = _importlib_util.spec_from_file_location("config_local", ruta)
+            if especificacion is None or especificacion.loader is None:
+                continue
+            modulo = _importlib_util.module_from_spec(especificacion)
+            especificacion.loader.exec_module(modulo)
+            return modulo
+        except Exception:  # noqa: BLE001
+            continue  # un archivo con errores no debe impedir arrancar
+    return None
+
+
+_config_local = _cargar_config_local()
+
+# Constantes que deben ser rutas: si el usuario las escribe como texto en
+# config_local.py (DEFAULT_OUTPUT_DIR = r"C:\..."), se convierten a Path.
+_CONSTANTES_RUTA = ("DEFAULT_OUTPUT_DIR", "DB_PATH", "LOG_DIR", "AI_EXE_OVERRIDE")
 
 if _config_local is not None:
     for _nombre in dir(_config_local):
         if _nombre.isupper():
             globals()[_nombre] = getattr(_config_local, _nombre)
-    del _nombre
+    if "_nombre" in globals():
+        del _nombre
+    CONFIG_LOCAL_USADO = getattr(_config_local, "__file__", "") or ""
+else:
+    CONFIG_LOCAL_USADO = ""
+
+for _nombre in _CONSTANTES_RUTA:
+    _valor = globals().get(_nombre)
+    if isinstance(_valor, str) and _valor.strip():
+        globals()[_nombre] = Path(_valor.strip()).expanduser()
+del _nombre

@@ -1,0 +1,57 @@
+name: Compilar ejecutables (Windows, macOS, Linux)
+
+# PyInstaller no compila cruzado: cada sistema genera el suyo. Este flujo los
+# compila los tres en paralelo y sube los paquetes como artefactos.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    name: ${{ matrix.nombre }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            nombre: Windows (.exe)
+            artefacto: ExtractorFanarts-Windows
+          - os: macos-latest
+            nombre: macOS
+            artefacto: ExtractorFanarts-macOS
+          - os: ubuntu-latest
+            nombre: Linux
+            artefacto: ExtractorFanarts-Linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install PySide6 httpx Pillow curl_cffi pyinstaller
+
+      - name: Motores de IA (Real-ESRGAN / waifu2x) — opcional
+        continue-on-error: true
+        run: python scripts/setup_vendor.py vendor --solo-ia
+
+      - name: Comprobar el entorno antes de empaquetar
+        run: python main.py --selftest
+
+      - name: Compilar
+        run: python scripts/build_exe.py --probar
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artefacto }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

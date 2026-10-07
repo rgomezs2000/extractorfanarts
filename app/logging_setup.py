@@ -28,10 +28,16 @@ def setup_logging(log_dir: Path | None = None) -> logging.Logger:
     stream.setFormatter(fmt)
     logger.addHandler(stream)
 
-    # Archivo .log con fallback
+    # Archivo .log con fallback: carpeta de usuario → junto a la app → temporal
+    import tempfile
+
     file_path: Path | None = None
-    for candidate in (log_dir or config.LOG_DIR,
-                      Path(__file__).resolve().parents[1] / "logs"):
+    candidatos = [
+        log_dir or config.LOG_DIR,
+        Path(__file__).resolve().parents[1] / "logs",
+        Path(tempfile.gettempdir()) / "ExtractorFanarts" / "logs",
+    ]
+    for candidate in candidatos:
         try:
             candidate.mkdir(parents=True, exist_ok=True)
             file_path = candidate / "app.log"
