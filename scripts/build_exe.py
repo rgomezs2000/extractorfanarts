@@ -90,6 +90,17 @@ def _rutas_datos_ia() -> list[tuple[Path, str]]:
     return entradas
 
 
+def _icono_para_empaquetar() -> Path | None:
+    """Icono del ejecutable: .ico en Windows, .png en macOS/Linux."""
+    preferidos = (("icon.ico", "icon.png") if sys.platform.startswith("win")
+                  else ("icon.png", "icon.ico"))
+    for nombre in preferidos:
+        ruta = ROOT / "assets" / nombre
+        if ruta.is_file():
+            return ruta
+    return None
+
+
 def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
     separador = ";" if sys.platform.startswith("win") else ":"
     args = [
@@ -111,6 +122,13 @@ def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
         args += ["--exclude-module", modulo]
     for origen, destino in _rutas_datos_ia():
         args += ["--add-data", f"{origen}{separador}{destino}"]
+    # Icono del ejecutable (y de la barra de tareas/ventana en tiempo de ejecución)
+    icono = _icono_para_empaquetar()
+    if icono is not None:
+        args += ["--icon", str(icono)]
+    assets = ROOT / "assets"
+    if assets.is_dir():
+        args += ["--add-data", f"{assets}{separador}assets"]
     # El archivo de credenciales del usuario NO se empaqueta (se lee de fuera)
     args += ["--exclude-module", "app.config_local"]
 

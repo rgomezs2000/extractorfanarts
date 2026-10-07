@@ -271,6 +271,55 @@ python scripts\diag_conexion.py Safebooru     # control sin claves
 5. Deduplicación por hash **dentro de cada búsqueda** (cada Descargar re-descarga
    todo y sobreescribe los archivos existentes).
 
+## 🎨 Icono e iconos de la interfaz
+
+El icono (una **paleta de pintura con pincel**) se genera por código, sin depender de
+imágenes ni fuentes externas, y se aplica a:
+
+- el **ejecutable** (`.exe` / `.app` / binario) al compilar,
+- la **ventana** y la **barra de tareas** (`QApplication.setWindowIcon`),
+- los **controles clave** de la interfaz.
+
+| Archivo | Para qué |
+|---|---|
+| `assets/icon.ico` | Windows: multi-tamaño 16, 24, 32, 48, 64, 128, 256 |
+| `assets/icon.png` | 1024 px (macOS/Linux, vistas previas) |
+| `assets/icon_256.png` | Icono de ventana en cualquier sistema |
+| `assets/icon_preview.png` | Tira de comprobación en todos los tamaños |
+
+Para cambiar el diseño o los colores (edita `PINTURAS` y la geometría en
+[scripts/make_icon.py](scripts/make_icon.py)) y regenera:
+
+```powershell
+python scripts\make_icon.py
+```
+
+**Iconos en los controles (cada icono representa su función):**
+
+| Control | Icono | Motivo |
+|---|---|---|
+| Buscar | 🔍 | lupa = buscar |
+| Descargar / Cancelar | ⬇️ / ⏹️ | flecha abajo = descargar · señal de stop = cancelar |
+| Limpiar | 🧹 | escoba = limpiar el formulario |
+| Carpeta de salida | 📂 / 📁 | carpeta = destino de los archivos |
+| Solo licencia liberada | ⚖️ | balanza = aspecto legal |
+| Contenido adulto | 🔞 | símbolo de restricción +18 |
+| Mejorar calidad | ✨ | destellos = mejora/retoque |
+| Modo IA | 🤖 | robot = inteligencia artificial |
+| Calidad WebP | 🎚️ | control deslizante = nivel |
+| Limitar cantidad | 🔢 / 🔢 | números = cantidad |
+| Metadatos .json | 🏷️ | etiqueta = datos del archivo |
+| Conexión | 📡 | antena = conexión de red |
+| Resultados | 🖼️ / 📋 | cuadro = imágenes · lista = resultados |
+| Tipo / Plataforma | 🗂️ / 🌐 | clasificación · sitio web |
+| @usuario · palabra · #hashtag | 👤 · 🔤 · #️⃣ | persona · texto · etiqueta |
+| Instancia | 🌐 | servidor del fediverso |
+| Tags · Fandom · Personaje · URL wiki | 🏷️ · 📚 · 🎭 · 🔗 | etiquetas · obra/lore · rol · enlace |
+| Progreso | 🔍 buscando… / ⬇️ %p% | refleja la tarea en curso (se oculta al terminar) |
+
+El icono de la ventana se resuelve con [app/icono.py](app/icono.py), que lo busca
+tanto en desarrollo como dentro del paquete empaquetado.
+
 ## Empaquetar como ejecutable (Windows / macOS / Linux)
 
 **PyInstaller no compila cruzado**: cada sistema operativo genera su propio ejecutable.

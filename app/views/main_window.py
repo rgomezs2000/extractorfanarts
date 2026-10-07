@@ -32,12 +32,23 @@ class MainWindow(QMainWindow):
     def __init__(self, controller: MainController):
         super().__init__()
         self.controller = controller
-        self.setWindowTitle(f"{config.APP_NAME} — archivo personal de fanarts")
+        self.setWindowTitle(f"🎨 {config.APP_NAME} — archivo personal de fanarts")
         self._muestra_recibida = False
+        self._tarea = "descargar"
         self._build_ui()
         self._connect()
         self._set_tipo(TIPOS[0])
         self._set_idle()
+        # Icono de la ventana (además del que fija main.py para toda la app)
+        try:
+            from PySide6.QtGui import QIcon
+
+            from ..icono import ruta_icono
+            ruta = ruta_icono()
+            if ruta is not None:
+                self.setWindowIcon(QIcon(str(ruta)))
+        except Exception:  # noqa: BLE001
+            pass
 
     # ------------------------------------------------------------------ construcción
     def _build_ui(self) -> None:
@@ -46,14 +57,14 @@ class MainWindow(QMainWindow):
         root = QVBoxLayout(central)
 
         # Fuente
-        fuente_box = QGroupBox("Fuente de búsqueda")
+        fuente_box = QGroupBox("🔎 Fuente de búsqueda")
         fl = QHBoxLayout(fuente_box)
         self.cmb_tipo = QComboBox()
         self.cmb_tipo.addItems(TIPOS)
         self.cmb_plataforma = QComboBox()
-        fl.addWidget(QLabel("Tipo:"))
+        fl.addWidget(QLabel("🗂️ Tipo:"))
         fl.addWidget(self.cmb_tipo)
-        fl.addWidget(QLabel("Plataforma:"))
+        fl.addWidget(QLabel("🌐 Plataforma:"))
         fl.addWidget(self.cmb_plataforma, 1)
         root.addWidget(fuente_box)
 
@@ -64,41 +75,41 @@ class MainWindow(QMainWindow):
         v = QVBoxLayout(self.page_social)
         v.addWidget(QLabel("Combina @usuario, palabra clave y/o #hashtag (usa el algoritmo nativo de la plataforma):"))
         self.ed_usuario = QLineEdit()
-        self.ed_usuario.setPlaceholderText("@usuario  (o @usuario@instancia)")
+        self.ed_usuario.setPlaceholderText("👤 @usuario  (o @usuario@instancia)")
         self.ed_keyword = QLineEdit()
-        self.ed_keyword.setPlaceholderText("palabra clave")
+        self.ed_keyword.setPlaceholderText("🔤 palabra clave")
         self.ed_hashtag = QLineEdit()
-        self.ed_hashtag.setPlaceholderText("#hashtag")
+        self.ed_hashtag.setPlaceholderText("#️⃣ #hashtag")
         v.addWidget(self.ed_usuario)
         v.addWidget(self.ed_keyword)
         v.addWidget(self.ed_hashtag)
         self.ed_instancia = QLineEdit()
         self.ed_instancia.setPlaceholderText(
-            "Instancia (opcional): ej. baraag.net · Misskey: ej. misskey.io — "
+            "🌐 Instancia (opcional): ej. baraag.net · Misskey: ej. misskey.io — "
             "si escribes @usuario@instancia se usa esa automáticamente"
         )
         v.addWidget(self.ed_instancia)
 
         self.page_booru = QWidget()
         v = QVBoxLayout(self.page_booru)
-        v.addWidget(QLabel("Tags del booru (las que el booru permita):"))
+        v.addWidget(QLabel("🏷️ Tags del booru (las que el booru permita):"))
         self.ed_tags = QLineEdit()
-        self.ed_tags.setPlaceholderText("ej. hatsune_miku solo")
+        self.ed_tags.setPlaceholderText("🏷️ ej. hatsune_miku solo")
         v.addWidget(self.ed_tags)
 
         self.page_wiki = QWidget()
         v = QVBoxLayout(self.page_wiki)
-        v.addWidget(QLabel("Fandom (franquicia):"))
+        v.addWidget(QLabel("📚 Fandom (franquicia):"))
         self.ed_fandom = QLineEdit()
-        self.ed_fandom.setPlaceholderText("ej. naruto")
+        self.ed_fandom.setPlaceholderText("📚 ej. naruto")
         v.addWidget(self.ed_fandom)
-        v.addWidget(QLabel("Personaje y/o concepto:"))
+        v.addWidget(QLabel("🎭 Personaje y/o concepto:"))
         self.ed_character = QLineEdit()
-        self.ed_character.setPlaceholderText("ej. naruto_uzumaki")
+        self.ed_character.setPlaceholderText("🎭 ej. naruto_uzumaki")
         v.addWidget(self.ed_character)
-        v.addWidget(QLabel("URL de la wiki (opcional):"))
+        v.addWidget(QLabel("🔗 URL de la wiki (opcional):"))
         self.ed_wiki_url = QLineEdit()
-        self.ed_wiki_url.setPlaceholderText("ej. https://naruto.fandom.com")
+        self.ed_wiki_url.setPlaceholderText("🔗 ej. https://naruto.fandom.com")
         v.addWidget(self.ed_wiki_url)
 
         self.stack.addWidget(self.page_social)
@@ -107,27 +118,27 @@ class MainWindow(QMainWindow):
         root.addWidget(self.stack)
 
         # Opciones
-        self.filtros_box = QGroupBox("Opciones")
+        self.filtros_box = QGroupBox("⚙️ Opciones")
         ov = QVBoxLayout(self.filtros_box)
         fl2 = QHBoxLayout()
-        self.chk_liberado = QCheckBox("Solo material con licencia liberada")
+        self.chk_liberado = QCheckBox("⚖️ Solo material con licencia liberada")
         self.chk_liberado.setToolTip(
             "Si se marca, solo se procesan obras con licencia permisiva explícita "
             "(CC0/CC-BY/dominio público). La mayoría del fanart no la tiene."
         )
-        self.chk_adulto = QCheckBox("Permitir contenido adulto")
+        self.chk_adulto = QCheckBox("🔞 Permitir contenido adulto")
         self.chk_adulto.setToolTip(
             "Confirmo que soy mayor de edad en mi jurisdicción. "
             "Por defecto se omiten los ratings questionable/explicit."
         )
-        self.chk_mejorar = QCheckBox("Mejorar calidad (upscale IA/Lanczos)")
+        self.chk_mejorar = QCheckBox("✨ Mejorar calidad (upscale IA/Lanczos)")
         self.chk_mejorar.setChecked(config.ENHANCE_DEFAULT_ON)
         self.chk_mejorar.setToolTip(
             "Controla SOLO el upscaling y la definición. El guardado en .webp se aplica "
             "SIEMPRE (el original nunca se conserva). Reglas: <700px→4x · 700-799px→3x · "
             "800-1500px→2x · 1501-1599px→1x · 1600px+→2x, con tope de 8K (7680 px)."
         )
-        self.chk_ia = QCheckBox("Modo IA (waifu2x/Real-ESRGAN)")
+        self.chk_ia = QCheckBox("🤖 Modo IA (waifu2x/Real-ESRGAN)")
         self.chk_ia.setToolTip(
             "Usa el motor IA Vulkan si está instalado (python scripts\\setup_vendor.py --ai); "
             "si no está disponible, usa Lanczos + afilado suave automáticamente."
@@ -141,7 +152,7 @@ class MainWindow(QMainWindow):
 
         # Calidad WebP
         fl3 = QHBoxLayout()
-        fl3.addWidget(QLabel("Calidad WebP:"))
+        fl3.addWidget(QLabel("🎚️ Calidad WebP:"))
         self.sld_calidad = QSlider(Qt.Horizontal)
         self.sld_calidad.setRange(1, 100)
         self.sld_calidad.setValue(config.WEBP_QUALITY_DEFAULT)
@@ -158,7 +169,7 @@ class MainWindow(QMainWindow):
 
         # Límite de cantidad de descargas
         fl4 = QHBoxLayout()
-        self.chk_limite = QCheckBox("Limitar cantidad de descargas")
+        self.chk_limite = QCheckBox("🔢 Limitar cantidad de descargas")
         self.chk_limite.setToolTip(
             "Si se marca, se descarga solo la cantidad indicada. Si no, se "
             "descarga todo lo encontrado (hasta el tope de seguridad de config.py)."
@@ -169,9 +180,9 @@ class MainWindow(QMainWindow):
         self.spin_cantidad.setEnabled(False)
         self.chk_limite.toggled.connect(self.spin_cantidad.setEnabled)
         fl4.addWidget(self.chk_limite)
-        fl4.addWidget(QLabel("Cantidad:"))
+        fl4.addWidget(QLabel("🔢 Cantidad:"))
         fl4.addWidget(self.spin_cantidad)
-        self.chk_sidecar = QCheckBox("Guardar metadatos .json")
+        self.chk_sidecar = QCheckBox("🏷️ Guardar metadatos .json")
         self.chk_sidecar.setChecked(config.WRITE_SIDECAR_JSON)
         self.chk_sidecar.setToolTip(
             "Guarda un archivo .json junto a cada imagen con autoría, origen y "
@@ -183,11 +194,11 @@ class MainWindow(QMainWindow):
         root.addWidget(self.filtros_box)
 
         # Carpeta de salida
-        carpeta_box = QGroupBox("Carpeta de salida")
+        carpeta_box = QGroupBox("📁 Carpeta de salida")
         cl = QHBoxLayout(carpeta_box)
         self.ed_carpeta = QLineEdit(str(config.DEFAULT_OUTPUT_DIR))
-        self.btn_carpeta = QPushButton("…")
-        self.btn_carpeta.setFixedWidth(36)
+        self.btn_carpeta = QPushButton("📂")
+        self.btn_carpeta.setFixedWidth(44)
         self.btn_carpeta.setToolTip("Elegir carpeta de salida")
         cl.addWidget(QLabel("Salida:"))
         cl.addWidget(self.ed_carpeta, 1)
@@ -196,9 +207,9 @@ class MainWindow(QMainWindow):
 
         # Botones
         botones = QHBoxLayout()
-        self.btn_buscar = QPushButton("Buscar")
-        self.btn_descargar = QPushButton("Descargar")
-        self.btn_limpiar = QPushButton("Limpiar")
+        self.btn_buscar = QPushButton("🔍 Buscar")
+        self.btn_descargar = QPushButton("⬇️ Descargar")
+        self.btn_limpiar = QPushButton("🧹 Limpiar")
         botones.addWidget(self.btn_buscar)
         botones.addWidget(self.btn_descargar)
         botones.addWidget(self.btn_limpiar)
@@ -206,27 +217,28 @@ class MainWindow(QMainWindow):
         root.addLayout(botones)
 
         # Resultados
-        self.lbl_muestra = QLabel("(aquí se mostrará una imagen de ejemplo de la búsqueda)")
+        self.lbl_muestra = QLabel("🖼️ (aquí se mostrará una imagen de ejemplo de la búsqueda)")
         self.lbl_muestra.setAlignment(Qt.AlignCenter)
         self.lbl_muestra.setMinimumSize(420, 280)
         self.lbl_muestra.setStyleSheet("border: 1px solid #999; background: #f5f5f5;")
         self.lst_resultados = QListWidget()
         self.lst_resultados.setMinimumHeight(120)
 
-        res_box = QGroupBox("Resultados")
+        res_box = QGroupBox("🖼️ Resultados")
         rv = QVBoxLayout(res_box)
         rv.addWidget(self.lbl_muestra)
-        rv.addWidget(QLabel("Resultados encontrados:"))
+        rv.addWidget(QLabel("📋 Resultados encontrados:"))
         rv.addWidget(self.lst_resultados)
         root.addWidget(res_box, 1)
 
-        # Progreso
+        # Progreso (solo descargas: la barra muestra el icono de descarga)
         self.progress = QProgressBar()
+        self.progress.setFormat("⬇️ %p%")
         self.progress.setVisible(False)
         root.addWidget(self.progress)
 
         # Estatus de conexión (última petición/respuesta)
-        self.lbl_conexion = QLabel("Conexión: —")
+        self.lbl_conexion = QLabel("📡 Conexión: —")
         self.lbl_conexion.setStyleSheet("color: #444444;")
         self.lbl_conexion.setToolTip("Última actividad HTTP: peticiones, respuestas y pausas")
         root.addWidget(self.lbl_conexion)
@@ -413,6 +425,7 @@ class MainWindow(QMainWindow):
                 self.statusBar().showMessage(f"⚠ {error}")
                 return
             self._preparar_busqueda_nueva()
+            self._tarea = "buscar"          # la barra de progreso lo refleja
             self.controller.buscar(s)
         except Exception as exc:
             logger.exception("excepcion en _on_buscar")
@@ -448,6 +461,7 @@ class MainWindow(QMainWindow):
                 self.statusBar().showMessage("Descarga no iniciada")
                 return
             self._preparar_busqueda_nueva()
+            self._tarea = "descargar"       # la barra de progreso lo refleja
             self.controller.descargar(s)
         except Exception as exc:
             logger.exception("excepcion en _on_descargar")
@@ -461,7 +475,7 @@ class MainWindow(QMainWindow):
                       self.ed_tags, self.ed_fandom, self.ed_character, self.ed_wiki_url):
                 w.clear()
             self.lst_resultados.clear()
-            self.lbl_muestra.setText("(aquí se mostrará una imagen de ejemplo de la búsqueda)")
+            self.lbl_muestra.setText("🖼️ (aquí se mostrará una imagen de ejemplo de la búsqueda)")
             self.progress.setVisible(False)
             self.controller.limpiar()
             self.statusBar().showMessage("Formulario limpio")
@@ -475,7 +489,7 @@ class MainWindow(QMainWindow):
         self.lst_resultados.clear()
         self._muestra_recibida = False
         self.lbl_muestra.clear()
-        self.lbl_muestra.setText("(buscando imagen de ejemplo…)")
+        self.lbl_muestra.setText("⏳ (buscando imagen de ejemplo…)")
         self.progress.setValue(0)
 
     def _on_results(self, items: list) -> None:
@@ -491,7 +505,7 @@ class MainWindow(QMainWindow):
             self.lbl_muestra.setPixmap(scaled)
         else:
             self.lbl_muestra.clear()
-            self.lbl_muestra.setText("(no se pudo mostrar la imagen de ejemplo)")
+            self.lbl_muestra.setText("⚠️ (no se pudo mostrar la imagen de ejemplo)")
 
     def _on_progress(self, done: int, total: int) -> None:
         self.progress.setVisible(True)
@@ -506,7 +520,7 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------------------ estados de UI
     def _set_running(self) -> None:
-        self.btn_descargar.setText("Cancelar")
+        self.btn_descargar.setText("⏹️ Cancelar")
         self.btn_buscar.setEnabled(False)
         self.btn_limpiar.setEnabled(False)
         self.cmb_tipo.setEnabled(False)
@@ -515,11 +529,18 @@ class MainWindow(QMainWindow):
         self.filtros_box.setEnabled(False)
         self.ed_carpeta.setEnabled(False)
         self.btn_carpeta.setEnabled(False)
+        # La barra refleja la función en curso: buscar (indeterminado) o descargar (%)
         self.progress.setValue(0)
+        if getattr(self, "_tarea", "descargar") == "buscar":
+            self.progress.setRange(0, 0)
+            self.progress.setFormat("🔍 buscando…")
+        else:
+            self.progress.setRange(0, 0)  # indeterminado hasta el primer avance
+            self.progress.setFormat("⬇️ %p%")
         self.progress.setVisible(True)
 
     def _set_idle(self) -> None:
-        self.btn_descargar.setText("Descargar")
+        self.btn_descargar.setText("⬇️ Descargar")
         self.btn_buscar.setEnabled(True)
         self.btn_limpiar.setEnabled(True)
         self.cmb_tipo.setEnabled(True)
@@ -528,4 +549,5 @@ class MainWindow(QMainWindow):
         self.filtros_box.setEnabled(True)
         self.ed_carpeta.setEnabled(True)
         self.btn_carpeta.setEnabled(True)
+        self.progress.setVisible(False)  # sin tarea activa no hay progreso que mostrar
         # Al cancelar se conservan el formulario, los resultados y la imagen de ejemplo.

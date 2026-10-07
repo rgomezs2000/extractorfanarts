@@ -30,6 +30,7 @@ from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app import config  # noqa: E402
 from app.controllers.main_controller import MainController  # noqa: E402
+from app.icono import aplicar_icono  # noqa: E402
 from app.logging_setup import setup_logging  # noqa: E402
 from app.views.main_window import MainWindow  # noqa: E402
 
@@ -55,6 +56,12 @@ def selftest() -> int:
     decir(f"  congelado   : {bool(getattr(sys, 'frozen', False))}")
     decir(f"  log         : {config.LOG_DIR}")
     decir(f"  carpeta base: {config.DEFAULT_OUTPUT_DIR}")
+    try:
+        from app.icono import ruta_icono
+        ruta = ruta_icono()
+        decir(f"  icono       : {ruta if ruta else 'no encontrado (assets/icon.ico)'}")
+    except Exception as exc:  # noqa: BLE001
+        decir(f"  icono       : FALLO ({exc})")
 
     problemas = 0
     try:
@@ -116,10 +123,13 @@ def selftest() -> int:
         from PySide6.QtWidgets import QApplication
         aplicacion = QApplication.instance() or QApplication([])
         controlador = MainController()
-        MainWindow(controlador)
+        ventana = MainWindow(controlador)
         controlador.shutdown()
         del aplicacion
         decir("  interfaz    : OK (ventana construida en segundo plano)")
+        decir(f"  controles   : {ventana.btn_buscar.text()} | "
+              f"{ventana.btn_descargar.text()} | {ventana.btn_limpiar.text()} | "
+              f"{ventana.chk_limite.text()}")
     except Exception as exc:  # noqa: BLE001
         decir(f"  interfaz    : FALLO ({exc})")
         problemas += 1
@@ -160,6 +170,7 @@ def main() -> int:
         app = QApplication(sys.argv)
         app.setApplicationName(config.APP_NAME)
         app.setStyle("Fusion")
+        aplicar_icono(app)  # 🎨 icono de la app (ventana, barra de tareas y .exe)
 
         controller = MainController()
         window = MainWindow(controller)
