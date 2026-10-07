@@ -30,7 +30,7 @@ from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app import config  # noqa: E402
 from app.controllers.main_controller import MainController  # noqa: E402
-from app.icono import aplicar_icono  # noqa: E402
+from app.icono import aplicar_icono, configurar_app_user_model_id  # noqa: E402
 from app.logging_setup import setup_logging  # noqa: E402
 from app.views.main_window import MainWindow  # noqa: E402
 
@@ -51,6 +51,9 @@ def selftest() -> int:
         except Exception:  # noqa: BLE001
             pass
 
+    # Windows: identificador propio (barra de tareas con NUESTRO icono)
+    from app.icono import configurar_app_user_model_id
+    decir(f"AppUserModelID: {'aplicado' if configurar_app_user_model_id() else 'no aplica'}")
     decir(f"{config.APP_NAME} {config.APP_VERSION}")
     decir(f"  python      : {sys.version.split()[0]}")
     decir(f"  congelado   : {bool(getattr(sys, 'frozen', False))}")
@@ -124,12 +127,21 @@ def selftest() -> int:
         aplicacion = QApplication.instance() or QApplication([])
         controlador = MainController()
         ventana = MainWindow(controlador)
+        ventana.ajustar_a_pantalla()
         controlador.shutdown()
         del aplicacion
         decir("  interfaz    : OK (ventana construida en segundo plano)")
         decir(f"  controles   : {ventana.btn_buscar.text()} | "
               f"{ventana.btn_descargar.text()} | {ventana.btn_limpiar.text()} | "
               f"{ventana.chk_limite.text()}")
+        pantalla = ventana.screen() or aplicacion.primaryScreen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            decir(f"  ventana     : {ventana.width()}x{ventana.height()} "
+                  f"(pantalla útil {util.width()}x{util.height()})")
+            cabe = (ventana.width() <= util.width()
+                    and ventana.height() <= util.height())
+            decir(f"  cabe en la pantalla: {'sí' if cabe else 'NO'}")
     except Exception as exc:  # noqa: BLE001
         decir(f"  interfaz    : FALLO ({exc})")
         problemas += 1
@@ -167,6 +179,10 @@ def main() -> int:
     setup_logging()  # log a consola + archivo .log
 
     try:
+        # Windows: identificador propio ANTES de crear la app, para que la barra de
+        # tareas muestre NUESTRO icono (si no, muestra el de python.exe).
+        configurar_app_user_model_id()
+
         app = QApplication(sys.argv)
         app.setApplicationName(config.APP_NAME)
         app.setStyle("Fusion")
@@ -174,7 +190,7 @@ def main() -> int:
 
         controller = MainController()
         window = MainWindow(controller)
-        window.resize(980, 760)
+        window.ajustar_a_pantalla()   # no salirse de la barra de tareas
         window.show()
 
         return app.exec()

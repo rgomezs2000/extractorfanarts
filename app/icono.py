@@ -52,3 +52,21 @@ def aplicar_icono(app) -> bool:
         return True
     except Exception:  # noqa: BLE001
         return False
+
+
+def configurar_app_user_model_id(nombre: str = "ExtractorFanarts.App") -> bool:
+    """Windows: identificador propio para que la BARRA DE TAREAS use nuestro icono.
+
+    Sin esto, Windows agrupa el proceso bajo el ejecutable anfitrión (python.exe) y
+    la barra de tareas muestra el icono de Python en vez del nuestro. Debe llamarse
+    ANTES de crear la QApplication.
+    """
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(nombre)
+        return True
+    except Exception:  # noqa: BLE001
+        return False

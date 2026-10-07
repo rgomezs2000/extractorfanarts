@@ -64,7 +64,7 @@ class VisorImagen(QLabel):
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.setAlignment(Qt.AlignCenter)
-        self.setMinimumSize(420, 280)
+        self.setMinimumSize(220, 140)   # pequeño a propósito: la ventana puede encogerse
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setCursor(Qt.PointingHandCursor)
         self.setStyleSheet("border: 1px solid #999; background: #f5f5f5; color: #666;")

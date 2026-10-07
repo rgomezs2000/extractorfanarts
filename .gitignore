@@ -270,3 +270,7 @@ certs/
 *.pfx
 *.cer
 *.pvk
+
+# Artefactos de diagnostico
+selftest.txt
+qa_preview.png

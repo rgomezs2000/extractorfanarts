@@ -307,6 +307,34 @@ Para cambiar el diseño o los colores (edita `PINTURAS` y la geometría en
 python scripts\make_icon.py
 ```
 
+**Icono en la barra de tareas (Windows):** además del icono del ejecutable, la app fija
+un **AppUserModelID** propio (`ExtractorFanarts.App`) *antes* de crear la aplicación Qt.
+Sin eso, Windows agrupa el proceso bajo el intérprete anfitrión y la barra de tareas
+muestra **el icono de Python** en lugar del nuestro. En macOS el icono lo aporta el
+`.app` y en Linux el escritorio/AppImage.
+
+**La ventana nunca tapa la barra de tareas:** al abrirse (y al restaurarse) se ajusta a
+`QScreen.availableGeometry()`, que ya descuenta la barra de tareas, el dock o el panel.
+Si la pantalla es pequeña, la ventana se reduce y el contenido se puede **desplazar**
+(el interfaz va dentro de un `QScrollArea`), en lugar de salirse de la pantalla.
+Verificable con `python main.py --selftest` (informa el tamaño de ventana y si cabe).
+
+**La interfaz se adapta al tamaño de la ventana (responsive):**
+
+| Elemento | Comportamiento al cambiar el ancho |
+|---|---|
+| Casillas de opciones y fila de límite | **Layout de flujo** ([app/views/flujo.py](app/views/flujo.py)): pasan de 1 a 2, 3 o 4 líneas según el espacio |
+| Fila "Tipo / Plataforma" | También en flujo: la plataforma baja a otra línea si no cabe |
+| Deslizador de calidad | Se **estira** con la ventana (ya no tiene ancho fijo) |
+| Campos de texto (usuario, hashtag, tags, wiki…) | Se estiran; su ancho mínimo es pequeño (el texto de ayuda no impone el ancho) |
+| Combo de plataforma | Encoge con puntos suspensivos (`AdjustToMinimumContentsLengthWithIcon`) |
+| Visor de la galería | Escala la imagen; mínimo reducido (220×140) |
+| Etiquetas largas (aviso, estado de conexión) | Ajuste de línea automático (`wordWrap`) |
+| Contenido que no cabe | Barras de desplazamiento, nunca recorte |
+
+Comprobado a 1400×950, 1100×800, 900×700 y 700×600: sin scroll horizontal (el mínimo del
+contenido es 564×781) y con envoltura de casillas en 2, 2, 3 y 4 líneas respectivamente.
+
 **Iconos en los controles (cada icono representa su función):**
 
 | Control | Icono | Motivo |

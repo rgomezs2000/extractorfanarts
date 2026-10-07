@@ -15,14 +15,15 @@ import logging
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QCheckBox, QComboBox, QFileDialog, QGroupBox, QHBoxLayout, QLabel,
+    QApplication, QCheckBox, QComboBox, QFileDialog, QGroupBox, QHBoxLayout, QLabel,
     QLineEdit, QListWidget, QMainWindow, QMessageBox, QProgressBar, QPushButton,
-    QSlider, QSpinBox, QStackedWidget, QVBoxLayout, QWidget,
+    QScrollArea, QSizePolicy, QSlider, QSpinBox, QStackedWidget, QVBoxLayout, QWidget,
 )
 
 from .. import config
 from ..controllers.main_controller import MainController
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
+from .flujo import FlowLayout
 from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
 
 logger = logging.getLogger("extractorfanarts")
@@ -56,19 +57,34 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------ construcción
     def _build_ui(self) -> None:
         central = QWidget()
-        self.setCentralWidget(central)
         root = QVBoxLayout(central)
+        # El contenido va dentro de un área desplazable: así la ventana puede ser
+        # más pequeña que el contenido (pantallas pequeñas) sin salirse de la
+        # zona útil ni tapar la barra de tareas.
+        desplazable = QScrollArea()
+        desplazable.setWidgetResizable(True)
+        desplazable.setFrameShape(QScrollArea.NoFrame)
+        desplazable.setWidget(central)
+        self.setCentralWidget(desplazable)
 
-        # Fuente
+        # Fuente (también en flujo: en ventanas estrechas la plataforma pasa a otra línea)
         fuente_box = QGroupBox("🔎 Fuente de búsqueda")
-        fl = QHBoxLayout(fuente_box)
+        fl = FlowLayout(hspacing=10, vspacing=4)
         self.cmb_tipo = QComboBox()
         self.cmb_tipo.addItems(TIPOS)
+        self.cmb_tipo.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         self.cmb_plataforma = QComboBox()
+        # Permite encogerse (con puntos suspensivos) en ventanas estrechas
+        self.cmb_plataforma.setSizeAdjustPolicy(
+            QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.cmb_plataforma.setMinimumContentsLength(14)
+        self.cmb_plataforma.setMinimumWidth(190)
+        self.cmb_plataforma.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         fl.addWidget(QLabel("🗂️ Tipo:"))
         fl.addWidget(self.cmb_tipo)
         fl.addWidget(QLabel("🌐 Plataforma:"))
-        fl.addWidget(self.cmb_plataforma, 1)
+        fl.addWidget(self.cmb_plataforma)
+        fuente_box.setLayout(fl)
         root.addWidget(fuente_box)
 
         # Filtros por tipo (stacked)
@@ -76,7 +92,12 @@ class MainWindow(QMainWindow):
 
         self.page_social = QWidget()
         v = QVBoxLayout(self.page_social)
-        v.addWidget(QLabel("Combina @usuario, palabra clave y/o #hashtag (usa el algoritmo nativo de la plataforma):"))
+        aviso_social = QLabel(
+            "Combina @usuario, palabra clave y/o #hashtag "
+            "(usa el algoritmo nativo de la plataforma):"
+        )
+        aviso_social.setWordWrap(True)   # se ajusta al ancho de la ventana
+        v.addWidget(aviso_social)
         self.ed_usuario = QLineEdit()
         self.ed_usuario.setPlaceholderText("👤 @usuario  (o @usuario@instancia)")
         self.ed_keyword = QLineEdit()
@@ -115,15 +136,22 @@ class MainWindow(QMainWindow):
         self.ed_wiki_url.setPlaceholderText("🔗 ej. https://naruto.fandom.com")
         v.addWidget(self.ed_wiki_url)
 
+        # Mínimo pequeño en los campos de texto: así el texto de ayuda (placeholder)
+        # o el contenido no imponen el ancho de la ventana (se recorta con scroll).
+        for campo in (self.ed_usuario, self.ed_keyword, self.ed_hashtag, self.ed_instancia,
+                      self.ed_tags, self.ed_fandom, self.ed_character, self.ed_wiki_url):
+            campo.setMinimumWidth(70)
+
         self.stack.addWidget(self.page_social)
         self.stack.addWidget(self.page_booru)
         self.stack.addWidget(self.page_wiki)
         root.addWidget(self.stack)
 
-        # Opciones
+        # Opciones (layout de flujo: se reparten en varias líneas si la ventana
+        # es estrecha y vuelven a una sola cuando hay espacio)
         self.filtros_box = QGroupBox("⚙️ Opciones")
         ov = QVBoxLayout(self.filtros_box)
-        fl2 = QHBoxLayout()
+        fl2 = FlowLayout(hspacing=14, vspacing=4)
         self.chk_liberado = QCheckBox("⚖️ Solo material con licencia liberada")
         self.chk_liberado.setToolTip(
             "Si se marca, solo se procesan obras con licencia permisiva explícita "
@@ -150,28 +178,27 @@ class MainWindow(QMainWindow):
         fl2.addWidget(self.chk_adulto)
         fl2.addWidget(self.chk_mejorar)
         fl2.addWidget(self.chk_ia)
-        fl2.addStretch(1)
         ov.addLayout(fl2)
 
-        # Calidad WebP
+        # Calidad WebP (el deslizador se estira con la ventana)
         fl3 = QHBoxLayout()
         fl3.addWidget(QLabel("🎚️ Calidad WebP:"))
         self.sld_calidad = QSlider(Qt.Horizontal)
         self.sld_calidad.setRange(1, 100)
         self.sld_calidad.setValue(config.WEBP_QUALITY_DEFAULT)
-        self.sld_calidad.setFixedWidth(220)
+        self.sld_calidad.setMinimumWidth(120)
+        self.sld_calidad.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.lbl_calidad_val = QLabel(str(config.WEBP_QUALITY_DEFAULT))
         self.lbl_calidad_val.setMinimumWidth(28)
         self.sld_calidad.valueChanged.connect(
             lambda v: self.lbl_calidad_val.setText(str(v))
         )
-        fl3.addWidget(self.sld_calidad)
+        fl3.addWidget(self.sld_calidad, 1)
         fl3.addWidget(self.lbl_calidad_val)
-        fl3.addStretch(1)
         ov.addLayout(fl3)
 
-        # Límite de cantidad de descargas
-        fl4 = QHBoxLayout()
+        # Límite de cantidad de descargas (también en flujo)
+        fl4 = FlowLayout(hspacing=14, vspacing=4)
         self.chk_limite = QCheckBox("🔢 Limitar cantidad de descargas")
         self.chk_limite.setToolTip(
             "Si se marca, se descarga solo la cantidad indicada. Si no, se "
@@ -192,7 +219,6 @@ class MainWindow(QMainWindow):
             "licencia. Desactivado: solo se guarda la imagen."
         )
         fl4.addWidget(self.chk_sidecar)
-        fl4.addStretch(1)
         ov.addLayout(fl4)
         root.addWidget(self.filtros_box)
 
@@ -221,9 +247,9 @@ class MainWindow(QMainWindow):
 
         # Resultados
         self.galeria = GaleriaWidget()
-        self.galeria.setMinimumHeight(320)
+        self.galeria.setMinimumHeight(200)
         self.lst_resultados = QListWidget()
-        self.lst_resultados.setMinimumHeight(120)
+        self.lst_resultados.setMinimumHeight(70)
 
         res_box = QGroupBox("🖼️ Resultados")
         rv = QVBoxLayout(res_box)
@@ -241,6 +267,7 @@ class MainWindow(QMainWindow):
         # Estatus de conexión (última petición/respuesta)
         self.lbl_conexion = QLabel("📡 Conexión: —")
         self.lbl_conexion.setStyleSheet("color: #444444;")
+        self.lbl_conexion.setWordWrap(True)   # no fuerza el ancho de la ventana
         self.lbl_conexion.setToolTip("Última actividad HTTP: peticiones, respuestas y pausas")
         root.addWidget(self.lbl_conexion)
 
@@ -511,6 +538,34 @@ class MainWindow(QMainWindow):
         if self._lightbox is None:
             self._lightbox = Lightbox(self.galeria)
         self._lightbox.abrir(indice)
+
+    # ------------------------------------------------------------------ tamaño en pantalla
+    def ajustar_a_pantalla(self) -> None:
+        """Ajusta la ventana a la zona útil de la pantalla (sin tapar la barra de tareas).
+
+        En Windows/macOS/Linux `availableGeometry()` ya descuenta la barra de tareas
+        (o el dock/panel). Si la pantalla es pequeña, la ventana se reduce y el
+        contenido se puede desplazar (QScrollArea) en lugar de salirse.
+        """
+        pantalla = self.screen() or QApplication.primaryScreen()
+        if pantalla is None:
+            self.resize(980, 760)
+            return
+        util = pantalla.availableGeometry()
+        margen = 24
+        ancho = max(520, min(1020, util.width() - margen))
+        alto = max(420, min(820, util.height() - margen))
+        self.resize(ancho, alto)
+        self.move(util.x() + max(0, (util.width() - ancho) // 2),
+                  util.y() + max(0, (util.height() - alto) // 2))
+        logger.info("ventana ajustada a %dx%d (pantalla útil %dx%d)",
+                    ancho, alto, util.width(), util.height())
+
+    def showEvent(self, evento):  # noqa: N802
+        super().showEvent(evento)
+        if not getattr(self, "_ajustada", False):
+            self._ajustada = True
+            self.ajustar_a_pantalla()
 
     def resizeEvent(self, evento):  # noqa: N802
         super().resizeEvent(evento)
