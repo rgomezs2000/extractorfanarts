@@ -318,3 +318,10 @@ Flujo propuesto para "buscar fandom (franquicia y/o personaje) en repositorios d
 > UI, modo IA con Real-ESRGAN/waifu2x (ncnn-vulkan, probado en GPU real) y
 > fallback automático a Lanczos + afilado. Pendiente opcional: backend
 > DirectML/CPU y más modelos (Fase C).
+
+> **Actualización (2026-10-08):** los tramos quedaron **≤699→4x · 700-799→3x ·
+> ≥800→2x**, con tope de 8K y sin reescalar por encima de 7679 px. Se retiró el
+> tramo `1501-1599→1x` porque rompía la coherencia de la tabla: una imagen de
+> 1550 px se quedaba **sin** reescalar mientras una de 1500 px se doblaba. Además,
+> el resultado de la mejora se informa siempre al usuario (tamaño de partida →
+> resultado real, y aviso si el origen es diminuto).

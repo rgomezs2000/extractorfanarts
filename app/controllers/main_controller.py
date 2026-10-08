@@ -148,6 +148,9 @@ def _procesar_obra(
 
     if sidecar:
         _write_sidecar(dest, art, mejora_meta)
+    if mejora_meta is not None:
+        # Texto listo para la UI y el registro: «153x153 → 612x612 · Lanczos 4x»
+        mejora_meta["resumen"] = enhance.resumen_mejora(mejora_meta)
     return dest, mejora_meta
 
 
@@ -499,7 +502,8 @@ class MainController(QObject):
                         finally:
                             shutil.rmtree(temporal, ignore_errors=True)
                         logger.info("imagen %d procesada para el portapapeles (%s)",
-                                    posicion, (meta or {}).get("modo", "?"))
+                                    posicion, (meta or {}).get("resumen")
+                                    or (meta or {}).get("modo", "?"))
                         self.individual_listo.emit(posicion, "", datos, dict(meta or {}))
                     elif accion == "guardar_como":
                         destino.parent.mkdir(parents=True, exist_ok=True)
@@ -510,7 +514,8 @@ class MainController(QObject):
                         )
                         self._registrar_historial(obra, dest)
                         logger.info("imagen %d guardada como %s (%s)",
-                                    posicion, dest, (meta or {}).get("modo", "?"))
+                                    posicion, dest, (meta or {}).get("resumen")
+                                    or (meta or {}).get("modo", "?"))
                         self.individual_listo.emit(posicion, str(dest), b"", dict(meta or {}))
                     else:
                         outdir = Path(settings.get("carpeta") or config.DEFAULT_OUTPUT_DIR)
@@ -521,7 +526,8 @@ class MainController(QObject):
                         )
                         self._registrar_historial(obra, dest)
                         logger.info("imagen %d guardada individualmente: %s (%s)",
-                                    posicion, dest, (meta or {}).get("modo", "?"))
+                                    posicion, dest, (meta or {}).get("resumen")
+                                    or (meta or {}).get("modo", "?"))
                         self.individual_listo.emit(posicion, str(dest), b"", dict(meta or {}))
                 except Exception as exc:  # noqa: BLE001
                     logger.warning("acción individual (%s) fallida: %s", accion, exc,
@@ -876,8 +882,10 @@ class MainController(QObject):
                             f"(animación, {(mejora_meta or {}).get('fotogramas')} fotogramas)"
                         )
                     else:
-                        modo_mejora = mejora_meta.get("modo") if mejora_meta else "sin mejora"
-                        sig.status.emit(f"[{i}/{total}] {art.site}: {dest.name} ({modo_mejora})")
+                        detalle = ((mejora_meta or {}).get("resumen")
+                                   or (mejora_meta or {}).get("modo")
+                                   or "sin mejora")
+                        sig.status.emit(f"[{i}/{total}] {art.site}: {dest.name} ({detalle})")
                     self._registrar_historial(art, dest)
                     guardados += 1
                     sig.progress.emit(i, total)

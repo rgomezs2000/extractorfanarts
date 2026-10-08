@@ -193,8 +193,10 @@ class MainWindow(QMainWindow):
         self.chk_mejorar.setChecked(config.ENHANCE_DEFAULT_ON)
         self.chk_mejorar.setToolTip(
             "Controla SOLO el upscaling y la definición. El guardado en .webp se aplica "
-            "SIEMPRE (el original nunca se conserva). Reglas: <700px→4x · 700-799px→3x · "
-            "800-1500px→2x · 1501-1599px→1x · 1600px+→2x, con tope de 8K (7680 px)."
+            "SIEMPRE (el original nunca se conserva). Reglas: hasta 699px→4x · "
+            "700-799px→3x · 800px o más→2x, con tope de 8K (7680 px). Por encima de "
+            "7679 px no se reescala. Al guardar verás el tamaño de partida y el "
+            "resultado real en la barra de estado."
         )
         self.chk_ia = QCheckBox("🤖 Modo IA")
         self.chk_ia.setToolTip(
@@ -521,22 +523,25 @@ class MainWindow(QMainWindow):
             self._individual_en_curso = max(0, self._individual_en_curso - 1)
             self._actualizar_acciones_imagen()
             modo = (meta or {}).get("modo") or ""
+            # El resumen trae los tamaños («153x153 → 612x612 · Lanczos 4x»), que es lo
+            # que permite comprobar de un vistazo que la mejora se aplicó de verdad.
+            detalle = (meta or {}).get("resumen") or modo
             if ruta:
                 texto = f"✅ Guardado: {ruta}"
-                if modo:
-                    texto += f"  ·  {modo}"
+                if detalle:
+                    texto += f"  ·  {detalle}"
                 self.statusBar().showMessage(texto)
-                logger.info("imagen %d guardada: %s (%s)", posicion, ruta, modo)
+                logger.info("imagen %d guardada: %s (%s)", posicion, ruta, detalle)
                 return
             if not datos:
                 self.statusBar().showMessage("⚠ La imagen llegó vacía; no se pudo copiar")
                 return
             correcto, motivo = self._copiar_imagen(datos)
             if correcto:
-                extra = f"  ·  {modo}" if modo else ""
+                extra = f"  ·  {detalle}" if detalle else ""
                 self.statusBar().showMessage(
                     f"📋 Imagen {posicion} copiada al portapapeles en .webp{extra}")
-                logger.info("imagen %d copiada al portapapeles (%s)", posicion, modo)
+                logger.info("imagen %d copiada al portapapeles (%s)", posicion, detalle)
             else:
                 self.statusBar().showMessage(f"⚠ No se pudo copiar la imagen: {motivo}")
         except Exception as exc:  # noqa: BLE001

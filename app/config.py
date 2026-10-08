@@ -357,12 +357,19 @@ WEBP_ALWAYS = True             # conversión a WebP obligatoria (nunca se guarda
 ENHANCE_DEFAULT_ON = True
 NO_UPSCALE_ABOVE = 1600        # (histórico) umbral antiguo; ahora lo gobiernan UPSCALE_BUCKETS
 UPSCALE_BUCKETS = [
-    (0, 699, 4),       # hasta 699 px      -> 4x
-    (700, 799, 3),     # de 700 a 799 px   -> 3x
-    (800, 1500, 2),    # de 800 a 1500 px  -> 2x
-    (1501, 1599, 1),   # de 1501 a 1599 px -> 1x (solo WebP)
-    (1600, 7679, 2),   # de 1600 px en adelante -> 2x, con tope de 8K
+    (0, 699, 4),       # hasta 699 px           -> 4x
+    (700, 799, 3),     # de 700 a 799 px        -> 3x
+    (800, 7679, 2),    # de 800 px en adelante  -> 2x, con tope de 8K
 ]
+# Ojo: los tramos deben ser CONTIGUOS y no bajar de factor al subir de tamaño. El
+# tramo antiguo (1501-1599 -> 1x) rompía eso: una imagen de 1550 px se quedaba sin
+# reescalar mientras una de 1500 px se doblaba. Por encima del último tramo
+# (>= 7680 px) no se reescala: solo se convierte a WebP.
+
+# Por debajo de este lado mayor se avisa de que el origen es diminuto: el
+# reescalado no inventa detalle real. Importa sobre todo si el destino es entrenar
+# un modelo (un origen de 153 px no sirve para un dataset, por mucho que se agrande).
+AVISO_ORIGEN_PEQUENO = 300
 
 # Tope de resolución de salida: ninguna imagen mejorada supera este lado mayor
 # (7680 px = 8K UHD). Si el factor la excediera, se reduce al tope (nunca se

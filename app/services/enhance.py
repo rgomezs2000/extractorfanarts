@@ -1,8 +1,10 @@
 """Mejora de calidad post-descarga: upscaling (Lanczos o IA), definición y WebP.
 
 Reglas (configurables en app/config.py, UPSCALE_BUCKETS):
-  - Hasta 699 px: 4x · 700-799 px: 3x · 800-1500 px: 2x · 1501-1599 px: 1x
-  - 1600 px en adelante: 2x, siempre con el tope MAX_OUTPUT_SIDE (7680 px = 8K).
+  - Hasta 699 px: 4x · 700-799 px: 3x · 800 px en adelante: 2x
+  - Tope MAX_OUTPUT_SIDE (7680 px = 8K); por encima de 7679 px no se reescala.
+  - `resumen_mejora()` devuelve el texto que ve el usuario («153x153 → 612x612 ·
+    Lanczos 4x») y avisa si el origen era diminuto (poco detalle real).
 El resultado se guarda SIEMPRE en .webp con la calidad configurada.
 
 CONTROL DE INTEGRIDAD (anti-corrupción / anti-artefactos):
@@ -462,3 +464,38 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         except OSError:
             pass
     return out, meta
+
+
+def resumen_mejora(meta: dict | None) -> str:
+    """Texto corto y VERIFICABLE de lo que se hizo con la imagen.
+
+    Es lo que se muestra en la barra de estado y se registra en el .log, para que
+    no haya que adivinar si la mejora se aplicó: deja ver el tamaño de partida, el
+    resultado real y el método.
+
+        «153x153 → 612x612 · Lanczos 4x · ⚠ origen pequeño (153 px)»
+
+    Sin esto, un «Lanczos 4x» sobre una imagen diminuta parece un fallo cuando en
+    realidad se aplicó la regla: lo que pasa es que el ORIGEN era muy pequeño.
+    """
+    meta = meta or {}
+    origen = str(meta.get("original_px") or "").strip()
+    destino = str(meta.get("resultado_px") or "").strip()
+    modo = str(meta.get("modo") or "").strip()
+
+    partes = []
+    if origen and destino:
+        partes.append(f"{origen} → {destino}")
+    elif destino:
+        partes.append(destino)
+    if modo:
+        partes.append(modo)
+    texto = " · ".join(partes) if partes else "sin mejora"
+
+    try:
+        lado = max(int(valor) for valor in origen.lower().split("x"))
+    except (ValueError, AttributeError):
+        lado = 0
+    if lado and lado < getattr(config, "AVISO_ORIGEN_PEQUENO", 300):
+        texto += f" · ⚠ origen pequeño ({lado} px, poco detalle real)"
+    return texto

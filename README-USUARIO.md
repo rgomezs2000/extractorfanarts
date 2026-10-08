@@ -258,8 +258,14 @@ a medias.
 
 - **Todo se guarda en `.webp`**, con la calidad que elijas en el deslizador
   (1–100). El archivo original no se conserva.
-- **✨ Mejorar calidad** aumenta la resolución de la imagen según su tamaño, con
-  un tope de 8K, y le aplica un afilado suave.
+- **✨ Mejorar calidad** aumenta la resolución según el tamaño de partida:
+  **hasta 699 px → ×4** · **700–799 px → ×3** · **800 px o más → ×2**, con un tope
+  de 8K, y aplica un afilado suave. Por encima de 7679 px solo se convierte a WebP.
+- **Siempre verás lo que se ha hecho:** al guardar o copiar, la barra de estado
+  indica el tamaño de partida y el resultado real
+  (`153x153 → 612x612 · Lanczos 4x`). Si el origen era muy pequeño (menos de
+  300 px) te avisa, porque **agrandar una imagen diminuta no crea detalle real**:
+  para preparar un dataset conviene saberlo antes de entrenar.
 - **🤖 Modo IA** usa los motores Real-ESRGAN / waifu2x si están incluidos en el
   paquete (dan más detalle, sobre todo en dibujos). Si no están disponibles, el
   programa lo dice y usa el reescalado clásico: **nunca** guarda una imagen

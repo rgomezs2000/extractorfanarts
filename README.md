@@ -71,7 +71,7 @@ lo resuelve el programa en una sola pasada, sin encadenar cinco herramientas.
 | **Imágenes del concepto correcto** | Búsqueda por **etiqueta exacta** en 14 boorus (el etiquetado de la comunidad es el mejor que existe para arte), por `@usuario` en redes sociales y por personaje/franquicia en wikis |
 | **Sin repetidas** | **Deduplicación por hash (md5)** dentro de cada búsqueda: el mismo archivo no entra dos veces |
 | **Un solo formato** | Conversión **siempre a `.webp`** con calidad configurable; el original no se conserva |
-| **Tamaños coherentes** | **Reescalado automático** por lado mayor (4x/3x/2x/1x) para que el dataset no mezcle 300 px con 3000 px; solo reduce si el resultado pasara de 8K |
+| **Tamaños coherentes** | **Reescalado automático** por lado mayor (4x / 3x / 2x) para que el dataset no mezcle 300 px con 3000 px; solo reduce si el resultado pasara de 8K |
 | **Definición en originales pequeños** | **✨ Mejorar calidad** (Lanczos + afilado) o **🤖 Modo IA** (Real-ESRGAN / waifu2x), con **validación anti-corrupción**: una imagen rota nunca entra al dataset |
 | **Etiquetas para las *captions*** | Sidecar `.json` opcional ([`_write_sidecar`](app/controllers/main_controller.py)) con `tags`, `artista`, `licencia`, `origen`, `rating` y `fecha` |
 | **Nombres trazables** | `<Plataforma>_<id>_<hash8>.webp`: se sabe de dónde salió cada archivo y se puede cruzar con el historial |
@@ -306,8 +306,13 @@ Con clic derecho sobre la imagen grande, cualquier miniatura o dentro del visor:
 - **Todo lo descargado se convierte siempre a `.webp`** con la calidad
   configurada (deslizador 1–100) y **el original nunca se conserva**.
 - **Upscaling opcional** («✨ Mejorar calidad») según el lado mayor de la imagen:
-  `<700px → 4x` · `700-799px → 3x` · `800-1500px → 2x` · `1501-1599px → 1x` ·
-  `1600px+ → 2x`, con tope de 8K (`MAX_OUTPUT_SIDE = 7680 px`).
+  `≤699px → 4x` · `700-799px → 3x` · `800px+ → 2x`, con tope de 8K
+  (`MAX_OUTPUT_SIDE = 7680 px`). Por encima de 7679 px no se reescala (solo WebP).
+  Los tramos son **contiguos**: subir de tamaño nunca baja el factor.
+- **La operación se informa siempre:** la barra de estado y el `.log` muestran el
+  tamaño de partida y el resultado real (`153x153 → 612x612 · Lanczos 4x`), y avisan
+  si el origen era diminuto (< `AVISO_ORIGEN_PEQUENO = 300` px), porque ampliar una
+  imagen de 153 px no crea detalle real.
 - **Modo IA** con Real-ESRGAN / waifu2x (ncnn-vulkan, GPU) si están instalados;
   si no, cae automáticamente a **Lanczos + afilado suave** y lo indica en el estado.
   - Para 2x y 3x se usa el modelo multiescala `realesr-animevideov3`; los
