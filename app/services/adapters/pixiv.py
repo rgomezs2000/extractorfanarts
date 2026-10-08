@@ -24,8 +24,9 @@ from urllib.parse import urlparse
 
 from ... import config
 from ...models.artwork import Artwork, SearchQuery
-from ..http_client import BlockedError, ConfigError, PoliteClient
+from ..http_client import BlockedError, ConfigError, PoliteClient, SinResultados
 from .base import SearchAdapter
+from .social_filtros import Criterios
 
 logger = logging.getLogger("extractorfanarts")
 
@@ -95,10 +96,13 @@ class PixivAdapter(SearchAdapter):
     # ------------------------------------------------------------------ búsqueda
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
         token = self._access_token(client)
+        criterios = Criterios.desde_query(query)
+        if criterios.vacio:
+            return []
         illusts: list[dict] = []
 
-        if query.usuario:
-            usuario = query.usuario.strip().lstrip("@")
+        if criterios.usuario:
+            usuario = criterios.usuario.strip().lstrip("@")
             user_id = usuario if usuario.isdigit() else self._buscar_usuario_id(
                 client, token, usuario
             )
@@ -107,19 +111,32 @@ class PixivAdapter(SearchAdapter):
             })
             illusts = datos.get("illusts", []) or []
         else:
-            palabra = (query.hashtag or query.keyword or "").strip().lstrip("#")
-            if not palabra:
+            # N valores sin límite: se busca cada palabra clave o etiqueta y se unen
+            terminos = list(criterios.hashtags) + list(criterios.palabras)
+            if not terminos:
                 return []
-            datos = self._get(client, "/v1/search/illust", token, {
-                "word": palabra,
-                "search_target": "partial_match_for_tags",
-                "sort": "date_desc",
-                "filter": "for_ios",
-            })
-            illusts = datos.get("illusts", []) or []
+            vistos_il: set[str] = set()
+            for palabra in terminos:
+                try:
+                    datos = self._get(client, "/v1/search/illust", token, {
+                        "word": palabra,
+                        "search_target": "partial_match_for_tags",
+                        "sort": "date_desc",
+                        "filter": "for_ios",
+                    })
+                except Exception as exc:  # noqa: BLE001
+                    logger.info("Pixiv: «%s» no se pudo buscar (%s)", palabra, exc)
+                    continue
+                for ilust in datos.get("illusts", []) or []:
+                    clave = str(ilust.get("id"))
+                    if clave not in vistos_il:
+                        vistos_il.add(clave)
+                        illusts.append(ilust)
 
         out: list[Artwork] = []
         for ilust in illusts:
+            if not self._cumple(ilust, criterios):
+                continue
             if ilust.get("type") == "ugoira":
                 generados = self._artwork_ugoira(client, token, ilust)
             else:
@@ -129,6 +146,17 @@ class PixivAdapter(SearchAdapter):
                 if len(out) >= query.limit:
                     return out
         return out
+
+    @staticmethod
+    def _cumple(ilust: dict, criterios: Criterios) -> bool:
+        """¿La ilustración cumple los filtros indicados? (título, etiquetas y autor)."""
+        titulo = ilust.get("title") or ""
+        descripcion = ilust.get("description") or ""
+        etiquetas = list(ilust.get("tags") or [])
+        autor = ((ilust.get("user") or {}).get("name")
+                 or (ilust.get("user") or {}).get("account") or "")
+        return criterios.cumple(texto=f"{titulo} {descripcion}", etiquetas=etiquetas,
+                                autor=autor)
 
     def _artwork_ugoira(self, client: PoliteClient, token: str,
                         ilust: dict) -> list[Artwork]:
@@ -172,7 +200,7 @@ class PixivAdapter(SearchAdapter):
         datos = self._get(client, "/v1/search/user", token, {"word": nombre})
         previsualizaciones = datos.get("user_previews", []) or []
         if not previsualizaciones:
-            raise BlockedError(
+            raise SinResultados(
                 f"no se encontró el usuario '{nombre}' en Pixiv "
                 "(también puedes escribir su id numérico)"
             )

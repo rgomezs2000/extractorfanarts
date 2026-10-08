@@ -1,14 +1,27 @@
-"""Adaptador de Bluesky (API pública atproto, sin autenticación)."""
+"""Adaptador de Bluesky (API pública atproto, sin autenticación).
+
+**Filtros combinados:** usuario (`from:`), varias palabras clave y varios hashtags se
+envían juntos a la API de búsqueda y, además, se comprueban en local con
+`social_filtros.Criterios` (la API puede devolver coincidencias parciales; así el
+resultado cumple TODOS los filtros, igual que en el fediverso).
+"""
 from __future__ import annotations
 
+import logging
 import re
 
 from ...models.artwork import Artwork, SearchQuery
 from ..http_client import PoliteClient
 from .base import SearchAdapter
+from .social_filtros import Criterios, repartir_en_lotes
+
+logger = logging.getLogger("extractorfanarts")
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 API_BASE = "https://public.api.bsky.app/xrpc"
+# Longitud máxima razonable de la consulta (la API de Bluesky la limita). No limita
+# cuántos valores escribes: si no caben en una consulta, se hacen varias y se unen.
+MAX_CONSULTA = 300
 
 
 class BlueskyAdapter(SearchAdapter):
@@ -16,27 +29,55 @@ class BlueskyAdapter(SearchAdapter):
 
     # ------------------------------------------------------------------ búsqueda
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
-        parts = []
-        if query.usuario:
-            parts.append(f"from:{query.usuario.strip().lstrip('@')}")
-        if query.hashtag:
-            parts.append(f"#{query.hashtag.strip().lstrip('#')}")
-        if query.keyword:
-            parts.append(query.keyword.strip())
-        if not parts:
+        criterios = Criterios.desde_query(query)
+        if criterios.vacio:
             return []
-        q = " ".join(parts)
+        aviso = getattr(client, "aviso", None)
+        if aviso is not None:
+            aviso(f"filtros de búsqueda → {criterios.detalle()}")
 
-        data = client.get_json(
-            f"{API_BASE}/app.bsky.feed.searchPosts",
-            params={"q": q, "limit": str(min(query.limit, 25))},
-        )
+        partes: list[str] = []
+        if criterios.usuario:
+            # En Bluesky los handles se escriben con puntos; si viene del fediverso
+            # ('@usuario@host') se convierte a 'usuario.host'.
+            partes.append(f"from:{criterios.usuario.strip().lstrip('@').replace('@', '.')}")
+        for tag in criterios.hashtags:
+            partes.append(f"#{tag}")
+        for frase in criterios.palabras:
+            partes.append(f'"{frase}"' if " " in frase else frase)
+
+        # N valores sin límite: una consulta por lote y se unen las publicaciones
+        publicaciones: list[dict] = []
+        vistas: set[str] = set()
+        for lote in repartir_en_lotes(partes, MAX_CONSULTA):
+            consulta = " ".join(lote)
+            logger.info("Bluesky: %s", consulta)
+            data = client.get_json(
+                f"{API_BASE}/app.bsky.feed.searchPosts",
+                params={"q": consulta, "limit": str(min(query.limit, 25))},
+            )
+            for post in data.get("posts", []) or []:
+                clave = str(post.get("uri") or post.get("cid"))
+                if clave not in vistas:
+                    vistas.add(clave)
+                    publicaciones.append(post)
+
+        descartados = 0
         out: list[Artwork] = []
-        for post in data.get("posts", []):
+        for post in publicaciones:
+            record = post.get("record") or {}
+            texto = record.get("text") or ""
+            etiquetas = _HASHTAG_RE.findall(texto)
+            autor = (post.get("author") or {}).get("handle") or ""
+            if not criterios.cumple(texto=texto, etiquetas=etiquetas, autor=autor):
+                descartados += 1
+                continue
             for art in self._post_images(post):
                 out.append(art)
                 if len(out) >= query.limit:
                     return out
+        logger.info("Bluesky: %d publicaciones, %d descartadas por los filtros, %d imágenes",
+                    len(publicaciones), descartados, len(out))
         return out
 
     # ------------------------------------------------------------------ extracción

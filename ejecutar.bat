@@ -34,6 +34,12 @@ if defined COPIAR (
   )
 )
 
+REM Etiqueta de integridad "Media": si el paquete se compilo dentro de un entorno
+REM restringido (sandbox), sus archivos quedan con etiqueta baja y Windows abre la
+REM app en modo restringido: arranca pero NO puede escribir en tus carpetas
+REM (Imagenes, Descargas, ~). Esto lo corrige (rapido, sin permisos de admin).
+icacls "dist\ExtractorFanarts" /setintegritylevel Medium /T >nul 2>&1
+
 echo Iniciando ExtractorFanarts...
 start "" "%EXE%"
 exit /b 0

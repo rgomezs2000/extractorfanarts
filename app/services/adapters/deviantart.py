@@ -4,10 +4,15 @@ Requiere DEVIANTART_CLIENT_ID/CLIENT_SECRET en app/config.py.
 """
 from __future__ import annotations
 
+import logging
+
 from ... import config
 from ...models.artwork import Artwork, SearchQuery
 from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
+from .social_filtros import Criterios
+
+logger = logging.getLogger("extractorfanarts")
 
 TOKEN_URL = "https://www.deviantart.com/oauth2/token"
 API_BASE = "https://www.deviantart.com/api/v1/oauth2"
@@ -42,26 +47,46 @@ class DeviantArtAdapter(SearchAdapter):
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
         token = self._ensure_token(client)
         headers = {"Authorization": f"Bearer {token}"}
+        criterios = Criterios.desde_query(query)
+        if criterios.vacio:
+            return []
+
         results: list[dict] = []
-        if query.usuario:
-            username = query.usuario.strip().lstrip("@")
+        vistos: set[str] = set()
+        if criterios.usuario:
+            username = criterios.usuario.strip().lstrip("@")
             data = client.get_json(
                 f"{API_BASE}/browse/user/{username}",
                 params={"limit": "24", "mature_content": "true"},
             )
             results = data.get("results", [])
         else:
-            tag = (query.hashtag or query.keyword or "").strip().lstrip("#")
-            if not tag:
+            # N valores sin límite: se consulta cada etiqueta o palabra clave y se unen
+            terminos = list(criterios.hashtags) + list(criterios.palabras)
+            if not terminos:
                 return []
-            data = client.get_json(
-                f"{API_BASE}/browse/tags",
-                params={"tag": tag, "limit": "24", "mature_content": "true"},
-            )
-            results = data.get("results", [])
+            for tag in terminos:
+                try:
+                    data = client.get_json(
+                        f"{API_BASE}/browse/tags",
+                        params={"tag": tag, "limit": "24", "mature_content": "true"},
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    logger.info("DeviantArt: «%s» no se pudo consultar (%s)", tag, exc)
+                    continue
+                for item in data.get("results", []) or []:
+                    clave = str(item.get("deviationid"))
+                    if clave not in vistos:
+                        vistos.add(clave)
+                        results.append(item)
 
         out: list[Artwork] = []
         for item in results:
+            texto = f"{item.get('title') or ''} {item.get('description') or ''}"
+            etiquetas = list(item.get("tags") or []) + list(item.get("tag_list") or [])
+            if not criterios.cumple(texto=texto, etiquetas=etiquetas,
+                                    autor=(item.get("author") or {}).get("username") or ""):
+                continue
             art = self._normalize(item)
             if art is not None:
                 out.append(art)

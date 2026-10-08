@@ -242,11 +242,8 @@ vendor_broken/
 # Salidas y bases de datos de las pruebas locales
 .e2e_out/
 .e2e_history.db
-.test_history.db
-.prueba_*/
 .diag_logs/
 .e2e_logs/
-.logtest*/
 
 # Empaquetado (PyInstaller) y logs
 build/

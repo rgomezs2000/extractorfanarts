@@ -37,6 +37,8 @@ CANDIDATES = [
      "https://konachan.net/post.json?limit=1"),
     ("Derpibooru", "philomena",
      "https://derpibooru.org/api/v1/json/search/images?q=*&per_page=1"),
+    ("ATF Booru", "danbooru",
+     "https://derpibooru.org/api/v1/json/search/images?q=*&per_page=1"),
 ]
 
 

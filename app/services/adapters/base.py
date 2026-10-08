@@ -18,12 +18,16 @@ class SearchAdapter(ABC):
 
 
 def split_tags(tags_text: str) -> list[str]:
-    """Separa tags por espacios y/o comas, quitando el '#' si viene."""
+    """Separa tags por espacios y/o comas, sin repetir y quitando el '#' y las comillas.
+
+    Admite **N tags** (los que quieras), que es lo natural en un booru:
+    `lori_loud 1girl solo blonde_hair` → 4 tags que se buscan todos a la vez.
+    """
     if not tags_text:
         return []
-    out = []
+    out: list[str] = []
     for part in tags_text.replace(",", " ").split():
-        part = part.strip().lstrip("#").strip()
-        if part:
-            out.append(part)
+        limpio = part.strip().strip('"').lstrip("#").strip()
+        if limpio and limpio.lower() not in [v.lower() for v in out]:
+            out.append(limpio)
     return out

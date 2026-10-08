@@ -14,6 +14,7 @@ from ... import config
 from ...models.artwork import Artwork, SearchQuery
 from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
+from .social_filtros import Criterios
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 API_BASE = "https://api.pinterest.com/v5"
@@ -33,29 +34,53 @@ class PinterestAdapter(SearchAdapter):
                 "PINTEREST_COUNTRY_CODE."
             )
         headers = {"Authorization": f"Bearer {token}"}
-        term = (query.keyword or query.hashtag or query.usuario or "").strip().lstrip("#@")
-        if not term:
+        criterios = Criterios.desde_query(query)
+        if criterios.vacio:
             return []
+        # N valores sin límite: se busca cada palabra clave o hashtag (y, si no hay
+        # ninguno, el usuario) y se unen los resultados; después se filtran en local
+        # con TODOS los valores indicados.
+        terminos = list(criterios.hashtags) + list(criterios.palabras)
+        if not terminos and criterios.usuario:
+            terminos = [criterios.usuario.strip().lstrip("#@")]
+        terminos = [t for t in terminos if t]
+        if not terminos:
+            return []
+        solo_texto = Criterios(usuario="", palabras=criterios.palabras,
+                               hashtags=criterios.hashtags)
 
-        if config.PINTEREST_COUNTRY_CODE:
-            data = client.get_json(
-                f"{API_BASE}/search/partner/pins",
-                params={
-                    "term": term,
-                    "country_code": config.PINTEREST_COUNTRY_CODE,
-                    "limit": str(min(query.limit, 25)),
-                },
-                headers=headers,
-            )
-        else:
-            data = client.get_json(
-                f"{API_BASE}/search/pins",
-                params={"query": term, "page_size": str(min(query.limit, 25))},
-                headers=headers,
-            )
+        pines: list[dict] = []
+        vistos: set[str] = set()
+        for term in terminos:
+            try:
+                if config.PINTEREST_COUNTRY_CODE:
+                    data = client.get_json(
+                        f"{API_BASE}/search/partner/pins",
+                        params={"term": term,
+                                "country_code": config.PINTEREST_COUNTRY_CODE,
+                                "limit": str(min(query.limit, 25))},
+                        headers=headers,
+                    )
+                else:
+                    data = client.get_json(
+                        f"{API_BASE}/search/pins",
+                        params={"query": term, "page_size": str(min(query.limit, 25))},
+                        headers=headers,
+                    )
+            except Exception as exc:  # noqa: BLE001
+                logger.info("Pinterest: «%s» no se pudo buscar (%s)", term, exc)
+                continue
+            for pin in data.get("items", []) or []:
+                clave = str(pin.get("id"))
+                if clave not in vistos:
+                    vistos.add(clave)
+                    pines.append(pin)
 
         out: list[Artwork] = []
-        for pin in data.get("items", []):
+        for pin in pines:
+            texto = f"{pin.get('title') or ''} {pin.get('description') or ''}"
+            if not solo_texto.cumple(texto=texto, etiquetas=[]):
+                continue
             art = self._normalize(pin)
             if art is not None:
                 out.append(art)

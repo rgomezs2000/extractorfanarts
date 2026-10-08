@@ -28,6 +28,7 @@ CASOS = [
     ("Safebooru (Donmai)", "hatsune_miku"),
     ("Konachan (SFW)", "hatsune_miku"),
     ("Derpibooru", "fluttershy"),
+    ("ATF Booru", "solo"),
 ]
 
 

@@ -76,7 +76,8 @@ def main() -> int:
 
         # 4) Filtros: verificación de la lista negra (sin red)
         from app.models.artwork import Artwork
-        malo = Artwork(site="test", site_id="1", url="http://x/img.jpg", tags=["loli"])
+        #malo = Artwork(site="test", site_id="1", url="http://x/img.jpg", tags=["loli"])
+        malo = Artwork(site="test", site_id="1", url="http://x/img.jpg", tags=["pedo"])
         bueno = Artwork(site="test", site_id="2", url="http://x/img2.jpg", tags=["safe"],
                         md5="abc")
         kept, rejected = filters.apply_filters([malo, bueno], limit=10)

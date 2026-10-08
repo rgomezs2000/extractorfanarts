@@ -96,7 +96,8 @@ def main() -> int:
     imgs = [f for f in files1 if not f.endswith(".json")]
     todos_webp = bool(imgs) and all(f.endswith(".webp") for f in imgs)
     log_tail = []
-    log_file = LOG_DIR / "app.log"
+    log_files = sorted(LOG_DIR.glob("app-*.log"), key=lambda p: p.stat().st_mtime)
+    log_file = log_files[-1] if log_files else (LOG_DIR / "app.log")
     if log_file.exists():
         lineas = log_file.read_text(encoding="utf-8").splitlines()
         log_tail = lineas[-5:]

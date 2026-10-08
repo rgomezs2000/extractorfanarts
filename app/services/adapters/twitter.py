@@ -13,9 +13,13 @@ from ... import config
 from ...models.artwork import Artwork, SearchQuery
 from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
+from .social_filtros import Criterios, repartir_en_lotes
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 API_BASE = "https://api.twitter.com/2"
+# Longitud máxima que acepta la consulta de la búsqueda reciente de X (caracteres).
+# No limita cuántos valores puedes escribir: si no caben, se hacen varias consultas.
+MAX_CONSULTA = 500
 
 
 class XAdapter(SearchAdapter):
@@ -60,8 +64,13 @@ class XAdapter(SearchAdapter):
             "media.fields": "url,preview_image_url,type",
         }
 
-        if query.usuario:
-            handle = query.usuario.strip().lstrip("@")
+        criterios = Criterios.desde_query(query)
+        if criterios.vacio:
+            return []
+
+        if criterios.usuario and not (criterios.palabras or criterios.hashtags):
+            # Solo el usuario: su timeline reciente (más resultados que la búsqueda)
+            handle = criterios.usuario.strip().lstrip("@")
             data = client.get_json(
                 f"{API_BASE}/users/by/username/{handle}", headers=headers
             )
@@ -78,16 +87,35 @@ class XAdapter(SearchAdapter):
                 headers=headers,
             )
         else:
-            q = (query.hashtag or query.keyword or "").strip()
-            if query.hashtag and not q.startswith("#"):
-                q = f"#{q.lstrip('#')}"
-            if not q:
+            # Búsqueda con TODOS los criterios (X los combina con AND):
+            #   from:usuario #hashtag1 #hashtag2 "palabra clave" …
+            # Admite N valores sin límite: si no caben en una consulta, se hacen varias
+            # (una por lote) y sus resultados se unen; después el filtro local exige
+            # todos los criterios igualmente.
+            terminos: list[str] = []
+            if criterios.usuario:
+                terminos.append(f"from:{criterios.usuario.strip().lstrip('@')}")
+            terminos += [f"#{tag}" for tag in criterios.hashtags]
+            terminos += [f'"{p}"' if " " in p else p for p in criterios.palabras]
+            if not terminos:
                 return []
-            data = client.get_json(
-                f"{API_BASE}/tweets/search/recent",
-                params={"query": q, "max_results": str(min(query.limit, 10)), **common},
-                headers=headers,
-            )
+            data = {"data": [], "includes": {"media": [], "users": []}}
+            vistos_tw: set[str] = set()
+            for lote in repartir_en_lotes(terminos, MAX_CONSULTA):
+                parcial = client.get_json(
+                    f"{API_BASE}/tweets/search/recent",
+                    params={"query": " ".join(lote),
+                            "max_results": str(min(query.limit, 10)), **common},
+                    headers=headers,
+                )
+                for tw in parcial.get("data", []) or []:
+                    clave = str(tw.get("id"))
+                    if clave not in vistos_tw:
+                        vistos_tw.add(clave)
+                        data["data"].append(tw)
+                incluye = parcial.get("includes", {}) or {}
+                data["includes"]["media"] += incluye.get("media", []) or []
+                data["includes"]["users"] += incluye.get("users", []) or []
 
         media = {
             m["media_key"]: m
@@ -98,6 +126,12 @@ class XAdapter(SearchAdapter):
 
         out: list[Artwork] = []
         for tw in data.get("data", []):
+            user = users.get(tw.get("author_id"), {})
+            username = user.get("username", "")
+            text = tw.get("text") or ""
+            etiquetas = _HASHTAG_RE.findall(text)
+            if not criterios.cumple(texto=text, etiquetas=etiquetas, autor=username):
+                continue
             for key in (tw.get("attachments") or {}).get("media_keys", []):
                 m = media.get(key)
                 if not m:
@@ -105,9 +139,6 @@ class XAdapter(SearchAdapter):
                 url = m.get("url") or m.get("preview_image_url")
                 if not url:
                     continue
-                user = users.get(tw.get("author_id"), {})
-                username = user.get("username", "")
-                text = tw.get("text") or ""
                 out.append(Artwork(
                     site=self.name,
                     site_id=str(tw.get("id", "")),

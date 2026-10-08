@@ -6,7 +6,7 @@ Uso:
     python scripts\\diag_conexion.py Gelbooru
 
 Muestra: longitud de las credenciales (enmascaradas), cada petición HTTP con su
-respuesta, y un veredicto claro. Todo queda también en .log_diag/app.log.
+respuesta, y un veredicto claro. Todo queda también en .log_diag/app-<fecha>.log.
 """
 from __future__ import annotations
 

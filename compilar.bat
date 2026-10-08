@@ -40,13 +40,18 @@ if exist "vendor\PyInstaller" (
 
 echo [3/3] Compilando el ejecutable...
 echo.
-python scripts\build_exe.py
+REM --consola: el .exe abre una ventana de consola con los registros (ver el .log
+REM del dia en vivo). Si prefieres compilarlo sin consola, quita ese argumento.
+python scripts\build_exe.py --consola
 if errorlevel 1 goto error
 
 echo.
 echo ============================================================
 echo   LISTO
 echo   Ejecutable: dist\ExtractorFanarts\ExtractorFanarts.exe
+echo.
+echo   Al abrirlo se abre tambien una consola con los registros
+echo   (los mismos que el .log del dia, en .extractorfanarts\logs).
 echo.
 echo   Antes de ejecutarlo, copia tu app\config_local.py a
 echo   dist\ExtractorFanarts\config_local.py (tus claves van ahi,

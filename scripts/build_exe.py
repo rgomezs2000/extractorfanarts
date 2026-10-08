@@ -142,6 +142,44 @@ def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
     return args
 
 
+def _arreglar_etiqueta_integridad(carpeta: Path) -> None:
+    """Devuelve la etiqueta de integridad del paquete a «Media» (Windows).
+
+    Si la compilación se hace desde una consola restringida (sandbox de un agente/IDE),
+    los archivos generados heredan la etiqueta **baja** de integridad y Windows lanza
+    el .exe en modo restringido: la app arranca, pero **no puede escribir** en Imágenes,
+    Descargas ni en `~` (da «Permiso denegado» aunque los permisos de las carpetas sean
+    correctos, y el Explorador no lo arregla, porque la etiqueta viaja con el archivo).
+    Este paso lo evita: es rápido, idempotente y no necesita permisos de administrador.
+    """
+    if not sys.platform.startswith("win"):
+        return
+    if not carpeta.is_dir():
+        return
+    icacls = shutil.which("icacls")
+    if not icacls:
+        print("[aviso] no se encontró icacls: revisa la etiqueta de integridad del paquete")
+        return
+    print("[info] revisando la etiqueta de integridad del paquete (para que no se abra "
+          "en modo restringido)…")
+    try:
+        resultado = subprocess.run(
+            [icacls, str(carpeta), "/setintegritylevel", "Medium", "/T"],
+            capture_output=True, text=True, cwd=str(ROOT),
+        )
+    except OSError as exc:
+        print(f"[aviso] no se pudo revisar la etiqueta de integridad: {exc}")
+        return
+    if resultado.returncode == 0:
+        print("[ok] etiqueta de integridad del paquete: Media (se abre con permisos normales)")
+    else:
+        detalle = (resultado.stderr or resultado.stdout or "").strip().splitlines()
+        print(f"[aviso] no se pudo ajustar la etiqueta de integridad "
+              f"({detalle[-1] if detalle else resultado.returncode}): si la app no puede "
+              "guardar en tus carpetas, ejecuta:\n"
+              f"        icacls \"{carpeta}\" /setintegritylevel Medium /T")
+
+
 def _crear_plantilla(destino: Path) -> None:
     try:
         destino.mkdir(parents=True, exist_ok=True)
@@ -276,6 +314,8 @@ def main() -> int:
     _crear_plantilla(carpeta_dist)
     # Cada compilación borra dist\: se vuelven a copiar tus claves para poder probar
     _copiar_config_usuario(carpeta_dist)
+    # Que el paquete NO quede con etiqueta de integridad baja (app en modo restringido)
+    _arreglar_etiqueta_integridad(carpeta_dist)
 
     # La carpeta build/ contiene un ejecutable INTERMEDIO e incompleto: si alguien
     # lo ejecuta por error falla con "Failed to load Python DLL ... _internal\python312.dll".

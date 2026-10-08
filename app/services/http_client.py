@@ -38,6 +38,19 @@ _SECRET_KEYS = (
     "client_secret", "password", "session",
 )
 
+# Estados HTTP en los que una página HTML significa «reto/bloqueo» (y no un error normal):
+# 200 (reto servido como si fuera contenido), 401/403 (bloqueo), 429 (límite) y 503.
+_ESTADOS_CON_RETO = (200, 401, 403, 429, 503)
+
+# Señales que aparecen en una página de verificación anti-bot (Cloudflare y similares).
+# Un HTML sin ninguna de ellas es un error HTTP normal (404, CDN, permisos…) y no debe
+# confundirse con un CAPTCHA ni sugerir tocar BROWSER_DOMAINS.
+_SEÑALES_DE_VERIFICACION = (
+    "captcha", "cloudflare", "just a moment", "attention required", "checking your browser",
+    "cf-chl", "challenge-platform", "ddos protection", "enable javascript and cookies",
+    "verify you are human", "unusual traffic",
+)
+
 
 class ConfigError(Exception):
     """Falta configurar algo (p. ej. credenciales de una plataforma)."""
@@ -45,6 +58,15 @@ class ConfigError(Exception):
 
 class BlockedError(Exception):
     """La fuente rechaza/bloquea las peticiones (bloqueo o CAPTCHA)."""
+
+
+class SinResultados(BlockedError):
+    """La búsqueda no encontró NADA (usuario o tag inexistente, recurso 404).
+
+    No es un fallo crítico: no hay nada que arreglar, simplemente no existe lo que se
+    pidió. El controlador lo trata como «sin resultados» (un solo aviso al usuario, con
+    el motivo en una línea) y deja el detalle completo en el registro.
+    """
 
 
 class CancelledError(Exception):
@@ -88,19 +110,30 @@ def _safe_url(url: str, params: dict | None = None) -> str:
 
 
 def _challenge_kind(resp) -> str | None:
-    """Detecta páginas de CAPTCHA/Cloudflare servidas en lugar del JSON."""
+    """Detecta páginas de verificación anti-bot servidas en lugar del contenido.
+
+    Solo se considera un «reto» cuando el estado HTTP puede corresponder a un bloqueo
+    (200 con HTML, 401/403/429 o 503) **y** el cuerpo tiene señales de verificación.
+    Un 404/400 con página HTML, o un 403 seco de un CDN, son errores HTTP normales y se
+    informan como tales (no como CAPTCHA ni con la pista de BROWSER_DOMAINS).
+    """
+    if resp.status_code not in _ESTADOS_CON_RETO:
+        return None
     ctype = (resp.headers.get("content-type") or "").lower()
     if "html" not in ctype:
         return None
     try:
         cuerpo = resp.text[:8000].lower()
     except Exception:  # noqa: BLE001
-        return "HTML"
+        return None
+    servidor = (resp.headers.get("server") or "").lower()
     if "captcha" in cuerpo:
         return "CAPTCHA de Cloudflare"
-    if "cloudflare" in cuerpo or "cloudflare" in (resp.headers.get("server") or "").lower():
+    if "cloudflare" in cuerpo or "cloudflare" in servidor:
         return "bloqueo de Cloudflare"
-    return "página HTML"
+    if any(señal in cuerpo for señal in _SEÑALES_DE_VERIFICACION):
+        return "página de verificación"
+    return None
 
 
 class PoliteClient:
@@ -209,15 +242,44 @@ class PoliteClient:
             headers = dict(headers or {})
             headers["User-Agent"] = self._browser_ua
         if self._curl is not None and es_navegador:
-            resp = self._curl.request(
-                method, url, params=params, headers=headers, json=json, data=data,
-                allow_redirects=True, timeout=30,
-            )
+            try:
+                resp = self._curl.request(
+                    method, url, params=params, headers=headers, json=json, data=data,
+                    allow_redirects=True, timeout=30,
+                )
+            except CancelledError:
+                raise
+            except Exception as exc:  # noqa: BLE001
+                raise self._error_de_conexion(url, exc) from exc
         else:
-            resp = self._httpx.request(
-                method, url, params=params, headers=headers, json=json, data=data
-            )
+            try:
+                resp = self._httpx.request(
+                    method, url, params=params, headers=headers, json=json, data=data
+                )
+            except CancelledError:
+                raise
+            except Exception as exc:  # noqa: BLE001
+                raise self._error_de_conexion(url, exc) from exc
         return _Respuesta(resp)
+
+    @staticmethod
+    def _error_de_conexion(url: str, exc: Exception) -> BlockedError:
+        """Convierte un fallo de red en un mensaje claro (dominio inexistente, sin internet…).
+
+        Sirve, por ejemplo, para un booru recién configurado cuyo dominio no existe: en
+        lugar de «Error inesperado: [Errno 11001] getaddrinfo failed», se explica qué
+        mirar. El detalle técnico completo (con traza) queda en el registro.
+        """
+        try:
+            host = urlparse(url).netloc or url
+        except Exception:  # noqa: BLE001
+            host = url
+        logger.error("no se pudo conectar con %s", host, exc_info=True)
+        return BlockedError(
+            f"no se pudo conectar con {host} ({type(exc).__name__}: {str(exc)[:120]})\n"
+            "Comprueba que el dominio del sitio exista y esté bien escrito, y tu conexión "
+            "a internet."
+        )
 
     def _event(self, mensaje: str, nivel: int = logging.INFO) -> None:
         logger.log(nivel, mensaje)
@@ -226,6 +288,10 @@ class PoliteClient:
                 self.on_event(mensaje)
             except Exception:  # noqa: BLE001
                 pass
+
+    def aviso(self, mensaje: str) -> None:
+        """Mensaje informativo para la UI/el log (lo usan los adaptadores)."""
+        self._event(mensaje)
 
     def _sleep(self, seconds: float) -> None:
         """Duerme en pasos cortos para poder reaccionar a la cancelación."""
@@ -305,8 +371,8 @@ class PoliteClient:
                         "(o CF_USER_AGENT) en app/config_local.py con el UA real de tu navegador."
                     )
                 raise BlockedError(
-                    f"{domain} exige superar un {reto} (HTTP {resp.status_code}) en lugar de "
-                    "devolver datos." + pista
+                    f"{domain} devolvió {reto} en lugar de datos (HTTP {resp.status_code})."
+                    + pista
                 )
 
             if resp.status_code == 429 or resp.status_code >= 500:
@@ -328,18 +394,37 @@ class PoliteClient:
                 )
 
             if resp.status_code == 403:
-                # 403 sin CAPTCHA → UNA pausa prudente y un único reintento
-                if retries >= 1:
-                    raise BlockedError(
-                        f"posible bloqueo en {domain} (HTTP 403) tras pausa y reintento"
-                    )
-                self._notify_pause(self.block_pause, f"posible bloqueo (HTTP 403) en {domain}")
-                self._sleep(self.block_pause)
-                retries += 1
-                continue
+                # Puede ser un bloqueo anti-bot (se pausa y se reintenta una vez) o un
+                # rechazo directo del servidor/CDN (permisos, red, país): en ese caso no
+                # tiene sentido esperar 5 minutos, así que se informa y se sigue.
+                servidor = (resp.headers.get("server") or "").lower()
+                parece_waf = ("cloudflare" in servidor or bool(resp.headers.get("cf-ray"))
+                              or bool(resp.headers.get("cf-mitigated")))
+                if parece_waf and retries < 1:
+                    self._notify_pause(self.block_pause, f"posible bloqueo (HTTP 403) en {domain}")
+                    self._sleep(self.block_pause)
+                    retries += 1
+                    continue
+                detalle = ""
+                try:
+                    fragmento = (resp.text or "").strip().replace("\n", " ")[:160]
+                except Exception:  # noqa: BLE001
+                    fragmento = ""
+                if fragmento:
+                    detalle = f" · {fragmento}"
+                raise BlockedError(
+                    f"{domain} rechazó la petición (HTTP 403 · servidor "
+                    f"{resp.headers.get('server') or '?'}){detalle}\n"
+                    "No es un CAPTCHA: puede que el sitio bloquee tu red o tu país, que "
+                    "haga falta iniciar sesión, o que la API ya no sea pública."
+                )
 
             if resp.status_code == 404:
-                raise BlockedError(f"recurso no encontrado en {domain} ({descripcion})")
+                raise SinResultados(
+                    f"{domain} no encontró ese recurso (HTTP 404): {descripcion}.\n"
+                    "Revisa el usuario, el hashtag o el texto buscado: puede que no "
+                    "exista o que esté mal escrito."
+                )
 
             if resp.status_code >= 400:
                 # Incluye el motivo que devuelve el servidor (p. ej. Mastodon:

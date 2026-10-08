@@ -29,6 +29,7 @@ _preparar_rutas()
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from app import config  # noqa: E402
+from app.consola import asegurar_consola, consola_propia, pausa_final  # noqa: E402
 from app.controllers.main_controller import MainController  # noqa: E402
 from app.icono import aplicar_icono, configurar_app_user_model_id  # noqa: E402
 from app.logging_setup import setup_logging  # noqa: E402
@@ -41,6 +42,7 @@ def selftest() -> int:
     Guarda el informe en `selftest.txt` junto al ejecutable (útil con --windowed,
     donde no hay consola) y también lo imprime si hay consola.
     """
+    asegurar_consola()          # en el .exe, abre la consola para poder leer el informe
     logger = setup_logging()
     lineas: list[str] = []
 
@@ -166,6 +168,7 @@ def selftest() -> int:
         except OSError:
             continue
 
+    pausa_final("Pulse Intro para cerrar…")   # que dé tiempo a leerlo en la consola
     return 0 if problemas == 0 else 1
 
 
@@ -176,7 +179,10 @@ def main() -> int:
     if "--selftest" in sys.argv:
         return selftest()
 
-    setup_logging()  # log a consola + archivo .log
+    # Consola de registros: en el .exe de Windows se abre una ventana con los mismos
+    # mensajes que van al .log del día (en desarrollo se usa tu terminal).
+    asegurar_consola()
+    setup_logging()  # registros: consola + archivo del día (.log)
 
     try:
         # Windows: identificador propio ANTES de crear la app, para que la barra de
@@ -193,11 +199,21 @@ def main() -> int:
         window.ajustar_a_pantalla()   # no salirse de la barra de tareas
         window.show()
 
+        # Cualquier salida (Alt+F4, la X, la barra de tareas, Ctrl+Q, cerrar la consola)
+        # pasa por el cierre ordenado: cancela lo pendiente, espera a las tareas de
+        # fondo y cierra el almacén. shutdown() es idempotente.
+        app.aboutToQuit.connect(controller.shutdown)
+
         return app.exec()
     except Exception:
         import logging
+        import traceback
 
         logging.getLogger("extractorfanarts").exception("error fatal al iniciar la aplicación")
+        if consola_propia():
+            # La consola es nuestra: se deja abierta para poder leer el error
+            traceback.print_exc()
+            pausa_final("Ocurrió un error. Pulse Intro para cerrar…")
         return 1
 
 
