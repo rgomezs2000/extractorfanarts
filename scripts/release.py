@@ -30,6 +30,7 @@ from app import config  # noqa: E402
 
 DIST = ROOT / "dist"
 PAQUETE = DIST / "ExtractorFanarts"
+LICENCIA = ROOT / "LICENSE"
 NOTICIAS = ROOT / "THIRD-PARTY-NOTICES.txt"
 LEEME = ROOT / "LEEME-PRIMERO.txt"
 
@@ -47,7 +48,7 @@ def version() -> str:
 
 
 def _copiar_avisos() -> None:
-    for origen in (NOTICIAS, LEEME):
+    for origen in (LICENCIA, NOTICIAS, LEEME):
         if not origen.is_file():
             continue
         try:

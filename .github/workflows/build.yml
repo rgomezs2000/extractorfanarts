@@ -91,9 +91,10 @@ jobs:
               "dist\ExtractorFanarts\ExtractorFanarts.exe"
           Remove-Item $pfx -Force
 
-      - name: Añadir avisos de licencias y LEEME al paquete
+      - name: Añadir licencia, avisos y LEEME al paquete
         shell: bash
         run: |
+          cp LICENSE dist/ExtractorFanarts/ 2>/dev/null || true
           cp THIRD-PARTY-NOTICES.txt dist/ExtractorFanarts/ 2>/dev/null || true
           cp LEEME-PRIMERO.txt dist/ExtractorFanarts/ 2>/dev/null || true
 

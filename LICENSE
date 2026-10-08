@@ -1,3 +1,41 @@
+================================================================================
+ ExtractorFanarts · LICENCIA (Unlicense · dominio público)
+================================================================================
+
+ Proyecto : ExtractorFanarts
+ Autor    : Roger Gomez <rogergomezs2003@gmail.com>
+ Año      : 2026
+ Versión  : 0.1.0-beta.1
+ Web      : https://github.com/rgomezs2000/extractorfanarts
+
+ Copyright (c) 2026 Roger Gomez
+
+
+--------------------------------------------------------------------------------
+ EN CASTELLANO (resumen; el texto legal vinculante es el inglés de abajo)
+--------------------------------------------------------------------------------
+
+Este programa se libera al DOMINIO PÚBLICO. Cualquier persona puede copiarlo,
+modificarlo, publicarlo, usarlo, compilarlo, venderlo o distribuirlo —tal cual o
+modificado— con cualquier propósito, comercial o no, y por cualquier medio, sin
+pedir permiso y sin condiciones. No se exige conservar este aviso ni dar
+atribución alguna, aunque se agradece.
+
+El programa se entrega «TAL CUAL», sin garantía de ningún tipo, expresa o
+implícita. Quien lo use asume todos los riesgos; el autor no responde de ningún
+daño derivado de su uso.
+
+En los países donde la ley reconoce derechos de autor, el autor renuncia a todo
+interés de copyright sobre este software y lo dedica al dominio público, en
+beneficio del público en general y en perjuicio de sus herederos y sucesores.
+Esta dedicación es un acto manifiesto e irrevocable de renuncia a todos los
+derechos presentes y futuros sobre este software.
+
+
+--------------------------------------------------------------------------------
+ TEXTO LEGAL (canónico, en inglés)
+--------------------------------------------------------------------------------
+
 This is free and unencumbered software released into the public domain.
 
 Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -22,3 +60,22 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <https://unlicense.org>
+
+
+--------------------------------------------------------------------------------
+ ALCANCE DE ESTA LICENCIA
+--------------------------------------------------------------------------------
+
+1) Cubre EXCLUSIVAMENTE el código fuente y los binarios de este repositorio
+   (ExtractorFanarts, sus scripts y su documentación).
+
+2) NO cubre el material que descargues con la herramienta (fanart, arte,
+   ilustraciones, animaciones): sus derechos pertenecen a sus respectivos
+   autores y a las plataformas donde se publican. ExtractorFanarts es solo un
+   cliente de descarga; el uso que hagas del material descargado es tu
+   responsabilidad.
+
+3) NO cubre los componentes de terceros redistribuidos dentro del paquete
+   (Qt/PySide6, Pillow, httpx, curl_cffi y los motores de IA Real-ESRGAN /
+   waifu2x). Cada uno conserva SU propia licencia: consulta
+   THIRD-PARTY-NOTICES.txt, incluido en el paquete.
