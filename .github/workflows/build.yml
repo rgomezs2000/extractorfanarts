@@ -55,6 +55,10 @@ jobs:
 
       - name: Motores de IA (Real-ESRGAN / waifu2x) — opcional
         continue-on-error: true
+        env:
+          # La API de GitHub limita por IP sin autenticar y los runners la comparten:
+          # sin token, la lista de releases falla y los motores no se descargan.
+          GITHUB_TOKEN: ${{ github.token }}
         run: python scripts/setup_vendor.py vendor --solo-ia
 
       # Informativa: el resultado queda en el registro, pero una limitación del

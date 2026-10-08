@@ -3,18 +3,24 @@ los extrae en ./vendor. Funciona en Windows, macOS y Linux (elige los wheels y
 los motores IA de la plataforma en la que se ejecuta).
 
 Uso:
-    python scripts/setup_vendor.py [carpeta_destino] [--ai] [--only=pkg1,pkg2]
+    python scripts/setup_vendor.py [carpeta_destino] [--ai] [--solo-ia] [--only=pkg1,pkg2]
 
   --ai              instala también los motores de IA (Real-ESRGAN / waifu2x)
+  --solo-ia         instala SOLO los motores de IA (ningún paquete de Python)
   --only=a,b        instala solo esos paquetes (para añadir uno nuevo sin tocar
                     lo ya instalado)
 
 Sin carpeta de destino usa ./vendor2 (útil para reconstruir); lo normal es:
     python scripts/setup_vendor.py vendor
+
+En el CI (GitHub Actions) conviene definir GITHUB_TOKEN: la API de GitHub limita a
+60 peticiones/hora por IP sin autenticar y los runners comparten IP, así que sin
+token la lista de releases puede fallar y los motores IA quedarse fuera.
 """
 from __future__ import annotations
 
 import json
+import os
 import platform
 import stat
 import sys
@@ -121,7 +127,13 @@ def pick_wheel(files: list[dict]) -> dict | None:
 
 # ------------------------------------------------------------------ utilidades
 def _json(url: str) -> dict:
-    with urllib.request.urlopen(url, timeout=60) as resp:
+    """GET JSON con User-Agent propio y token de GitHub si está disponible."""
+    peticion = urllib.request.Request(
+        url, headers={"User-Agent": "ExtractorFanarts-setup_vendor"})
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token and "api.github.com" in url:
+        peticion.add_header("Authorization", f"Bearer {token}")
+    with urllib.request.urlopen(peticion, timeout=60) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -218,8 +230,20 @@ def main() -> int:
         print(f"[ok] {paquete} {ver}")
         instalados += 1
 
-    if "--ai" in sys.argv:
+    # OJO: `--solo-ia` TAMBIÉN instala los motores. Antes solo lo hacía `--ai`, así
+    # que `setup_vendor.py vendor --solo-ia` (lo que usa el CI) no instalaba NADA y
+    # el paso terminaba con éxito: el paquete publicado salía sin motores de IA.
+    if "--ai" in sys.argv or solo_ia:
         install_ai_engines(target)
+        motores = sorted({ruta.name for ruta in target.rglob("*")
+                          if ruta.is_file()
+                          and ruta.name.startswith(tuple(AI_GITHUB))})
+        if motores:
+            print(f"[ok] motores IA instalados: {', '.join(motores)}")
+        else:
+            print("[AVISO] no se instaló ningún motor de IA (¿sin red o sin binario "
+                  "para esta plataforma?): la aplicación seguirá funcionando con "
+                  "Lanczos + afilado.")
 
     print(f"\nInstalado en {target} ({instalados} paquetes)")
     return 0

@@ -298,6 +298,16 @@ def main() -> int:
     print(f"[info] modo: {'onefile' if onefile else 'onedir'} · "
           f"consola: {'sí' if consola else 'no'}")
 
+    # Visibilidad: sin esto, un paquete sin motores IA parecía correcto hasta que el
+    # usuario marcaba "Modo IA" y la app caía a Lanczos sin explicación.
+    datos_ia = _rutas_datos_ia()
+    if datos_ia:
+        print("[info] motores IA incluidos: "
+              + ", ".join(str(origen.name) for origen, _ in datos_ia))
+    else:
+        print("[aviso] NO se incluyen motores IA (el modo IA usará Lanczos + afilado). "
+              "Para tenerlos:  python scripts\\setup_vendor.py vendor --solo-ia")
+
     entorno = dict(os.environ)
     if VENDOR.is_dir():
         previo = entorno.get("PYTHONPATH", "")
