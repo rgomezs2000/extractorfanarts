@@ -337,7 +337,13 @@ Con clic derecho sobre la imagen grande, cualquier miniatura o dentro del visor:
    conversión directa a WebP en lugar de dejar algo roto.
 5. **Verificación final:** el `.webp` se reabre y se comprueba (decodifica +
    tamaño); si no pasa, se conserva el original.
-6. **El historial no puede tumbar una descarga ya guardada:** si la base de datos
+6. **Afilado calibrado (anti-halos):** el afilado está limitado (0-150 %) y se
+   aplica **suave** tras el reescalado (`SHARPEN_LANCZOS = 20`, radio `1.5`). Se
+   midió sobre líneas duras: con el valor anterior (65, radio 2,0) el *ringing*
+   —los halos claros/oscuros pegados a las líneas— era **3,5× mayor** (0,301
+   frente a 0,086) a cambio de muy poca nitidez real. En IA ya era suave
+   (`SHARPEN_AI = 25`).
+7. **El historial no puede tumbar una descarga ya guardada:** si la base de datos
    no es escribible, el archivo se conserva y solo queda el aviso en el log.
 
 ### 6.7 Filtros legales y éticos
@@ -815,7 +821,7 @@ marcar **«Contenido adulto»** en Opciones.
 | `ALLOW_ADULT_RATINGS` | ratings permitidos (gate de contenido adulto) |
 | `REQUIRE_FREE_LICENSE`, `FREE_LICENSE_HINTS` | exigir y reconocer licencia liberada (CC0/CC-BY/dominio público) |
 | `MAX_RESULTS_PER_SOURCE` | tope de resultados por fuente |
-| `SHARPEN_LANCZOS = 65`, `SHARPEN_AI = 25` | afilado tras el reescalado |
+| `SHARPEN_LANCZOS = 20` (radio `1.5`), `SHARPEN_AI = 25` | afilado tras el reescalado, calibrado para no crear halos |
 | `MAX_OUTPUT_SIDE = 7680` | tope de lado de salida (8K) |
 | `AI_MAX_MAE = 12` | umbral de descarte de salidas anómalas de la IA |
 | `LOG_DIAS_A_CONSERVAR = 30` | días de `.log` que se conservan (0 = nunca borrar) |

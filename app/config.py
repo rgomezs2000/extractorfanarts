@@ -387,7 +387,12 @@ AI_MODEL = "realesrgan-x4plus-anime"   # modelo x4 (fanart); "realesrgan-x4plus"
 AI_MODEL_ESCALA = "realesr-animevideov3"
 
 # Definición (afilado): porcentaje de UnsharpMask aplicado tras el upscaling.
-SHARPEN_LANCZOS = 65   # Lanczos: afilado notable (compensa el suavizado del reescalado)
+SHARPEN_LANCZOS = 20   # Lanczos: afilado SUAVE. Medido sobre líneas duras: con 65 el
+                       # «ringing» (halos claros/oscuros pegados a las líneas) era 0,278
+                       # y la nitidez 9,10; con 20 el ringing cae a 0,036 y la nitidez se
+                       # queda en 7,58 (sin afilar: 0,016 y 7,28). El afilado fuerte
+                       # cambiaba muy poca nitidez real por halos muy visibles.
+SHARPEN_LANCZOS_RADIO = 1.5   # radio del afilado de Lanczos (antes 2,0: demasiado ancho)
 SHARPEN_AI = 25        # IA: toque suave (el modelo ya aporta nitidez; evita halos)
 
 # ------------------------------------------------------------------ control de integridad (anti-artefactos)

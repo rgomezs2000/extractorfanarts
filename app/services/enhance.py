@@ -166,7 +166,8 @@ def _lanczos_upscale(path: Path, tamano: tuple[int, int]) -> Path:
         rgb = im.convert("RGB")
         if rgb.size != tamano:
             rgb = rgb.resize(tamano, Image.Resampling.LANCZOS)
-        rgb = _afilar(rgb, config.SHARPEN_LANCZOS)
+        rgb = _afilar(rgb, config.SHARPEN_LANCZOS,
+                      radio=getattr(config, "SHARPEN_LANCZOS_RADIO", 1.5))
         rgb.save(tmp, "PNG")
     return tmp
 
