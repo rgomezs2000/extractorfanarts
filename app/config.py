@@ -378,6 +378,11 @@ MAX_OUTPUT_SIDE = 7680
 # Límite de píxeles para usar IA (evita trabajos desmesurados que la GPU no
 # terminaría en un tiempo razonable); por encima se usa Lanczos al tamaño objetivo.
 AI_MAX_PIXELS = 50_000_000
+# Desviación de color (por canal, en niveles de 0-255) que se tolera a la salida de
+# la IA antes de devolverle la paleta del original. Los modelos Real-ESRGAN desplazan
+# ~1 nivel (imperceptible): con ese valor no se toca nada; si un modelo cambia más el
+# color, se corrige y queda en el registro.
+AI_PALETA_TOLERANCIA = 1
 
 WEBP_QUALITY_DEFAULT = 90     # calidad WebP configurable en la UI (1-100)
 AI_EXE_OVERRIDE = ""          # ruta manual al exe IA si no está en vendor/PATH

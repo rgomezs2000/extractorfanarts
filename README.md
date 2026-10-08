@@ -343,7 +343,11 @@ Con clic derecho sobre la imagen grande, cualquier miniatura o dentro del visor:
    —los halos claros/oscuros pegados a las líneas— era **3,5× mayor** (0,301
    frente a 0,086) a cambio de muy poca nitidez real. En IA ya era suave
    (`SHARPEN_AI = 25`).
-7. **El historial no puede tumbar una descarga ya guardada:** si la base de datos
+7. **Paleta intacta en el modo IA:** los modelos Real-ESRGAN desplazan ligeramente
+   los canales (medido: ~1 nivel de 255 en el verde, imperceptible). Si la
+   desviación supera `AI_PALETA_TOLERANCIA`, se devuelve la paleta a la del original
+   y queda en el registro: la mejora **no cambia el color de la obra**.
+8. **El historial no puede tumbar una descarga ya guardada:** si la base de datos
    no es escribible, el archivo se conserva y solo queda el aviso en el log.
 
 ### 6.7 Filtros legales y éticos
@@ -833,6 +837,7 @@ marcar **«Contenido adulto»** en Opciones.
 | `SHARPEN_LANCZOS = 20` (radio `1.5`), `SHARPEN_AI = 25` | afilado tras el reescalado, calibrado para no crear halos |
 | `MAX_OUTPUT_SIDE = 7680` | tope de lado de salida (8K) |
 | `AI_MAX_MAE = 12` | umbral de descarte de salidas anómalas de la IA |
+| `AI_PALETA_TOLERANCIA = 1` | desviación de color que se tolera a la IA antes de devolverle la paleta del original |
 | `LOG_DIAS_A_CONSERVAR = 30` | días de `.log` que se conservan (0 = nunca borrar) |
 | `LOG_EN_CONSOLA = False` | desactiva la consola de registros |
 

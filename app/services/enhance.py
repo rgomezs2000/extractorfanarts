@@ -113,6 +113,43 @@ def _mae_contra_original(original: Path, candidato: Path, w: int, h: int) -> flo
         return None
 
 
+def _corregir_paleta(original: Path, salida: Path) -> list[int] | None:
+    """Devuelve la paleta de una salida IA a la del original (limpieza de color).
+
+    Los modelos Real-ESRGAN desplazan ligeramente los canales (medido en el modelo de
+    anime: +1,4 en el verde). Se calcula el desplazamiento medio por canal comparando
+    el original con la salida reducida a su tamaño, y se resta en la imagen completa:
+    el resultado conserva la definición de la IA pero con la MISMA paleta, sin
+    cambiar el color de la obra. Devuelve los desfases aplicados (o None si no hacía
+    falta tocar nada).
+    """
+    try:
+        Image, _ = _pillow()
+        with Image.open(original) as im_o, Image.open(salida) as im_s:
+            referencia = im_o.convert("RGB")
+            imagen = im_s.convert("RGB")
+        reducida = imagen.resize(referencia.size, Image.Resampling.LANCZOS)
+        desfases: list[int] = []
+        for canal in range(3):
+            a = referencia.getchannel(canal).tobytes()
+            b = reducida.getchannel(canal).tobytes()
+            desfases.append(round(sum(x - y for x, y in zip(a, b)) / len(a)))
+        if all(abs(desfase) <= getattr(config, "AI_PALETA_TOLERANCIA", 1)
+               for desfase in desfases):
+            return None                      # ya coincide: no se toca nada
+        canales = []
+        for canal, desfase in enumerate(desfases):
+            banda = imagen.getchannel(canal)
+            if desfase:
+                banda = banda.point(lambda v, d=desfase: max(0, min(255, v + d)))
+            canales.append(banda)
+        Image.merge("RGB", canales).save(salida, "PNG")
+        return desfases
+    except Exception:  # noqa: BLE001
+        logger.warning("no se pudo corregir la paleta de la salida IA", exc_info=True)
+        return None
+
+
 def _validar_ia(original: Path, candidato: Path, w: int, h: int) -> bool:
     """Descarta salidas de IA que no se parezcan al original (mosaicos/desplazamientos)."""
     mae = _mae_contra_original(original, candidato, w, h)
@@ -226,8 +263,11 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
     # motor para saber POR QUÉ no mejoró (p. ej. «encode image … failed» cuando el
     # .exe arrastra la etiqueta de integridad baja y Windows lo lanza en modo
     # restringido: arranca, pero no puede escribir su salida).
-    # El registro vive en la carpeta temporal del sistema: no ensucia la salida.
+    # El registro es SOLO para diagnosticar: se lee y se borra en la misma llamada,
+    # así no queda ni un archivo suelto (ni en la salida ni en el temporal).
     registro = Path(tempfile.gettempdir()) / f"extractorfanarts-ia-{os.getpid()}.log"
+    error_ejecucion = ""
+    motivo_motor = ""
     try:
         # Los exes ncnn buscan ./models relativo al directorio de trabajo:
         # se ejecutan con cwd = carpeta del ejecutable.
@@ -237,12 +277,18 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
                 timeout=1800, check=True, cwd=str(exe.parent),
             )
     except Exception as exc:  # noqa: BLE001
-        logger.warning("el motor IA (%s) falló al ejecutarse: %s · %s",
-                       exe.name, exc, _ultimas_lineas(registro))
-        return None
-    if not salida.exists() or salida.stat().st_size == 0:
-        logger.warning("el motor IA (%s) no generó ninguna imagen · %s",
-                       exe.name, _ultimas_lineas(registro))
+        error_ejecucion = str(exc)
+    finally:
+        motivo_motor = _ultimas_lineas(registro)
+        try:
+            registro.unlink()
+        except OSError:
+            pass
+
+    if error_ejecucion or not salida.exists() or salida.stat().st_size == 0:
+        logger.warning("el motor IA (%s) no mejoró la imagen: %s · %s",
+                       exe.name, error_ejecucion or "no generó ninguna imagen",
+                       motivo_motor)
         return None
     try:
         Image, _ = _pillow()
@@ -315,8 +361,17 @@ def _ai_upscale(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None
                 resultado.unlink()
             except OSError:
                 pass
-            return refinado
-        return resultado
+            final = refinado
+        else:
+            final = resultado
+
+        # LIMPIEZA DE COLOR: el modelo desplaza un poco los canales; se devuelve la
+        # paleta a la del original para que la mejora no cambie el color de la obra.
+        desfases = _corregir_paleta(path, final)
+        if desfases is not None:
+            logger.info("paleta de la salida IA corregida al original (R%+d G%+d B%+d)",
+                        desfases[0], desfases[1], desfases[2])
+        return final
     return None
 
 
