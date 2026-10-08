@@ -57,6 +57,62 @@ de pago.
 > parte del fanart no tiene licencia liberada. El análisis completo de
 > implicaciones legales está en [docs/INFORME-FACTIBILIDAD.md](docs/INFORME-FACTIBILIDAD.md).
 
+### 1.1 Uso principal: preparar datasets para entrenar modelos de IA
+
+Además del archivado personal, ExtractorFanarts está pensado como **herramienta de
+curación de datasets** para entrenar modelos de imagen: **LoRA**, **LyCORIS**
+(LoCon, LoHa), **embeddings textuales**, **checkpoints / DreamBooth** y ajustes de
+estilo. Todo el trabajo previo que exige un dataset —reunir el concepto correcto,
+quitar repetidas, dejar un formato y un tamaño homogéneos y guardar las etiquetas—
+lo resuelve el programa en una sola pasada, sin encadenar cinco herramientas.
+
+| Lo que necesita un dataset | Cómo lo resuelve ExtractorFanarts |
+|---|---|
+| **Imágenes del concepto correcto** | Búsqueda por **etiqueta exacta** en 14 boorus (el etiquetado de la comunidad es el mejor que existe para arte), por `@usuario` en redes sociales y por personaje/franquicia en wikis |
+| **Sin repetidas** | **Deduplicación por hash (md5)** dentro de cada búsqueda: el mismo archivo no entra dos veces |
+| **Un solo formato** | Conversión **siempre a `.webp`** con calidad configurable; el original no se conserva |
+| **Tamaños coherentes** | **Reescalado automático** por lado mayor (4x/3x/2x/1x) para que el dataset no mezcle 300 px con 3000 px; solo reduce si el resultado pasara de 8K |
+| **Definición en originales pequeños** | **✨ Mejorar calidad** (Lanczos + afilado) o **🤖 Modo IA** (Real-ESRGAN / waifu2x), con **validación anti-corrupción**: una imagen rota nunca entra al dataset |
+| **Etiquetas para las *captions*** | Sidecar `.json` opcional ([`_write_sidecar`](app/controllers/main_controller.py)) con `tags`, `artista`, `licencia`, `origen`, `rating` y `fecha` |
+| **Nombres trazables** | `<Plataforma>_<id>_<hash8>.webp`: se sabe de dónde salió cada archivo y se puede cruzar con el historial |
+| **Dataset limpio** | Filtros obligatorios (lista negra, plataformas de pago, contenido adulto, licencia) más tus exclusiones por etiqueta, dominio o texto |
+| **Revisión antes de descargar** | Galería con carrusel y visor: se descartan las malas imágenes **antes** de bajarlas |
+| **Inventario de lo bajado** | Historial SQLite (`~/.extractorfanarts/historial.db`) con `md5`, `url`, `ruta` y fecha de cada descarga |
+| **Procedencia y permisos** | Los boorus y las wikis aportan `artista`, `licencia` y `origen`: útil para atribuir y para respetar listas de «no entrenar» |
+
+**Flujo recomendado para un LoRA de personaje**
+
+1. **Tipo:** *Booru* → **Plataforma:** Danbooru o Gelbooru (etiquetado más fino).
+2. **Tags:** el personaje + calidad y encuadre (`solo`, `1girl`, `highres`) y
+   exclusiones con guion (`-comic`, `-text`, `-sketch`).
+3. Marcar **✨ Mejorar calidad** (y **🤖 Modo IA** si el original es pequeño o de
+   boceto) para homogeneizar la definición.
+4. Marcar **🏷️ Guardar metadatos .json**: deja las etiquetas de cada imagen listas
+   para convertirlas en *captions*.
+5. **Descargar** con un límite razonable (100–200 imágenes por personaje; 30–50
+   bastan para un LyCORIS/LoCon de estilo).
+6. **Revisar en la galería**: variedad de poses, fondos y expresiones; fuera las de
+   cuerpo cortado, con marca de agua o borrosas.
+7. Convertir los `.json` en captions (las `tags` son un buen punto de partida) y
+   entrenar con la herramienta habitual (kohya-ss, OneTrainer, ai-toolkit…).
+
+**Recomendaciones de curación**
+
+- **Variedad antes que cantidad:** 40 imágenes distintas entrenan mejor que 200
+  casi idénticas; el hash elimina copias exactas, no variaciones parecidas.
+- **Un tamaño objetivo:** decidir el *bucket* de entrenamiento (512 / 768 / 1024) y
+  quedarse en esa franja. El programa reescala **hacia arriba**.
+- **El programa no recorta:** para encuadres concretos hay que pasar las imágenes
+  por un editor antes de entrenar.
+- **Si el entrenador no acepta WebP**, convertir la carpeta por lotes a PNG/JPG.
+- **Entre sesiones no hay deduplicación automática:** el historial registra lo
+  descargado, pero la lista de hashes no se recarga al arrancar (ver
+  [`DownloadStore.load_hashes`](app/models/store.py)), así que otra búsqueda del
+  mismo personaje en otro día puede volver a bajar imágenes que ya están en disco.
+- **Ética y licencias:** usar `licencia` y `artista` del `.json` para respetar las
+  condiciones de cada obra y las listas de «no entrenar». Con **⚖️ Solo licencia
+  liberada** el programa descarta lo que no declare licencia abierta.
+
 ---
 
 ## 2. Misión
@@ -129,6 +185,7 @@ obligatorio y trazabilidad completa de cada operación.
 ### 5.1 Dentro del alcance
 
 - Búsqueda y descarga de **imágenes y animaciones** desde las plataformas listadas en [§6.1](#61-fuentes-soportadas).
+- **Curación de datasets para IA**: búsqueda por etiqueta, filtrado, homogeneización de formato y tamaño y metadatos para *captioning* — ver [§1.1](#11-uso-principal-preparar-datasets-para-entrenar-modelos-de-ia).
 - Búsqueda por **usuario, palabra clave, hashtags, tags de booru y páginas de wiki**, con combinación de varios valores por campo.
 - **Filtrado ético/legal configurable**: lista negra, exclusión propia por tag/dominio/texto, gate de contenido adulto, licencia y deduplicación.
 - **Post-procesado local**: conversión a WebP, mejora de calidad (IA o Lanczos), respeto de transparencia y control de integridad.
