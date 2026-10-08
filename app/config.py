@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "ExtractorFanarts"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.0-beta.1"
 
 # User-Agent identificado (cortesía / transparencia con los sitios)
 # Nota: debe ser ASCII puro (los headers HTTP no admiten acentos).
