@@ -28,6 +28,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from .. import config
@@ -172,6 +173,15 @@ def _lanczos_upscale(path: Path, tamano: tuple[int, int]) -> Path:
     return tmp
 
 
+def _ultimas_lineas(ruta: Path, cuantas: int = 3) -> str:
+    """Últimas líneas del registro de un motor, para explicar un fallo."""
+    try:
+        texto = ruta.read_text(encoding="utf-8", errors="replace").strip().splitlines()
+    except OSError:
+        return ""
+    return " | ".join(linea.strip() for linea in texto[-cuantas:] if linea.strip())
+
+
 # ------------------------------------------------------------------ IA (opcional)
 def _find_ai_exe() -> Path | None:
     """Localiza el motor IA (Windows .exe o binario de macOS/Linux)."""
@@ -210,17 +220,29 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
     cmd = [str(exe), "-i", str(entrada), "-o", str(salida), "-s", str(escala), "-f", "png"]
     if modelo and "realesrgan" in exe.name.lower():
         cmd += ["-n", modelo]
+
+    # La salida del motor se guarda en un ARCHIVO, no en una tubería: las tuberías
+    # fallan en entornos con sandbox y, sobre todo, aquí hacen falta las palabras del
+    # motor para saber POR QUÉ no mejoró (p. ej. «encode image … failed» cuando el
+    # .exe arrastra la etiqueta de integridad baja y Windows lo lanza en modo
+    # restringido: arranca, pero no puede escribir su salida).
+    # El registro vive en la carpeta temporal del sistema: no ensucia la salida.
+    registro = Path(tempfile.gettempdir()) / f"extractorfanarts-ia-{os.getpid()}.log"
     try:
         # Los exes ncnn buscan ./models relativo al directorio de trabajo:
         # se ejecutan con cwd = carpeta del ejecutable.
-        # stdio a DEVNULL (no pipes): compatible con sandbox y con la app.
-        subprocess.run(
-            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            timeout=1800, check=True, cwd=str(exe.parent),
-        )
-    except Exception:  # noqa: BLE001
+        with open(registro, "wb") as manejador:
+            subprocess.run(
+                cmd, stdout=manejador, stderr=subprocess.STDOUT,
+                timeout=1800, check=True, cwd=str(exe.parent),
+            )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("el motor IA (%s) falló al ejecutarse: %s · %s",
+                       exe.name, exc, _ultimas_lineas(registro))
         return None
     if not salida.exists() or salida.stat().st_size == 0:
+        logger.warning("el motor IA (%s) no generó ninguna imagen · %s",
+                       exe.name, _ultimas_lineas(registro))
         return None
     try:
         Image, _ = _pillow()
@@ -390,11 +412,12 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
                     )
                     mejorada = _lanczos_upscale(base_upscale, tamano)
                     temporales.append(mejorada)
-                    meta["modo"] = (
-                        f"Lanczos {factor}x (IA omitida: imagen muy grande)"
-                        if demasiado_grande
-                        else f"Lanczos {factor}x (IA no disponible)"
-                    )
+                    if demasiado_grande:
+                        meta["modo"] = f"Lanczos {factor}x (IA omitida: imagen muy grande)"
+                    else:
+                        meta["modo"] = (f"Lanczos {factor}x "
+                                        "(IA no disponible: mira el registro)")
+                        meta["ia_fallida"] = True
             else:
                 mejorada = _lanczos_upscale(base_upscale, tamano)
                 temporales.append(mejorada)

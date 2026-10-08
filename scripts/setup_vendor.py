@@ -22,7 +22,9 @@ from __future__ import annotations
 import json
 import os
 import platform
+import shutil
 import stat
+import subprocess
 import sys
 import urllib.request
 import zipfile
@@ -186,6 +188,35 @@ def install_ai_engines(target: Path) -> None:
         except Exception as exc:  # noqa: BLE001
             print(f"[omitido] {nombre}: {exc}")
     _marcar_ejecutables(target)
+    _etiqueta_integridad_media(target)
+
+
+def _etiqueta_integridad_media(directorio: Path) -> None:
+    """Windows: devuelve a «Media» la etiqueta de integridad de los motores IA.
+
+    Si la extracción ocurre dentro de un entorno restringido (sandbox de un agente,
+    CI en contenedor…), los `.exe` heredan la etiqueta de integridad **baja** y
+    Windows los lanza en modo restringido: arrancan (detectan la GPU) pero **no
+    pueden escribir su salida** — «encode image … failed» —, así que el modo IA se
+    queda en Lanczos sin explicar el motivo. Es exactamente la misma corrección que
+    `build_exe.py` aplica al paquete compilado.
+    """
+    if not sys.platform.startswith("win"):
+        return
+    icacls = shutil.which("icacls")
+    if not icacls:
+        return
+    try:
+        resultado = subprocess.run(
+            [icacls, str(directorio), "/setintegritylevel", "Medium", "/T", "/C"],
+            capture_output=True, text=True,
+        )
+    except OSError:
+        return
+    if resultado.returncode == 0:
+        print("[ok] etiqueta de integridad de los motores IA: Media")
+    else:
+        print("[aviso] no se pudo ajustar la etiqueta de integridad de los motores IA")
 
 
 # ------------------------------------------------------------------ principal

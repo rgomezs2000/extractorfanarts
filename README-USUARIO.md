@@ -308,6 +308,7 @@ Puedes ver y ajustar todo esto: en **Opciones**, botón
 | **Acceso denegado** al guardar en Imágenes o Descargas | Abre el programa **con doble clic desde el Explorador** (no desde una terminal restringida). Si sigue igual, ejecuta `ExtractorFanarts.exe --selftest` y revisa `selftest.txt` |
 | Cloudflare pide un CAPTCHA (p. ej. Rule34.xxx) | Abre el sitio en tu navegador, resuélvelo, y copia en `config_local.py` la cookie `cf_clearance` y tu `User-Agent` (F12 → Red → la primera petición → Cabeceras). El programa **nunca** evade CAPTCHAs |
 | Una wiki o un sitio devuelve error 403 | Suele ser una defensa contra programas. Anótalo y avisa al autor |
+| **El 🤖 Modo IA no mejora nada** (sigue usando Lanczos) | Los motores de IA pueden traer una etiqueta de Windows que les impide escribir su resultado (en el registro verás `encode image … failed`). Si sabes abrir una consola, ejecuta en la carpeta del programa: `icacls _internal\vendor /setintegritylevel Medium /T`. Si no, avisa al autor y usa **✨ Mejorar calidad** sin modo IA |
 | Búsqueda muy lenta | Se espacian las peticiones a propósito (cortesía con los sitios). Con muchos hashtags o palabras clave tarda más |
 | Cualquier error raro | Mira el `.log` del día: ahí está exactamente qué respondió cada servidor |
 

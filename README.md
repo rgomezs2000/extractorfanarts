@@ -657,11 +657,20 @@ Doble clic en **`ejecutar.bat`** hace lo mismo aplicando los ajustes locales.
 ### 9.3 Modo IA (opcional)
 
 ```powershell
-python scripts\setup_vendor.py --ai
+python scripts\setup_vendor.py vendor --solo-ia   # solo los motores de IA
 ```
 
-Descarga Real-ESRGAN y waifu2x (ncnn-vulkan) con sus modelos. Sin ellos la
-aplicación funciona igual y usa **Lanczos + afilado suave**.
+Descarga Real-ESRGAN y waifu2x (ncnn-vulkan) con sus modelos y les deja la
+etiqueta de integridad en «Media» (ver más abajo). Sin ellos la aplicación
+funciona igual y usa **Lanczos + afilado suave**.
+
+> ⚠️ **Si marcas 🤖 Modo IA y no mejora nada** (el registro dice `IA no
+> disponible` o `encode image … failed`), los motores arrastran la etiqueta de
+> integridad **baja**: arrancan y detectan la GPU, pero Windows no les deja
+> escribir su imagen de salida. Se arregla con:
+> ```powershell
+> python scripts\arreglar_integridad.py --motores
+> ```
 
 ### 9.4 Comprobar la instalación
 
@@ -1166,7 +1175,33 @@ python scripts\arreglar_integridad.py "otra\carpeta"  # o el paquete que quieras
 (equivale a `icacls "dist\ExtractorFanarts" /setintegritylevel Medium /T`).
 `compilar.bat` y `ejecutar.bat` **ya lo aplican solos**.
 
-### 15.4 Otras comprobaciones
+### 15.4 El modo IA no mejora nada (se queda en Lanczos)
+
+Los motores `realesrgan-ncnn-vulkan.exe` y `waifu2x-ncnn-vulkan.exe` pueden traer
+la **etiqueta de integridad baja** (les pasa si se descargaron dentro de un entorno
+restringido). Windows los lanza entonces en modo restringido: **arrancan** —el
+registro muestra que detectan la GPU— pero **no pueden escribir su imagen de
+salida**, y la aplicación cae a Lanczos.
+
+*Síntoma exacto en el registro* (`~/.extractorfanarts/logs/app-AAAA-MM-DD.log`):
+
+```
+WARNING | el motor IA (realesrgan-ncnn-vulkan.exe) no generó ninguna imagen ·
+          [0 Intel(R) UHD Graphics] … | 0,00% | encode image … failed
+```
+
+*Solución* (no hace falta ser administrador):
+
+```powershell
+python scripts\arreglar_integridad.py --motores     # desde el código
+icacls _internal\vendor /setintegritylevel Medium /T  # en el paquete compilado
+```
+
+`setup_vendor.py --solo-ia` ya deja la etiqueta bien al instalar los motores, así
+que esto solo hace falta para instalaciones antiguas o copiadas desde un entorno
+restringido.
+
+### 15.5 Otras comprobaciones
 
 | Síntoma | Causa y solución |
 |---|---|
@@ -1175,6 +1210,8 @@ python scripts\arreglar_integridad.py "otra\carpeta"  # o el paquete que quieras
 | Un booru devuelve pocos resultados con muchos tags | Cada página trae hasta 200 resultados y puede haber pocas coincidencias: quita un tag |
 | `deps` fallan al arrancar | Comprueba con `python main.py --selftest`; instala con `scripts\setup_vendor.py` |
 | Errores raros tras actualizar | Reinicia la app (los ajustes se leen al arrancar) y revisa el `.log` del día |
+| El resultado mejora pero se ven **halos** junto a las líneas | Baja `SHARPEN_LANCZOS` en `config_local.py` (por defecto 20; a 0 no se afila nada) |
+| Una imagen sale **muy blanda o pixelada** | El origen era diminuto: mira el aviso «⚠ origen pequeño» del estado. Ampliar una imagen de 153 px no crea detalle |
 
 ---
 
@@ -1190,7 +1227,7 @@ python scripts\arreglar_integridad.py "otra\carpeta"  # o el paquete que quieras
 | `scripts\pixiv_token.py` | asistente del refresh token de Pixiv (OAuth PKCE): sirve como script en desarrollo y es lo que se compila para el paquete |
 | `scripts\build_token_exe.py` | compila el asistente como `pixiv-token.exe` y lo coloca dentro del paquete (`--destino`, `--probar`) |
 | `scripts\pixiv_url.py` | utilidad de URL/identificadores de Pixiv |
-| `scripts\arreglar_integridad.py` | devuelve la etiqueta de integridad del paquete a «Media» |
+| `scripts\arreglar_integridad.py` | devuelve la etiqueta de integridad a «Media»: paquete compilado y/o motores IA (`--motores`) |
 | `scripts\limpiar_sidecars.py` | detecta o borra los `.json` antiguos de una carpeta (`--borrar`) |
 | `scripts\diag_conexion.py` | diagnóstico de credenciales y conexión de un sitio |
 | `scripts\diag_net.py` | diagnóstico de red y resolución de dominios |

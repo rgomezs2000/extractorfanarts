@@ -135,6 +135,13 @@ SI LA APP NO PUEDE GUARDAR EN TUS CARPETAS (Imagenes, Descargas...):
   (o recompilando con compilar.bat, que ya lo corrige solo). Cierra la app
   antes de arreglarlo y vuelve a abrirla despues.
 
+SI EL MODO IA NO MEJORA NADA (se queda en Lanczos):
+  los motores de IA (realesrgan / waifu2x) pueden traer esa misma etiqueta baja.
+  Arrancan y ven tu tarjeta grafica, pero Windows no les deja escribir su
+  resultado. Se arregla igual, en la carpeta del programa:
+      icacls _internal\vendor /setintegritylevel Medium /T
+  Si no, desmarca "Modo IA": con "Mejorar calidad" sigue mejorando (Lanczos).
+
 4) LICENCIA Y CONDICIONES DE USO
 --------------------------------
 ExtractorFanarts es un programa PROPIETARIO: su autor conserva TODOS los
