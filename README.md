@@ -74,7 +74,7 @@ En la práctica, la misión se concreta en cinco compromisos:
 | **No decidir por el usuario** | Todo filtro es visible, explicable y configurable; el motivo exacto de cada descarte se muestra en pantalla |
 | **No dejar el trabajo a medias** | Control de integridad en cada etapa (descarga, mejora, guardado) y cierre ordenado que no deja archivos a medias |
 | **No esconder lo que hace** | Registro diario en texto plano con cada petición, respuesta y decisión de filtrado |
-| **No exigir confianza ciega** | Código abierto, sin telemetría, sin servidor propio y con las credenciales siempre en el equipo del usuario |
+| **No exigir confianza ciega** | Sin telemetría, sin servidor propio y con las credenciales siempre en el equipo del usuario: nada de lo que haces sale de tu ordenador |
 
 ---
 
