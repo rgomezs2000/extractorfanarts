@@ -22,7 +22,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [1/3] Dependencias de la aplicacion (PySide6, httpx, Pillow, curl_cffi)...
+echo [1/4] Dependencias de la aplicacion (PySide6, httpx, Pillow, curl_cffi)...
 if exist "vendor\PySide6" (
   echo       ya estan en .\vendor
 ) else (
@@ -30,7 +30,7 @@ if exist "vendor\PySide6" (
   if errorlevel 1 goto error
 )
 
-echo [2/3] PyInstaller (para empaquetar)...
+echo [2/4] PyInstaller (para empaquetar)...
 if exist "vendor\PyInstaller" (
   echo       ya esta en .\vendor
 ) else (
@@ -38,17 +38,22 @@ if exist "vendor\PyInstaller" (
   if errorlevel 1 goto error
 )
 
-echo [3/3] Compilando el ejecutable...
+echo [3/4] Compilando el ejecutable...
 echo.
 REM --consola: el .exe abre una ventana de consola con los registros (ver el .log
 REM del dia en vivo). Si prefieres compilarlo sin consola, quita ese argumento.
 python scripts\build_exe.py --consola
 if errorlevel 1 goto error
 
+echo [4/4] Asistente de token de Pixiv (se entrega dentro del paquete)...
+python scripts\build_token_exe.py
+if errorlevel 1 goto error
+
 echo.
 echo ============================================================
 echo   LISTO
 echo   Ejecutable: dist\ExtractorFanarts\ExtractorFanarts.exe
+echo   Asistente : dist\ExtractorFanarts\pixiv-token.exe
 echo.
 echo   Al abrirlo se abre tambien una consola con los registros
 echo   (los mismos que el .log del dia, en .extractorfanarts\logs).

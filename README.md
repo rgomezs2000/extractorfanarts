@@ -692,7 +692,7 @@ publicarlo.
 | **FBooru** | `FBOORU_API_KEY` + `FBOORU_LOGIN` | Perfil de su API (`booru.fbooru.net/profile.json`); se envían en cada consulta |
 | **DeviantArt** | `DEVIANTART_CLIENT_ID` + `DEVIANTART_CLIENT_SECRET` | [deviantart.com/developers](https://www.deviantart.com/developers/) |
 | **Tumblr** | `TUMBLR_API_KEY` | [tumblr.com/oauth/apps](https://www.tumblr.com/oauth/apps) |
-| **Pixiv** | `PIXIV_REFRESH_TOKEN` | `python scripts\pixiv_token.py` — ver [§10.3](#103-pixiv-tu-cuenta) |
+| **Pixiv** | `PIXIV_REFRESH_TOKEN` | Asistente **`pixiv-token.exe`** incluido en el paquete (en desarrollo, `python scripts\pixiv_token.py`) — ver [§10.3](#103-pixiv-tu-cuenta) |
 | **X/Twitter** | `X_BEARER_TOKEN` (o `X_API_KEY` + `X_API_SECRET`) | App de desarrollador **con facturación**: la API v2 es de pago por uso |
 | **Pinterest** | `PINTEREST_ACCESS_TOKEN` (+ `PINTEREST_COUNTRY_CODE`) | App aprobada + OAuth del usuario; la búsqueda global usa un endpoint beta |
 | **Cloudflare** | `CF_CLEARANCE` + `CF_USER_AGENT` | Ver [§15.1](#151-captcha-de-cloudflare-p-ej-rule34xxx) |
@@ -704,11 +704,18 @@ Pixiv no ofrece acceso anónimo: su API exige autenticación. La aplicación usa
 **API oficial de la app** con **tu propia cuenta** mediante un *refresh token*
 (no guarda tu contraseña y no hace scraping de la web).
 
-1. Ejecuta `python scripts\pixiv_token.py`.
+**El asistente viaja dentro del paquete** como `pixiv-token.exe` (Windows) o
+`pixiv-token` (macOS/Linux): basta con hacer doble clic. Escribe el token en el
+**mismo `config_local.py` que lee la aplicación**, así que solo hay que reiniciarla.
+En desarrollo funciona igual como script: `python scripts\pixiv_token.py`
+(opciones `--code=`, `--save`, `--donde`, `--sin-pausa`).
+
+1. Ejecuta el asistente (`pixiv-token.exe`) — o, en desarrollo, el script.
 2. Abre el enlace que muestra e **inicia sesión** con tu cuenta de Pixiv.
 3. El navegador terminará en una URL con `?code=...` (la página puede dar error:
-   es normal). Copia esa URL completa o solo el código y pégala en la consola.
-4. El script obtiene el **refresh token** y puede guardarlo en `app/config_local.py`.
+   es normal). Copia esa URL completa o solo el código y pégala en la ventana.
+4. El asistente obtiene el **refresh token** y lo guarda en el `config_local.py`
+   que usa la aplicación (`--donde` te dice cuál es, sin tocar nada).
 5. **Reinicia la app.**
 
 En la UI (Tipo: *Red social* → Plataforma: *Pixiv*):
@@ -919,6 +926,10 @@ compilas desde un entorno restringido; para un paquete ya compilado:
 
 **Notas importantes:**
 
+- **El paquete incluye dos ejecutables:** la aplicación
+  (`ExtractorFanarts.exe`) y el **asistente de token de Pixiv**
+  (`pixiv-token.exe`), compilado con `scripts\build_token_exe.py`. Es
+  independiente de la app (solo necesita `httpx`) y ronda los 10 MB.
 - **Las credenciales NO se empaquetan.** El build deja una **plantilla** al lado
   del binario. Así tus claves nunca entran en el paquete.
 - **Registros y base de datos** viven en `~/.extractorfanarts/`, fuera del paquete.
@@ -1163,7 +1174,8 @@ python scripts\arreglar_integridad.py "otra\carpeta"  # o el paquete que quieras
 | `scripts\release.py` | crea el `.zip` + `.sha256` y publica el Release (`--tag`, `--gh`, `--version`) |
 | `scripts\make_icon.py` | regenera los iconos de `assets/` |
 | `scripts\hacer_certificado.py` / `.ps1` | crea un certificado autofirmado (`--simular`, `--confiar`) |
-| `scripts\pixiv_token.py` | obtiene el refresh token de Pixiv (OAuth PKCE) |
+| `scripts\pixiv_token.py` | asistente del refresh token de Pixiv (OAuth PKCE): sirve como script en desarrollo y es lo que se compila para el paquete |
+| `scripts\build_token_exe.py` | compila el asistente como `pixiv-token.exe` y lo coloca dentro del paquete (`--destino`, `--probar`) |
 | `scripts\pixiv_url.py` | utilidad de URL/identificadores de Pixiv |
 | `scripts\arreglar_integridad.py` | devuelve la etiqueta de integridad del paquete a «Media» |
 | `scripts\limpiar_sidecars.py` | detecta o borra los `.json` antiguos de una carpeta (`--borrar`) |

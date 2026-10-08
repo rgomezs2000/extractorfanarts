@@ -1,22 +1,26 @@
-"""Obtiene el refresh token de Pixiv (flujo OAuth PKCE) y lo guarda.
+"""Obtiene el refresh token de Pixiv (flujo OAuth PKCE) y lo guarda en config_local.py.
 
-Uso:
+Uso como script (desarrollo, dentro del repositorio):
     python scripts\\pixiv_token.py                    # interactivo (recomendado)
     python scripts\\pixiv_token.py --code=XXXX        # si ya tienes el código
     python scripts\\pixiv_token.py --code=XXXX --save # guarda sin preguntar
 
-Qué hace:
-  1. Genera el código PKCE y te muestra el enlace de inicio de sesión de Pixiv.
-  2. Inicias sesión con TU cuenta en el navegador.
-  3. El navegador acaba en una URL con `?code=...` (la página puede fallar: es normal).
-  4. Pegas esa URL (o solo el código) y el script obtiene el refresh token.
-  5. Puede escribirlo automáticamente en app/config_local.py (ignorado por git).
+Uso como ejecutable (el que viaja DENTRO del paquete del release):
+    pixiv-token.exe                                   # doble clic; no necesita Python
 
-Tu contraseña nunca pasa por este script ni por la app: solo el refresh token,
+Qué hace:
+  1. Genera el código PKCE y muestra el enlace de inicio de sesión de Pixiv.
+  2. Inicias sesión con TU cuenta en el navegador.
+  3. El navegador acaba en una URL con `?code=...` (la página puede dar error: es normal).
+  4. Pegas esa URL (o solo el código) y se obtiene el refresh token.
+  5. Lo escribe en el MISMO `config_local.py` que lee la aplicación, así que basta con
+     reiniciar ExtractorFanarts.
+
+Tu contraseña nunca pasa por este asistente ni por la aplicación: solo el refresh token,
 que puedes revocar cerrando sesión en Pixiv.
 
-Importante: el código de autorización caduca en ~1 minuto; si el canje falla con
-"invalid_request", vuelve a ejecutar el script y usa un código nuevo.
+Importante: el código de autorización caduca en ~1 minuto. Si el canje falla con
+"invalid_request", vuelve a ejecutarlo y usa un código nuevo.
 """
 from __future__ import annotations
 
@@ -30,7 +34,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 _ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(_ROOT))
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 _VENDOR = _ROOT / "vendor"
 if _VENDOR.is_dir() and str(_VENDOR) not in sys.path:
     sys.path.insert(0, str(_VENDOR))
@@ -44,7 +49,26 @@ REDIRECT_URI = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
 LOGIN_URL = "https://app-api.pixiv.net/web/v1/login"
 HASH_SECRET = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 APP_UA = "PixivAndroidApp/5.0.234 (Android 10; Pixel 3)"
-CONFIG_LOCAL = _ROOT / "app" / "config_local.py"
+
+
+def _congelado() -> bool:
+    """True cuando corremos como ejecutable compilado (PyInstaller)."""
+    return bool(getattr(sys, "frozen", False))
+
+
+def _destino_config() -> Path:
+    """El `config_local.py` que lee la aplicación: en ese mismo se escribe el token.
+
+    La app lo busca, por este orden: junto al ejecutable, dentro del paquete y en
+    `~/.extractorfanarts/config_local.py`. `config.CONFIG_LOCAL_USADO` ya contiene la
+    ruta del que encontró, así que escribir ahí garantiza que la app lo verá.
+    """
+    usado = str(getattr(config, "CONFIG_LOCAL_USADO", "") or "")
+    if usado:
+        return Path(usado)
+    if _congelado():
+        return Path(sys.executable).resolve().parent / "config_local.py"
+    return _ROOT / "app" / "config_local.py"
 
 
 def _cabeceras() -> dict:
@@ -116,22 +140,84 @@ def _continuacion_desde_intermedia(entrada: str) -> str | None:
     return unquote(interno) if interno else None
 
 
-def _guardar_en_config(token: str) -> bool:
-    if not CONFIG_LOCAL.exists():
-        print(f"[aviso] no existe {CONFIG_LOCAL}; crea el archivo y añade la línea a mano")
-        return False
-    contenido = CONFIG_LOCAL.read_text(encoding="utf-8")
+def _guardar_en_config(token: str) -> Path | None:
+    """Escribe (o reemplaza) PIXIV_REFRESH_TOKEN en el config_local.py de la app."""
+    destino = _destino_config()
     linea = f'PIXIV_REFRESH_TOKEN = "{token}"'
-    if re.search(r"^#?\s*PIXIV_REFRESH_TOKEN\s*=", contenido, flags=re.MULTILINE):
-        contenido = re.sub(r"^#?\s*PIXIV_REFRESH_TOKEN\s*=.*$", linea, contenido,
-                           flags=re.MULTILINE)
-    else:
-        contenido = contenido.rstrip() + "\n\n# --------------------------------------------------- Pixiv\n" + linea + "\n"
-    CONFIG_LOCAL.write_text(contenido, encoding="utf-8")
-    return True
+    try:
+        if destino.is_file():
+            contenido = destino.read_text(encoding="utf-8")
+        else:
+            destino.parent.mkdir(parents=True, exist_ok=True)
+            contenido = (
+                '"""Ajustes y credenciales locales de ExtractorFanarts.\n\n'
+                "Cualquier constante en MAYUSCULAS de aqui sobreescribe app/config.py.\n"
+                '"""\n'
+            )
+        if re.search(r"^#?\s*PIXIV_REFRESH_TOKEN\s*=", contenido, flags=re.MULTILINE):
+            contenido = re.sub(r"^#?\s*PIXIV_REFRESH_TOKEN\s*=.*$", linea, contenido,
+                               flags=re.MULTILINE)
+        else:
+            contenido = (contenido.rstrip()
+                         + "\n\n# --------------------------------------------------- Pixiv\n"
+                         + linea + "\n")
+        destino.write_text(contenido, encoding="utf-8")
+        return destino
+    except OSError as exc:
+        print(f"[aviso] no se pudo escribir en {destino}: {exc}")
+        return None
+
+
+def _pedir(mensaje: str) -> str | None:
+    """`input()` que no revienta si la consola se cierra o no hay entrada."""
+    try:
+        return input(mensaje)
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return None
+
+
+def _pausa_final() -> None:
+    """En el ejecutable, la ventana de consola se cierra al terminar: esperamos.
+
+    Solo cuando hay una consola interactiva de verdad (doble clic). Si se lanza desde
+    otra terminal o con la entrada redirigida, no se detiene. Se puede desactivar con
+    `--sin-pausa`.
+    """
+    if not _congelado() or "--sin-pausa" in sys.argv:
+        return
+    if any(opcion in sys.argv for opcion in ("--ayuda", "-h", "--help", "--donde")):
+        return
+    try:
+        if sys.stdin is None or not sys.stdin.isatty():
+            return
+    except Exception:  # noqa: BLE001
+        return
+    _pedir("\nPulse Intro para cerrar…")
+
+
+def _ayuda() -> None:
+    print(__doc__.strip())
+    print("\nOpciones:")
+    print("  --code=XXXX    canjea directamente un código que ya tengas")
+    print("  --save         guarda el token sin preguntar")
+    print("  --donde        muestra en qué config_local.py se guardará y sale")
+    print("  --sin-pausa    no espera al final (al lanzarlo desde otra consola)")
+    print("  --ayuda        muestra esta ayuda")
 
 
 def main() -> int:
+    if "--ayuda" in sys.argv or "-h" in sys.argv or "--help" in sys.argv:
+        _ayuda()
+        return 0
+
+    if "--donde" in sys.argv:
+        destino = _destino_config()
+        print(f"config_local.py que usa la aplicación: {destino}")
+        print(f"existe: {'sí' if destino.is_file() else 'no (se creará al guardar el token)'}")
+        print(f"ejecutable: {Path(sys.executable).resolve()}")
+        return 0
+
     # Modo no interactivo:  --code=XXXX  (y opcional --save)
     code_arg = ""
     guardar_auto = "--save" in sys.argv
@@ -148,6 +234,8 @@ def main() -> int:
 
     if not code_arg:
         print("=" * 78)
+        print("ASISTENTE DE PIXIV — ExtractorFanarts")
+        print("=" * 78)
         print("PASO 1 — Abre este enlace e inicia sesión con TU cuenta de Pixiv:")
         print()
         print("   " + url)
@@ -156,13 +244,16 @@ def main() -> int:
         print("         Copia la URL COMPLETA de la barra de direcciones: debe contener")
         print("         'code=...'.")
         print()
-        print("⚠️  NO CIERRES ESTA CONSOLA hasta pegar el código: el enlace de arriba")
-        print("    solo es válido con ESTA ejecución del script (si lo reinicias, cambia).")
+        print("⚠️  NO CIERRES ESTA VENTANA hasta pegar el código: el enlace de arriba")
+        print("    solo es válido con ESTA ejecución (si la reinicias, cambia).")
         print("=" * 78)
 
         code = ""
         while not code:
-            entrada = input("\nPega la URL final (con code=...) o el código: ").strip()
+            entrada = _pedir("\nPega la URL final (con code=...) o el código: ")
+            if entrada is None:
+                print("[error] no se recibió ningún dato (¿se cerró la entrada?).")
+                return 1
             code, continuacion = _clasificar(entrada)
             if code:
                 break
@@ -215,26 +306,38 @@ def main() -> int:
         return 1
 
     print("\n" + "=" * 78)
-    print("REFRESH TOKEN:")
+    print("TU REFRESH TOKEN DE PIXIV (cópialo por si acaso):")
     print()
     print("   " + refresh)
     print("=" * 78)
 
-    try:
-        respuesta_guardar = "s" if guardar_auto else input(
-            "\n¿Guardarlo en app/config_local.py? (s/n): "
-        ).strip().lower()
-    except EOFError:
-        respuesta_guardar = "n"
-    if respuesta_guardar.startswith("s"):
-        if _guardar_en_config(refresh):
-            print("[ok] guardado en app/config_local.py — reinicia la app")
+    destino = _destino_config()
+    respuesta_guardar = "s" if guardar_auto else _pedir(
+        f"\n¿Guardarlo en {destino}? (s/n): "
+    )
+    if respuesta_guardar is None:
+        print(f"[info] no se guardó nada. Añade a mano en {destino}:")
+        print(f'      PIXIV_REFRESH_TOKEN = "{refresh}"')
+        return 0
+    if respuesta_guardar.strip().lower().startswith("s"):
+        guardado = _guardar_en_config(refresh)
+        if guardado is not None:
+            print(f"[ok] guardado en {guardado}")
+            print("[ok] reinicia ExtractorFanarts y Pixiv quedará activado")
         else:
-            print("[aviso] no se pudo guardar automáticamente")
+            print("[aviso] no se pudo guardar automáticamente; copia el token a mano")
+            print(f'      PIXIV_REFRESH_TOKEN = "{refresh}"')
     else:
-        print("[info] copia el token en PIXIV_REFRESH_TOKEN de app/config_local.py")
+        print(f"[info] copia el token en PIXIV_REFRESH_TOKEN dentro de {destino}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        _codigo = main()
+    except Exception as exc:  # noqa: BLE001
+        print(f"\n[error] algo falló: {exc}")
+        _codigo = 1
+    finally:
+        _pausa_final()
+    raise SystemExit(_codigo)

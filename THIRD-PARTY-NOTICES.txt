@@ -51,6 +51,12 @@ EMPAQUETADO (solo en el proceso de compilación, no se distribuye)
 PyInstaller — MIT · pyinstaller-hooks-contrib — Apache 2.0
 pefile — MIT · pywin32-ctypes — BSD 3-Clause · altgraph — MIT
 
+ASISTENTE DE PIXIV (pixiv-token; se entrega junto a la aplicación)
+------------------------------------------------------------------
+Es un ejecutable independiente que solo sirve para obtener tu refresh token de
+Pixiv. Incluye las mismas bibliotecas de red que la aplicación (httpx, httpcore,
+h11, anyio, sniffio, idna y certifi), con las licencias indicadas arriba.
+
 USO RESPONSABLE
 ---------------
 Esta herramienta es para archivo personal de contenido al que tengas acceso

@@ -53,6 +53,8 @@ El programa **no se instala**: se descomprime y se ejecuta.
 3. **macOS:** si dice *«no se puede abrir»*, haz clic derecho en la aplicación →
    **Abrir**. Si aun así se resiste, ejecuta en Terminal:
    `xattr -dr com.apple.quarantine ExtractorFanarts.app`
+   Lo mismo vale para el asistente: si macOS bloquea `pixiv-token`, haz clic
+   derecho sobre él → **Abrir**.
 4. **Linux:** da permisos de ejecución la primera vez:
    `chmod +x ExtractorFanarts` y luego ejecútalo.
 
@@ -132,9 +134,11 @@ CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 | Pinterest | `PINTEREST_ACCESS_TOKEN` | App aprobada + permiso del usuario |
 
 **Pixiv.** No permite el acceso anónimo: hay que usar tu propia cuenta con un
-*refresh token*. El programa **no guarda tu contraseña**. El asistente para
-obtener ese token se distribuye con el proyecto; si lo necesitas, pídelo al
-autor (abajo) o consulta la página del proyecto.
+*refresh token* (el programa **no guarda tu contraseña**). En la **misma carpeta**
+que el programa tienes un asistente: haz **doble clic en `pixiv-token.exe`** (o
+`pixiv-token` en Linux/macOS) y sigue lo que te diga. Te dará un enlace para
+iniciar sesión en Pixiv, le pegarás la dirección final y **el token se guarda
+solo**. Después, **reinicia ExtractorFanarts**.
 
 > 🔐 Guarda tus claves en `config_local.py`. Ese archivo queda en tu equipo: el
 > programa no envía nada a ningún servidor propio y no incluye ninguna clave.

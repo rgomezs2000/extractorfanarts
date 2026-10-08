@@ -74,6 +74,15 @@ actualizaciones). Cualquier constante en MAYUSCULAS de ese archivo sobreescribe
 app\config.py. En la app: boton "¿Que se filtra? (lista negra)" en Opciones, que muestra
 los arrays tal como estan y la ruta del config_local.py que se esta usando.
 
+PIXIV (opcional): Pixiv no permite entrar sin cuenta. En esta misma carpeta tienes
+el asistente  pixiv-token.exe  (o pixiv-token en Linux/macOS):
+  1) Doble clic en pixiv-token.exe
+  2) Abre el enlace que muestra e inicia sesion con tu cuenta de Pixiv
+  3) El navegador acabara en una pagina de error: copia la URL COMPLETA
+     (la que lleva "code=...") y pegala en la ventana del asistente
+  4) El asistente guarda el token solo. Reinicia ExtractorFanarts.
+Tu contrasena nunca se guarda; puedes revocar el acceso cerrando sesion en Pixiv.
+
 En "Red social" puedes combinar los campos: usuario + palabra(s) clave + hashtag(s).
 Se exigen todos los campos que rellenes y cada campo admite valores SIN LIMITE:
   hashtags      ->  #lola_loud  o  #lola_loud #the_loud_house  (separalos con espacios)

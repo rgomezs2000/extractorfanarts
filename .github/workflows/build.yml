@@ -66,6 +66,11 @@ jobs:
       - name: Compilar
         run: python scripts/build_exe.py
 
+      # El asistente de Pixiv viaja DENTRO del paquete, junto a la aplicación: quien
+      # descarga el release no tiene Python y necesita una forma de obtener su token.
+      - name: Compilar el asistente de token de Pixiv
+        run: python scripts/build_token_exe.py
+
       # El contexto `secrets` NO se admite dentro de un `if:`: si se usa ahí, GitHub
       # marca el flujo entero como inválido y no arranca ningún trabajo. Se pasa por
       # `env` (que sí lo admite) y el propio script decide si hay certificado o no.
