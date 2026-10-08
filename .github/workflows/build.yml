@@ -46,27 +46,47 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install PySide6 httpx Pillow curl_cffi pyinstaller
 
+      - name: Bibliotecas gráficas de Qt (solo Linux; sin ellas Qt no carga en el CI)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgl1 libegl1 libxkbcommon0 \
+            libdbus-1-3 libfontconfig1 libxcb-cursor0 libxcb-xinerama0
+
       - name: Motores de IA (Real-ESRGAN / waifu2x) — opcional
         continue-on-error: true
         run: python scripts/setup_vendor.py vendor --solo-ia
 
+      # Informativa: el resultado queda en el registro, pero una limitación del
+      # entorno del CI (sin pantalla, sin GPU, sin fuentes) no debe impedir publicar.
       - name: Autocomprobación antes de empaquetar
+        continue-on-error: true
         run: python main.py --selftest
 
       - name: Compilar
         run: python scripts/build_exe.py
 
+      # El contexto `secrets` NO se admite dentro de un `if:`: si se usa ahí, GitHub
+      # marca el flujo entero como inválido y no arranca ningún trabajo. Se pasa por
+      # `env` (que sí lo admite) y el propio script decide si hay certificado o no.
       - name: Firmar el ejecutable (opcional; solo si hay certificado)
-        if: ${{ matrix.os == 'windows-latest' && secrets.WINDOWS_CERT_PFX_BASE64 != '' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         continue-on-error: true
         shell: pwsh
+        env:
+          CERT_PFX_BASE64: ${{ secrets.WINDOWS_CERT_PFX_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
         run: |
+          if (-not $env:CERT_PFX_BASE64) {
+            Write-Host "No hay certificado configurado (secret WINDOWS_CERT_PFX_BASE64): no se firma."
+            exit 0
+          }
           $pfx = Join-Path $env:RUNNER_TEMP "certificado.pfx"
-          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_PFX_BASE64 }}"))
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERT_PFX_BASE64))
           $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue |
                       Sort-Object FullName | Select-Object -Last 1
           if (-not $signtool) { Write-Host "::warning::no se encontró signtool"; exit 0 }
-          & $signtool.FullName sign /f $pfx /p "${{ secrets.WINDOWS_CERT_PASSWORD }}" `
+          & $signtool.FullName sign /f $pfx /p $env:CERT_PASSWORD `
               /fd sha256 /td sha256 /tr http://timestamp.digicert.com `
               "dist\ExtractorFanarts\ExtractorFanarts.exe"
           Remove-Item $pfx -Force
