@@ -697,8 +697,21 @@ BOORU_SITES = [
 - También se admite la forma abreviada `"auth": ("GELBOORU",)`, que lee las
   claves de las constantes de `app/config.py` (compatibilidad con configuraciones
   antiguas).
-- **Para no subir tus tokens**, define el array completo (o solo el booru nuevo)
-  en `config_local.py`: lo que pongas ahí sobreescribe `app/config.py`.
+- **Para no subir tus tokens**, define el array completo en `config_local.py`: lo
+  que pongas ahí sobreescribe `app/config.py`.
+- **Para añadir sin reescribir**, usa `BOORU_SITES_EXTRA`: esa lista se **suma** a
+  `BOORU_SITES` en lugar de sustituirla. Se ignoran las entradas repetidas por
+  nombre y las que no traigan `name`, `family` y `base`; si un nombre ya existe,
+  se respeta el de `BOORU_SITES`.
+
+  ```python
+  # en config_local.py
+  BOORU_SITES_EXTRA = [
+      {"name": "MiBooru", "family": "gelbooru", "base": "https://mi-booru.example",
+       "auth": {"api_key": MI_API_KEY, "user_id": MI_USER_ID},
+       "view_tpl": "https://mi-booru.example/index.php?page=post&s=view&id={id}"},
+  ]
+  ```
 - **Si el dominio no existe** o no hay internet, la búsqueda no revienta: verás
   *«no se pudo conectar con … — Comprueba que el dominio del sitio exista y esté
   bien escrito, y tu conexión a internet»*, y la traza completa queda en el registro.
