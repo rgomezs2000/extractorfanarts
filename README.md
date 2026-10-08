@@ -1080,7 +1080,9 @@ marca **«Set as a pre-release»** → adjuntar el `.zip`.
   tomada de [README-USUARIO.md](README-USUARIO.md)), `LEEME-PRIMERO.txt`,
   `LICENSE` y `THIRD-PARTY-NOTICES.txt` con las licencias de los componentes
   redistribuidos (Qt/PySide6 LGPL v3, Pillow, httpx, curl_cffi, motores IA…).
-- Tamaño del paquete de Windows: ~132 MB comprimido (Qt + motores IA).
+- Tamaño del paquete comprimido (Qt + motores IA): **~147 MB** en Windows,
+  ~240 MB en Linux y ~557 MB en macOS (los motores de IA para macOS son más
+  pesados al incluir los binarios de las dos arquitecturas).
 
 ---
 
