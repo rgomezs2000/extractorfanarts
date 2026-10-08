@@ -1,6 +1,6 @@
 # ExtractorFanarts
 
-**Versión 0.1.0-beta.1 (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · Licencia: Unlicense (dominio público)
+**Versión 0.1.0-beta.1 (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 Aplicación de escritorio para **buscar, revisar y archivar arte y fanart** desde
 redes sociales, boorus e wikis de fandom, con **restricciones legales y éticas
@@ -488,7 +488,7 @@ compilar.bat                  compila el .exe (con consola de registros)
 ejecutar.bat                  ejecuta en desarrollo aplicando los ajustes locales
 crear_certificado.bat         crea un certificado autofirmado
 firmar.bat                    firma el ejecutable con signtool
-LICENSE                       licencia del proyecto (Unlicense); se adjunta al paquete
+LICENSE                       licencia de uso del programa; se adjunta al paquete
 LEEME-PRIMERO.txt             guía de primeros pasos que se adjunta al paquete
 THIRD-PARTY-NOTICES.txt       licencias de los componentes redistribuidos
 ```
@@ -947,7 +947,7 @@ Proveedores: DigiCert, Sectigo, SSL.com, Certum, GlobalSign. Como la clave ya no
 puede estar en un `.pfx` suelto, la firma se hace con su servicio en la nube
 (DigiCert KeyLocker, SSL.com eSigner, Sectigo Cloud) o con Azure Trusted Signing.
 
-### 13.3 Sin certificado (lo habitual en proyectos abiertos)
+### 13.3 Sin certificado (lo habitual cuando no hay presupuesto para uno)
 
 Publica en GitHub Releases con el **`LEEME-PRIMERO.txt`** (ya se añade al
 paquete) explicando el aviso y el archivo **`.sha256`** para que cada usuario
@@ -1121,11 +1121,12 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
 
 ## 17. Licencia y avisos legales
 
-- **Licencia del proyecto:** [Unlicense](LICENSE) — software liberado al
-  **dominio público** por **Roger Gomez** (2026). Puedes copiarlo, modificarlo,
-  publicarlo, usarlo, compilarlo, venderlo o distribuirlo con cualquier
-  propósito, comercial o no, sin pedir permiso ni dar atribución. El archivo
-  `LICENSE`, con el texto legal completo y el detalle de su alcance, se incluye
+- **Licencia del programa:** **propietaria — todos los derechos reservados**
+  (© 2026 Roger Gomez). Se concede únicamente el derecho a **ejecutar y usar el
+  programa** de forma gratuita y para uso personal; **se prohíbe** copiarlo,
+  redistribuirlo, venderlo, modificarlo, descompilarlo o reutilizar su código
+  fuente. El **código fuente es propiedad del autor y no se licencia**. El
+  archivo [LICENSE](LICENSE), con las condiciones completas, se incluye
   **dentro del paquete** junto al ejecutable.
 - **Componentes de terceros:** las licencias de Qt/PySide6 (LGPL v3), Pillow,
   httpx, curl_cffi y los motores de IA están en

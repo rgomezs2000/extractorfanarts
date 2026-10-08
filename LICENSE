@@ -1,5 +1,6 @@
 ================================================================================
- ExtractorFanarts · LICENCIA (Unlicense · dominio público)
+ ExtractorFanarts · LICENCIA DE USO
+ Programa propietario · TODOS LOS DERECHOS RESERVADOS
 ================================================================================
 
  Proyecto : ExtractorFanarts
@@ -8,74 +9,174 @@
  Versión  : 0.1.0-beta.1
  Web      : https://github.com/rgomezs2000/extractorfanarts
 
- Copyright (c) 2026 Roger Gomez
+ Copyright (c) 2026 Roger Gomez. TODOS LOS DERECHOS RESERVADOS.
+
+ LEER ESTO ANTES DE USAR EL PROGRAMA. Al ejecutarlo aceptas estas condiciones.
+ Si no estás de acuerdo con ellas, no lo uses y borra todas las copias.
 
 
 --------------------------------------------------------------------------------
- EN CASTELLANO (resumen; el texto legal vinculante es el inglés de abajo)
+ 1. QUÉ SE CONCEDE
 --------------------------------------------------------------------------------
 
-Este programa se libera al DOMINIO PÚBLICO. Cualquier persona puede copiarlo,
-modificarlo, publicarlo, usarlo, compilarlo, venderlo o distribuirlo —tal cual o
-modificado— con cualquier propósito, comercial o no, y por cualquier medio, sin
-pedir permiso y sin condiciones. No se exige conservar este aviso ni dar
-atribución alguna, aunque se agradece.
+Se concede permiso, gratuito, no exclusivo y no transferible, para:
 
-El programa se entrega «TAL CUAL», sin garantía de ningún tipo, expresa o
-implícita. Quien lo use asume todos los riesgos; el autor no responde de ningún
-daño derivado de su uso.
+  a) EJECUTAR el programa ya compilado (ExtractorFanarts.exe y su carpeta) en
+     equipos de tu propiedad o bajo tu control;
+  b) USARLO para tu archivo personal de imágenes, sin límite de tiempo ni de
+     número de descargas;
+  c) HACER UNA COPIA de seguridad del paquete para uso propio.
 
-En los países donde la ley reconoce derechos de autor, el autor renuncia a todo
-interés de copyright sobre este software y lo dedica al dominio público, en
-beneficio del público en general y en perjuicio de sus herederos y sucesores.
-Esta dedicación es un acto manifiesto e irrevocable de renuncia a todos los
-derechos presentes y futuros sobre este software.
+No hay que pagar nada, no hay que registrarse y no se recogen datos.
 
 
 --------------------------------------------------------------------------------
- TEXTO LEGAL (canónico, en inglés)
+ 2. QUÉ NO SE PERMITE
 --------------------------------------------------------------------------------
 
-This is free and unencumbered software released into the public domain.
+Sin autorización previa y por escrito del autor, NO puedes:
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
-
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-For more information, please refer to <https://unlicense.org>
+  a) COPIAR, PUBLICAR, COMPARTIR, SUBIR a ningún sitio, ENLAZAR para su
+     descarga ni REDISTRIBUIR el programa, ni total ni parcialmente, ni
+     incluirlo dentro de otro producto o paquete;
+  b) VENDERLO, ALQUILARLO, SUBLICENCIARLO ni explotarlo comercialmente;
+  c) MODIFICARLO, TRADUCIRLO, ADAPTARLO ni crear obras derivadas;
+  d) SOMETERLO A INGENIERÍA INVERSA, DESCOMPILARLO o DESENSAMBLARLO, ni
+     intentar obtener, extraer, reconstruir o reutilizar su código fuente,
+     salvo en la medida en que la ley aplicable lo permita de forma imperativa;
+  e) QUITAR, OCULTAR O ALTERAR los avisos de autor, esta licencia o los avisos
+     de componentes de terceros incluidos en el paquete;
+  f) USAR EL NOMBRE, EL ICONO O LA MARCA del proyecto para promocionar o
+     presentar productos derivados sin autorización;
+  g) USAR el programa con fines ilícitos o para vulnerar derechos de autor,
+     condiciones de servicio de terceros o la intimidad de otras personas.
 
 
 --------------------------------------------------------------------------------
- ALCANCE DE ESTA LICENCIA
+ 3. EL CÓDIGO FUENTE ES PROPIEDAD DEL AUTOR
 --------------------------------------------------------------------------------
 
-1) Cubre EXCLUSIVAMENTE el código fuente y los binarios de este repositorio
-   (ExtractorFanarts, sus scripts y su documentación).
+El código fuente de ExtractorFanarts es propiedad exclusiva del autor y NO se
+cede, NO se licencia y NO se publica como software libre: no se concede ningún
+derecho sobre él, ni siquiera el de consultarlo o reutilizarlo.
 
-2) NO cubre el material que descargues con la herramienta (fanart, arte,
-   ilustraciones, animaciones): sus derechos pertenecen a sus respectivos
-   autores y a las plataformas donde se publican. ExtractorFanarts es solo un
-   cliente de descarga; el uso que hagas del material descargado es tu
-   responsabilidad.
+Si has tenido acceso al código fuente por cualquier medio, no puedes copiarlo,
+reutilizarlo, publicarlo, cederlo ni incorporarlo a otro proyecto sin
+autorización escrita del autor.
 
-3) NO cubre los componentes de terceros redistribuidos dentro del paquete
-   (Qt/PySide6, Pillow, httpx, curl_cffi y los motores de IA Real-ESRGAN /
-   waifu2x). Cada uno conserva SU propia licencia: consulta
-   THIRD-PARTY-NOTICES.txt, incluido en el paquete.
+Esta licencia NO convierte el programa en software libre ni de código abierto:
+el programa se distribuye únicamente como ejecutable compilado.
+
+
+--------------------------------------------------------------------------------
+ 4. PROPIEDAD INTELECTUAL
+--------------------------------------------------------------------------------
+
+El programa, su código fuente, su diseño, su interfaz, su icono y su
+documentación son propiedad de Roger Gomez y están protegidos por la
+legislación de propiedad intelectual.
+
+Esta licencia concede únicamente un derecho limitado de USO: no supone cesión,
+venta, renuncia ni licencia de ningún derecho de autor, marca o patente.
+
+
+--------------------------------------------------------------------------------
+ 5. EL CONTENIDO QUE DESCARGUES NO ESTÁ CUBIERTO
+--------------------------------------------------------------------------------
+
+Esta licencia cubre el PROGRAMA, no el material que descargues con él.
+
+El fanart, el arte y las ilustraciones pertenecen a sus respectivos autores y a
+las plataformas donde se publican. ExtractorFanarts es solo una herramienta de
+descarga: el uso que hagas del material descargado —y el respeto de sus
+licencias y de las condiciones de cada plataforma— es tu responsabilidad
+exclusiva.
+
+
+--------------------------------------------------------------------------------
+ 6. COMPONENTES DE TERCEROS
+--------------------------------------------------------------------------------
+
+El paquete incluye bibliotecas de terceros (Qt/PySide6, Pillow, httpx,
+curl_cffi y los motores de IA Real-ESRGAN / waifu2x) que conservan SUS PROPIAS
+licencias, detalladas en THIRD-PARTY-NOTICES.txt.
+
+Esta licencia no modifica ni restringe esas condiciones, y no concede ningún
+derecho sobre esos componentes más allá de lo que sus propias licencias
+permitan.
+
+
+--------------------------------------------------------------------------------
+ 7. GARANTÍA Y RESPONSABILIDAD
+--------------------------------------------------------------------------------
+
+EL PROGRAMA SE ENTREGA «TAL CUAL» Y «SEGÚN DISPONIBILIDAD», SIN GARANTÍA DE
+NINGÚN TIPO, expresa o implícita, incluidas —sin limitarse a ellas— las
+garantías de comerciabilidad, idoneidad para un fin concreto, exactitud y
+ausencia de errores. El autor no garantiza que el programa funcione sin
+interrupciones ni que los servicios de terceros sigan disponibles.
+
+EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY APLICABLE, EL AUTOR NO SERÁ
+RESPONSABLE DE NINGÚN DAÑO derivado del uso o de la imposibilidad de usar el
+programa, incluidos daños directos, indirectos, incidentales, especiales o
+consecuentes, pérdida de datos, pérdida de archivos o lucro cesante, aunque se
+le hubiera advertido de la posibilidad de tales daños.
+
+El usuario asume todos los riesgos derivados del uso del programa.
+
+
+--------------------------------------------------------------------------------
+ 8. TERMINACIÓN
+--------------------------------------------------------------------------------
+
+Esta licencia se extingue automáticamente si incumples cualquiera de sus
+condiciones. En ese caso deberás dejar de usar el programa y destruir todas las
+copias que tengas, incluida la de seguridad.
+
+La extinción de la licencia no te exime de las obligaciones ya contraídas ni de
+la responsabilidad por los daños causados.
+
+
+--------------------------------------------------------------------------------
+ 9. LEY APLICABLE
+--------------------------------------------------------------------------------
+
+Estas condiciones se rigen por la legislación del país de residencia del autor,
+sin perjuicio de los derechos que la ley de tu propio país te reconozca de
+forma imperativa.
+
+
+--------------------------------------------------------------------------------
+ NOTICE IN ENGLISH (non-binding summary)
+--------------------------------------------------------------------------------
+
+Copyright (c) 2026 Roger Gomez. All rights reserved.
+
+ExtractorFanarts is PROPRIETARY software, not free or open-source software.
+
+You are granted a free, non-exclusive, non-transferable permission to run and
+use the compiled program for personal, non-commercial purposes only.
+
+You may NOT copy, publish, share, upload, redistribute, sell, rent, sublicense,
+modify, translate, reverse engineer, decompile or disassemble the software, nor
+extract, reconstruct or reuse its source code, without the author's prior
+written permission.
+
+The source code is the exclusive property of the author and is not licensed.
+
+The software is provided "AS IS", without warranty of any kind, express or
+implied, and the author shall not be liable for any damages arising from its
+use. This license terminates automatically if you breach any of its terms.
+
+
+--------------------------------------------------------------------------------
+ PERMISOS ADICIONALES
+--------------------------------------------------------------------------------
+
+Para cualquier uso distinto de los concedidos en el punto 1 (uso comercial,
+redistribución, integración en otro producto, traducción, acceso al código
+fuente…), escribe al autor indicando qué necesitas:
+
+    Roger Gomez — rogergomezs2003@gmail.com
+
+================================================================================

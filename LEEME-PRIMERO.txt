@@ -126,11 +126,28 @@ SI LA APP NO PUEDE GUARDAR EN TUS CARPETAS (Imagenes, Descargas...):
   (o recompilando con compilar.bat, que ya lo corrige solo). Cierra la app
   antes de arreglarlo y vuelve a abrirla despues.
 
-4) USO RESPONSABLE
+4) LICENCIA Y CONDICIONES DE USO
+--------------------------------
+ExtractorFanarts es un programa PROPIETARIO: su autor conserva TODOS los
+derechos (Copyright (c) 2026 Roger Gomez). No es software libre.
+
+  SI puedes:  ejecutarlo y usarlo gratis, para tu archivo personal, en tus
+              equipos, y hacerte una copia de seguridad.
+  NO puedes:  copiarlo, compartirlo, subirlo a ningun sitio, venderlo,
+              modificarlo, descompilarlo ni reutilizar su codigo fuente.
+              Tampoco puedes quitar los avisos de autor de este paquete.
+
+El codigo fuente es propiedad del autor y no se licencia.
+El texto legal completo esta en el archivo LICENSE, junto al ejecutable.
+
+Puedes hacer tantas descargas como quieras: lo que no se permite es
+redistribuir el PROGRAMA (el .exe), no lo que descargues con el.
+
+5) USO RESPONSABLE
 ------------------
 Herramienta para archivo personal de contenido al que tengas acceso legitimo.
 Respeta los terminos de servicio de cada plataforma y los derechos de autor.
 Las imagenes se guardan siempre en .webp (el original no se conserva).
 
-Componentes de terceros y sus licencias: THIRD-PARTY-NOTICES.txt
+Licencia del programa: LICENSE  ·  Componentes de terceros: THIRD-PARTY-NOTICES.txt
 ========================================================================
