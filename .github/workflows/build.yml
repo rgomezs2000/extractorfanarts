@@ -113,6 +113,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Re-release limpio: si ya existe un Release para esta etiqueta (p. ej. al
+      # re-publicar la MISMA versión), se borra antes para no arrastrar adjuntos
+      # viejos ni chocar con ellos. `gh` ya viene en los runners y --yes evita
+      # la confirmación interactiva. Si no existe, el paso no hace nada.
+      - name: Eliminar un Release previo de esta etiqueta (si existe)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete "${{ github.ref_name }}" --yes
+
       - uses: actions/download-artifact@v4
         with:
           path: paquetes
@@ -136,7 +146,7 @@ jobs:
           done
 
       - name: Crear el Release con los paquetes adjuntos
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             paquetes/*.zip
@@ -146,4 +156,6 @@ jobs:
           # Una etiqueta con sufijo (p. ej. v0.1.0-beta.1) se publica como
           # pre-release: queda marcada como beta y no sustituye a la estable.
           prerelease: ${{ contains(github.ref_name, '-') }}
+          # Si quedara algún adjunto con el mismo nombre, se reemplaza.
+          overwrite_files: true
           fail_on_unmatched_files: true
