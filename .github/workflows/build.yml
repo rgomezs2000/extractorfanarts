@@ -91,12 +91,14 @@ jobs:
               "dist\ExtractorFanarts\ExtractorFanarts.exe"
           Remove-Item $pfx -Force
 
-      - name: Añadir licencia, avisos y LEEME al paquete
+      - name: Añadir licencia, avisos, LEEME y README de usuario al paquete
         shell: bash
         run: |
           cp LICENSE dist/ExtractorFanarts/ 2>/dev/null || true
           cp THIRD-PARTY-NOTICES.txt dist/ExtractorFanarts/ 2>/dev/null || true
           cp LEEME-PRIMERO.txt dist/ExtractorFanarts/ 2>/dev/null || true
+          # La guía del usuario viaja como README.md; el README técnico se queda en el repo
+          cp README-USUARIO.md dist/ExtractorFanarts/README.md 2>/dev/null || true
 
       - name: Subir artefacto
         uses: actions/upload-artifact@v4

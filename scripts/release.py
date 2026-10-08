@@ -57,6 +57,16 @@ def _copiar_avisos() -> None:
         except OSError as exc:
             print(f"[aviso] no se pudo copiar {origen.name}: {exc}")
 
+    # La guía del USUARIO viaja como README.md; el README técnico (arquitectura,
+    # scripts, cómo compilar) se queda en el repositorio y no se distribuye.
+    manual = ROOT / "README-USUARIO.md"
+    if manual.is_file():
+        try:
+            shutil.copy2(manual, PAQUETE / "README.md")
+            print("[ok] incluido en el paquete: README.md (guía del usuario)")
+        except OSError as exc:
+            print(f"[aviso] no se pudo copiar {manual.name}: {exc}")
+
 
 def _hash_sha256(archivo: Path) -> str:
     import hashlib

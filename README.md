@@ -488,6 +488,8 @@ compilar.bat                  compila el .exe (con consola de registros)
 ejecutar.bat                  ejecuta en desarrollo aplicando los ajustes locales
 crear_certificado.bat         crea un certificado autofirmado
 firmar.bat                    firma el ejecutable con signtool
+README.md                     documentación técnica del proyecto (este archivo)
+README-USUARIO.md             guía del usuario; se empaqueta como README.md en el release
 LICENSE                       licencia de uso del programa; se adjunta al paquete
 LEEME-PRIMERO.txt             guía de primeros pasos que se adjunta al paquete
 THIRD-PARTY-NOTICES.txt       licencias de los componentes redistribuidos
@@ -1001,9 +1003,10 @@ marca **«Set as a pre-release»** → adjuntar el `.zip`.
 - `scripts/release.py` **sustituye temporalmente** `config_local.py` del paquete
   por la plantilla vacía, comprime, verifica que **no haya claves** en el `.zip`,
   genera el **SHA-256** y restaura tu archivo.
-- El paquete incluye `LICENSE` (la licencia del proyecto) y
-  `THIRD-PARTY-NOTICES.txt` con las licencias de los componentes redistribuidos
-  (Qt/PySide6 LGPL v3, Pillow, httpx, curl_cffi, motores IA…).
+- El paquete incluye, junto al ejecutable: **`README.md`** (la guía del usuario,
+  tomada de [README-USUARIO.md](README-USUARIO.md)), `LEEME-PRIMERO.txt`,
+  `LICENSE` y `THIRD-PARTY-NOTICES.txt` con las licencias de los componentes
+  redistribuidos (Qt/PySide6 LGPL v3, Pillow, httpx, curl_cffi, motores IA…).
 - Tamaño del paquete de Windows: ~132 MB comprimido (Qt + motores IA).
 
 ---
