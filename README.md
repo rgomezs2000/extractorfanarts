@@ -1234,6 +1234,7 @@ restringido.
 | `scripts\setup_vendor.py` | instala las dependencias en `./vendor` **sin pip** (`--ai` motores de IA, `--only=pkg1,pkg2`) |
 | `scripts\build_exe.py` | empaqueta con PyInstaller (`--onefile`, `--consola`, `--probar`, `--firmar`) |
 | `scripts\release.py` | crea el `.zip` + `.sha256` y publica el Release (`--tag`, `--gh`, `--version`) |
+| `scripts\limpiar_release.py` | borra los adjuntos de un Release de GitHub antes de volver a publicar la misma versión (`--repo`, `--tag`) |
 | `scripts\make_icon.py` | regenera los iconos de `assets/` |
 | `scripts\hacer_certificado.py` / `.ps1` | crea un certificado autofirmado (`--simular`, `--confiar`) |
 | `scripts\pixiv_token.py` | asistente del refresh token de Pixiv (OAuth PKCE): sirve como script en desarrollo y es lo que se compila para el paquete |

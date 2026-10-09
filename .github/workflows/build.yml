@@ -126,28 +126,12 @@ jobs:
     steps:
       # Re-release limpio: se borran los adjuntos que ya tuviera el Release de esta
       # etiqueta (p. ej. de una publicación anterior de la MISMA versión, o con el
-      # nombre antiguo del proyecto). Se hace con `gh api` porque es explícito y deja
-      # su salida en el registro; `gh release delete` fallaba sin decir por qué.
+      # nombre antiguo del proyecto). Se hace con Python (biblioteca estándar) y no
+      # con `gh`, que en estos runners fallaba sin dejar rastro y acumulaba adjuntos.
       - name: Limpiar los adjuntos previos de esta etiqueta
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          echo "Repositorio: $GITHUB_REPOSITORY · etiqueta: $GITHUB_REF_NAME"
-          id="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" --jq .id 2>/dev/null || true)"
-          if [ -z "$id" ]; then
-            echo "No hay Release previo para esta etiqueta: nada que limpiar."
-            exit 0
-          fi
-          echo "Release previo id=$id · adjuntos actuales:"
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id/assets" \
-             --jq '.[] | "  \(.id)  \(.name)"' | tee /tmp/adjuntos.txt
-          while read -r aid nombre; do
-            [ -z "$aid" ] && continue
-            echo "borrando adjunto obsoleto: $nombre"
-            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$aid"
-          done < /tmp/adjuntos.txt
-          echo "Adjuntos que quedan:"
-          gh api "repos/$GITHUB_REPOSITORY/releases/$id/assets" --jq '.[] | "  \(.name)"' || true
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/limpiar_release.py
 
       - uses: actions/download-artifact@v4
         with:
