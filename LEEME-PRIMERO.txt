@@ -51,6 +51,9 @@ que registrarse y no se recogen datos.
                   "Ejecutar de todas formas". Cuando venga FIRMADO
                   digitalmente este aviso no aparece; un certificado
                   autofirmado no sirve para quitarlo)
+                  GRATIS sin aviso: instala con Scoop
+                  (scoop bucket add rgomezs2000 https://github.com/rgomezs2000/scoop-bucket
+                   scoop install imaginteca)
        macOS   : clic derecho en la aplicacion -> Abrir
                  (si se resiste: xattr -dr com.apple.quarantine Imaginteca.app)
        Linux   : chmod +x Imaginteca   y luego ejecutalo

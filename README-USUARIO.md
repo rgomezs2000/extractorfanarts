@@ -137,8 +137,9 @@ nada, no hay que registrarse y no se recogen datos.
    la carpeta `_internal` que va a su lado.
 
 4. **Ábrelo**:
-   - **Windows:** doble clic en **`Imaginteca.exe`**. Si el paquete viene **firmado
-     digitalmente**, no aparece ningún aviso. Si no lo está, la primera vez sale el
+   - **Windows:** doble clic en **`Imaginteca.exe`**. Si lo instalas con **Scoop**
+     (`scoop install imaginteca`) o el paquete viene **firmado digitalmente**, no
+     aparece ningún aviso. Si no lo está, la primera vez sale el
      aviso azul *«Windows protegió su PC»*: es normal (un certificado de firma es de
      pago y, sin él, Windows avisa de todo lo que se descarga). Pulsa **Más información
      → Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en el `.exe` →

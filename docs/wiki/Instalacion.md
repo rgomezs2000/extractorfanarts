@@ -66,7 +66,22 @@ Descomprime el `.zip` **completo** en una carpeta tuya, por ejemplo
   ./Imaginteca
   ```
 
-## 4. O instálalo con el asistente
+## 4. Sin la ventana azul (gratis)
+
+El aviso azul no se puede quitar con código: hace falta un certificado de una
+autoridad, y **no hay ninguno gratuito**. La vía **gratuita** que funciona es
+**Scoop**, que descarga el paquete sin la marca de internet que dispara SmartScreen:
+
+```powershell
+scoop bucket add rgomezs2000 https://github.com/rgomezs2000/scoop-bucket
+scoop install imaginteca      # sin aviso; se actualiza con «scoop update imaginteca»
+```
+
+También sirven **Chocolatey** y **winget** (gratis, con revisión), y con el tiempo la
+**reputación** hace que SmartScreen deje de avisar. Los detalles, en el repositorio
+([`scoop/README.md`](https://github.com/rgomezs2000/extractorfanarts/blob/main/scoop/README.md)).
+
+## 5. O instálalo con el asistente
 
 Si prefieres instalarlo como cualquier otro programa (con accesos directos y
 desinstalador), usa el **instalador** de tu sistema:
@@ -85,7 +100,7 @@ desinstalador), usa el **instalador** de tu sistema:
   Queda en `/opt/imaginteca` con el lanzador `imaginteca`, su icono y su entrada de
   menú. Se desinstala con `sudo apt remove imaginteca`.
 
-## 5. Desde la consola
+## 6. Desde la consola
 
 ```bash
 Imaginteca --selftest                 # estado del entorno → selftest.txt
@@ -98,7 +113,7 @@ Imaginteca --actualizar               # descarga, verifica e instala (limpio) y 
 conserva tus claves, borra la versión anterior, los temporales y el paquete
 descargado, y vuelve a abrir el programa (la consola se queda abierta).
 
-## 6. Primer arranque
+## 7. Primer arranque
 
 Al abrirlo por primera vez se crea la carpeta de datos:
 
@@ -113,7 +128,7 @@ si quieres, tus **claves** (`config_local.py`).
 Las imágenes se guardan en la **carpeta de Imágenes** del sistema, subcarpeta
 `Imaginteca` (la puedes cambiar con el botón **📂 Carpeta** o el atajo `Ctrl+O`).
 
-## 7. Comprueba que todo está bien
+## 8. Comprueba que todo está bien
 
 En una consola, dentro de la carpeta del programa:
 

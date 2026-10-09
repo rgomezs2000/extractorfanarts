@@ -1174,6 +1174,28 @@ pwsh -File scripts\firmar_windows.ps1 dist\Imaginteca\Imaginteca.exe
 El instalador de Inno Setup también se firma solo si hay certificado (usa `SignTool`
 por dentro), así que **el archivo que la gente ejecuta al descargar** queda firmado.
 
+### ¿Y si no hay certificado? (la vía gratis)
+
+El aviso azul **no se puede quitar** con código: solo lo hace un certificado de una
+autoridad, y **no existe ninguno gratuito** para software propietario. Un certificado
+autofirmado no sirve (no es de confianza para otros equipos).
+
+La vía **gratuita** que sí funciona es **Scoop**: descarga el paquete **sin la marca de
+internet** que dispara SmartScreen, así que el programa se abre sin ningún aviso. El
+manifiesto ya está en el repositorio (`scoop/imaginteca.json`, generado con
+`scripts\scoop\generar_manifiesto.py`) y solo falta publicarlo en un repositorio
+`scoop-bucket` de tu cuenta:
+
+```powershell
+scoop bucket add rgomezs2000 https://github.com/rgomezs2000/scoop-bucket
+scoop install imaginteca      # sin ventana azul; se actualiza con «scoop update imaginteca»
+```
+
+También valen **Chocolatey** (gratis, con moderación) y **winget** (gratis, aunque
+pueden exigir el instalador firmado), y con el tiempo la **reputación** hace que
+SmartScreen deje de avisar por sí solo. Los detalles, en
+[`scoop/README.md`](scoop/README.md).
+
 ### macOS
 
 En macOS el equivalente es un **Apple Developer ID** (99 $/año) + **notarización** de

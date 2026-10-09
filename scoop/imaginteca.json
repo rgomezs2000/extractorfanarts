@@ -1,0 +1,30 @@
+{
+    "version": "0.1.5-beta.5",
+    "description": "Imaginteca: colecciones de imágenes listas como datasets (LoRA, LyCORIS, checkpoints) o como galería",
+    "homepage": "https://github.com/rgomezs2000/extractorfanarts",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/rgomezs2000/extractorfanarts/releases/download/v0.1.5-beta.5/Imaginteca-Windows.zip",
+            "hash": "sha256:ef177f330d4f43a45a472c0f829ae2f290f219c44184774010af4f35beb2240f"
+        }
+    },
+    "extract_dir": "Imaginteca",
+    "bin": "Imaginteca.exe",
+    "shortcuts": [
+        [
+            "Imaginteca.exe",
+            "Imaginteca"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/rgomezs2000/extractorfanarts"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/rgomezs2000/extractorfanarts/releases/download/v$version/Imaginteca-Windows.zip"
+            }
+        }
+    }
+}
