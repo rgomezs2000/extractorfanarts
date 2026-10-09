@@ -10,7 +10,7 @@ dataset** para entrenar modelos.
 > nadie: se descarga con **tus credenciales**, con peticiones espaciadas y **sin
 > evadir nunca CAPTCHAs ni inicios de sesión**.
 
-**Versión actual:** `0.1.2-beta` (fase beta) · **Licencia:** propietaria (ver
+**Versión actual:** `0.1.3-beta` (fase beta) · **Licencia:** propietaria (ver
 [Licencia](Licencia))
 
 ---
@@ -19,6 +19,7 @@ dataset** para entrenar modelos.
 
 | Si quieres… | Ve a |
 |---|---|
+| Ver si tu equipo cumple lo necesario | **[Requisitos](Requisitos)** |
 | Instalarlo y abrirlo por primera vez | **[Instalación](Instalacion)** |
 | Buscar y descargar ya, en 5 minutos | **[Guía rápida](Guia-rapida)** |
 | Saber qué plataformas hay y cuáles piden claves | **[Soporte de plataformas](Plataformas)** · [redes](Redes-sociales) · [boorus](Boorus) · [fandoms](Fandoms) |

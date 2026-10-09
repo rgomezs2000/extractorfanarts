@@ -1,4 +1,5 @@
 - [🏠 Inicio](Home)
+- [✅ Requisitos](Requisitos)
 - [📥 Instalación](Instalacion)
 - [🚀 Guía rápida](Guia-rapida)
 - [🌐 Plataformas](Plataformas)

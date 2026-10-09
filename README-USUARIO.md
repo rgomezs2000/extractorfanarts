@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.2-beta (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.3-beta (fase beta)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -29,23 +29,24 @@ dataset** para entrenar modelos.
 ## Índice
 
 1. [Qué es y para qué sirve](#1-qué-es-y-para-qué-sirve)
-2. [Instalar y abrir](#2-instalar-y-abrir)
-3. [Qué hay en esta carpeta](#3-qué-hay-en-esta-carpeta)
-4. [Tus claves (opcional)](#4-tus-claves-opcional)
-5. [Buscar y descargar, paso a paso](#5-buscar-y-descargar-paso-a-paso)
-6. [Plataformas compatibles](#6-plataformas-compatibles)
-7. [La galería y el visor](#7-la-galería-y-el-visor)
-8. [Menú contextual (clic derecho)](#8-menú-contextual-clic-derecho)
-9. [Barra de herramientas, menús y atajos](#9-barra-de-herramientas-menús-y-atajos)
-10. [La ayuda dentro del programa (F1) y «Acerca de»](#10-la-ayuda-dentro-del-programa-f1-y-acerca-de)
-11. [Dónde se guarda todo](#11-dónde-se-guarda-todo)
-12. [Calidad y mejora de imagen](#12-calidad-y-mejora-de-imagen)
-13. [Preparar datasets para IA (LoRA, LyCORIS, checkpoints)](#13-preparar-datasets-para-ia-lora-lycoris-checkpoints)
-14. [Qué se filtra](#14-qué-se-filtra)
-15. [Actualizaciones](#15-actualizaciones)
-16. [Si algo va mal](#16-si-algo-va-mal)
-17. [Más información, foro y contacto](#17-más-información-foro-y-contacto)
-18. [Licencia y uso responsable](#18-licencia-y-uso-responsable)
+2. [Requisitos](#2-requisitos)
+3. [Instalar y abrir](#3-instalar-y-abrir)
+4. [Qué hay en esta carpeta](#4-qué-hay-en-esta-carpeta)
+5. [Tus claves (opcional)](#5-tus-claves-opcional)
+6. [Buscar y descargar, paso a paso](#6-buscar-y-descargar-paso-a-paso)
+7. [Plataformas compatibles](#7-plataformas-compatibles)
+8. [La galería y el visor](#8-la-galería-y-el-visor)
+9. [Menú contextual (clic derecho)](#9-menú-contextual-clic-derecho)
+10. [Barra de herramientas, menús y atajos](#10-barra-de-herramientas-menús-y-atajos)
+11. [La ayuda dentro del programa (F1) y «Acerca de»](#11-la-ayuda-dentro-del-programa-f1-y-acerca-de)
+12. [Dónde se guarda todo](#12-dónde-se-guarda-todo)
+13. [Calidad y mejora de imagen](#13-calidad-y-mejora-de-imagen)
+14. [Preparar datasets para IA (LoRA, LyCORIS, checkpoints)](#14-preparar-datasets-para-ia-lora-lycoris-checkpoints)
+15. [Qué se filtra](#15-qué-se-filtra)
+16. [Actualizaciones](#16-actualizaciones)
+17. [Si algo va mal](#17-si-algo-va-mal)
+18. [Más información, foro y contacto](#18-más-información-foro-y-contacto)
+19. [Licencia y uso responsable](#19-licencia-y-uso-responsable)
 
 ---
 
@@ -67,7 +68,38 @@ quedarse solo con licencias liberadas.
 
 ---
 
-## 2. Instalar y abrir
+## 2. Requisitos
+
+**Para usarlo** (el paquete de la release) no hay que instalar nada: **Python va
+incluido** dentro del programa.
+
+| | Mínimo | Recomendado |
+|---|---|---|
+| **Sistema** | Windows 10 · macOS 11 · cualquier Linux de escritorio | Windows 11 · macOS 13+ · Ubuntu 22.04+ |
+| **Arquitectura** | 64 bits | 64 bits nativo |
+| **Disco** | ~1,5 GB libres (el paquete ocupa 150–560 MB) | 5 GB o más para tu colección |
+| **Memoria** | 4 GB | 8 GB o más |
+| **Pantalla** | 1024×768 (la ventana funciona desde 728×695) | 1920×1080 |
+| **Conexión** | Para buscar, descargar y actualizar | Banda ancha |
+| **Claves** | **Ninguna** para empezar (fediverso, Bluesky, wikis y 12 de los 14 booros) | Las que quieras para Rule34, Gelbooru, Pixiv… |
+| **Tarjeta gráfica** | **Opcional**: solo para el **🤖 Modo IA** (Vulkan) | GPU Intel/AMD/NVIDIA con Vulkan |
+
+- **El paquete ya trae todo**: Python, las bibliotecas y los motores de IA. No hay
+  que instalar dependencias ni registrarse en ningún sitio.
+- **El 🤖 Modo IA es opcional**: si no hay GPU compatible, el programa lo dice y usa
+  el reescalado clásico (todo lo demás funciona igual).
+- **Permisos**: escritura en la carpeta del programa y en tu carpeta de imágenes. Si
+  lo pones en una carpeta protegida (`Program Files`), las actualizaciones
+  automáticas no podrán reemplazarlo: te avisa y deja el paquete descargado.
+- **Para compilarlo desde el código** (no es tu caso si usas la release): Python
+  3.11+, PyInstaller y los paquetes del proyecto en `vendor/`; el detalle está en
+  la wiki: **[Requisitos](https://github.com/rgomezs2000/extractorfanarts/wiki/Requisitos)**.
+
+> **Desde el programa:** **Ayuda → 🧩 Dependencias del sistema** comprueba el
+> intérprete de Python, los paquetes esenciales y los motores de IA, lo muestra en
+> pantalla **y en la consola**, y permite actualizarlos de una vez (ver el punto 16).
+
+## 3. Instalar y abrir
 
 **El programa no se instala**: se descomprime y se ejecuta. No hay que pagar nada,
 no hay que registrarse y no se recogen datos.
@@ -125,7 +157,7 @@ viven tus registros, tu historial y —si quieres— tus claves.
 
 ---
 
-## 3. Qué hay en esta carpeta
+## 4. Qué hay en esta carpeta
 
 | Archivo | Para qué sirve |
 |---|---|
@@ -142,7 +174,7 @@ Puedes mover la carpeta entera donde quieras, pero mantén esos archivos **junto
 
 ---
 
-## 4. Tus claves (opcional)
+## 5. Tus claves (opcional)
 
 El programa funciona **sin configurar nada** en varias plataformas. Para las que
 piden credenciales, edita el archivo **`config_local.py`** que está **junto al
@@ -194,7 +226,7 @@ iniciar sesión en Pixiv, le pegarás la dirección final (la que lleva `code=..
 
 ---
 
-## 5. Buscar y descargar, paso a paso
+## 6. Buscar y descargar, paso a paso
 
 1. **Tipo:** elige *Red social*, *Booru* o *Wiki*.
 2. **Plataforma:** el sitio concreto (la lista cambia según el tipo).
@@ -219,7 +251,7 @@ una imagen para guardar solo esa (ver más abajo).
 
 ---
 
-## 6. Plataformas compatibles
+## 7. Plataformas compatibles
 
 El detalle completo, plataforma por plataforma, está en la wiki:
 **[Soporte de plataformas](https://github.com/rgomezs2000/extractorfanarts/wiki/Plataformas)**
@@ -257,7 +289,7 @@ gratuita (y también funcionan sin ella).
   se consulta **su** servidor; o `@usuario` y rellena el campo *Instancia*. En
   Misskey, el texto se busca como su etiqueta equivalente.
 - **DeviantArt, Tumblr, X y Pinterest** necesitan que crees **tu propia app** en la
-  plataforma y pegues las credenciales en `config_local.py` (ver el punto 4).
+  plataforma y pegues las credenciales en `config_local.py` (ver el punto 5).
 - **Pixiv** necesita tu cuenta: se resuelve con el asistente `pixiv-token.exe`, y
   **el programa no guarda tu contraseña**.
 
@@ -266,7 +298,7 @@ exige app revisada y tu token), FurAffinity/Inkbunny (frágil: sin API oficial).
 
 ### 6.3 Boorus, uno por uno
 
-Los booros son la mejor fuente para un [dataset](#13-preparar-datasets-para-ia-lora-lycoris-checkpoints):
+Los booros son la mejor fuente para un [dataset](#14-preparar-datasets-para-ia-lora-lycoris-checkpoints):
 su **etiquetado** es el más completo que existe para arte. Se agrupan en **5
 familias de API** (gelbooru, danbooru, moebooru, philomena y shimmie), así que
 muchos comparten comportamiento.
@@ -367,7 +399,7 @@ Fandom también):
 
 ---
 
-## 7. La galería y el visor
+## 8. La galería y el visor
 
 - Los resultados aparecen en un **carrusel**: contador, imagen grande y una tira
   de miniaturas. Hay **una casilla por cada resultado**.
@@ -383,7 +415,7 @@ Fandom también):
 
 ---
 
-## 8. Menú contextual (clic derecho)
+## 9. Menú contextual (clic derecho)
 
 Con **clic derecho** sobre cualquier imagen (la grande, una miniatura o dentro
 del visor):
@@ -401,7 +433,7 @@ hayas pulsado Buscar**.
 
 ---
 
-## 9. Barra de herramientas, menús y atajos
+## 10. Barra de herramientas, menús y atajos
 
 Arriba tienes los accesos directos a todo lo importante, primero lo esencial y
 luego lo de apoyo:
@@ -439,7 +471,7 @@ medias.
 
 ---
 
-## 10. La ayuda dentro del programa (F1) y «Acerca de»
+## 11. La ayuda dentro del programa (F1) y «Acerca de»
 
 - **`F1`** (o **Ayuda → Ayuda**) abre esta guía **dentro del programa**: a la
   izquierda el **índice** con todas las secciones y un **buscador** para dar con la
@@ -452,7 +484,7 @@ medias.
 
 ---
 
-## 11. Dónde se guarda todo
+## 12. Dónde se guarda todo
 
 | Qué | Dónde |
 |---|---|
@@ -472,7 +504,7 @@ medias.
 
 ---
 
-## 12. Calidad y mejora de imagen
+## 13. Calidad y mejora de imagen
 
 - **Todo se guarda en `.webp`**, con la calidad que elijas en el deslizador
   (1–100). El archivo original no se conserva.
@@ -501,7 +533,7 @@ medias.
 
 ---
 
-## 13. Preparar datasets para IA (LoRA, LyCORIS, checkpoints)
+## 14. Preparar datasets para IA (LoRA, LyCORIS, checkpoints)
 
 Este programa también sirve para **preparar las imágenes con las que se entrena un
 modelo**: un **LoRA** de tu personaje, un **LyCORIS** (LoCon, LoHa) de estilo, un
@@ -534,7 +566,7 @@ iguales) · elige un tamaño objetivo (512, 768, 1024) y sé constante · el pro
 
 ---
 
-## 14. Qué se filtra
+## 15. Qué se filtra
 
 El programa aplica **siempre** unos filtros antes de mostrarte o guardarte nada, y
 te dice el motivo exacto de cada descarte:
@@ -557,7 +589,7 @@ Puedes ver y ajustar todo esto en **🛡️ Filtros**.
 
 ---
 
-## 15. Actualizaciones
+## 16. Actualizaciones
 
 Pulsa **🔄 Actualizaciones** y el programa mirará si hay una versión más nueva
 publicada. Te dirá **cuál tienes y cuál hay**, con la fecha, el peso de la descarga
@@ -581,7 +613,7 @@ más.
 
 ---
 
-## 16. Si algo va mal
+## 17. Si algo va mal
 
 | Síntoma | Qué pasa y qué hacer |
 |---|---|
@@ -602,7 +634,24 @@ pantalla. Es lo más útil que puedes adjuntar si pides ayuda.
 
 ---
 
-## 17. Más información, foro y contacto
+### 16.1 Dependencias del sistema (mantenimiento)
+
+**Ayuda → 🧩 Dependencias del sistema** muestra el estado del **intérprete de
+Python**, de los **paquetes esenciales** (comparando la versión instalada con la
+última publicada en PyPI) y de los **motores de IA**, **en pantalla y en la
+consola**.
+
+- Con el **paquete de la release** no hay nada que actualizar por separado: las
+  dependencias viajan dentro del programa (incluido Python) y se actualizan con el
+  propio **🔄 Actualizaciones**.
+- Ejecutando **desde el código**, desde ese cuadro se **actualizan de una vez**: se
+  abre una **consola propia** que espera a que el programa se cierre, actualiza los
+  paquetes, lo **vuelve a abrir** y **deja la consola abierta** con el informe. La
+  consola **no se cierra ni se reinicia**: solo se reinicia el programa.
+
+---
+
+## 18. Más información, foro y contacto
 
 La documentación ampliada y el **foro** viven en la **wiki del proyecto**:
 
@@ -630,7 +679,7 @@ Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
 
 ---
 
-## 18. Licencia y uso responsable
+## 19. Licencia y uso responsable
 
 ### Licencia del programa
 
@@ -694,5 +743,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.2-beta · fase beta: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.3-beta · fase beta: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

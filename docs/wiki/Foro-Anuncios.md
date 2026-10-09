@@ -20,6 +20,16 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.3-beta
+
+- **[Requisitos](Requisitos)**, la página nueva: qué necesitas para usarlo y qué
+  para compilarlo (y que el modo IA es opcional).
+- **Ayuda → 🧩 Dependencias del sistema**: estado de Python, de los paquetes
+  esenciales y de los motores de IA, con opción de **actualizarlos de una vez**.
+- **La consola de mantenimiento ya no se cierra**: al actualizar el programa o sus
+  dependencias se abre una consola con el informe que permanece abierta (el
+  programa sí se reinicia).
+
 ### 2026-10-09 · v0.1.2-beta
 
 - Nueva **versión 0.1.2-beta**.

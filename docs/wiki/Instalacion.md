@@ -1,5 +1,8 @@
 # Instalación
 
+> **Antes de empezar:** comprueba los **[Requisitos](Requisitos)** (sistema,
+> espacio, pantalla y el modo IA). Se tarda un minuto.
+
 **Imaginteca no se instala**: se descomprime y se ejecuta. No hay que pagar nada,
 no hay que registrarse y no se recogen datos.
 

@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
     QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QVBoxLayout, QWidget,
 )
 
-from .. import ayuda, config, updater
+from .. import ayuda, config, dependencias, updater
 from ..controllers.main_controller import MainController
 from ..services import filters as filtros
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
@@ -1251,6 +1251,12 @@ class MainWindow(QMainWindow):
         menu_ayuda = self.menuBar().addMenu("A&yuda")
         menu_ayuda.addAction(self.act_ayuda)
         menu_ayuda.addAction(self.act_actualizar)
+        # Mantenimiento: estado y actualización de Python y los paquetes esenciales
+        self.act_dependencias = QAction("🧩 Dependencias del sistema", self)
+        self.act_dependencias.setToolTip(
+            "Python, paquetes esenciales y motores de IA: estado y actualización")
+        self.act_dependencias.triggered.connect(self._comprobar_dependencias)
+        menu_ayuda.addAction(self.act_dependencias)
         menu_ayuda.addSeparator()
         # Comunidad y asistencia técnica: el foro es donde se pregunta y se comenta,
         # y también donde se hace valer la garantía del autor.
@@ -1334,6 +1340,14 @@ class MainWindow(QMainWindow):
         except Exception as exc:  # noqa: BLE001
             logger.exception("no se pudo mostrar «Acerca de»")
             QMessageBox.warning(self, "Acerca de", f"Error: {exc}")
+
+    def _comprobar_dependencias(self) -> None:
+        """Estado (y actualización) de Python, los paquetes esenciales y los motores."""
+        try:
+            _DialogoDependencias(self).exec()
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo abrir el cuadro de dependencias")
+            QMessageBox.warning(self, "Dependencias", f"Error: {exc}")
 
     # ------------------------------------------------------------------ actualizaciones
     def _buscar_actualizaciones(self) -> None:
@@ -1730,3 +1744,145 @@ def _texto_licencia() -> str:
             f"{config.AUTOR_COPYRIGHT} · Todos los derechos reservados.\n\n"
             "No se encontró el archivo LICENSE junto a la aplicación.\n"
             "El texto completo acompaña al ejecutable.\n")
+
+
+class _SenalesDependencias(QObject):
+    """Señales del trabajo de comprobación de dependencias (se emiten en otro hilo)."""
+
+    listo = Signal(dict)
+    fallo = Signal(str)
+
+
+class _TrabajoDependencias(QRunnable):
+    """Consulta Python, los paquetes esenciales y PyPI sin congelar la ventana."""
+
+    def __init__(self, senales: _SenalesDependencias, comprobar_red: bool = True):
+        super().__init__()
+        self.senales = senales
+        self._red = comprobar_red
+        self.setAutoDelete(True)
+
+    def run(self) -> None:
+        try:
+            self.senales.listo.emit(dependencias.estado(comprobar_red=self._red))
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("fallo al comprobar las dependencias")
+            self.senales.fallo.emit(str(exc))
+
+
+class _DialogoDependencias(QDialog):
+    """Python, paquetes esenciales y motores de IA: estado y actualización.
+
+    El informe se ve **en pantalla y en la consola**. Si hay novedades y el programa
+    se ejecuta desde el código, se ofrece actualizarlas: se abre un proceso con
+    **consola propia** que espera a que el programa se cierre, actualiza los
+    paquetes, vuelve a abrir el programa y **deja la consola abierta** (la consola
+    no se cierra ni se reinicia; el programa sí).
+    """
+
+    def __init__(self, padre=None):
+        super().__init__(padre)
+        self.setWindowTitle(f"Dependencias de {config.APP_NAME}")
+        self._padre = padre
+        self._datos: dict | None = None
+        self._senales = _SenalesDependencias()
+        self._senales.listo.connect(self._on_listo)
+        self._senales.fallo.connect(self._on_fallo)
+
+        diseño = QVBoxLayout(self)
+        explicacion = QLabel(
+            "Comprueba el <b>intérprete de Python</b>, los <b>paquetes esenciales</b> "
+            "(Qt/PySide6, Pillow, httpx, curl_cffi…) y los <b>motores de IA</b>.<br>"
+            "El informe se muestra aquí y también en la <b>consola</b>.")
+        explicacion.setWordWrap(True)
+        explicacion.setTextFormat(Qt.RichText)
+        diseño.addWidget(explicacion)
+
+        self.visor = QTextBrowser()
+        self.visor.setLineWrapMode(QTextBrowser.NoWrap)
+        self.visor.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+        self.visor.setMinimumSize(600, 320)
+        diseño.addWidget(self.visor, 1)
+
+        botones = QDialogButtonBox()
+        self.btn_comprobar = botones.addButton("🔄 Comprobar de nuevo",
+                                               QDialogButtonBox.ActionRole)
+        self.btn_actualizar = botones.addButton("⬆️ Actualizar dependencias",
+                                                QDialogButtonBox.ActionRole)
+        self.btn_consola = botones.addButton("🖥️ Ver en consola",
+                                             QDialogButtonBox.ActionRole)
+        botones.addButton("Cerrar", QDialogButtonBox.RejectRole)
+        botones.rejected.connect(self.reject)
+        self.btn_comprobar.clicked.connect(self.comprobar)
+        self.btn_actualizar.clicked.connect(self._actualizar)
+        self.btn_consola.clicked.connect(self._a_consola)
+        self.btn_actualizar.setEnabled(False)
+        diseño.addWidget(botones)
+
+        pantalla = self.screen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            self.resize(max(640, min(980, util.width() - 80)),
+                        max(470, min(700, util.height() - 80)))
+        self.comprobar()
+
+    def comprobar(self) -> None:
+        self.btn_comprobar.setEnabled(False)
+        self.btn_actualizar.setEnabled(False)
+        self.visor.setPlainText("Consultando las versiones instaladas y PyPI…")
+        QThreadPool.globalInstance().start(_TrabajoDependencias(self._senales, True))
+
+    def _on_listo(self, datos: dict) -> None:
+        self._datos = datos
+        self.btn_comprobar.setEnabled(True)
+        lineas = dependencias.resumen(datos)
+        self.visor.setPlainText("\n".join(lineas))
+        dependencias.escribir_en_consola(lineas)     # el informe, también en consola
+        self.btn_actualizar.setEnabled(
+            bool(datos.get("actualizables")) and not datos.get("empaquetado"))
+        if datos.get("empaquetado"):
+            self.btn_actualizar.setToolTip(
+                "Esta copia está empaquetada: sus dependencias se actualizan con "
+                "«🔄 Actualizaciones»")
+        elif not datos.get("actualizables"):
+            self.btn_actualizar.setToolTip("Todo está al día")
+
+    def _on_fallo(self, motivo: str) -> None:
+        self.btn_comprobar.setEnabled(True)
+        self.visor.setPlainText(f"No se pudieron comprobar las dependencias:\n\n{motivo}")
+
+    def _a_consola(self) -> None:
+        if self._datos is None:
+            return
+        if not dependencias.escribir_en_consola(dependencias.resumen(self._datos)):
+            QMessageBox.information(self, "Consola",
+                                    "No hay ninguna consola disponible en este sistema.")
+
+    def _actualizar(self) -> None:
+        datos = self._datos or {}
+        if datos.get("empaquetado"):
+            QMessageBox.information(
+                self, "Dependencias",
+                "Esta copia está empaquetada: las dependencias viajan dentro del\n"
+                "programa, así que se actualizan con «🔄 Actualizaciones».")
+            return
+        pendientes = ", ".join(datos.get("actualizables") or [])
+        respuesta = QMessageBox.question(
+            self, "Actualizar dependencias",
+            f"Se van a actualizar en «vendor/»:\n\n    {pendientes}\n\n"
+            "Se abrirá una CONSOLA con el proceso y el informe.\n"
+            "El programa se cerrará y se volverá a abrir solo.\n"
+            "La consola NO se cierra: se queda para que leas el resultado.\n\n¿Continuar?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if respuesta != QMessageBox.Yes:
+            return
+        try:
+            dependencias.escribir_en_consola(dependencias.resumen(datos))
+            guion = dependencias.escribir_actualizador()
+            dependencias.lanzar(guion)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo preparar la actualización de dependencias")
+            QMessageBox.critical(self, "Dependencias", f"Error: {exc}")
+            return
+        self.accept()
+        QTimer.singleShot(600, QApplication.quit)

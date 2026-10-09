@@ -28,7 +28,7 @@ registros. La actualización reemplaza **el programa**, no tus datos.
 
 Se comparan correctamente, incluidas las betas:
 
-- `0.1.2-beta` es **más nueva** que `0.1.0-beta.1`
+- `0.1.3-beta` es **más nueva** que `0.1.0-beta.1`
 - `0.1.0` (final) es **más nueva** que cualquier `0.1.0-beta.x`
 
 Las versiones **beta cuentan como versión nueva**, porque es lo que se publica por
@@ -52,12 +52,28 @@ descomprimirlo **encima** de la carpeta del programa (o en una carpeta nueva y
 copiar tu `config_local.py`) y abrirlo. Verifica el `.sha256` como se explica en
 [Instalación](Instalacion).
 
+## Dependencias y consola (mantenimiento)
+
+En **Ayuda → 🧩 Dependencias del sistema** puedes ver el estado del **intérprete de
+Python**, de los **paquetes esenciales** (Qt/PySide6, Pillow, httpx, curl_cffi…) y de
+los **motores de IA**, comparado con la **última versión publicada en PyPI**. El
+informe sale **en pantalla y en la consola**.
+
+- **Paquete de la release:** no hay nada que actualizar por separado; las
+  dependencias (Python incluido) viajan dentro y se actualizan con
+  **🔄 Actualizaciones**.
+- **Ejecutando desde el código:** desde ese cuadro se **actualizan de una vez**. Se
+  abre una **consola propia** que espera a que el programa se cierre, actualiza los
+  paquetes, **vuelve a abrir el programa** y **deja la consola abierta** con el
+  informe: la consola **no se cierra ni se reinicia**, solo se reinicia el
+  programa.
+
 ## Saber qué versión tienes
 
 - **Ayuda → Acerca de** (o el botón **ℹ️**): versión instalada, entorno y rutas.
 - `Imaginteca.exe --version` en una consola.
 - El paquete se llama `Imaginteca-Windows.zip` / `-Linux` / `-macOS`, y el Release
-  indica la etiqueta (`v0.1.2-beta`).
+  indica la etiqueta (`v0.1.3-beta`).
 
 ---
 

@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.2-beta (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.3-beta (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -982,7 +982,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.2-beta > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.3-beta > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1152,7 +1152,7 @@ verifique su descarga.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Fase beta.** Una etiqueta con sufijo (`v0.1.2-beta`) se publica
+> **Fase beta.** Una etiqueta con sufijo (`v0.1.3-beta`) se publica
 > automáticamente como **pre-release** de GitHub: queda marcada como beta, no
 > sustituye a la última versión estable y no se ofrece como descarga recomendada.
 
@@ -1163,9 +1163,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.2-beta"
+git commit -m "release v0.1.3-beta"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.2-beta
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.3-beta
 ```
 
 Resultado en unos minutos:
@@ -1174,16 +1174,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.2-beta-windows.zip
-gh release create v0.1.2-beta "dist\Imaginteca-v0.1.2-beta-windows.zip" `
-   --title "Imaginteca v0.1.2-beta" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.3-beta-windows.zip
+gh release create v0.1.3-beta "dist\Imaginteca-v0.1.3-beta-windows.zip" `
+   --title "Imaginteca v0.1.3-beta" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.2-beta` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.3-beta` (crear al publicar) →
 marca **«Set as a pre-release»** → adjuntar el `.zip`.
 
 **Notas:**

@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.3-beta — 9 de octubre de 2026
+
+**Requisitos y dependencias**
+- Página nueva **[Requisitos](Requisitos)** (en la wiki y en la ayuda del programa,
+  **antes** de Instalación): qué hace falta para usarlo, qué hace falta para
+  compilarlo y qué es opcional (el modo IA).
+- **Ayuda → 🧩 Dependencias del sistema**: comprueba el **intérprete de Python**,
+  los **paquetes esenciales** (frente a la última versión de PyPI) y los **motores
+  de IA**; el informe sale **en pantalla y en la consola** y se pueden
+  **actualizar de una vez**.
+
+**Consola de mantenimiento**
+- Al actualizar el programa **o sus dependencias** se abre una **consola propia**
+  con el proceso y el informe, y **no se cierra ni se reinicia**: el programa se
+  reinicia solo y la consola se queda para leerla.
+
+---
+
 ## v0.1.2-beta — 9 de octubre de 2026
 
 **Versión y propiedades del ejecutable**

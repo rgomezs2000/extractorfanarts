@@ -45,7 +45,7 @@ _SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
 def clave_version(texto: str) -> tuple[int, int, int, int, int]:
     """Clave comparable: (mayor, menor, parche, es_final, número de beta).
 
-    Así `0.1.2-beta > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    Así `0.1.3-beta > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
     final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
     """
     texto = (texto or "").strip().lstrip("vV")
@@ -253,20 +253,30 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
         guion = temporal / "actualizar.bat"
         guion.write_text(
             "@echo off\r\n"
-            f"title Actualizando {config.APP_NAME}\r\n"
-            "echo Esperando a que se cierre la aplicacion...\r\n"
+            "chcp 65001 >nul\r\n"
+            f"title {config.APP_NAME} - actualizacion\r\n"
+            "echo ======================================================================\r\n"
+            f"echo   {config.APP_NAME} - instalando la version nueva\r\n"
+            "echo ======================================================================\r\n"
+            "echo.\r\n"
+            "echo   Esperando a que se cierre la aplicacion...\r\n"
             ":espera\r\n"
             f'tasklist /FI "PID eq {os.getpid()}" | find "{os.getpid()}" >nul 2>&1\r\n'
             "if not errorlevel 1 (\r\n"
             "  timeout /t 1 /nobreak >nul\r\n"
             "  goto espera\r\n"
             ")\r\n"
-            f'echo Instalando la version nueva en "{destino}"...\r\n'
+            f'echo   Instalando en "{destino}"...\r\n'
             "powershell -NoProfile -ExecutionPolicy Bypass -Command "
             f"\"Expand-Archive -LiteralPath '{paquete}' -DestinationPath '{destino}' -Force\"\r\n"
-            f'echo Abriendo {config.APP_NAME}...\r\n'
+            "echo   Copiado. Abriendo la aplicacion...\r\n"
             f'start "" "{ejecutable}"\r\n'
-            'start "" cmd /c del "%~f0"\r\n',
+            "echo.\r\n"
+            "echo ======================================================================\r\n"
+            "echo   Listo. ESTA CONSOLA NO SE CIERRA NI SE REINICIA:\r\n"
+            "echo   el programa se ha reiniciado por su cuenta; dejala abierta\r\n"
+            "echo   para leer el informe y cierrala cuando quieras.\r\n"
+            "echo ======================================================================\r\n",
             encoding="utf-8",
         )
         return guion
@@ -288,13 +298,14 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
 
 
 def lanzar_actualizador(guion: Path) -> None:
-    """Arranca el script desenganchado del proceso actual."""
+    """Arranca el script en una **consola visible** que no se cierra al terminar.
+
+    Así se ve todo el proceso (espera, copia, reapertura) y el informe queda en
+    pantalla: la consola no se cierra ni se reinicia, solo el programa.
+    """
     if sys.platform.startswith("win"):
-        banderas = 0
-        for nombre in ("DETACHED_PROCESS", "CREATE_NEW_PROCESS_GROUP"):
-            banderas |= int(getattr(subprocess, nombre, 0))
-        subprocess.Popen(["cmd", "/c", str(guion)], close_fds=True,
-                         creationflags=banderas)
+        subprocess.Popen(["cmd", "/c", "start", f"{config.APP_NAME} - actualizacion",
+                          "cmd", "/k", str(guion)], close_fds=True)
     else:
         subprocess.Popen(["/bin/sh", str(guion)], close_fds=True, start_new_session=True)
 
