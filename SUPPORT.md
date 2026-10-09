@@ -19,7 +19,7 @@
 | 💬 **[Foro (en la wiki)](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** | **Asistencia técnica**, dudas de uso, ideas y anuncios |
 | 🐞 **[Fallos (en la wiki)](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** | Fallos y mejoras con seguimiento |
 | 📖 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)** | Consultar y **comentar** en las páginas |
-| 🔒 **Reporte privado** | Fallos de seguridad: pestaña **Security** del repositorio → *Report a vulnerability* |
+| 🔒 **Privado (Discord)** | Fallos de seguridad y asuntos que no deban ser públicos: **`rgomezs2010`** |
 
 ## 3. Qué incluir (hace que te ayuden a la primera)
 

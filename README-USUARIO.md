@@ -331,7 +331,7 @@ mensajes que el registro del día. Es normal y útil para ver qué está pasando
   documentación completa (también dentro del programa, con `F1`).
 - 🐞 **[Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**:
   fallos y mejoras, con seguimiento.
-- 🔒 **Algo privado** (fallos de seguridad): el **reporte privado** del repositorio (pestaña *Security*).
+- 🔒 **Algo privado** (fallos de seguridad): **Discord: `rgomezs2010`**.
 
 Todo esto está también en el menú **Ayuda** del programa (y en los botones de la
 ventana que se abre con `F1`).

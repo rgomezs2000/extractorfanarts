@@ -22,6 +22,9 @@ Para **responder** a alguien, copia su mensaje citado (`>`) o menciona su usuari
 
 > Para editar la wiki hace falta una **cuenta de GitHub** (es gratis). Es lo único
 > que se pide: ni correo, ni registro en otro sitio, ni datos personales.
+>
+> **¿No tienes cuenta, o es algo privado** (un fallo de seguridad, por ejemplo)?
+> Escribe por **Discord: `rgomezs2010`**.
 
 ## 📋 Plantilla de mensaje
 
