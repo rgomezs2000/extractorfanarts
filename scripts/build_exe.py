@@ -191,6 +191,35 @@ def _crear_plantilla(destino: Path) -> None:
         print(f"[aviso] no se pudo crear la plantilla: {exc}")
 
 
+def _copiar_documentos(destino: Path) -> None:
+    """Copia los documentos que van junto al ejecutable.
+
+    La ayuda DENTRO del programa (F1) lee el manual que está al lado del
+    ejecutable: el manual de usuario viaja como `README.md`. El flujo de release
+    hacía esta copia, pero una compilación local no, así que la ayuda mostraba el
+    texto mínimo. Ahora una compilación local queda igual de completa.
+    """
+    documentos = (
+        ("README-USUARIO.md", "README.md"),
+        ("LICENSE", "LICENSE"),
+        ("LEEME-PRIMERO.txt", "LEEME-PRIMERO.txt"),
+        ("THIRD-PARTY-NOTICES.txt", "THIRD-PARTY-NOTICES.txt"),
+    )
+    copiados = []
+    for nombre_origen, nombre_destino in documentos:
+        origen = ROOT / nombre_origen
+        if not origen.is_file():
+            continue
+        try:
+            destino.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(origen, destino / nombre_destino)
+            copiados.append(nombre_destino)
+        except OSError as exc:
+            print(f"[aviso] no se pudo copiar {nombre_origen}: {exc}")
+    if copiados:
+        print(f"[ok] documentos junto al ejecutable: {', '.join(copiados)}")
+
+
 def _copiar_config_usuario(destino: Path) -> None:
     """Copia TUS claves (app/config_local.py) junto al ejecutable para poder probarlo.
 
@@ -324,6 +353,8 @@ def main() -> int:
     _crear_plantilla(carpeta_dist)
     # Cada compilación borra dist\: se vuelven a copiar tus claves para poder probar
     _copiar_config_usuario(carpeta_dist)
+    # El manual, la licencia y los avisos: los necesita la ayuda (F1) del programa
+    _copiar_documentos(carpeta_dist)
     # Que el paquete NO quede con etiqueta de integridad baja (app en modo restringido)
     _arreglar_etiqueta_integridad(carpeta_dist)
 
