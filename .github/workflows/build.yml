@@ -174,8 +174,9 @@ jobs:
             (cd "$nombre" && zip -qry "../${nombre}.zip" Imaginteca)
           done
           # El .tar.gz portátil y el instalador de cada sistema salen a la raíz
+          # (solo los instaladores: el .iss con el que se generan no se publica)
           mv */*.tar.gz . 2>/dev/null || true
-          mv */instaladores/* . 2>/dev/null || true
+          mv */instaladores/*.exe */instaladores/*.dmg */instaladores/*.deb . 2>/dev/null || true
           ls -lh
 
       - name: Generar huellas SHA-256 (para verificar la descarga)
@@ -224,6 +225,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          esperados=$(find paquetes -maxdepth 1 -type f | wc -l)
+          # Solo lo que se publica: portátil (.zip y .tar.gz), instalador y huellas.
+          esperados=$(find paquetes -maxdepth 1 -type f \
+            \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.exe' \
+               -o -name '*.dmg' -o -name '*.deb' -o -name '*.sha256' \) | wc -l)
           echo "Adjuntos esperados: $esperados"
           python scripts/limpiar_release.py --comprobar "$esperados"
