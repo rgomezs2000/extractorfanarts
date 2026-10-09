@@ -224,6 +224,9 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
    El programa puede descargar fanarts, imagenes oficiales y paginas de comic o
    fancomic. Por defecto el contenido adulto (NSFW) NO aparece.
 
+   Si NO marcas la casilla, la busqueda y la descarga funcionan igual de bien: el
+   contenido adulto se filtra y no aparece. No hay bloqueo, solo filtro.
+
    Para verlo:
      1) Marca "Contenido adulto" en Opciones.
      2) Al pulsar Buscar o Descargar, el programa pide tu FECHA DE NACIMIENTO y

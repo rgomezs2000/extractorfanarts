@@ -9,6 +9,9 @@
   lo definen (fluidos, partes del cuerpo, atuendo explícito y sugestivo, actividades
   individuales y colectivas), **qué se puede extraer y qué no** y las condiciones de
   acceso.
+- **Sin el 🔞 marcado nada se bloquea**: Buscar y Descargar siguen funcionando y el
+  contenido adulto (`questionable`/`explicit`) se filtra; la lista negra y el bloqueo
+  de plataformas de pago se aplican siempre, marques o no el 🔞.
 - **Verificación de edad en el programa**: al marcar «🔞 Contenido adulto» y pulsar
   **Buscar** (o **Descargar**) se pide la **fecha de nacimiento** y se calcula la edad
   contra la fecha actual. Con **menos de 18 años no se busca ni se descarga nada**: se

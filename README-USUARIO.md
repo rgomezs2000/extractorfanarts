@@ -625,6 +625,13 @@ Los sitios lo clasifican con **ratings**, y el programa los respeta:
 | `questionable` | **Sugestivo**: insinuación, poca ropa, poses | **No** |
 | `explicit` | **Explícito**: actos sexuales o desnudo | **No** |
 
+**Sin el 🔞 marcado** (o si lo desmarcas), **Buscar y Descargar funcionan con total
+normalidad**: simplemente el **contenido adulto se filtra** y no aparece
+(`questionable` y `explicit` se descartan antes de mostrarse). No hay ningún bloqueo:
+la búsqueda sigue igual, solo que «limpia». Lo que **sí** se aplica siempre, marques o
+no el 🔞, es la **lista negra de contenido prohibido** y el **bloqueo de plataformas de
+pago**.
+
 **Qué lo define** (las señales que llevan una imagen al terreno adulto):
 
 | Elemento | Ejemplos | Nivel |
@@ -667,8 +674,10 @@ dice el motivo exacto de cada descarte:
   `child_porn` y todo lo que empiece por `pedo`.
 - **Plataformas de pago** (Patreon, Pixiv Fanbox, OnlyFans, Fansly, Unifans…): se
   descartan los enlaces a contenido exclusivo.
-- **Contenido adulto (🔞):** por defecto **no** aparece. Si marcas «Permitir contenido
-  adulto» en Opciones, sí (con la verificación de edad del punto 15.2).
+- **Contenido adulto (🔞):** por defecto **no** aparece: `questionable` y `explicit`
+  se filtran y la búsqueda y la descarga siguen funcionando con normalidad. Si marcas
+  «Permitir contenido adulto» en Opciones, se admiten (con la verificación de edad del
+  punto 15.2).
 - **Solo licencia liberada (⚖️):** opcional; solo procesa lo que declare
   CC0 / CC-BY / dominio público.
 - **Tu propia lista de exclusiones** (etiquetas, dominios o palabras) que puedes

@@ -38,6 +38,13 @@ explícito**. Los sitios lo clasifican con **ratings**, y el programa los respet
 | `questionable` | **Sugestivo**: insinuación, poca ropa, poses | **No** |
 | `explicit` | **Explícito**: actos sexuales o desnudo | **No** |
 
+**Sin el 🔞 marcado** (o si lo desmarcas), **Buscar y Descargar funcionan con total
+normalidad**: simplemente el **contenido adulto se filtra** y no aparece
+(`questionable` y `explicit` se descartan antes de mostrarse). No hay ningún bloqueo:
+la búsqueda sigue igual, solo que «limpia». Lo que **sí** se aplica siempre, marques o
+no el 🔞, es la **lista negra de contenido prohibido** y el **bloqueo de plataformas de
+pago**.
+
 ### Alcance: qué elementos lo definen
 
 | Elemento | Ejemplos | Nivel habitual |
@@ -56,7 +63,7 @@ manera y suelen caer en `questionable` o `explicit`.
 
 | | |
 |---|---|
-| **Sí** | Lo que la plataforma sirve **públicamente** y pasa los filtros. Con el 🔞 marcado se admiten `questionable` y `explicit` |
+| **Sí** | Lo que la plataforma sirve **públicamente** y pasa los filtros. Con el 🔞 marcado se admiten `questionable` y `explicit`; **sin marcarlo, la búsqueda y la descarga funcionan igual y esas dos categorías se filtran** |
 | **No, nunca** | Contenido con **menores**: la lista negra lo bloquea siempre (etiquetas `childporn`, `child_porn` y todo lo que empiece por `pedo`), marques lo que marques |
 | **No, nunca** | Material de **pago o exclusivo**, y lo que la API no entregue |
 | **Tampoco** | Contenido **ilegal** o no consentido: la lista negra se aplica **aunque** tengas el 🔞 activado |
