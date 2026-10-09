@@ -1415,12 +1415,20 @@ texto (documentación + foro + las barras `_Sidebar` y `_Footer`).
 ```powershell
 python scripts\publicar_wiki.py --comprobar     # ver qué haría, sin publicar
 python scripts\publicar_wiki.py                 # publicar en la wiki
+python scripts\publicar_wiki.py --esperar       # espera a que exista y publica sola
 ```
 
 La wiki de GitHub es un repositorio aparte (`<repo>.wiki.git`). **La primera vez**
-hay que activarla y crear una página desde la web (GitHub crea el repositorio de la
-wiki con esa primera página); después el script hace el resto. Si todavía no existe,
-el script lo detecta y explica los tres pasos.
+hay que activarla en **Settings → Features** y **guardar una página desde la web**
+(GitHub no crea el repositorio de la wiki hasta entonces, y no se puede hacer por
+git: un `git push` responde `Repository not found`); después el script hace el
+resto. Con `--esperar` el script se queda esperando y publica solo en cuanto
+guardes esa primera página.
+
+> **Protección del foro:** la documentación se actualiza desde `docs/wiki/` (se
+> sobrescribe), pero las páginas del **foro** **no se sobrescriben** si ya existen,
+> porque pueden tener mensajes de usuarios. Para forzarlas existe `--forzar`, y
+> para retirar páginas que ya no estén en `docs/wiki/`, `--limpiar-sobrantes`.
 
 ### 18.3 Documentos de apoyo
 
