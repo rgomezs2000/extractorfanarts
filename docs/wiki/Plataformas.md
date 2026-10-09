@@ -1,59 +1,66 @@
-# Plataformas
+# 🧩 Soporte de plataformas
 
-Imaginteca reúne **8 redes sociales**, **14 booros**, **5 familias de booru** y
-**wikis de fandom**, todo detrás de la misma ventana.
+Todo lo que Imaginteca puede consultar, **una por una**, con lo que hace falta en
+cada caso. Hay tres familias de fuentes:
 
-## Redes sociales (8)
+| Familia | Cuántas | Página |
+|---|---|---|
+| 🌐 **Redes sociales** | **8** integradas | **[Redes sociales](Redes-sociales)** |
+| 🧩 **Boorus** | **14** integrados (en 5 familias de API) | **[Boorus](Boorus)** |
+| 📚 **Fandoms y wikis** | **Fandom.com y cualquier wiki MediaWiki** | **[Fandoms](Fandoms)** |
 
-| Plataforma | ¿Clave? |
+## Qué significa «compatible»
+
+Una plataforma integrada puede hacer, como mínimo, **buscar y descargar**: le
+escribes un usuario, una etiqueta o un fandom y el programa te devuelve resultados
+con su original para guardarlo. Lo que cambia entre plataformas es:
+
+| | Qué quiere decir |
 |---|---|
-| **Fediverso** (cualquier instancia de Mastodon, Misskey o CherryPick; detecta el software solo) | No |
-| **Bluesky** | No |
-| **DeviantArt** | Sí (`DEVIANTART_CLIENT_ID` + `DEVIANTART_CLIENT_SECRET`) |
-| **Tumblr** | Sí (`TUMBLR_API_KEY`) |
-| **Pixiv** (API oficial con tu cuenta) | Sí (`PIXIV_REFRESH_TOKEN`, con el asistente) |
-| **X / Twitter** (API v2) | Sí, y es de **pago** (`X_BEARER_TOKEN`) |
-| **Pinterest** (API v5, OAuth propio) | Sí (`PINTEREST_ACCESS_TOKEN`, app aprobada) |
-| **Newgrounds** | No |
+| 🔑 **Claves** | Si necesita credenciales tuyas (gratuitas o de pago) para consultar su API |
+| 🎯 **Qué se busca** | Etiquetas (boors), usuario/hashtag (redes) o franquicia/personaje (wikis) |
+| ⚖️ **Qué se puede descargar** | Algunas solo entregan el original si el artista lo permite |
+| 🐢 **Límites** | Peticiones por minuto, resultados por página, búsquedas restringidas sin clave |
 
-## Boores (14)
+**Se aplican siempre los filtros** (contenido prohibido, plataformas de pago,
+contenido adulto y licencias): ver **[Qué se filtra](Claves-y-configuracion)**.
+El programa **espacia las peticiones a propósito** y **nunca** evade CAPTCHAs,
+inicios de sesión ni bloqueos.
 
-Safebooru · Gelbooru · Rule34.xxx · The Big ImageBoard · Xbooru · Hypnohub ·
-Danbooru · Safebooru (Donmai) · Yande.re · Konachan · Konachan (SFW) ·
+## Resumen de un vistazo
+
+**Redes sociales (8):** Fediverso (Mastodon / Misskey / CherryPick) · Bluesky ·
+DeviantArt · Tumblr · Pixiv · X (Twitter) · Pinterest · Newgrounds
+
+**Boorus (14):** Safebooru · Gelbooru · Rule34.xxx · The Big ImageBoard · Xbooru ·
+Hypnohub · Danbooru · Safebooru (Donmai) · Yande.re · Konachan · Konachan (SFW) ·
 Derpibooru · ATF Booru · Rule34 Paheal
 
-| Booru | ¿Clave? |
-|---|---|
-| Safebooru, Danbooru, Konachan (SFW), Yande.re, Derpibooru, ATF Booru… | No |
-| **Rule34.xxx** | Sí (`RULE34_API_KEY` + `RULE34_USER_ID`) |
-| **Gelbooru** | Sí (`GELBOORU_API_KEY` + `GELBOORU_USER_ID`) |
+**Wikis:** cualquier wiki de **Fandom.com** y cualquier **MediaWiki** (por
+franquicia, personaje o concepto).
 
-Los booros también se pueden consultar por **familia de API**: `gelbooru`,
-`danbooru`, `moebooru`, `philomena` y `shimmie`.
+## Sin configurar nada
 
-## Wikis (1 tipo)
+Funcionan **sin ninguna clave**: Fediverso, Bluesky, Newgrounds, todas las wikis y
+**12 de los 14 booros**. Solo piden credenciales (gratuitas) **Gelbooru** y
+**Rule34.xxx**; y son opcionales: sin ellas se consultan igual, con menos
+resultados por página.
 
-**Fandom.com** y cualquier wiki MediaWiki: búsqueda por **franquicia**,
-**personaje** y/o **concepto**. No piden clave.
+## Las que vendrán
 
----
+No hay fechas: cada candidata depende de que su API lo permita **y** de respetar
+sus condiciones. Están estudiadas y ordenadas por facilidad, en cada página:
 
-## Notas que ahorran tiempo
+- **[Redes sociales · próximamente](Redes-sociales#próximamente)**: Reddit,
+  ArtStation, Instagram/Threads, FurAffinity…
+- **[Boorus · próximamente](Boorus#próximamente)**: e621, Rule34.us, Realbooru,
+  Sakugabooru, Zerochan…
 
-- **Sin claves funcionan:** fediverso, Bluesky, wikis, Newgrounds y la mayoría de
-  booros públicos. Puedes empezar a usarlo sin configurar nada.
-- **Rule34.xxx y Rule34 Paheal** son casi todo contenido adulto: si no marcas
-  **Permitir contenido adulto** en Opciones verás **0 resultados** aunque la
-  conexión funcione perfectamente.
-- **Cloudflare** (por ejemplo en Rule34.xxx) puede pedir un CAPTCHA: ábrelo en tu
-  navegador, resuélvelo y copia en `config_local.py` la cookie `cf_clearance` y tu
-  `User-Agent`. El programa **nunca** evade CAPTCHAs.
-- **Se espacian las peticiones a propósito** (cortesía con los sitios): con muchos
-  hashtags o palabras clave, la búsqueda tarda más. Es normal y deliberado.
-- **Cada plataforma guarda en su propia subcarpeta** dentro de la carpeta de
-  salida.
+> **¿Falta la tuya?** Dilo en el **[foro · Plataformas y sitios](Foro-Plataformas)**:
+> las peticiones con más interés son las que se estudian primero.
 
 ---
 
-**Siguiente:** [Claves y configuración](Claves-y-configuracion) ·
-**¿Algo no responde?** [Problemas frecuentes](Problemas-frecuentes)
+**[Redes sociales](Redes-sociales)** · **[Boorus](Boorus)** ·
+**[Fandoms](Fandoms)** · **[Claves y configuración](Claves-y-configuracion)** ·
+**[Guía rápida](Guia-rapida)**

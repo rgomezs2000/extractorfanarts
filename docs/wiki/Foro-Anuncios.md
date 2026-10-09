@@ -26,6 +26,10 @@ plataformas que se caen y arreglos.
   sin nombre propio, sin correo y sin el repositorio.
 - **Nueva ventana de licencia** dentro del programa («📜 Ver licencia completa»).
 - El autor pasa a ser **InfoArte** en la documentación y en la licencia.
+- **Soporte de plataformas documentado**: [redes sociales](Redes-sociales),
+  [boorus](Boorus) y [fandoms](Fandoms) **uno por uno**, con lo que busca cada una,
+  sus claves, sus límites y las que vendrán. También en la ayuda del programa
+  (`F1`) y resumido en las [preguntas frecuentes](Preguntas-frecuentes).
 
 ### 2026-10-09 · v0.1.0-beta.3
 

@@ -27,6 +27,41 @@ En español.
 Sí: técnicamente es un archivador de imágenes. Las fuentes integradas son arte y
 fanart de esas plataformas.
 
+## Sobre las plataformas
+
+> El detalle de cada una (qué busca, qué claves pide y qué límites tiene) está en
+> **[Soporte de plataformas](Plataformas)**.
+
+**¿Qué redes sociales son compatibles?**
+Estas **8**: **Fediverso** (cualquier servidor de Mastodon, Misskey o CherryPick),
+**Bluesky**, **DeviantArt**, **Tumblr**, **Pixiv**, **X (Twitter)**,
+**Pinterest** y **Newgrounds**. Sin claves funcionan el fediverso, Bluesky y
+Newgrounds; las demás piden credenciales tuyas (X, además, de pago).
+→ **[Ver las redes una por una](Redes-sociales)** · *Próximamente: Reddit,
+ArtStation, Instagram/Threads, FurAffinity.*
+
+**¿Qué boorus son compatibles?**
+Estos **14**: **Safebooru**, **Gelbooru**, **Rule34.xxx**, **The Big ImageBoard**,
+**Xbooru**, **Hypnohub**, **Danbooru**, **Safebooru (Donmai)**, **Yande.re**,
+**Konachan**, **Konachan (SFW)**, **Derpibooru**, **ATF Booru** y **Rule34
+Paheal**. **12 no piden nada**; solo Gelbooru y Rule34.xxx aceptan una clave
+gratuita (y funcionan igual sin ella).
+→ **[Ver los boorus uno por uno](Boorus)** · *Próximamente: e621, Rule34.us,
+Realbooru, Sakugabooru, Zerochan.*
+
+**¿Qué fandoms son compatibles?**
+**Todos los que estén en Fandom.com**, además de **cualquier wiki MediaWiki** (por
+su URL): anime y manga, videojuegos, animación occidental, comics y superhéroes,
+cine, TV, libros, música… No hay lista cerrada: se busca por **franquicia**,
+**personaje** o **concepto**, y las imágenes salen de la propia wiki. En la página
+tienes los fandoms más buscados por categoría, con lo que encuentras en cada uno.
+→ **[Ver fandoms y wikis](Fandoms)**
+
+**¿Y si la plataforma que quiero no está?**
+Pídela en el **[foro · Plataformas y sitios](Foro-Plataformas)**: las peticiones
+con más interés se estudian primero, y las de familias ya soportadas (más booros
+Gelbooru, Danbooru o Moebooru) son las más rápidas de añadir.
+
 ## Sobre el uso y lo legal
 
 **¿Es legal?**

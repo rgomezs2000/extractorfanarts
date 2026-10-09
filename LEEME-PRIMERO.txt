@@ -185,6 +185,10 @@ Toda la documentacion ampliada y el FORO estan en la wiki del proyecto:
     https://github.com/rgomezs2000/extractorfanarts/wiki
 
   Wiki .................... guia ampliada, instalacion, claves, calidad, datasets
+  Plataformas ............. cada red social, cada booru y los fandoms, uno por uno
+    Redes sociales ........ https://github.com/rgomezs2000/extractorfanarts/wiki/Redes-sociales
+    Boorus ................ https://github.com/rgomezs2000/extractorfanarts/wiki/Boorus
+    Fandoms y wikis ....... https://github.com/rgomezs2000/extractorfanarts/wiki/Fandoms
   Foro - Soporte tecnico .. dudas de uso y asistencia tecnica
   Foro - Fallos ........... algo no funciona como deberia
   Foro - Ideas ............ propuestas y mejoras

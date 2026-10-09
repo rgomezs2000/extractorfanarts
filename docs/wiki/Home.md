@@ -21,7 +21,7 @@ dataset** para entrenar modelos.
 |---|---|
 | Instalarlo y abrirlo por primera vez | **[Instalación](Instalacion)** |
 | Buscar y descargar ya, en 5 minutos | **[Guía rápida](Guia-rapida)** |
-| Saber qué plataformas hay y cuáles piden claves | **[Plataformas](Plataformas)** |
+| Saber qué plataformas hay y cuáles piden claves | **[Soporte de plataformas](Plataformas)** · [redes](Redes-sociales) · [boorus](Boorus) · [fandoms](Fandoms) |
 | Poner tus claves (Rule34, Gelbooru, Pixiv…) | **[Claves y configuración](Claves-y-configuracion)** |
 | Entender el formato, la calidad y la mejora con IA | **[Calidad y mejora](Calidad-y-mejora)** |
 | Preparar un dataset para LoRA / LyCORIS / checkpoint | **[Datasets para IA](Datasets-IA)** |

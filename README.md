@@ -241,6 +241,12 @@ y se añaden sin programar nada: ver [§10.4](#104-añadir-o-cambiar-un-booru).
 **Sin claves:** Fediverso, Bluesky, Safebooru, Danbooru, wikis y la mayoría de
 boorus públicos.
 
+**El detalle de cada plataforma** —qué busca, qué claves pide, qué límites tiene y
+cuáles vendrán— está documentado para el usuario en la wiki:
+[Plataformas](https://github.com/rgomezs2000/extractorfanarts/wiki/Plataformas), [Redes sociales](https://github.com/rgomezs2000/extractorfanarts/wiki/Redes-sociales),
+[Boorus](https://github.com/rgomezs2000/extractorfanarts/wiki/Boorus) y [Fandoms](https://github.com/rgomezs2000/extractorfanarts/wiki/Fandoms). Esas páginas se editan en `docs/wiki/`
+y se publican con `scripts\publicar_wiki.py`.
+
 **Interfaz:** el programa lleva una **barra de herramientas** con las funciones
 esenciales y las de apoyo, menús **Archivo** y **Ayuda**, **ayuda integrada con
 `F1`** (el manual completo, con índice, dentro de la ventana), un cuadro **Acerca

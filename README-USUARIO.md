@@ -33,7 +33,7 @@ dataset** para entrenar modelos.
 3. [Qué hay en esta carpeta](#3-qué-hay-en-esta-carpeta)
 4. [Tus claves (opcional)](#4-tus-claves-opcional)
 5. [Buscar y descargar, paso a paso](#5-buscar-y-descargar-paso-a-paso)
-6. [Plataformas disponibles](#6-plataformas-disponibles)
+6. [Plataformas compatibles](#6-plataformas-compatibles)
 7. [La galería y el visor](#7-la-galería-y-el-visor)
 8. [Menú contextual (clic derecho)](#8-menú-contextual-clic-derecho)
 9. [Barra de herramientas, menús y atajos](#9-barra-de-herramientas-menús-y-atajos)
@@ -219,18 +219,125 @@ una imagen para guardar solo esa (ver más abajo).
 
 ---
 
-## 6. Plataformas disponibles
+## 6. Plataformas compatibles
 
-| Tipo | Plataformas |
+El detalle completo, plataforma por plataforma, está en la wiki:
+**[Soporte de plataformas](https://github.com/rgomezs2000/extractorfanarts/wiki/Plataformas)**
+([redes](https://github.com/rgomezs2000/extractorfanarts/wiki/Redes-sociales) ·
+[boorus](https://github.com/rgomezs2000/extractorfanarts/wiki/Boorus) ·
+[fandoms](https://github.com/rgomezs2000/extractorfanarts/wiki/Fandoms)). Aquí
+tienes el resumen y lo esencial de cada una.
+
+### 6.1 ¿Qué es compatible? (resumen)
+
+| Familia | Cuántas | Cuáles |
+|---|---|---|
+| 🌐 **Redes sociales** | **8** | Fediverso, Bluesky, DeviantArt, Tumblr, Pixiv, X (Twitter), Pinterest, Newgrounds |
+| 🧩 **Boorus** | **14** (en 5 familias de API) | Safebooru, Gelbooru, Rule34.xxx, The Big ImageBoard, Xbooru, Hypnohub, Danbooru, Safebooru (Donmai), Yande.re, Konachan, Konachan (SFW), Derpibooru, ATF Booru, Rule34 Paheal |
+| 📚 **Fandoms y wikis** | **todas** | Cualquier wiki de **Fandom.com** y cualquier **MediaWiki** (por franquicia, personaje o concepto) |
+
+**Sin configurar nada** funcionan: Fediverso, Bluesky, Newgrounds, todas las wikis
+y **12 de los 14 booros**. Solo **Gelbooru** y **Rule34.xxx** aceptan una clave
+gratuita (y también funcionan sin ella).
+
+### 6.2 Redes sociales, una por una
+
+| Red | Qué se busca | 🔑 Claves | Notas |
+|---|---|---|---|
+| **Fediverso** (Mastodon / Misskey / CherryPick) | `@usuario`, `@usuario@servidor`, `#hashtags`, palabras | No | Cualquier instancia: detecta el software solo |
+| **Bluesky** | palabras clave y `#hashtags` | No | API pública (atproto) |
+| **DeviantArt** | palabras clave + **licencia** | Sí (app propia, gratis) | Permite filtrar por licencia |
+| **Tumblr** | etiquetas de post | Sí (consumer key, gratis) | Solo publicaciones públicas |
+| **Pixiv** | obras de un autor, etiquetas | Sí (tu cuenta) | También animaciones *ugoira* |
+| **X / Twitter** | palabras y `#hashtags` | Sí (**de pago**) | No hay plan gratuito |
+| **Pinterest** | pines y tableros | Sí (app aprobada) | Solo contenido al que tengas acceso |
+| **Newgrounds** | arte público del sitio | No | La más frágil ante cambios del sitio |
+
+- **Fediverso:** escribe `@usuario@servidor` (por ejemplo `@alguien@baraag.net`) y
+  se consulta **su** servidor; o `@usuario` y rellena el campo *Instancia*. En
+  Misskey, el texto se busca como su etiqueta equivalente.
+- **DeviantArt, Tumblr, X y Pinterest** necesitan que crees **tu propia app** en la
+  plataforma y pegues las credenciales en `config_local.py` (ver el punto 4).
+- **Pixiv** necesita tu cuenta: se resuelve con el asistente `pixiv-token.exe`, y
+  **el programa no guarda tu contraseña**.
+
+**Próximamente:** Reddit (viable), ArtStation (viable), Instagram/Threads (difícil:
+exige app revisada y tu token), FurAffinity/Inkbunny (frágil: sin API oficial).
+
+### 6.3 Boorus, uno por uno
+
+Los booros son la mejor fuente para un [dataset](#13-preparar-datasets-para-ia-lora-lycoris-checkpoints):
+su **etiquetado** es el más completo que existe para arte. Se agrupan en **5
+familias de API** (gelbooru, danbooru, moebooru, philomena y shimmie), así que
+muchos comparten comportamiento.
+
+| Booru | Familia | 🔑 Claves | De qué va |
+|---|---|---|---|
+| **Safebooru** | Gelbooru | No | Solo contenido **SFW**; ideal para empezar |
+| **Gelbooru** | Gelbooru | Gratis (opcional) | Enorme y variado, con `rating:` para filtrar |
+| **Rule34.xxx** | Gelbooru | Gratis (opcional) | **Adulto** casi al 100 % |
+| **The Big ImageBoard** | Gelbooru | No | Generalista y ordenado |
+| **Xbooru** | Gelbooru | No | **Adulto**, con mucho arte *furry* |
+| **Hypnohub** | Gelbooru | No | **Adulto**, temática concreta |
+| **Danbooru** | Danbooru | No | **El mejor etiquetado para anime/fanart**; sin clave, **2 etiquetas** por búsqueda |
+| **Safebooru (Donmai)** | Danbooru | No | La parte **SFW** de Danbooru, mismo etiquetado |
+| **Yande.re** | Moebooru | No | Alta resolución; mezcla SFW y adulto |
+| **Konachan** | Moebooru | No | Fondos y arte en gran tamaño |
+| **Konachan (SFW)** | Moebooru | No | El mismo sitio, solo **SFW** |
+| **Derpibooru** | Philomena | No | **My Little Pony** y su comunidad |
+| **ATF Booru** | Danbooru | No | **Adulto** (se aplican los filtros de contenido prohibido) |
+| **Rule34 Paheal** | Shimmie | No | **Adulto** |
+
+- **Cómo buscar:** etiquetas separadas por espacios (`lola_loud 1girl solo`),
+  excluir con guion (`-comic -text`) y operadores del sitio (`rating:general`,
+  `score:>10`, `order:score`).
+- **Aviso adulto:** en Rule34.xxx, Rule34 Paheal, Xbooru, Hypnohub y ATF Booru casi
+  todo es adulto: sin marcar **«Permitir contenido adulto»** verás **0 resultados**.
+
+**Próximamente:** e621 (viable), Rule34.us y Realbooru (familia Gelbooru),
+Sakugabooru (familia Moebooru), Zerochan (sin API pública). Además, **cualquier
+booru de una familia soportada se puede añadir ya** desde `config_local.py`.
+
+### 6.4 Fandoms y wikis
+
+No hay lista cerrada: se conecta a **cualquier wiki de Fandom.com** y a cualquier
+**MediaWiki**. Son cientos de miles de wikis.
+
+| | |
 |---|---|
-| **Redes sociales (8)** | Fediverso (**cualquier** servidor de Mastodon, Misskey o CherryPick), Bluesky, DeviantArt, Tumblr, Pixiv, X (Twitter), Pinterest, Newgrounds |
-| **Boorus (14)** | Safebooru, Gelbooru, Rule34.xxx, The Big ImageBoard, Xbooru, Hypnohub, Danbooru, Safebooru (Donmai), Yande.re, Konachan, Konachan (SFW), Derpibooru, ATF Booru y Rule34 Paheal |
-| **Familias de booru (5)** | `gelbooru`, `danbooru`, `moebooru`, `philomena` y `shimmie` |
-| **Wikis (1 tipo)** | Fandom.com y cualquier wiki MediaWiki (búsqueda por franquicia, personaje y concepto) |
+| **Qué se busca** | Por **franquicia**, por **personaje** y/o por **concepto** (`fanart`, `anime`, `wallpaper`) |
+| **De dónde salen las imágenes** | De las imágenes que la propia wiki tiene subidas |
+| **Claves** | **Ninguna** (API pública de MediaWiki) |
+| **Cómo se elige la wiki** | Por el nombre del fandom o pegando directamente su **URL** |
 
-**En el fediverso** no hace falta elegir servidor: escribe `@usuario@servidor`
-(por ejemplo `@alguien@baraag.net`) y se consulta su servidor; o escribe
-`@usuario` y rellena el campo *Instancia*.
+**Fandoms más buscados, por categoría** (todos funcionan, y cualquier otro de
+Fandom también):
+
+- **Anime y manga:** Naruto, One Piece, Dragon Ball, My Hero Academia, Jujutsu
+  Kaisen, Demon Slayer, Attack on Titan, Bleach, Fairy Tail, Black Clover, Sailor
+  Moon, Cardcaptor Sakura, Inuyasha, Tokyo Ghoul, Sword Art Online, Hunter x
+  Hunter, JoJo's Bizarre Adventure, Chainsaw Man, Spy x Family, One Punch Man,
+  Evangelion, Dandadan.
+- **Videojuegos:** Pokémon, Minecraft, The Legend of Zelda, Genshin Impact, Honkai:
+  Star Rail, League of Legends, Valorant, Overwatch, Fortnite, The Elder Scrolls /
+  Skyrim, Dark Souls, Elden Ring, Hollow Knight, Undertale, Stardew Valley, Five
+  Nights at Freddy's, Sonic, Super Mario, Resident Evil, Silent Hill, Animal
+  Crossing.
+- **Animación occidental:** My Little Pony, Steven Universe, Gravity Falls,
+  Adventure Time, The Owl House, Star vs. the Forces of Evil, Rick and Morty, Los
+  Simpson, South Park, Avatar: la leyenda de Aang, She-Ra, Hazbin Hotel, Helluva
+  Boss, Miraculous, Bluey, Kim Possible, Danny Phantom.
+- **Cómics y superhéroes:** Marvel, DC, Spider-Man, Batman, X-Men, The Boys,
+  Invincible.
+- **Cine, TV y libros:** Star Wars, Harry Potter, El Señor de los Anillos, Juego de
+  Tronos, Stranger Things, Marvel Cinematic Universe, The Witcher, Dune, Percy
+  Jackson.
+- **Música, mascotas y otros:** Vocaloid / Hatsune Miku, K-pop, Sanrio, Warrior
+  Cats, furry, Creepypasta, SCP Foundation.
+
+> **Consejo:** si conoces la wiki, pega su URL (por ejemplo
+> `https://naruto.fandom.com/es`) y busca ahí directamente. La calidad depende de
+> la wiki: algunas tienen arte en alta resolución y otras casi solo texto.
 
 ---
 

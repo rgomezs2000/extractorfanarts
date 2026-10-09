@@ -13,6 +13,16 @@
 - **Nueva ventana de licencia**: «📜 Ver licencia completa» abre el texto entero
   dentro del programa (con botón para copiarlo), en vez de remitir a un archivo.
 
+**Soporte de plataformas**
+- Páginas nuevas en la wiki: **[Soporte de plataformas](Plataformas)**,
+  **[Redes sociales](Redes-sociales)**, **[Boorus](Boorus)** y
+  **[Fandoms](Fandoms)**: cada plataforma explicada —qué busca, qué claves pide,
+  qué límites tiene y de qué va— y **las que vendrán**.
+- La **guía del usuario** (y por tanto la ayuda `F1` del programa) incluye el mismo
+  detalle, plataforma por plataforma.
+- Las **[preguntas frecuentes](Preguntas-frecuentes)** responden de un vistazo qué
+  **redes**, qué **boorus** y qué **fandoms** son compatibles.
+
 ---
 
 ## v0.1.0-beta.3 — 9 de octubre de 2026
