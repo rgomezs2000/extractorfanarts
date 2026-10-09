@@ -19,8 +19,8 @@
 **Licencia**
 - **Licencia v2**: la **garantía corre por cuenta del autor** (se corrigen sin
   coste los defectos reportados, se atienden los avisos y se responde de los daños
-  directos causados por un defecto del programa). Se puede hacer valer por el foro,
-  el foro de la wiki o por contacto directo.
+  directos causados por un defecto del programa). Se puede hacer valer por el foro
+  de la wiki.
 
 **Nombre del proyecto**
 - El proyecto pasa a llamarse **Imaginteca** (antes «ExtractorFanarts»): imágenes,

@@ -331,7 +331,7 @@ mensajes que el registro del día. Es normal y útil para ver qué está pasando
   documentación completa (también dentro del programa, con `F1`).
 - 🐞 **[Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**:
   fallos y mejoras, con seguimiento.
-- ✉️ **rogergomezs2003@gmail.com**: contacto directo.
+- 🔒 **Algo privado** (fallos de seguridad): el **reporte privado** del repositorio (pestaña *Security*).
 
 Todo esto está también en el menú **Ayuda** del programa (y en los botones de la
 ventana que se abre con `F1`).
@@ -481,7 +481,7 @@ nada.
 El texto legal completo está en el archivo **`LICENSE`** que acompaña al
 ejecutable (**licencia v2, revisada el 9 de octubre de 2026**). Para cualquier
 permiso distinto (uso comercial, redistribución, integración en otro producto…),
-escribe al autor: **rogergomezs2003@gmail.com**.
+pídelo por escrito al autor **desde el foro de la wiki**, indicando qué necesitas.
 
 ### Garantía: responde el autor
 
@@ -495,8 +495,8 @@ corre por cuenta del autor**.
 - **Se atienden los avisos.** Deja tu **comentario, contacto o reporte** donde
   prefieras: el **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**,
   la **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**, las
-  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** o el
-  contacto directo (**rogergomezs2003@gmail.com**). Incluye el **registro del día**
+  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**.
+  Incluye el **registro del día**
   (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
   Linux/macOS) y el archivo **`selftest.txt`**. Se contesta y se trabaja en ello en
   un plazo razonable, sin coste alguno.

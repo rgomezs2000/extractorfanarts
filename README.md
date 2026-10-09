@@ -1357,11 +1357,11 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
   documentación dice, a **corregir sin coste los defectos** que se le reporten y
   publicar la versión corregida, a **atender los avisos** y a responder de los
   **daños directos** que un defecto del programa cause en tus archivos o en tu
-  equipo. **Para hacerla valer:** deja tu **comentario, contacto o reporte en la
-  [wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) o en el
-  [foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** —o en las
-  [fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos), o por
-  contacto directo— incluyendo el registro del día
+  equipo. **Para hacerla valer:** deja tu **comentario, contacto o reporte en el
+  [foro de la wiki](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**
+  ([soporte](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Soporte-tecnico)
+  o [fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)),
+  incluyendo el registro del día
   (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
   Linux/macOS) y `selftest.txt`; se contesta y se trabaja en ello en un plazo
   razonable, sin coste. **No cubre** el

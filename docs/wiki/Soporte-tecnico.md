@@ -11,7 +11,7 @@ coste** y se publica la versión corregida.
 | 💬 **Foro (en la wiki)** | Dudas de uso, cómo hacer algo, preguntas abiertas y **asistencia técnica** | [Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro) |
 | 🐞 **Fallos (en la wiki)** | Fallos con seguimiento y peticiones de mejora | [Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos) |
 | 📖 **Wiki** | Consultar antes de preguntar | [Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) |
-| ✉️ **Contacto directo** | Lo que prefieras tratar en privado | `rogergomezs2003@gmail.com` |
+| 🔒 **Reporte privado** | Fallos de seguridad ([pestaña Security](https://github.com/rgomezs2000/extractorfanarts/security/advisories/new)) | Solo lo ve el autor |
 
 Puedes **comentar en el foro o en la wiki**: todo se lee y se
 contesta.

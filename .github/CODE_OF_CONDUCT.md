@@ -38,8 +38,8 @@ Imaginteca. Participar implica aceptar estas normas.
 - El autor (o quien delegue) puede **editar, cerrar o borrar** cualquier contenido
   que incumpla estas normas, y **bloquear** a quien las incumpla de forma grave o
   repetida.
-- Si crees que se ha actuado injustamente, escríbelo en privado a
-  **rogergomezs2003@gmail.com**.
+- Si crees que se ha actuado injustamente, dilo en el foro de la wiki indicando
+  que quieres que lo revise el autor.
 
 ## Ámbito
 

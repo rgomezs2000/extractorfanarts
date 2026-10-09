@@ -41,8 +41,8 @@ garantía corre por cuenta del autor**.
 - **Cómo hacerla valer:** deja tu comentario, contacto o reporte en el
   **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**, en la
   **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)** o en las
-  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** —o
-  escribe a `rogergomezs2003@gmail.com`— incluyendo el **registro del día**
+  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**,
+  incluyendo el **registro del día**
   (`%USERPROFILE%\.imaginteca\logs`) y el **`selftest.txt`**. Se contesta y se
   trabaja en ello **en un plazo razonable, sin coste**.
 
@@ -81,7 +81,7 @@ Para cualquier uso distinto (uso comercial, redistribución, integración en otr
 producto, traducción, acceso al código fuente…), escribe al autor indicando qué
 necesitas:
 
-**Roger Gomez — rogergomezs2003@gmail.com**
+**desde el foro de la wiki del proyecto**, indicando qué necesitas
 
 El texto legal completo está en el archivo **`LICENSE`** que acompaña al
 ejecutable.

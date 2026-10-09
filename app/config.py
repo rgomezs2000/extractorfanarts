@@ -39,7 +39,7 @@ URL_FORO_COMUNIDAD = f"{URL_WIKI}/Foro-y-comunidad"
 URL_DESCARGAS = f"{URL_REPO}/releases"
 URL_SOPORTE = f"{URL_WIKI}/Soporte-tecnico"   # qué incluir para pedir ayuda
 URL_PROBLEMAS = f"{URL_WIKI}/Problemas-frecuentes"
-CONTACTO_EMAIL = "rogergomezs2003@gmail.com"
+CONTACTO_EMAIL = ""            # sin correo público: el canal es el foro de la wiki
 
 # User-Agent identificado (cortesía / transparencia con los sitios)
 # Nota: debe ser ASCII puro (los headers HTTP no admiten acentos).

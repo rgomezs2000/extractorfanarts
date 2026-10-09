@@ -5,11 +5,11 @@
 Si encuentras un fallo que pueda comprometer la seguridad o la privacidad de
 quien use Imaginteca —por ejemplo, que **tus claves salgan de tu equipo**, que se
 ejecute código no previsto, o que se pueda escribir fuera de las carpetas
-permitidas—, **no lo publiques en el foro**: escríbelo en privado a
+permitidas—, **no lo publiques en el foro**: usa el **reporte privado de
+vulnerabilidades** del repositorio (pestaña **Security** → *Report a
+vulnerability*), que solo lo ve el autor.
 
-**rogergomezs2003@gmail.com**
-
-indicando:
+Indica:
 
 1. Qué has encontrado y **por qué es un problema**.
 2. **Cómo reproducirlo** (versión, sistema y pasos).

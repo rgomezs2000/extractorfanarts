@@ -4,7 +4,7 @@
 ================================================================================
 
  Proyecto : Imaginteca
- Autor    : Roger Gomez <rogergomezs2003@gmail.com>
+ Autor    : Roger Gomez
  Año      : 2026
  Versión  : 0.1.0-beta.2
  Licencia : v2 (revisada el 9 de octubre de 2026)
@@ -124,8 +124,7 @@ permitan.
    b) CORREGIR SIN COSTE los defectos que se le reporten y publicar la versión
       corregida (la aplicación puede actualizarse sola: ver el apartado de
       actualizaciones de la documentación);
-   c) ATENDER los avisos de fallo y las consultas de uso: en el foro, la wiki o
-      el foro de la wiki, o por contacto directo;
+   c) ATENDER los avisos de fallo y las consultas de uso: en el foro de la wiki;
    d) si algo no funcionara como se describe y no hubiera forma de arreglarlo,
       darte una solución alternativa o indicarte cómo seguir usando lo que ya
       tengas.
@@ -158,7 +157,7 @@ permitan.
      Foro        : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro
      Wiki        : https://github.com/rgomezs2000/extractorfanarts/wiki
      Incidencias : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos
-     Contacto    : rogergomezs2003@gmail.com
+     Contacto    : el foro de la wiki
 
  7.6 ALCANCE PERSONAL. Esta garantía es personal e intransferible y se extiende
  al uso permitido en el punto 1. Si cedes, vendes o redistribuyes el programa
@@ -224,6 +223,6 @@ Para cualquier uso distinto de los concedidos en el punto 1 (uso comercial,
 redistribución, integración en otro producto, traducción, acceso al código
 fuente…), escribe al autor indicando qué necesitas:
 
-    Roger Gomez — rogergomezs2003@gmail.com
+    (a través del foro de la wiki del proyecto, indicando qué necesitas)
 
 ================================================================================

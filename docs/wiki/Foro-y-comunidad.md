@@ -66,8 +66,8 @@ El foro es **público** y cualquiera puede leerlo. Antes de publicar:
   cambios**: lo que incumpla estas normas se revierte y se avisa a quien lo hizo.
 - El autor (o quien delegue) puede revertir, cerrar o borrar contenido y **bloquear**
   a quien incumpla las normas de forma grave o repetida.
-- Si crees que se ha actuado injustamente, dilo en un mensaje del foro o por el
-  canal de contacto que figura en la [Licencia](Licencia).
+- Si crees que se ha actuado injustamente, dilo en un mensaje del foro indicando
+  que quieres que lo revise el autor.
 
 ## Sobre el código
 

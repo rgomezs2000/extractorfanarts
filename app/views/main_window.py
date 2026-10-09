@@ -1624,7 +1624,7 @@ class _DialogoAcerca(QDialog):
         redes sociales, booros y wikis de fandom.</p>
         <p><b>Versión instalada:</b> {config.APP_VERSION}
         {'(beta)' if 'beta' in config.APP_VERSION else ''}<br>
-        <b>Autor:</b> Roger Gomez &lt;{config.CONTACTO_EMAIL}&gt;<br>
+        <b>Autor:</b> Roger Gomez<br>
         <b>Licencia:</b> propietaria · todos los derechos reservados (ver
         <code>LICENSE</code>)<br>
         <b>Proyecto:</b> <a href="{config.URL_REPO}">{config.REPO_GITHUB}</a></p>

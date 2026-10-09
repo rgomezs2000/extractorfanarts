@@ -163,7 +163,7 @@ haga lo que dice la documentacion, a corregir SIN COSTE los defectos que le
 reportes y publicar la version corregida, a atender los avisos y a responder de
 los danos directos que un defecto del programa cause en tus archivos o equipo.
 Como pedirla: deja tu comentario, contacto o reporte en el FORO DE LA WIKI (o en
-la propia wiki; tambien puedes escribir a rogergomezs2003@gmail.com), con el
+la propia wiki), con el
 .log del dia (%USERPROFILE%\.imaginteca\logs en Windows, ~/.imaginteca/logs en
 Linux/macOS) y selftest.txt; se contesta y se trabaja en ello en un plazo
 razonable.

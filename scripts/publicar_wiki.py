@@ -115,7 +115,7 @@ def main() -> int:
         for linea in estado.splitlines():
             print(f"          {linea}")
 
-        _git(["-c", "user.name=Imaginteca", "-c", "user.email=rogergomezs2003@gmail.com",
+        _git(["-c", "user.name=Imaginteca", "-c", "user.email=imaginteca@users.noreply.github.com",
               "commit", "-m", "wiki: actualiza las páginas desde docs/wiki"], temporal)
         _git(["push", "origin", "HEAD"], temporal)
         print("[ok] wiki publicada")
