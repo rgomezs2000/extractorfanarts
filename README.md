@@ -1416,13 +1416,10 @@ texto (documentación + foro + las barras `_Sidebar` y `_Footer`).
 python scripts\publicar_wiki.py --comprobar     # ver qué haría, sin publicar
 python scripts\publicar_wiki.py                 # publicar en la wiki
 python scripts\publicar_wiki.py --esperar       # espera a que exista y publica sola
-`
-
-Tambien puedes hacer **doble clic en publicar_wiki.bat** (en la raiz del proyecto):
-espera a que exista la wiki y publica solo.
-
-`powershell
 ```
+
+También puedes hacer **doble clic en `publicar_wiki.bat`** (en la raíz del
+proyecto): espera a que exista la wiki y publica solo, sin abrir una consola.
 
 La wiki de GitHub es un repositorio aparte (`<repo>.wiki.git`). **La primera vez**
 hay que activarla en **Settings → Features** y **guardar una página desde la web**
