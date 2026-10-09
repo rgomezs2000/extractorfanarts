@@ -124,15 +124,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Re-release limpio: se borran los adjuntos que ya tuviera el Release de esta
-      # etiqueta (p. ej. de una publicación anterior de la MISMA versión, o con el
-      # nombre antiguo del proyecto). Se hace con Python (biblioteca estándar) y no
-      # con `gh`, que en estos runners fallaba sin dejar rastro y acumulaba adjuntos.
-      - name: Limpiar los adjuntos previos de esta etiqueta
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: python scripts/limpiar_release.py
-
       - uses: actions/download-artifact@v4
         with:
           path: paquetes
@@ -170,18 +161,20 @@ jobs:
           overwrite_files: true
           fail_on_unmatched_files: true
 
+      # Limpieza DESPUÉS de publicar, nunca antes: si se borrara el Release primero y
+      # algo fallara, la etiqueta se quedaría sin publicar. Aquí solo se retiran los
+      # adjuntos que NO son de esta versión (restos de nombres antiguos o de otra
+      # publicación), así que el Release siempre queda servible.
+      - name: Retirar los adjuntos que no son de esta versión
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/limpiar_release.py --carpeta paquetes
+
       # Guardia: el Release debe quedar con EXACTAMENTE 6 adjuntos (3 .zip + 3 .sha256).
       # Si aparece cualquier otro (resto de un nombre antiguo, de otra versión…), el
       # trabajo falla y se ve en el registro en vez de dejar el Release sucio.
-      - name: Comprobar que el Release no arrastra adjuntos viejos
+      - name: Comprobar que el Release tiene exactamente 6 adjuntos
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" \
-             --jq '.assets[].name' | sort | tee /tmp/finales.txt
-          n="$(wc -l < /tmp/finales.txt)"
-          echo "adjuntos en el Release: $n (se esperan 6)"
-          if [ "$n" != "6" ]; then
-            echo "::error::El Release de $GITHUB_REF_NAME tiene $n adjuntos; revisa la limpieza previa."
-            exit 1
-          fi
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/limpiar_release.py --comprobar 6
