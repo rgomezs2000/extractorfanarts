@@ -1,7 +1,7 @@
 # Licencia
 
 **Imaginteca es un programa propietario.**
-**Copyright InfoArte 2026.**
+**© 2026 InfoArte.**
 **Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
 2026).
 

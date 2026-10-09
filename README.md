@@ -1320,6 +1320,7 @@ restringido.
 | `scripts\release.py` | crea el `.zip` + `.sha256` y publica el Release (`--tag`, `--gh`, `--version`) |
 | `scripts\limpiar_release.py` | borra los adjuntos de un Release de GitHub antes de volver a publicar la misma versión (`--repo`, `--tag`) |
 | `scripts\publicar_wiki.py` | publica las páginas de `docs/wiki/` en la Wiki de GitHub (`--repo`, `--comprobar`) |
+| `scripts\actualizar_copyright.py` | pone el aviso de copyright al **año en curso** en todos los documentos (`--comprobar` para ver qué cambiaría) |
 | `scripts\make_icon.py` | regenera los iconos de `assets/` |
 | `scripts\hacer_certificado.py` / `.ps1` | crea un certificado autofirmado (`--simular`, `--confiar`) |
 | `scripts\pixiv_token.py` | asistente del refresh token de Pixiv (OAuth PKCE): sirve como script en desarrollo y es lo que se compila para el paquete |
@@ -1342,7 +1343,10 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
 ## 17. Licencia y avisos legales
 
 - **Licencia del programa:** **propietaria — todos los derechos reservados**
-  (**Copyright InfoArte 2026**). Se concede únicamente el derecho a **ejecutar y usar el
+  (**© 2026 InfoArte**). El aviso de copyright es **dinámico**: mientras el año en
+  curso sea el de creación se muestra «© 2026 InfoArte», y en cuanto cambie el año
+  pasa a «© 2026-2027 InfoArte» (lo calcula el propio programa al arrancar, y en
+  los documentos lo actualiza `scripts\actualizar_copyright.py`). Se concede únicamente el derecho a **ejecutar y usar el
   programa** de forma gratuita y para uso personal; **se prohíbe** copiarlo,
   redistribuirlo, venderlo, modificarlo, descompilarlo o reutilizar su código
   fuente. El **código fuente es propiedad del autor y no se licencia**. El

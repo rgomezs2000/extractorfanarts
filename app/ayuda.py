@@ -10,6 +10,7 @@ muestra formateado sin conversiones propias.
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QUrl
@@ -129,8 +130,20 @@ def cargar_manual() -> tuple[str, list[tuple[str, str]], Path | None]:
         texto = _TEXTO_MINIMO.format(nombre=config.APP_NAME)
         titulo, secciones = dividir_secciones(texto)
         return titulo, secciones, None
+    markdown = refrescar_copyright(markdown)
     titulo, secciones = dividir_secciones(markdown)
     return titulo, secciones, ruta
+
+
+def refrescar_copyright(markdown: str) -> str:
+    """Pone el aviso de copyright al año en curso aunque el manual sea de un año antes.
+
+    Así la ayuda muestra siempre el año correcto sin depender de que alguien haya
+    vuelto a ejecutar `scripts/actualizar_copyright.py` tras el cambio de año.
+    """
+    patron = re.compile(r"(?:©|\(c\)|Copyright(?:\s*\(c\))?)\s*20\d\d(?:\s*[-–]\s*20\d\d)?\s*InfoArte",
+                        re.IGNORECASE)
+    return patron.sub(config.AUTOR_COPYRIGHT, markdown)
 
 
 class VentanaAyuda(QDialog):

@@ -4,6 +4,7 @@ Por ahora NO hay autenticación interna ni gestión de usuarios: las claves de
 las APIs se colocan aquí (ver README). Los datos sensibles deberían migrarse
 a variables de entorno o un archivo externo en una versión futura.
 """
+import datetime
 import os
 import sys
 from pathlib import Path
@@ -15,7 +16,23 @@ APP_VERSION = "0.1.0-beta.4"
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
 # ni nombre propio, ni correo. El canal privado es Discord.
 AUTOR = "InfoArte"
-AUTOR_COPYRIGHT = "Copyright InfoArte 2026"
+ANIO_INICIAL = 2026          # año de creación del proyecto
+
+
+def aviso_copyright(anio_inicial: int = ANIO_INICIAL, autor: str = AUTOR) -> str:
+    """Aviso de copyright con el año en curso.
+
+      - Si el año actual es el de creación:  «© 2026 InfoArte»
+      - Si ya ha cambiado el año:            «© 2026-2027 InfoArte»
+
+    Se calcula en cada arranque, así que el programa nunca muestra un año viejo.
+    """
+    actual = datetime.date.today().year
+    rango = f"{anio_inicial}-{actual}" if actual > anio_inicial else str(anio_inicial)
+    return f"© {rango} {autor}"
+
+
+AUTOR_COPYRIGHT = aviso_copyright()
 CONTACTO_DISCORD = "rgomezs2010"
 
 # ------------------------------------------------------------------ actualizaciones

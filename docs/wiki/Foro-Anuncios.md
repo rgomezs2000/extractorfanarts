@@ -26,6 +26,8 @@ plataformas que se caen y arreglos.
   sin nombre propio, sin correo y sin el repositorio.
 - **Nueva ventana de licencia** dentro del programa («📜 Ver licencia completa»).
 - El autor pasa a ser **InfoArte** en la documentación y en la licencia.
+- **Copyright dinámico**: el aviso pasa solo de «© 2026 InfoArte» a
+  «© 2026-2027 InfoArte» cuando cambie el año; no hay que tocar nada.
 - **Soporte de plataformas documentado**: [redes sociales](Redes-sociales),
   [boorus](Boorus) y [fandoms](Fandoms) **uno por uno**, con lo que busca cada una,
   sus claves, sus límites y las que vendrán. También en la ayuda del programa

@@ -7,11 +7,15 @@
   correo, ni el repositorio. Aparece **InfoArte** y el contacto privado
   (**Discord `rgomezs2010`**).
 - **El autor pasa a ser InfoArte** en todos los documentos y en la licencia, con
-  el aviso **«Copyright InfoArte 2026 · Todos los derechos reservados»**.
+  el aviso **«© 2026 InfoArte · Todos los derechos reservados»**.
 - Las rutas de «Acerca de» se muestran como `%USERPROFILE%…`, así que no aparece
   el nombre de usuario del equipo.
 - **Nueva ventana de licencia**: «📜 Ver licencia completa» abre el texto entero
   dentro del programa (con botón para copiarlo), en vez de remitir a un archivo.
+- **Aviso de copyright dinámico**: «© 2026 InfoArte» mientras el año en curso sea
+  el de creación, y «© 2026-2027 InfoArte» en cuanto cambie el año. Lo calcula el
+  programa en cada arranque (y `scripts\actualizar_copyright.py` lo pone al día en
+  los documentos).
 
 **Soporte de plataformas**
 - Páginas nuevas en la wiki: **[Soporte de plataformas](Plataformas)**,

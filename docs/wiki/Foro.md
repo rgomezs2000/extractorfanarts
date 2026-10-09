@@ -90,5 +90,5 @@ que un defecto cause en tus archivos. Ver **[Licencia](Licencia)**.
 
 ---
 
-*Imaginteca · **Copyright InfoArte 2026** · Programa propietario (ver
+*Imaginteca · **© 2026 InfoArte** · Programa propietario (ver
 [Licencia](Licencia))*

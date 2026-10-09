@@ -18,7 +18,7 @@ dataset** para entrenar modelos.
 > ideas, plataformas y datasets) y las respuestas a las dudas más comunes.
 > **Contacto privado: Discord `rgomezs2010`.**
 
-> **Programa propietario.** **Copyright InfoArte 2026** · Todos los derechos
+> **Programa propietario.** **© 2026 InfoArte** · Todos los derechos
 > reservados.
 > Puedes usarlo gratis para tu colección personal. No puedes copiarlo,
 > redistribuirlo, venderlo ni modificarlo. La **garantía corre por cuenta del
@@ -609,8 +609,12 @@ Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
 ### Licencia del programa
 
 **Imaginteca es un programa propietario.**
-**Copyright InfoArte 2026 · Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
+**© 2026 InfoArte · Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
 2026).
+
+> El **aviso de copyright es dinámico**: mientras el año en curso sea el de
+> creación verás **«© 2026 InfoArte»**, y en cuanto cambie el año pasará solo a
+> **«© 2026-2027 InfoArte»** (el programa lo calcula en cada arranque).
 
 - **Sí puedes:** ejecutarlo y usarlo **gratis**, para tu colección personal, en tus
   equipos, y hacerte una copia de seguridad.
