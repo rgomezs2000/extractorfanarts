@@ -66,6 +66,11 @@ def main() -> int:
                                  "página desde la web) y publica sola")
     analizador.add_argument("--esperar-segundos", type=int, default=1800,
                             help="cuánto esperar con --esperar (por defecto 1800 = 30 min)")
+    analizador.add_argument("--forzar", action="store_true",
+                            help="sobrescribe TAMBIÉN las páginas del foro (¡puede borrar "
+                                 "mensajes de usuarios!)")
+    analizador.add_argument("--limpiar-sobrantes", action="store_true",
+                            help="retira de la wiki las páginas que ya no están en docs/wiki")
     argumentos = analizador.parse_args()
 
     if not argumentos.repo:
@@ -117,11 +122,38 @@ def main() -> int:
                 avisado = True
             time.sleep(10)
 
-        copiadas = 0
+        # ── Sincronización con protección del foro ────────────────────────────────
+        # La documentación manda desde `docs/wiki/` (se sobrescribe), pero las
+        # páginas del FORO pueden tener mensajes de usuarios: si ya existen, NO se
+        # tocan. Así se puede actualizar la wiki sin borrar lo que ha escrito nadie.
+        existentes = {p.name for p in temporal.glob("*.md")}
+        nombres_repo = {p.name for p in paginas}
+
+        def es_foro(nombre: str) -> bool:
+            return nombre.startswith("Foro")
+
+        escritas, conservadas = [], []
         for pagina in paginas:
+            if pagina.name in existentes and es_foro(pagina.name) and not argumentos.forzar:
+                conservadas.append(pagina.name)
+                continue
             shutil.copy2(pagina, temporal / pagina.name)
-            copiadas += 1
-        print(f"[ok] {copiadas} páginas copiadas a la wiki")
+            escritas.append(pagina.name)
+        print(f"[ok] {len(escritas)} páginas escritas desde docs/wiki")
+        if conservadas:
+            print(f"[ok] {len(conservadas)} páginas del foro se conservan tal cual "
+                  f"(pueden tener mensajes de usuarios):")
+            for nombre in sorted(conservadas):
+                print(f"          - {nombre}")
+
+        sobrantes = sorted(n for n in existentes if n not in nombres_repo)
+        for nombre in sobrantes:
+            if argumentos.limpiar_sobrantes:
+                (temporal / nombre).unlink()
+                print(f"[ok] retirada la página sobrante: {nombre}")
+            else:
+                print(f"[aviso] la wiki tiene una página que no está en docs/wiki: "
+                      f"{nombre}  (usa --limpiar-sobrantes para retirarla)")
 
         _git(["add", "-A"], temporal)
         codigo, estado = _git(["status", "--porcelain"], temporal)
