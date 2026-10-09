@@ -2,6 +2,14 @@
 
 **Imaginteca es un programa propietario.**
 **© 2026 InfoArte.**
+
+> **Sobre el código fuente.** Los archivos «Source code (zip)» y «Source code
+> (tar.gz)» que GitHub añade automáticamente a cada release son una **instantánea del
+> repositorio**, no forman parte de la publicación: lo que se publica son los
+> programas ya compilados (portátil e instaladores) y su documentación. **Imaginteca
+> es un programa propietario** (© 2026 InfoArte · Todos los derechos reservados) y la
+> licencia **no permite redistribuir ni reutilizar el código**.
+
 **Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
 2026).
 

@@ -191,6 +191,20 @@ jobs:
       - name: Crear el Release con los paquetes adjuntos
         uses: softprops/action-gh-release@v3
         with:
+          # GitHub añade SIEMPRE dos enlaces «Source code (zip/tar.gz)» que no se pueden
+          # desactivar (son una instantánea del tag, no adjuntos nuestros). Se aclara en
+          # las notas para que nadie crea que forman parte de la publicación.
+          body: |
+            > **Sobre el código fuente.** Los archivos «Source code (zip)» y «Source code
+            > (tar.gz)» que GitHub añade automáticamente a esta página son una instantánea
+            > del repositorio y **no forman parte de esta publicación**: aquí se publican
+            > los programas ya compilados (versión portátil e instaladores) y su
+            > documentación.
+            >
+            > **Imaginteca es un programa propietario:** © 2026 InfoArte · Todos los derechos
+            > reservados. La licencia **no permite redistribuir ni reutilizar el código**.
+            > El código vive en el repositorio, con su licencia, y no se distribuye con el
+            > programa.
           files: |
             paquetes/*.zip
             paquetes/*.tar.gz

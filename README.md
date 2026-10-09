@@ -1163,6 +1163,20 @@ verifique su descarga.
 
 ## 14. Publicar un release
 
+> **Sobre el código fuente.** Los archivos «Source code (zip)» y «Source code
+> (tar.gz)» que GitHub añade automáticamente a cada release son una **instantánea del
+> repositorio**, no forman parte de la publicación: lo que se publica son los
+> programas ya compilados (portátil e instaladores) y su documentación. **Imaginteca
+> es un programa propietario** (© 2026 InfoArte · Todos los derechos reservados) y la
+> licencia **no permite redistribuir ni reutilizar el código**.
+
+En la página del release, los adjuntos del proyecto son **solo** los paquetes
+(`Imaginteca-*.zip`, `*.tar.gz`), los instaladores (`.exe`, `.dmg`, `.deb`) y sus
+huellas `.sha256`: 18 en total. Los enlaces «Source code» los pone GitHub y no se
+pueden desactivar ([GitHub Community #6003](
+https://github.com/orgs/community/discussions/6003)); el flujo los aclara en las
+notas del release.
+
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 

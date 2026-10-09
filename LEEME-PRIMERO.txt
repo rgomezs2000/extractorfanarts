@@ -224,6 +224,13 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
 Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los derechos
 (c) 2026 InfoArte. No es software libre.
 
+   NOTA SOBRE EL CODIGO FUENTE: en la pagina de Releases, los archivos
+   "Source code (zip)" y "Source code (tar.gz)" los anade GitHub solo: son una
+   copia del repositorio y NO forman parte de la publicacion. Lo que se publica
+   son los programas ya compilados (portatil e instaladores) y su documentacion.
+   El codigo vive en el repositorio, con su licencia, y no se distribuye con el
+   programa.
+
   SI puedes:  ejecutarlo y usarlo gratis, para tu coleccion personal, en tus
               equipos, y hacerte una copia de seguridad.
   NO puedes:  copiarlo, compartirlo, subirlo a ningun sitio, venderlo,
