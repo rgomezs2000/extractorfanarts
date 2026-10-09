@@ -238,7 +238,9 @@ def main() -> int:
     print(f"[info] versión {datos['version']} · {datos['repo']} · instalador "
           f"{datos['instalador']} · sha256 {datos['sha_instalador'][:16]}…")
 
-    base = Path(argumentos.salida) if argumentos.salida else ROOT
+    # Ruta ABSOLUTA: el manifiesto de Scoop se genera en otro proceso (con su propio
+    # directorio de trabajo), así que una ruta relativa acabaría en el sitio equivocado.
+    base = Path(argumentos.salida).resolve() if argumentos.salida else ROOT
     escribir_chocolatey(datos, base / "chocolatey")
     escribir_winget(datos, base / "winget")
 
@@ -249,7 +251,10 @@ def main() -> int:
         orden += ["--zip", str(Path(argumentos.zip).resolve())]
     else:
         orden += ["--etiqueta", f"v{datos['version']}"]
-    subprocess.call(orden, cwd=str(ROOT))
+    codigo = subprocess.call(orden, cwd=str(ROOT))
+    if codigo != 0:
+        print("[error] no se pudo generar el manifiesto de Scoop")
+        return codigo
 
     print()
     print("Todos los manifiestos quedan en el repositorio y se publican en el release.")
