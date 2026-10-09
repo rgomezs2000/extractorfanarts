@@ -20,6 +20,15 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.3 — la beta definitiva (3.ª entrega)
+
+- **Nueva página [Qué se descarga](Contenido)**: fanarts, imágenes oficiales, cómics y
+  fancomics, y el apartado **NSFW (+18)** completo (ratings, qué lo define, qué se
+  extrae y qué no).
+- **Verificación de edad**: con el 🔞 marcado, al **Buscar** o **Descargar** se pide la
+  fecha de nacimiento; **menores de 18 no buscan ni descargan** contenido adulto. Tu
+  fecha no se guarda ni se envía a ningún sitio.
+
 ### 2026-10-09 · v0.1.5-beta.2 — la beta definitiva (2.ª entrega)
 
 - **Desarrollo vs producción**: las copias de desarrollo (código fuente o

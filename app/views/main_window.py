@@ -22,15 +22,15 @@ import os
 from pathlib import Path
 
 from PySide6.QtCore import (
-    QByteArray, QEvent, QMimeData, QObject, QRunnable, Qt, QThreadPool, QTimer,
+    QByteArray, QDate, QEvent, QMimeData, QObject, QRunnable, Qt, QThreadPool, QTimer,
     QUrl, Signal,
 )
 from PySide6.QtGui import (
     QAction, QDesktopServices, QFontDatabase, QImage, QKeySequence, QShortcut,
 )
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
-    QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
+    QApplication, QCheckBox, QComboBox, QDateEdit, QDialog, QDialogButtonBox,
+    QFileDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy,
     QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QVBoxLayout, QWidget,
 )
@@ -944,6 +944,9 @@ class MainWindow(QMainWindow):
             if error:
                 self.statusBar().showMessage(f"⚠ {error}")
                 return
+            # Contenido adulto: sin la verificación de mayoría de edad no se busca.
+            if not self._verificar_mayoria_de_edad():
+                return
             self._preparar_busqueda_nueva()
             self._tarea = "buscar"          # la barra de progreso lo refleja
             self.controller.buscar(s)
@@ -960,6 +963,9 @@ class MainWindow(QMainWindow):
             error = self._validar(s)
             if error:
                 self.statusBar().showMessage(f"⚠ {error}")
+                return
+            # También al descargar: el contenido adulto exige ser mayor de edad.
+            if not self._verificar_mayoria_de_edad():
                 return
             # Confirmación antes de iniciar la descarga
             detalle = (
@@ -1074,6 +1080,41 @@ class MainWindow(QMainWindow):
             # Se comprueba al arrancar (sin cambiar nada) para avisar desde el
             # principio si las descargas no podrán ir a la carpeta configurada.
             QTimer.singleShot(200, self._avisar_si_no_escribible)
+
+    def _verificar_mayoria_de_edad(self) -> bool:
+        """Pide la fecha de nacimiento antes de buscar o descargar contenido adulto.
+
+        Devuelve **True** si puede continuar: porque la casilla «🔞 Contenido adulto»
+        no está marcada, o porque ya se verificó en esta sesión.
+
+        Si es menor de 18 años **no se hace nada** (ni búsqueda ni descarga), se avisa
+        y se desmarca la casilla. Si cancela, tampoco se continúa.
+        """
+        if not getattr(self, "chk_adulto", None) or not self.chk_adulto.isChecked():
+            return True
+        if getattr(self, "_adulto_verificado", False):
+            return True
+
+        dialogo = _DialogoEdad(self)
+        aceptado = dialogo.exec() == QDialog.Accepted
+        if not aceptado or not dialogo.mayor_de_edad:
+            self.chk_adulto.setChecked(False)
+            self.statusBar().showMessage("🔞 Contenido adulto desactivado")
+            if dialogo.menor_de_edad:
+                QMessageBox.warning(
+                    self, "Contenido adulto (+18)",
+                    "Debes ser mayor de 18 años para buscar o descargar contenido adulto.\n\n"
+                    "No se ha iniciado nada y se ha desactivado «🔞 Contenido adulto»:\n"
+                    "puedes buscar sin él. Si te equivocaste al escribir la fecha,\n"
+                    "vuelve a marcarlo e inténtalo de nuevo.")
+                logger.info("contenido adulto bloqueado: la edad indicada es menor de 18")
+            return False
+
+        # Mayor de edad verificado: se recuerda (o no) durante esta sesión, sin guardar
+        # la fecha de nacimiento en ningún sitio.
+        self._adulto_verificado = bool(dialogo.recordar)
+        logger.info("contenido adulto autorizado (verificación de edad superada)")
+        return True
 
     def _mostrar_filtros(self) -> None:
         """Muestra la lista negra y los filtros que se aplican siempre (solo lectura)."""
@@ -1924,3 +1965,103 @@ class _DialogoDependencias(QDialog):
             return
         self.accept()
         QTimer.singleShot(600, QApplication.quit)
+
+
+class _DialogoEdad(QDialog):
+    """Verificación de mayoría de edad para el contenido adulto (+18).
+
+    Pide la **fecha de nacimiento** y calcula la edad contra la **fecha actual** del
+    equipo. Si es menor de 18 años no se busca ni se descarga nada.
+
+    **No se guarda ni se envía nada**: la fecha se compara en el propio equipo y solo
+    se recuerda (mientras dure la sesión, si se marca la casilla) que la persona
+    verificó ser mayor de edad. Ni la fecha ni la edad se escriben en el registro.
+    """
+
+    def __init__(self, padre=None):
+        super().__init__(padre)
+        self.setWindowTitle("🔞 Contenido adulto · verificación de edad")
+        self.mayor_de_edad = False
+        self.menor_de_edad = False
+        self.recordar = True
+
+        diseño = QVBoxLayout(self)
+        titulo = QLabel("<h3>🔞 Contenido adulto (+18)</h3>")
+        titulo.setTextFormat(Qt.RichText)
+        diseño.addWidget(titulo)
+
+        aviso = QLabel(
+            "Has marcado <b>🔞 Contenido adulto</b>. Para buscar o descargar este tipo "
+            "de imágenes hay que ser <b>mayor de 18 años</b>.<br><br>"
+            "Escribe tu <b>fecha de nacimiento</b>: se comprueba aquí mismo contra la "
+            "fecha de hoy y <b>no se guarda ni se envía a ningún sitio</b>.")
+        aviso.setWordWrap(True)
+        aviso.setTextFormat(Qt.RichText)
+        diseño.addWidget(aviso)
+
+        fila = QHBoxLayout()
+        fila.addWidget(QLabel("Fecha de nacimiento:"))
+        self.fecha = QDateEdit()
+        self.fecha.setCalendarPopup(True)
+        self.fecha.setDisplayFormat("dd/MM/yyyy")
+        # Arranca en la fecha de hoy: hay que cambiarla a mano (así, un clic sin mirar
+        # no da por válida ninguna edad).
+        self.fecha.setDate(QDate.currentDate())
+        self.fecha.setMaximumDate(QDate.currentDate())
+        self.fecha.setMinimumDate(QDate.currentDate().addYears(-120))
+        fila.addWidget(self.fecha, 1)
+        diseño.addLayout(fila)
+
+        self.chk_recordar = QCheckBox("Recordar durante esta sesión (no volver a preguntar)")
+        self.chk_recordar.setChecked(True)
+        self.chk_recordar.setToolTip(
+            "Solo dura mientras el programa esté abierto; no se guarda en el disco")
+        diseño.addWidget(self.chk_recordar)
+
+        self.lbl_edad = QLabel("")
+        self.lbl_edad.setWordWrap(True)
+        self.lbl_edad.setTextFormat(Qt.RichText)
+        diseño.addWidget(self.lbl_edad)
+
+        botones = QDialogButtonBox()
+        self.btn_confirmar = botones.addButton("Confirmar", QDialogButtonBox.AcceptRole)
+        botones.addButton("Cancelar", QDialogButtonBox.RejectRole)
+        botones.accepted.connect(self.accept)
+        botones.rejected.connect(self.reject)
+        diseño.addWidget(botones)
+
+        self.fecha.dateChanged.connect(self._actualizar_edad)
+        self._actualizar_edad()
+
+        pantalla = self.screen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            self.resize(max(460, min(620, util.width() - 80)),
+                        max(320, min(460, util.height() - 80)))
+        self.fecha.setFocus()
+
+    def edad(self) -> int:
+        """Edad en años cumplidos según la fecha actual."""
+        nacimiento = self.fecha.date()
+        hoy = QDate.currentDate()
+        años = hoy.year() - nacimiento.year()
+        if (hoy.month(), hoy.day()) < (nacimiento.month(), nacimiento.day()):
+            años -= 1
+        return años
+
+    def _actualizar_edad(self, *_) -> None:
+        años = self.edad()
+        if años < 0:
+            self.lbl_edad.setText("<b>Esa fecha es futura:</b> revísala.")
+        elif años >= 18:
+            self.lbl_edad.setText(f"<b>Edad: {años} años.</b> Puedes continuar.")
+        else:
+            self.lbl_edad.setText(
+                f"<b>Edad: {años} años.</b> Hay que ser <b>mayor de 18</b> para este "
+                "contenido.")
+
+    def accept(self) -> None:            # lo llaman el botón y la tecla Intro
+        self.recordar = self.chk_recordar.isChecked()
+        self.mayor_de_edad = self.edad() >= 18
+        self.menor_de_edad = not self.mayor_de_edad
+        QDialog.accept(self)             # el aviso lo muestra la ventana principal

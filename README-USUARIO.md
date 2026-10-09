@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.2 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.3 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -42,7 +42,7 @@ dataset** para entrenar modelos.
 12. [Dónde se guarda todo](#12-dónde-se-guarda-todo)
 13. [Calidad y mejora de imagen](#13-calidad-y-mejora-de-imagen)
 14. [Preparar datasets para IA (LoRA, LyCORIS, checkpoints)](#14-preparar-datasets-para-ia-lora-lycoris-checkpoints)
-15. [Qué se filtra](#15-qué-se-filtra)
+15. [Contenido, filtros y +18](#15-contenido-qué-se-descarga-qué-se-filtra-y-el-18)
 16. [Actualizaciones](#16-actualizaciones)
 17. [Si algo va mal](#17-si-algo-va-mal)
 18. [Más información, foro y contacto](#18-más-información-foro-y-contacto)
@@ -596,16 +596,79 @@ iguales) · elige un tamaño objetivo (512, 768, 1024) y sé constante · el pro
 
 ---
 
-## 15. Qué se filtra
+## 15. Contenido: qué se descarga, qué se filtra y el +18
 
-El programa aplica **siempre** unos filtros antes de mostrarte o guardarte nada, y
-te dice el motivo exacto de cada descarte:
+### 15.1 Qué se descarga
 
-- **Lista negra de contenido prohibido** (etiquetas y prefijos).
+| Tipo | Qué es | Dónde aparece |
+|---|---|---|
+| **Fanart** | Arte hecho por la comunidad: lo más abundante y lo mejor etiquetado | Boorus, redes sociales y wikis |
+| **Imagen oficial** | Promocionales, portadas e ilustraciones de producción | Wikis de fandom y boorus |
+| **Cómic y fancomic** | Páginas o viñetas completas (llegan **página a página**) | Wikis, boorus y algunas redes |
+
+- Todo se guarda en **WebP** (ligero y versátil) y, si quieres, con **subida de calidad**
+  (Real-ESRGAN/waifu2x) hasta 8K.
+- **Nunca** se descarga: contenido prohibido (ver 15.3), material de **pago o exclusivo**
+  (Patreon, Fanbox, OnlyFans, Fansly, Unifans…) ni nada que la plataforma no entregue
+  por su API pública. El programa **no salta muros de pago ni inicios de sesión**.
+
+### 15.2 NSFW: contenido adulto (+18)
+
+**NSFW** («Not Safe For Work») es el contenido que **no es apto** para verse en un
+entorno laboral o delante de menores: en la práctica, material **sexual o explícito**.
+Los sitios lo clasifican con **ratings**, y el programa los respeta:
+
+| Rating | Qué significa | ¿Sin marcar el 🔞? |
+|---|---|---|
+| `general` | Apto para todos | Sí |
+| `sensitive` | Sensible, pero no sexual | Sí |
+| `questionable` | **Sugestivo**: insinuación, poca ropa, poses | **No** |
+| `explicit` | **Explícito**: actos sexuales o desnudo | **No** |
+
+**Qué lo define** (las señales que llevan una imagen al terreno adulto):
+
+| Elemento | Ejemplos | Nivel |
+|---|---|---|
+| **Fluidos** | Semen, lubricación, saliva abundante, sudor | Explícito |
+| **Partes del cuerpo** | Genitales, pechos con pezón, nalgas | Sugestivo o explícito según el contexto |
+| **Atuendo explícito** | Desnudo, ropa transparente, lencería sin más, *bondage* | Explícito |
+| **Atuendo sugestivo** | Ropa muy ajustada, escotes, bañador, ropa interior | Sugestivo |
+| **Actividades individuales** | Masturbación, uso de juguetes | Explícito |
+| **Actividades colectivas** | Sexo entre dos o más personas | Explícito |
+
+**Qué se puede extraer y qué no:**
+
+| | |
+|---|---|
+| **Sí** | Lo que la plataforma sirve públicamente y pasa los filtros; con el 🔞 marcado se admiten `questionable` y `explicit` |
+| **No, nunca** | Contenido con **menores** (etiquetas `childporn`, `child_porn` y todo lo que empiece por `pedo`), material de **pago** y lo que la API no entregue |
+| **Tampoco** | Contenido **ilegal** o no consentido: la lista negra se aplica **aunque** marques el 🔞 |
+
+**Condiciones para el +18:**
+
+1. Marca **🔞 Contenido adulto** en Opciones.
+2. Al pulsar **Buscar** o **Descargar** aparece la **verificación de edad**: escribes tu
+   **fecha de nacimiento** y se calcula la edad **contra la fecha actual**.
+3. **Menos de 18 años**: **no se busca ni se descarga nada**, se avisa de que hay que ser
+   mayor de 18 y la casilla 🔞 **se desmarca sola** (puedes buscar sin ella).
+4. **18 años o más**: la búsqueda o la descarga continúa, ya con contenido adulto.
+5. **Tu privacidad**: la fecha se compara **en tu equipo** y **no se guarda ni se envía**
+   a ningún sitio (tampoco al registro). Solo se recuerda, mientras el programa esté
+   abierto y si dejas marcada *«Recordar durante esta sesión»*, que verificaste la edad;
+   si la desmarcas, **preguntará en cada búsqueda**.
+6. **Es tu responsabilidad** cumplir la ley de tu país o región sobre este contenido.
+
+### 15.3 Qué se filtra siempre
+
+El programa aplica **siempre** unos filtros antes de mostrarte o guardarte nada, y te
+dice el motivo exacto de cada descarte:
+
+- **Lista negra de contenido prohibido** (etiquetas y prefijos): `childporn`,
+  `child_porn` y todo lo que empiece por `pedo`.
 - **Plataformas de pago** (Patreon, Pixiv Fanbox, OnlyFans, Fansly, Unifans…): se
   descartan los enlaces a contenido exclusivo.
-- **Contenido adulto (🔞):** por defecto **no** aparece. Si marcas «Permitir
-  contenido adulto» en Opciones, sí.
+- **Contenido adulto (🔞):** por defecto **no** aparece. Si marcas «Permitir contenido
+  adulto» en Opciones, sí (con la verificación de edad del punto 15.2).
 - **Solo licencia liberada (⚖️):** opcional; solo procesa lo que declare
   CC0 / CC-BY / dominio público.
 - **Tu propia lista de exclusiones** (etiquetas, dominios o palabras) que puedes
@@ -804,5 +867,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.2 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.3 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

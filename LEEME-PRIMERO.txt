@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.5-beta.2 - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta.3 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -219,7 +219,28 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
     Discord: rgomezs2010
 
 
-10) DESARROLLO O PRODUCCION
+10) CONTENIDO ADULTO (+18)
+
+   El programa puede descargar fanarts, imagenes oficiales y paginas de comic o
+   fancomic. Por defecto el contenido adulto (NSFW) NO aparece.
+
+   Para verlo:
+     1) Marca "Contenido adulto" en Opciones.
+     2) Al pulsar Buscar o Descargar, el programa pide tu FECHA DE NACIMIENTO y
+        calcula tu edad con la fecha de hoy.
+     3) Si eres MENOR de 18: no se busca ni se descarga nada, se te avisa y la
+        casilla se desmarca sola.
+     4) Si eres mayor de 18: la busqueda o la descarga continua.
+
+   Tu fecha de nacimiento NO se guarda ni se envia a ningun sitio: se compara en tu
+   equipo. Se recuerda solo mientras el programa este abierto (y si dejas marcada
+   la casilla "Recordar durante esta sesion").
+
+   La lista negra de contenido prohibido (menores, contenido ilegal) y el bloqueo
+   de plataformas de pago se aplican SIEMPRE, tengas o no el contenido adulto
+   activado. Es tu responsabilidad cumplir la ley de tu pais o region.
+
+11) DESARROLLO O PRODUCCION
 
    El programa sabe de donde viene:
 
@@ -249,7 +270,7 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
      Linux          sudo apt install ./Imaginteca-<version>-linux-installer.deb
                     (o: sudo dpkg -i ./Imaginteca-<version>-linux-installer.deb)
 
-11) LICENCIA Y GARANTIA
+12) LICENCIA Y GARANTIA
 -----------------------
 Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los derechos
 (c) 2026 InfoArte. No es software libre.

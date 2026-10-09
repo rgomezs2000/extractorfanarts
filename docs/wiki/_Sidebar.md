@@ -3,6 +3,7 @@
 - [📥 Instalación](Instalacion)
 - [🚀 Guía rápida](Guia-rapida)
 - [🌐 Plataformas](Plataformas)
+- [🖼️ Qué se descarga](Contenido)
   - [Redes sociales](Redes-sociales)
   - [Boorus](Boorus)
   - [Fandoms y wikis](Fandoms)

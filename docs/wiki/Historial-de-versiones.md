@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.3 — 9 de octubre de 2026 · la beta definitiva (3.ª entrega)
+
+**Contenido y contenido adulto**
+- Página nueva **[Qué se descarga](Contenido)**: fanarts, imágenes oficiales, **cómics
+  y fancomics**, qué se guarda y qué **nunca** se descarga.
+- Dentro, el apartado **NSFW (+18)**: qué significa, los **ratings**, los elementos que
+  lo definen (fluidos, partes del cuerpo, atuendo explícito y sugestivo, actividades
+  individuales y colectivas), **qué se puede extraer y qué no** y las condiciones de
+  acceso.
+- **Verificación de edad en el programa**: al marcar «🔞 Contenido adulto» y pulsar
+  **Buscar** (o **Descargar**) se pide la **fecha de nacimiento** y se calcula la edad
+  contra la fecha actual. Con **menos de 18 años no se busca ni se descarga nada**: se
+  avisa y la casilla se desmarca. La fecha **no se guarda ni se envía**.
+
+---
+
 ## v0.1.5-beta.2 — 9 de octubre de 2026 · la beta definitiva (2.ª entrega)
 
 **Canal: desarrollo y producción**

@@ -223,10 +223,10 @@ jobs:
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Desde v0.1.5-beta.2 (la beta DEFINITIVA) los releases se publican como
+          # Desde v0.1.5-beta.3 (la beta DEFINITIVA) los releases se publican como
           # OFICIALES, no como pre-release: la versión sigue llamándose «beta», pero
           # el release es el oficial y GitHub lo marca como «Latest». Las betas
-          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.2) quedaron como pre-release.
+          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.3) quedaron como pre-release.
           prerelease: false
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true
