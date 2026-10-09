@@ -4,13 +4,12 @@
 ================================================================================
 
  Proyecto : Imaginteca
- Autor    : Roger Gomez
+ Autor    : InfoArte
  Año      : 2026
- Versión  : 0.1.0-beta.2
+ Versión  : 0.1.0-beta.4
  Licencia : v2 (revisada el 9 de octubre de 2026)
- Web      : https://github.com/rgomezs2000/imaginteca
 
- Copyright (c) 2026 Roger Gomez. TODOS LOS DERECHOS RESERVADOS.
+ Copyright (c) 2026 InfoArte. TODOS LOS DERECHOS RESERVADOS.
 
  LEER ESTO ANTES DE USAR EL PROGRAMA. Al ejecutarlo aceptas estas condiciones.
  Si no estás de acuerdo con ellas, no lo uses y borra todas las copias.
@@ -74,7 +73,7 @@ el programa se distribuye únicamente como ejecutable compilado.
 --------------------------------------------------------------------------------
 
 El programa, su código fuente, su diseño, su interfaz, su icono y su
-documentación son propiedad de Roger Gomez y están protegidos por la
+documentación son propiedad de InfoArte y están protegidos por la
 legislación de propiedad intelectual.
 
 Esta licencia concede únicamente un derecho limitado de USO: no supone cesión,
@@ -153,11 +152,10 @@ permitan.
  en Linux y macOS) y el archivo selftest.txt. El autor contestará y trabajará en
  ello en un plazo razonable, sin coste alguno para ti.
 
-     Repositorio : https://github.com/rgomezs2000/extractorfanarts
      Foro        : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro
      Wiki        : https://github.com/rgomezs2000/extractorfanarts/wiki
-     Incidencias : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos
-     Contacto    : el foro de la wiki
+     Fallos      : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos
+     Contacto    : Discord: rgomezs2010
 
  7.6 ALCANCE PERSONAL. Esta garantía es personal e intransferible y se extiende
  al uso permitido en el punto 1. Si cedes, vendes o redistribuyes el programa
@@ -189,7 +187,7 @@ forma imperativa.
  NOTICE IN ENGLISH (non-binding summary)
 --------------------------------------------------------------------------------
 
-Copyright (c) 2026 Roger Gomez. All rights reserved.
+Copyright (c) 2026 InfoArte. All rights reserved.
 
 Imaginteca is PROPRIETARY software, not free or open-source software.
 
@@ -221,8 +219,7 @@ This license terminates automatically if you breach any of its terms.
 
 Para cualquier uso distinto de los concedidos en el punto 1 (uso comercial,
 redistribución, integración en otro producto, traducción, acceso al código
-fuente…), escribe al autor indicando qué necesitas:
-
-    (a través del foro de la wiki del proyecto, indicando qué necesitas)
+fuente…), pide permiso por escrito al autor desde el foro del proyecto; para
+algo privado, escribe por Discord: rgomezs2010
 
 ================================================================================

@@ -9,7 +9,14 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.0-beta.3"
+APP_VERSION = "0.1.0-beta.4"
+
+# ------------------------------------------------------------------ autoría
+# Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
+# ni nombre propio, ni correo. El canal privado es Discord.
+AUTOR = "InfoArte"
+AUTOR_COPYRIGHT = "Copyright InfoArte 2026"
+CONTACTO_DISCORD = "rgomezs2010"
 
 # ------------------------------------------------------------------ actualizaciones
 # Repositorio del que se leen las versiones nuevas (Releases de GitHub). Si renombras

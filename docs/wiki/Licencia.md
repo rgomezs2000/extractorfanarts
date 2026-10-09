@@ -1,6 +1,7 @@
 # Licencia
 
-**Imaginteca es un programa propietario.** © 2026 Roger Gomez.
+**Imaginteca es un programa propietario.**
+**Copyright InfoArte 2026.**
 **Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
 2026).
 

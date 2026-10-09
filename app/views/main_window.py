@@ -18,13 +18,16 @@ Reglas de UI:
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 
 from PySide6.QtCore import (
     QByteArray, QEvent, QMimeData, QObject, QRunnable, Qt, QThreadPool, QTimer,
     QUrl, Signal,
 )
-from PySide6.QtGui import QAction, QDesktopServices, QImage, QKeySequence, QShortcut
+from PySide6.QtGui import (
+    QAction, QDesktopServices, QFontDatabase, QImage, QKeySequence, QShortcut,
+)
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
@@ -1275,9 +1278,13 @@ class MainWindow(QMainWindow):
         menu_ayuda.addAction(self.act_acerca)
 
     def _accion_enlace(self, texto: str, url: str, descripcion: str = "") -> QAction:
-        """Acción que abre un enlace del proyecto en el navegador."""
+        """Acción que abre un enlace del proyecto en el navegador.
+
+        La dirección NO se muestra en la interfaz (ni en el globo de ayuda): solo se
+        abre. Así los menús no exponen datos de la cuenta del proyecto.
+        """
         accion = QAction(texto, self)
-        accion.setToolTip(f"{descripcion}\n{url}" if descripcion else url)
+        accion.setToolTip(descripcion or texto)
         accion.triggered.connect(lambda _=False, destino=url: self._abrir_enlace(destino))
         return accion
 
@@ -1285,13 +1292,13 @@ class MainWindow(QMainWindow):
         """Abre un enlace (wiki, foro, descargas) en el navegador."""
         try:
             QDesktopServices.openUrl(QUrl(url))
-            self.statusBar().showMessage(f"🌐 Abriendo {url}")
+            self.statusBar().showMessage("🌐 Abriendo en el navegador…")
             logger.info("enlace abierto: %s", url)
         except Exception as exc:  # noqa: BLE001
             logger.exception("no se pudo abrir el enlace %s", url)
             QMessageBox.warning(
                 self, "No se pudo abrir",
-                f"No se pudo abrir el navegador.\n\nLa dirección es:\n{url}\n\n{exc}")
+                f"No se pudo abrir el navegador.\n\n{exc}")
 
     def _sincronizar_barra(self) -> None:
         """Copia a la barra el texto y el estado de los botones del formulario."""
@@ -1593,9 +1600,13 @@ class _DialogoAcerca(QDialog):
         self.btn_actualizar = botones.addButton("🔄 Buscar actualizaciones",
                                                 QDialogButtonBox.ActionRole)
         self.btn_actualizar.setToolTip("Comprueba la última versión publicada y la instala")
+        self.btn_licencia = botones.addButton("📜 Ver licencia completa",
+                                              QDialogButtonBox.ActionRole)
+        self.btn_licencia.setToolTip("Abre la licencia entera en una ventana")
         botones.addButton("Cerrar", QDialogButtonBox.RejectRole)
         botones.rejected.connect(self.reject)
         self.btn_actualizar.clicked.connect(self._buscar)
+        self.btn_licencia.clicked.connect(self._ver_licencia)
         diseño.addWidget(botones)
 
         pantalla = self.screen()
@@ -1612,10 +1623,11 @@ class _DialogoAcerca(QDialog):
         filas = "".join(
             f"<tr><td><b>{etiqueta}</b>&nbsp;&nbsp;</td><td><code>{valor}</code></td></tr>"
             for etiqueta, valor in (
-                ("Registros", config.LOG_DIR),
-                ("Historial", config.DB_PATH),
-                ("Config local", config.CONFIG_LOCAL_USADO or "(ninguno)"),
-                ("Carpeta de salida", config.DEFAULT_OUTPUT_DIR),
+                ("Registros", self._ruta_corta(config.LOG_DIR)),
+                ("Historial", self._ruta_corta(config.DB_PATH)),
+                ("Config local", self._ruta_corta(config.CONFIG_LOCAL_USADO)
+                 if config.CONFIG_LOCAL_USADO else "(ninguno)"),
+                ("Carpeta de salida", self._ruta_corta(config.DEFAULT_OUTPUT_DIR)),
             ))
         modo = "empaquetado" if getattr(sys, "frozen", False) else "desde el código"
         return f"""
@@ -1624,25 +1636,97 @@ class _DialogoAcerca(QDialog):
         redes sociales, booros y wikis de fandom.</p>
         <p><b>Versión instalada:</b> {config.APP_VERSION}
         {'(beta)' if 'beta' in config.APP_VERSION else ''}<br>
-        <b>Autor:</b> Roger Gomez<br>
-        <b>Licencia:</b> propietaria · todos los derechos reservados (ver
-        <code>LICENSE</code>)<br>
-        <b>Proyecto:</b> <a href="{config.URL_REPO}">{config.REPO_GITHUB}</a></p>
-        <p><b>Comunidad y asistencia</b> (el foro está en la wiki; la garantía del
-        autor se hace valer ahí):<br>
-        💬 <a href="{config.URL_FORO}">Foro</a> ·
-        🆘 <a href="{config.URL_FORO_SOPORTE}">Soporte técnico</a> ·
-        🐞 <a href="{config.URL_FORO_FALLOS}">Fallos</a> ·
-        🌐 <a href="{config.URL_WIKI}">Wiki</a> ·
-        📥 <a href="{config.URL_DESCARGAS}">Descargas</a></p>
+        <b>Autor:</b> {config.AUTOR} ·
+        <b>Discord:</b> {config.CONTACTO_DISCORD}<br>
+        <b>Licencia:</b> propietaria · {config.AUTOR_COPYRIGHT} · todos los derechos
+        reservados</p>
         <p><b>Entorno:</b> Python {sys.version.split()[0]} · Qt {QtCore.qVersion()} ·
         {modo}</p>
         <p><b>Dónde queda todo:</b></p>
         <table cellspacing="3">{filas}</table>
         """
 
+    @staticmethod
+    def _ruta_corta(ruta) -> str:
+        """Ruta con variables de entorno: no expone el nombre de usuario del equipo."""
+        texto = str(ruta)
+        for variable in ("USERPROFILE", "HOME"):
+            valor = os.environ.get(variable)
+            if valor and texto.lower().startswith(valor.lower()):
+                return "%USERPROFILE%" + texto[len(valor):]
+        return texto
+
+    def _ver_licencia(self) -> None:
+        """Abre la licencia completa en su propia ventana."""
+        try:
+            _DialogoLicencia(self).exec()
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo mostrar la licencia")
+            QMessageBox.warning(self, "Licencia", f"No se pudo mostrar la licencia:\n{exc}")
+
     def _buscar(self) -> None:
         self.accept()
         padre = self._padre
         if padre is not None and hasattr(padre, "_buscar_actualizaciones"):
             padre._buscar_actualizaciones()
+
+
+class _DialogoLicencia(QDialog):
+    """Muestra el texto completo de la licencia (LICENSE) dentro del programa.
+
+    Se abre desde «Acerca de» para no obligar a nadie a buscar el archivo: el
+    usuario lo lee aquí, completo, y puede copiarlo si lo necesita.
+    """
+
+    def __init__(self, padre=None):
+        super().__init__(padre)
+        self.setWindowTitle(f"Licencia de {config.APP_NAME}")
+        diseño = QVBoxLayout(self)
+
+        encabezado = QLabel(f"<b>{config.AUTOR_COPYRIGHT}</b> · todos los derechos reservados")
+        encabezado.setTextFormat(Qt.RichText)
+        diseño.addWidget(encabezado)
+
+        visor = QTextBrowser()
+        visor.setLineWrapMode(QTextBrowser.NoWrap)
+        visor.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+        visor.setPlainText(_texto_licencia())
+        visor.setMinimumSize(560, 380)
+        diseño.addWidget(visor, 1)
+
+        botones = QDialogButtonBox()
+        btn_copiar = botones.addButton("📋 Copiar", QDialogButtonBox.ActionRole)
+        btn_copiar.setToolTip("Copia el texto de la licencia al portapapeles")
+        btn_copiar.clicked.connect(lambda: QApplication.clipboard().setText(_texto_licencia()))
+        botones.addButton("Cerrar", QDialogButtonBox.RejectRole)
+        botones.rejected.connect(self.reject)
+        diseño.addWidget(botones)
+
+        pantalla = self.screen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            self.resize(max(600, min(900, util.width() - 80)),
+                        max(460, min(700, util.height() - 80)))
+
+
+def _texto_licencia() -> str:
+    """Texto de la licencia: se busca junto al ejecutable y, si no, en el proyecto."""
+    import sys
+
+    candidatos = []
+    if getattr(sys, "frozen", False):
+        candidatos.append(Path(sys.executable).resolve().parent / "LICENSE")
+        interior = getattr(sys, "_MEIPASS", None)
+        if interior:
+            candidatos.append(Path(interior) / "LICENSE")
+    candidatos.append(Path(__file__).resolve().parents[2] / "LICENSE")
+    for ruta in candidatos:
+        try:
+            if ruta.is_file():
+                return ruta.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+    return (f"{config.APP_NAME} es un programa propietario.\n"
+            f"{config.AUTOR_COPYRIGHT} · Todos los derechos reservados.\n\n"
+            "No se encontró el archivo LICENSE junto a la aplicación.\n"
+            "El texto completo acompaña al ejecutable.\n")

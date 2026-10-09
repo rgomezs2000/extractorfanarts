@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.0-beta.4
+
+- **«Acerca de» sin datos personales**: **InfoArte** y **Discord `rgomezs2010`**,
+  sin nombre propio, sin correo y sin el repositorio.
+- **Nueva ventana de licencia** dentro del programa («📜 Ver licencia completa»).
+- El autor pasa a ser **InfoArte** en la documentación y en la licencia.
+
 ### 2026-10-09 · v0.1.0-beta.3
 
 - **Documentación reescrita y al día**: guía del usuario, `LEEME-PRIMERO.txt` y

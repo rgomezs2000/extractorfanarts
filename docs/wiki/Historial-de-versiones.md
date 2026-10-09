@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.0-beta.4 — 9 de octubre de 2026
+
+**Sin datos personales**
+- **El cuadro «Acerca de» ya no muestra nada personal**: ni nombre propio, ni
+  correo, ni el repositorio. Aparece **InfoArte** y el contacto privado
+  (**Discord `rgomezs2010`**).
+- **El autor pasa a ser InfoArte** en todos los documentos y en la licencia, con
+  el aviso **«Copyright InfoArte 2026 · Todos los derechos reservados»**.
+- Las rutas de «Acerca de» se muestran como `%USERPROFILE%…`, así que no aparece
+  el nombre de usuario del equipo.
+- **Nueva ventana de licencia**: «📜 Ver licencia completa» abre el texto entero
+  dentro del programa (con botón para copiarlo), en vez de remitir a un archivo.
+
+---
+
 ## v0.1.0-beta.3 — 9 de octubre de 2026
 
 **Documentación**

@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.0-beta.3 - LEEME PRIMERO
+ IMAGINTECA 0.1.0-beta.4 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -200,7 +200,7 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
 10) LICENCIA Y GARANTIA
 -----------------------
 Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los derechos
-(Copyright (c) 2026 Roger Gomez). No es software libre.
+(Copyright (c) 2026 InfoArte). No es software libre.
 
   SI puedes:  ejecutarlo y usarlo gratis, para tu coleccion personal, en tus
               equipos, y hacerte una copia de seguridad.

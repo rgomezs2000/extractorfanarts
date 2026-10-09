@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.0-beta.3 (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.0-beta.4 (fase beta)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -18,7 +18,8 @@ dataset** para entrenar modelos.
 > ideas, plataformas y datasets) y las respuestas a las dudas más comunes.
 > **Contacto privado: Discord `rgomezs2010`.**
 
-> **Programa propietario.** © 2026 Roger Gomez · Todos los derechos reservados.
+> **Programa propietario.** **Copyright InfoArte 2026** · Todos los derechos
+> reservados.
 > Puedes usarlo gratis para tu colección personal. No puedes copiarlo,
 > redistribuirlo, venderlo ni modificarlo. La **garantía corre por cuenta del
 > autor**: ver **Licencia** al final.
@@ -500,8 +501,8 @@ Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
 
 ### Licencia del programa
 
-**Imaginteca es un programa propietario.** © 2026 Roger Gomez.
-**Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
+**Imaginteca es un programa propietario.**
+**Copyright InfoArte 2026 · Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
 2026).
 
 - **Sí puedes:** ejecutarlo y usarlo **gratis**, para tu colección personal, en tus
@@ -556,5 +557,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.0-beta.3 · fase beta: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.0-beta.4 · fase beta: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

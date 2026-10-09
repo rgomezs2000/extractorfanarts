@@ -45,7 +45,7 @@ _SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
 def clave_version(texto: str) -> tuple[int, int, int, int, int]:
     """Clave comparable: (mayor, menor, parche, es_final, número de beta).
 
-    Así `0.1.0-beta.3 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    Así `0.1.0-beta.4 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
     final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
     """
     texto = (texto or "").strip().lstrip("vV")

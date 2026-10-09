@@ -10,7 +10,7 @@ dataset** para entrenar modelos.
 > nadie: se descarga con **tus credenciales**, con peticiones espaciadas y **sin
 > evadir nunca CAPTCHAs ni inicios de sesión**.
 
-**Versión actual:** `0.1.0-beta.3` (fase beta) · **Licencia:** propietaria (ver
+**Versión actual:** `0.1.0-beta.4` (fase beta) · **Licencia:** propietaria (ver
 [Licencia](Licencia))
 
 ---
