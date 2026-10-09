@@ -7,6 +7,7 @@
  Autor    : Roger Gomez <rogergomezs2003@gmail.com>
  Año      : 2026
  Versión  : 0.1.0-beta.2
+ Licencia : v2 (revisada el 9 de octubre de 2026)
  Web      : https://github.com/rgomezs2000/imaginteca
 
  Copyright (c) 2026 Roger Gomez. TODOS LOS DERECHOS RESERVADOS.
@@ -107,22 +108,53 @@ permitan.
 
 
 --------------------------------------------------------------------------------
- 7. GARANTÍA Y RESPONSABILIDAD
+ 7. GARANTÍA DEL AUTOR Y RESPONSABILIDAD
 --------------------------------------------------------------------------------
 
-EL PROGRAMA SE ENTREGA «TAL CUAL» Y «SEGÚN DISPONIBILIDAD», SIN GARANTÍA DE
-NINGÚN TIPO, expresa o implícita, incluidas —sin limitarse a ellas— las
-garantías de comerciabilidad, idoneidad para un fin concreto, exactitud y
-ausencia de errores. El autor no garantiza que el programa funcione sin
-interrupciones ni que los servicios de terceros sigan disponibles.
+ 7.1 CÓMO SE ENTREGA. El programa se entrega «tal cual» y «según
+ disponibilidad»: no hay instalador, no hay que registrarse, no se paga nada y
+ no se promete que los servicios de terceros sigan abiertos ni igual. Eso
+ describe la FORMA DE ENTREGA, no una renuncia a responder: lo que sigue es la
+ garantía que el autor ASUME sobre el programa.
 
-EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY APLICABLE, EL AUTOR NO SERÁ
-RESPONSABLE DE NINGÚN DAÑO derivado del uso o de la imposibilidad de usar el
-programa, incluidos daños directos, indirectos, incidentales, especiales o
-consecuentes, pérdida de datos, pérdida de archivos o lucro cesante, aunque se
-le hubiera advertido de la posibilidad de tales daños.
+ 7.2 EL AUTOR RESPONDE DEL PROGRAMA. La garantía corre por cuenta del autor,
+ que se compromete a:
 
-El usuario asume todos los riesgos derivados del uso del programa.
+   a) que el programa haga lo que su documentación dice que hace;
+   b) CORREGIR SIN COSTE los defectos que se le reporten y publicar la versión
+      corregida (la aplicación puede actualizarse sola: ver el apartado de
+      actualizaciones de la documentación);
+   c) ATENDER los avisos de fallo y las consultas de uso;
+   d) si algo no funcionara como se describe y no hubiera forma de arreglarlo,
+      darte una solución alternativa o indicarte cómo seguir usando lo que ya
+      tengas.
+
+ 7.3 QUÉ CUBRE. La garantía cubre EL PROGRAMA Y SU FUNCIONAMIENTO: defectos y
+ errores del programa (búsqueda, descarga, conversión, guardado, mejora de
+ calidad, actualización), y los DAÑOS DIRECTOS que un defecto suyo cause en tus
+ archivos o en tu equipo —por ejemplo, si sobrescribiera un archivo que no
+ debía—. El autor responde de esos daños.
+
+ 7.4 QUÉ NO CUBRE. Quedan fuera de esta garantía:
+
+   a) el contenido que descargues y el uso que hagas de él (punto 5);
+   b) el uso ilícito del programa o contrario a las condiciones de terceros
+      (punto 2.g);
+   c) los cambios que hagas en tu equipo, en tus claves, en tu red o en la
+      configuración del programa;
+   d) que un servicio de terceros cambie su API, cierre, limite el acceso o
+      bloquee las peticiones. En ese caso el autor no puede garantizar el
+      servicio ajeno, pero SÍ se compromete a avisarlo, a adaptar el programa
+      cuando sea posible y a mantener todo lo que dependa de él.
+
+ 7.5 CÓMO SE HACE VALER. Escribe a la dirección de contacto de esta licencia
+ indicando qué pasa y adjuntando el registro del día
+ (%USERPROFILE%\.imaginteca\logs) y el archivo selftest.txt. El autor contestará
+ y trabajará en ello en un plazo razonable, sin coste alguno para ti.
+
+ 7.6 ALCANCE PERSONAL. Esta garantía es personal e intransferible y se extiende
+ al uso permitido en el punto 1. Si cedes, vendes o redistribuyes el programa
+ sin autorización, la garantía deja de cubrirte a ti y a quien lo reciba.
 
 
 --------------------------------------------------------------------------------
@@ -164,9 +196,16 @@ written permission.
 
 The source code is the exclusive property of the author and is not licensed.
 
-The software is provided "AS IS", without warranty of any kind, express or
-implied, and the author shall not be liable for any damages arising from its
-use. This license terminates automatically if you breach any of its terms.
+The software is delivered "AS IS" (no installer, no service contract, no fee),
+BUT the author ASSUMES THE WARRANTY for the software itself: reported defects
+are fixed free of charge and a corrected version is published; support requests
+are answered; and direct damage caused to your files or equipment by a defect
+of the program is the author's responsibility. Excluded from this warranty: the
+content you download and how you use it, any unlawful use, changes made on your
+own system, and third-party services changing or closing their APIs (which will
+be reported and adapted to whenever possible).
+
+This license terminates automatically if you breach any of its terms.
 
 
 --------------------------------------------------------------------------------

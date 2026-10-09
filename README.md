@@ -1348,5 +1348,17 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
   plataforma. No redistribuyas el material descargado ni lo uses con fines
   comerciales sin la licencia correspondiente. El análisis completo está en
   [docs/INFORME-FACTIBILIDAD.md](docs/INFORME-FACTIBILIDAD.md).
-- **Sin garantía:** el software se ofrece «tal cual», sin garantía de ningún
-  tipo. El usuario es responsable del uso que haga de él.
+- **Garantía del autor (licencia v2):** el programa se entrega **«tal cual»**
+  (sin instalador, sin registro y sin coste), pero eso describe la forma de
+  entrega, no una renuncia a responder: **la garantía corre por cuenta del
+  autor**. El autor se compromete a que el programa haga lo que esta
+  documentación dice, a **corregir sin coste los defectos** que se le reporten y
+  publicar la versión corregida, a **atender los avisos** y a responder de los
+  **daños directos** que un defecto del programa cause en tus archivos o en tu
+  equipo. Para hacerla valer: escribe a **rogergomezs2003@gmail.com** con el
+  registro del día (`%USERPROFILE%\.imaginteca\logs`) y `selftest.txt`; se
+  contesta y se trabaja en ello en un plazo razonable, sin coste. **No cubre** el
+  contenido que descargues ni el uso que hagas de él, el uso ilícito, los cambios
+  que hagas en tu equipo y tus claves, ni que un servicio de terceros cambie su
+  API o cierre (eso se avisa y se adapta en cuanto se puede). El texto completo
+  está en [LICENSE](LICENSE).

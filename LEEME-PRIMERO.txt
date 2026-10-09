@@ -71,7 +71,7 @@ config_local.py los arrays que quieras con tus valores y reinicia.
 config_local.py se busca: 1) junto al .exe, 2) dentro del paquete, 3) en
 %USERPROFILE%\.imaginteca\config_local.py (lo mejor con el .exe: sobrevive a las
 actualizaciones). Cualquier constante en MAYUSCULAS de ese archivo sobreescribe
-app\config.py. En la app: boton "¿Que se filtra? (lista negra)" en Opciones, que muestra
+app\config.py. En la app: boton "Que se filtra? (lista negra)" en Opciones, que muestra
 los arrays tal como estan y la ruta del config_local.py que se esta usando.
 
 PIXIV (opcional): Pixiv no permite entrar sin cuenta. En esta misma carpeta tienes
@@ -156,6 +156,19 @@ derechos (Copyright (c) 2026 Roger Gomez). No es software libre.
 El codigo fuente es propiedad del autor y no se licencia.
 El texto legal completo esta en el archivo LICENSE, junto al ejecutable.
 
+GARANTIA: el programa se entrega "tal cual" (sin instalador, sin registro y sin
+coste), pero eso es la forma de entrega, no una renuncia a responder: la
+garantia corre por cuenta del autor. El autor se compromete a que el programa
+haga lo que dice la documentacion, a corregir SIN COSTE los defectos que le
+reportes y publicar la version corregida, a atender los avisos y a responder de
+los danos directos que un defecto del programa cause en tus archivos o equipo.
+Como pedirla: escribe a rogergomezs2003@gmail.com con el .log del dia
+(%USERPROFILE%\.imaginteca\logs) y selftest.txt; se contesta en un plazo
+razonable. NO cubre: el contenido que descargues ni su uso, el uso ilicito, los
+cambios que hagas en tu equipo o claves, ni que un servicio de terceros cambie
+su API o cierre (eso se avisa y se adapta en cuanto se puede).
+Licencia v2, revisada el 9 de octubre de 2026.
+
 Puedes hacer tantas descargas como quieras: lo que no se permite es
 redistribuir el PROGRAMA (el .exe), no lo que descargues con el.
 
@@ -165,5 +178,5 @@ Herramienta para archivo personal de contenido al que tengas acceso legitimo.
 Respeta los terminos de servicio de cada plataforma y los derechos de autor.
 Las imagenes se guardan siempre en .webp (el original no se conserva).
 
-Licencia del programa: LICENSE  ·  Componentes de terceros: THIRD-PARTY-NOTICES.txt
+Licencia del programa: LICENSE  -  Componentes de terceros: THIRD-PARTY-NOTICES.txt
 ========================================================================

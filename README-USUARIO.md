@@ -456,9 +456,29 @@ nada.
 - **El código fuente es propiedad del autor** y no se licencia.
 
 El texto legal completo está en el archivo **`LICENSE`** que acompaña al
-ejecutable. Para cualquier permiso distinto (uso comercial, redistribución,
-integración en otro producto…), escribe al autor:
-**rogergomezs2003@gmail.com**.
+ejecutable (**licencia v2, revisada el 9 de octubre de 2026**). Para cualquier
+permiso distinto (uso comercial, redistribución, integración en otro producto…),
+escribe al autor: **rogergomezs2003@gmail.com**.
+
+### Garantía: responde el autor
+
+El programa se entrega **«tal cual»** (no hay instalador, ni registro, ni coste),
+pero eso es la **forma de entrega**, no una renuncia a responder: **la garantía
+corre por cuenta del autor**.
+
+- Si algo **no hace lo que dice esta guía**, es un defecto del programa: el autor
+  lo **corrige sin coste** y publica la versión corregida (la propia aplicación
+  puede instalártela: mira *Actualizaciones*, en el apartado 14).
+- **Se atienden los avisos.** Escribe a **rogergomezs2003@gmail.com** contando qué
+  pasa, con el **registro del día** (`%USERPROFILE%\.imaginteca\logs`) y el
+  archivo **`selftest.txt`**. Se contesta y se trabaja en ello en un plazo
+  razonable, sin coste alguno.
+- **Daños directos por un defecto del programa** (por ejemplo, que sobrescriba un
+  archivo que no debía): responde el autor.
+- **Qué no cubre:** el contenido que descargues y el uso que hagas de él, el uso
+  ilícito o contra las condiciones de una plataforma, los cambios que hagas en tu
+  equipo o en tus claves, y que un servicio de terceros cambie su API o cierre
+  (eso se avisa y se adapta en cuanto se puede).
 
 ### Componentes de terceros
 
