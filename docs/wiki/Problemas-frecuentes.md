@@ -17,7 +17,7 @@ Antes de preguntar, mira aquí: la mayoría de los avisos tienen explicación.
 |---|---|
 | **0 resultados** pero la conexión va bien | En Rule34.xxx y Rule34 Paheal casi todo es adulto: marca **Permitir contenido adulto** en Opciones |
 | Búsqueda **muy lenta** | Se espacian las peticiones a propósito (cortesía con los sitios). Con muchos hashtags o palabras clave tarda más |
-| Una wiki o un sitio devuelve **403** | Suele ser una defensa contra programas. Anótalo y avísalo en el [foro](https://github.com/rgomezs2000/extractorfanarts/discussions) |
+| Una wiki o un sitio devuelve **403** | Suele ser una defensa contra programas. Anótalo y avísalo en el [foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro) |
 | **Cloudflare pide un CAPTCHA** (Rule34.xxx) | Ábrelo en tu navegador, resuélvelo y copia en `config_local.py` la cookie `cf_clearance` y tu `User-Agent` (F12 → Red → la primera petición → Cabeceras). **El programa nunca evade CAPTCHAs** |
 | Las palabras clave del fediverso no encuentran nada | Si la instancia no permite buscar por texto sin cuenta, se buscan como etiqueta equivalente (`Lola Loud` → `#lola_loud`) |
 | Pixiv no funciona | Necesita tu token: usa `pixiv-token.exe` (ver [Claves y configuración](Claves-y-configuracion)) y reinicia |
@@ -55,5 +55,5 @@ Y si vas a pedir ayuda, incluye ese archivo y el `selftest.txt`: ver
 ---
 
 **¿No está tu caso?** Pregúntalo en el
-**[foro](https://github.com/rgomezs2000/extractorfanarts/discussions)** o abre una
-**[incidencia](https://github.com/rgomezs2000/extractorfanarts/issues)**.
+**[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** o abre una
+**[fallo](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**.

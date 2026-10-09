@@ -1252,21 +1252,25 @@ class MainWindow(QMainWindow):
         # Comunidad y asistencia técnica: el foro es donde se pregunta y se comenta,
         # y también donde se hace valer la garantía del autor.
         self.act_foro = self._accion_enlace(
-            "💬 Foro y comunidad", config.URL_FORO,
-            "Preguntas, comentarios y asistencia técnica (GitHub Discussions)")
+            "💬 Foro (en la wiki)", config.URL_FORO,
+            "Preguntas, comentarios y asistencia técnica: el foro vive en la wiki")
+        self.act_foro_soporte = self._accion_enlace(
+            "🆘 Foro · Soporte técnico", config.URL_FORO_SOPORTE,
+            "Dudas de uso y asistencia técnica")
+        self.act_foro_fallos = self._accion_enlace(
+            "🐞 Foro · Fallos", config.URL_FORO_FALLOS,
+            "Algo no funciona como debería")
         self.act_soporte = self._accion_enlace(
-            "🆘 Soporte técnico", config.URL_SOPORTE,
-            "Qué incluir para que te ayuden a la primera (registro y selftest.txt)")
+            "📋 Qué incluir al pedir ayuda", config.URL_SOPORTE,
+            "Versión, sistema, pasos, selftest.txt y el registro del día")
         self.act_wiki = self._accion_enlace(
             "🌐 Wiki (documentación)", config.URL_WIKI,
             "Instalación, guía rápida, claves, calidad, datasets…")
-        self.act_incidencias = self._accion_enlace(
-            "🐞 Reportar un fallo", config.URL_INCIDENCIAS,
-            "Fallos y peticiones de mejora con seguimiento")
         menu_ayuda.addAction(self.act_foro)
+        menu_ayuda.addAction(self.act_foro_soporte)
+        menu_ayuda.addAction(self.act_foro_fallos)
         menu_ayuda.addAction(self.act_soporte)
         menu_ayuda.addAction(self.act_wiki)
-        menu_ayuda.addAction(self.act_incidencias)
         menu_ayuda.addSeparator()
         menu_ayuda.addAction(self.act_acerca)
 
@@ -1278,7 +1282,7 @@ class MainWindow(QMainWindow):
         return accion
 
     def _abrir_enlace(self, url: str) -> None:
-        """Abre un enlace (wiki, foro, incidencias, descargas) en el navegador."""
+        """Abre un enlace (wiki, foro, descargas) en el navegador."""
         try:
             QDesktopServices.openUrl(QUrl(url))
             self.statusBar().showMessage(f"🌐 Abriendo {url}")
@@ -1624,11 +1628,12 @@ class _DialogoAcerca(QDialog):
         <b>Licencia:</b> propietaria · todos los derechos reservados (ver
         <code>LICENSE</code>)<br>
         <b>Proyecto:</b> <a href="{config.URL_REPO}">{config.REPO_GITHUB}</a></p>
-        <p><b>Comunidad y asistencia</b> (la garantía del autor se hace valer aquí):<br>
-        💬 <a href="{config.URL_FORO}">Foro y comunidad</a> ·
-        🆘 <a href="{config.URL_SOPORTE}">Soporte técnico</a> ·
+        <p><b>Comunidad y asistencia</b> (el foro está en la wiki; la garantía del
+        autor se hace valer ahí):<br>
+        💬 <a href="{config.URL_FORO}">Foro</a> ·
+        🆘 <a href="{config.URL_FORO_SOPORTE}">Soporte técnico</a> ·
+        🐞 <a href="{config.URL_FORO_FALLOS}">Fallos</a> ·
         🌐 <a href="{config.URL_WIKI}">Wiki</a> ·
-        🐞 <a href="{config.URL_INCIDENCIAS}">Incidencias</a> ·
         📥 <a href="{config.URL_DESCARGAS}">Descargas</a></p>
         <p><b>Entorno:</b> Python {sys.version.split()[0]} · Qt {QtCore.qVersion()} ·
         {modo}</p>

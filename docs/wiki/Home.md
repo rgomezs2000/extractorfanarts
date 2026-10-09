@@ -28,21 +28,29 @@ dataset** para entrenar modelos.
 | Actualizar el programa | **[Actualizaciones](Actualizaciones)** |
 | Resolver un problema | **[Problemas frecuentes](Problemas-frecuentes)** |
 | Pedir ayuda técnica | **[Soporte técnico](Soporte-tecnico)** |
-| Comentar, proponer o preguntar | **[Foro y comunidad](Foro-y-comunidad)** |
+| Comentar, proponer o preguntar | **[Foro](Foro)** |
 
 ---
 
-## 💬 Comunidad y soporte
+## 💬 Foro (en la wiki)
 
-Aquí **puede comentar cualquiera**, también para **asistencia técnica**:
+El **foro vive aquí, en la wiki**: no hay que registrarse en ningún sitio nuevo y
+todo queda junto a la documentación. Se publica un mensaje igual que se edita una
+página: **✏️ Edit → copiar la plantilla al final de «Mensajes» → Save page** (hace
+falta una cuenta de GitHub, gratis).
 
-- **[Foro (Discussions)](https://github.com/rgomezs2000/extractorfanarts/discussions)** —
-  preguntas, dudas de uso, ideas y anuncios. Es el sitio recomendado para hablar.
-- **[Incidencias (Issues)](https://github.com/rgomezs2000/extractorfanarts/issues)** —
-  fallos con pasos para reproducirlos y peticiones de mejora con seguimiento.
-- **[Soporte técnico](Soporte-tecnico)** — qué datos conviene incluir (registro
-  del día y `selftest.txt`) para que te puedan ayudar a la primera.
-- **[Foro y comunidad](Foro-y-comunidad)** — normas de convivencia y cómo participar.
+| Tablero | Para qué |
+|---|---|
+| 👋 [Presentaciones](Foro-Presentaciones) | presentarte y contar qué coleccionas |
+| 🆘 [Soporte técnico](Foro-Soporte-tecnico) | **asistencia técnica** y dudas de uso |
+| 🐞 [Fallos](Foro-Fallos) | algo no funciona como debería |
+| 💡 [Ideas y sugerencias](Foro-Ideas) | propuestas y mejoras |
+| 🌐 [Plataformas y sitios](Foro-Plataformas) | cambios y problemas de las fuentes |
+| 🎨 [Datasets y entrenamiento](Foro-Datasets) | LoRA, LyCORIS, checkpoints, captions |
+| 📣 [Anuncios](Foro-Anuncios) | versiones nuevas y avisos (solo lectura) |
+
+Las normas están en **[Foro y comunidad](Foro-y-comunidad)**, y qué incluir en cada
+mensaje, en **[Soporte técnico](Soporte-tecnico)**.
 
 Los comentarios, las dudas y los reportes **se leen y se contestan**, y son
 también la forma de hacer valer la **garantía del autor** (ver

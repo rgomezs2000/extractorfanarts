@@ -7,15 +7,21 @@
 - [🧠 Datasets para IA](Datasets-IA)
 - [🔄 Actualizaciones](Actualizaciones)
 
+**💬 Foro** *(aquí se comenta y se pide ayuda)*
+- [📋 Entrar al foro](Foro)
+- [👋 Presentaciones](Foro-Presentaciones)
+- [🆘 Soporte técnico](Foro-Soporte-tecnico)
+- [🐞 Fallos](Foro-Fallos)
+- [💡 Ideas y sugerencias](Foro-Ideas)
+- [🌐 Plataformas y sitios](Foro-Plataformas)
+- [🎨 Datasets y entrenamiento](Foro-Datasets)
+- [📣 Anuncios](Foro-Anuncios)
+- [🤝 Normas y convivencia](Foro-y-comunidad)
+
 **¿Problemas?**
 - [🛠️ Problemas frecuentes](Problemas-frecuentes)
 - [❓ Preguntas frecuentes](Preguntas-frecuentes)
-- [🆘 Soporte técnico](Soporte-tecnico)
-
-**Comunidad**
-- [💬 Foro y comunidad](Foro-y-comunidad)
-- [🐞 Incidencias](https://github.com/rgomezs2000/extractorfanarts/issues)
-- [💬 Foro (Discussions)](https://github.com/rgomezs2000/extractorfanarts/discussions)
+- [📋 Qué incluir al pedir ayuda](Soporte-tecnico)
 
 **Información**
 - [📜 Licencia](Licencia)

@@ -16,8 +16,8 @@
 
 | Canal | Para qué |
 |---|---|
-| 💬 **[Foro (Discussions)](https://github.com/rgomezs2000/extractorfanarts/discussions)** | **Asistencia técnica**, dudas de uso, ideas y anuncios |
-| 🐞 **[Incidencias (Issues)](https://github.com/rgomezs2000/extractorfanarts/issues)** | Fallos y mejoras con seguimiento |
+| 💬 **[Foro (en la wiki)](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** | **Asistencia técnica**, dudas de uso, ideas y anuncios |
+| 🐞 **[Fallos (en la wiki)](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** | Fallos y mejoras con seguimiento |
 | 📖 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)** | Consultar y **comentar** en las páginas |
 | ✉️ **rogergomezs2003@gmail.com** | Lo que prefieras tratar en privado |
 

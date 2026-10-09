@@ -30,8 +30,12 @@ UPDATE_TIMEOUT = 15            # segundos de espera al consultar GitHub
 REPO_GITHUB = "rgomezs2000/extractorfanarts"
 URL_REPO = f"https://github.com/{REPO_GITHUB}"
 URL_WIKI = f"{URL_REPO}/wiki"
-URL_FORO = f"{URL_REPO}/discussions"          # el foro: preguntas y asistencia
-URL_INCIDENCIAS = f"{URL_REPO}/issues"        # fallos y mejoras con seguimiento
+# El FORO vive dentro de la wiki (no en el repositorio): es una página editable por
+# cualquiera, con un tablero por tema.
+URL_FORO = f"{URL_WIKI}/Foro"
+URL_FORO_SOPORTE = f"{URL_WIKI}/Foro-Soporte-tecnico"
+URL_FORO_FALLOS = f"{URL_WIKI}/Foro-Fallos"
+URL_FORO_COMUNIDAD = f"{URL_WIKI}/Foro-y-comunidad"
 URL_DESCARGAS = f"{URL_REPO}/releases"
 URL_SOPORTE = f"{URL_WIKI}/Soporte-tecnico"   # qué incluir para pedir ayuda
 URL_PROBLEMAS = f"{URL_WIKI}/Problemas-frecuentes"

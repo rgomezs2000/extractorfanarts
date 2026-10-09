@@ -8,12 +8,12 @@ coste** y se publica la versión corregida.
 
 | Canal | Para qué | Enlace |
 |---|---|---|
-| 💬 **Foro (Discussions)** | Dudas de uso, cómo hacer algo, preguntas abiertas y **asistencia técnica** | [Discussions](https://github.com/rgomezs2000/extractorfanarts/discussions) |
-| 🐞 **Incidencias (Issues)** | Fallos con seguimiento y peticiones de mejora | [Issues](https://github.com/rgomezs2000/extractorfanarts/issues) |
+| 💬 **Foro (en la wiki)** | Dudas de uso, cómo hacer algo, preguntas abiertas y **asistencia técnica** | [Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro) |
+| 🐞 **Fallos (en la wiki)** | Fallos con seguimiento y peticiones de mejora | [Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos) |
 | 📖 **Wiki** | Consultar antes de preguntar | [Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) |
 | ✉️ **Contacto directo** | Lo que prefieras tratar en privado | `rogergomezs2003@gmail.com` |
 
-Puedes **comentar en el foro, en la wiki o en la incidencia**: todo se lee y se
+Puedes **comentar en el foro o en la wiki**: todo se lee y se
 contesta.
 
 ## Qué incluir (esto hace que te ayuden a la primera)

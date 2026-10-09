@@ -1359,8 +1359,8 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
   **daños directos** que un defecto del programa cause en tus archivos o en tu
   equipo. **Para hacerla valer:** deja tu **comentario, contacto o reporte en la
   [wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) o en el
-  [foro](https://github.com/rgomezs2000/extractorfanarts/discussions)** —o en las
-  [incidencias](https://github.com/rgomezs2000/extractorfanarts/issues), o por
+  [foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** —o en las
+  [fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos), o por
   contacto directo— incluyendo el registro del día
   (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
   Linux/macOS) y `selftest.txt`; se contesta y se trabaja en ello en un plazo
@@ -1372,28 +1372,45 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
 
 ---
 
-## 18. Comunidad, wiki y foro
+## 18. La wiki y el foro
 
-El proyecto tiene **wiki y foro dentro del repositorio** para que cualquiera pueda
-**comentar, preguntar y pedir asistencia técnica**. Todo se lee y se contesta, y es
-también la forma de hacer valer la **garantía del autor**
-([§17](#17-licencia-y-avisos-legales)).
+La comunidad de Imaginteca vive **dentro de la wiki del repositorio**: la
+documentación y el foro están en el mismo sitio y **el repositorio no aloja
+conversaciones** (ni Discussions ni hilos de incidencias). Cualquiera puede
+**comentar, preguntar y pedir asistencia técnica**, y ahí es también donde se hace
+valer la **garantía del autor** ([§17](#17-licencia-y-avisos-legales)).
 
-| Canal | Para qué | Dirección |
-|---|---|---|
-| 💬 **Foro (Discussions)** | preguntas, dudas de uso, ideas, anuncios y **asistencia técnica** | <https://github.com/rgomezs2000/extractorfanarts/discussions> |
-| 🐞 **Incidencias (Issues)** | fallos y mejoras **con seguimiento** | <https://github.com/rgomezs2000/extractorfanarts/issues> |
-| 📖 **Wiki** | documentación completa (se puede **comentar** en cada página) | <https://github.com/rgomezs2000/extractorfanarts/wiki> |
-| 🆘 **Soporte técnico** | qué incluir para que te ayuden a la primera | <https://github.com/rgomezs2000/extractorfanarts/wiki/Soporte-tecnico> |
-| ✉️ **Contacto** | lo que prefieras tratar en privado | `rogergomezs2003@gmail.com` |
+### 18.1 El foro, en la wiki
 
-### 18.1 La wiki vive en el repositorio
+El foro son **páginas de la wiki**, con un tablero por tema. Se publica un mensaje
+igual que se edita una página: **✏️ Edit → copiar la plantilla al final de
+«Mensajes» → Save page**. Hace falta una cuenta de GitHub (gratis) y nada más.
+
+| Tablero | Para qué |
+|---|---|
+| 👋 [Presentaciones](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Presentaciones) | presentarse y contar qué se colecciona |
+| 🆘 [Soporte técnico](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Soporte-tecnico) | **asistencia técnica** y dudas de uso |
+| 🐞 [Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos) | algo no funciona como debería |
+| 💡 [Ideas y sugerencias](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Ideas) | propuestas y mejoras |
+| 🌐 [Plataformas y sitios](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Plataformas) | cambios y problemas de las fuentes |
+| 🎨 [Datasets y entrenamiento](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Datasets) | LoRA, LyCORIS, checkpoints, captions |
+| 📣 [Anuncios](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Anuncios) | versiones nuevas y avisos (solo lectura) |
+
+La entrada está en [Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro),
+las normas en [Foro y comunidad](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-y-comunidad)
+y el resumen de qué incluir en cada mensaje, en
+[Soporte técnico](https://github.com/rgomezs2000/extractorfanarts/wiki/Soporte-tecnico).
+
+> **Permisos:** para que el foro admita mensajes, la wiki debe poder editarla
+> cualquiera (es lo predeterminado en un repositorio público). Si se restringe a
+> colaboradores, nadie de fuera podrá escribir. Todos los cambios quedan en el
+> **historial** de la wiki y se pueden revertir, así que la moderación es sencilla.
+
+### 18.2 Las páginas viven en `docs/wiki/`
 
 Las páginas **no** se escriben a mano en la wiki: viven en **`docs/wiki/`** dentro
 del repositorio y desde ahí se publican, para no mantener dos copias del mismo
-texto (16 páginas: inicio, instalación, guía rápida, plataformas, claves, calidad,
-datasets, actualizaciones, problemas frecuentes, soporte, foro, preguntas, licencia,
-historial y las barras `_Sidebar`/`_Footer`).
+texto (documentación + foro + las barras `_Sidebar` y `_Footer`).
 
 ```powershell
 python scripts\publicar_wiki.py --comprobar     # ver qué haría, sin publicar
@@ -1405,28 +1422,12 @@ hay que activarla y crear una página desde la web (GitHub crea el repositorio d
 wiki con esa primera página); después el script hace el resto. Si todavía no existe,
 el script lo detecta y explica los tres pasos.
 
-### 18.2 El foro (Discussions)
+### 18.3 Documentos de apoyo
 
-Se activa en **Settings → Features → Discussions** del repositorio. Las plantillas
-de hilo están en [`.github/DISCUSSION_TEMPLATE/`](.github/DISCUSSION_TEMPLATE):
-
-| Plantilla | Categoría sugerida |
-|---|---|
-| `soporte-tecnico.yml` | 🆘 Soporte técnico |
-| `preguntas.yml` | ❓ Preguntas y respuestas |
-| `ideas.yml` | 💡 Ideas y sugerencias |
-| `plataformas.yml` | 🌐 Plataformas y sitios |
-| `datasets.yml` | 🎨 Datasets y entrenamiento |
-
-### 18.3 Incidencias y escaparate del repositorio
-
-- Plantillas de incidencia en [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE)
-  (error, soporte técnico, mejora) y enlaces a la comunidad en su `config.yml`.
-- [SUPPORT.md](SUPPORT.md) — por dónde pedir ayuda (GitHub lo muestra al abrir una
-  incidencia).
+- [SUPPORT.md](SUPPORT.md) — por dónde pedir ayuda y qué incluir.
 - [.github/SECURITY.md](.github/SECURITY.md) — cómo reportar un problema de
   seguridad **en privado**.
 - [.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md) — normas de convivencia.
 
-**La aplicación enlaza a todo esto**: menú **Ayuda** (foro, soporte técnico, wiki e
-incidencias), la ventana de ayuda (`F1`) y el cuadro **Acerca de**.
+**La aplicación enlaza a todo esto**: menú **Ayuda** (foro, soporte técnico y wiki),
+la ventana de ayuda (`F1`) y el cuadro **Acerca de**.

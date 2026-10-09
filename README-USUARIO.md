@@ -325,11 +325,11 @@ mensajes que el registro del día. Es normal y útil para ver qué está pasando
 
 ### ¿Dónde pido ayuda?
 
-- 💬 **[Foro](https://github.com/rgomezs2000/extractorfanarts/discussions)**: el
+- 💬 **[Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**: el
   sitio para preguntar, comentar y pedir **asistencia técnica**.
 - 🌐 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**: la
   documentación completa (también dentro del programa, con `F1`).
-- 🐞 **[Incidencias](https://github.com/rgomezs2000/extractorfanarts/issues)**:
+- 🐞 **[Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**:
   fallos y mejoras, con seguimiento.
 - ✉️ **rogergomezs2003@gmail.com**: contacto directo.
 
@@ -493,9 +493,9 @@ corre por cuenta del autor**.
   lo **corrige sin coste** y publica la versión corregida (la propia aplicación
   puede instalártela: mira *Actualizaciones*, en el apartado 14).
 - **Se atienden los avisos.** Deja tu **comentario, contacto o reporte** donde
-  prefieras: el **[foro](https://github.com/rgomezs2000/extractorfanarts/discussions)**,
+  prefieras: el **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**,
   la **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**, las
-  **[incidencias](https://github.com/rgomezs2000/extractorfanarts/issues)** o el
+  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** o el
   contacto directo (**rogergomezs2003@gmail.com**). Incluye el **registro del día**
   (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
   Linux/macOS) y el archivo **`selftest.txt`**. Se contesta y se trabaja en ello en

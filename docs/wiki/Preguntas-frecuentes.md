@@ -72,7 +72,7 @@ entrenador no lo acepta, convierte la carpeta a PNG/JPG por lotes.
 
 **¿Puedo proponer cosas o reportar fallos?**
 Sí, y se agradece: [foro](Foro-y-comunidad),
-[incidencias](https://github.com/rgomezs2000/extractorfanarts/issues) o
+[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos) o
 [Soporte técnico](Soporte-tecnico).
 
 **¿Aceptan código o traducciones del programa?**
@@ -91,5 +91,5 @@ Con **🔄 Actualizaciones** dentro del programa (o mirando
 ---
 
 **¿No está tu pregunta?** Pregúntala en el
-**[foro](https://github.com/rgomezs2000/extractorfanarts/discussions)**: con eso
+**[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**: con eso
 también ayudas a quien venga detrás.

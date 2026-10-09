@@ -5,7 +5,7 @@
 Si encuentras un fallo que pueda comprometer la seguridad o la privacidad de
 quien use Imaginteca —por ejemplo, que **tus claves salgan de tu equipo**, que se
 ejecute código no previsto, o que se pueda escribir fuera de las carpetas
-permitidas—, **no lo publiques como incidencia abierta**: escríbelo en privado a
+permitidas—, **no lo publiques en el foro**: escríbelo en privado a
 
 **rogergomezs2003@gmail.com**
 
@@ -17,7 +17,7 @@ indicando:
 
 Se contesta **en un plazo razonable** y se trabaja en la corrección **sin coste**.
 Si el fallo afecta a datos o a la privacidad, se avisará por el
-[foro](https://github.com/rgomezs2000/extractorfanarts/discussions) una vez
+[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro) una vez
 publicada la versión corregida, con el detalle justo para que la gente pueda
 protegerse.
 

@@ -1,6 +1,6 @@
 **Imaginteca** · [Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) ·
-[Foro](https://github.com/rgomezs2000/extractorfanarts/discussions) ·
-[Incidencias](https://github.com/rgomezs2000/extractorfanarts/issues) ·
+[Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro) ·
+[Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos) ·
 [Descargas](https://github.com/rgomezs2000/extractorfanarts/releases) ·
 [Licencia](Licencia)
 

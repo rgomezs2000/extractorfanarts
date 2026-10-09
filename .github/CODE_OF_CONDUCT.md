@@ -1,6 +1,6 @@
 # Normas de convivencia
 
-Este repositorio —wiki, foro e incidencias— es un espacio para **ayudarse** con
+La wiki del proyecto y su foro son un espacio para **ayudarse** con
 Imaginteca. Participar implica aceptar estas normas.
 
 ## Cómo nos tratamos
@@ -43,7 +43,7 @@ Imaginteca. Participar implica aceptar estas normas.
 
 ## Ámbito
 
-Estas normas se aplican a la wiki, al foro, a las incidencias y a cualquier
+Estas normas se aplican a la wiki, a su foro y a cualquier
 espacio del proyecto. Al participar, aceptas también la
 [licencia](https://github.com/rgomezs2000/extractorfanarts/wiki/Licencia) del
 programa.

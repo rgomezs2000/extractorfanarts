@@ -20,12 +20,18 @@
 - **Licencia v2**: la **garantía corre por cuenta del autor** (se corrigen sin
   coste los defectos reportados, se atienden los avisos y se responde de los daños
   directos causados por un defecto del programa). Se puede hacer valer por el foro,
-  la wiki, las incidencias o por contacto directo.
+  el foro de la wiki o por contacto directo.
 
 **Nombre del proyecto**
 - El proyecto pasa a llamarse **Imaginteca** (antes «ExtractorFanarts»): imágenes,
   colección y preparación de datasets. El ejecutable, las carpetas de datos y los
   paquetes usan el nombre nuevo. Tus claves anteriores se siguen leyendo.
+
+**Comunidad**
+- **El foro vive en la wiki** (no en el repositorio): tableros de soporte técnico,
+  fallos, ideas, plataformas y datasets, más las normas de convivencia. Se publica
+  un mensaje editando la página, y todo queda junto a la documentación.
+- La **garantía del autor** se hace valer dejando el reporte en el foro de la wiki.
 
 **Calidad y limpieza**
 - El modo IA ya no deja registros ni archivos temporales: el proceso queda limpio.
@@ -50,4 +56,4 @@ Primera versión pública (beta).
 ---
 
 *¿Falta algo en el historial? Dilo en el
-[foro](https://github.com/rgomezs2000/extractorfanarts/discussions).*
+[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro).*
