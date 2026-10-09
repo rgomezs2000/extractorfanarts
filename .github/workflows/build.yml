@@ -124,6 +124,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # El checkout es IMPRESCINDIBLE aquí: sin él, este job no tiene el repositorio
+      # en el workspace y `python scripts/limpiar_release.py` no existe (el intérprete
+      # termina con código 2). Fue la causa de que la limpieza del Release fallara
+      # siempre en silencio y se acumularan adjuntos de versiones anteriores.
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           path: paquetes
