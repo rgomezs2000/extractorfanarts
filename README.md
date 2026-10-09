@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.5-beta.3 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.5-beta.4 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -654,8 +654,8 @@ wiki: [Instalación](https://github.com/rgomezs2000/extractorfanarts/wiki/Instal
 2. **Instalador con asistente**: `…-windows-installer.exe` (Inno Setup, por usuario,
    con accesos directos y desinstalador), `…-macos-installer.dmg` (arrastrar a
    Aplicaciones) y `…-linux-installer.deb` (`/opt/imaginteca` + lanzador + menú).
-3. **Consola**: `--selftest`, `--version`, `--comprobar-actualizacion` y
-   `--actualizar` (descarga, verifica la huella, **reemplazo limpio** —conserva
+3. **Consola**: `--selftest`, `--version`, `--dependencias`,
+   `--comprobar-actualizacion` y `--actualizar` (descarga, verifica la huella, **reemplazo limpio** —conserva
    `config_local.py` y borra versión anterior, temporales y descarga— y reinicia).
 
 Los instaladores los genera el propio flujo de compilación en cada sistema
@@ -1052,7 +1052,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.5-beta.3 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.5-beta.4 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1236,12 +1236,12 @@ notas del release.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Betas y releases.** Hasta `v0.1.5-beta.3` las etiquetas se publicaban como
-> **pre-release** de GitHub. Desde **`v0.1.5-beta.3` (la beta definitiva)** el flujo
+> **Betas y releases.** Hasta `v0.1.5-beta.4` las etiquetas se publicaban como
+> **pre-release** de GitHub. Desde **`v0.1.5-beta.4` (la beta definitiva)** el flujo
 > publica **releases OFICIALES** (`prerelease: false`): la versión sigue llamándose
 > «beta», pero aparece como la **última versión** del proyecto y se ofrece como
 > descarga recomendada. El programa marca una versión como beta por **su nombre**
-> (`0.1.5-beta.3`), no por la marca de GitHub.
+> (`0.1.5-beta.4`), no por la marca de GitHub.
 
 ### Opción A — automática (recomendada)
 
@@ -1250,9 +1250,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.5-beta.3"
+git commit -m "release v0.1.5-beta.4"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.3
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.4
 ```
 
 Resultado en unos minutos:
@@ -1261,16 +1261,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.3-windows.zip
-gh release create v0.1.5-beta.3 "dist\Imaginteca-v0.1.5-beta.3-windows.zip" `
-   --title "Imaginteca v0.1.5-beta.3" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.4-windows.zip
+gh release create v0.1.5-beta.4 "dist\Imaginteca-v0.1.5-beta.4-windows.zip" `
+   --title "Imaginteca v0.1.5-beta.4" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.5-beta.3` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.5-beta.4` (crear al publicar) →
 deja **sin marcar** «Set as a pre-release» (desde la beta definitiva los
 releases son oficiales) → adjuntar los paquetes.
 

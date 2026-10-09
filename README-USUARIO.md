@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.3 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.4 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -761,10 +761,36 @@ Imaginteca.exe --actualizar                # Windows: instala y reinicia
 
 ### 16.1 Dependencias del sistema (mantenimiento)
 
+**Qué te dice y de dónde lo saca.** El informe dice, para cada dependencia
+esencial (PySide6, shiboken6, Pillow, httpx, httpcore, h11, anyio, certifi y
+curl_cffi), **la versión que está en uso**, **de dónde sale** y cuál es la **última
+publicada**:
+
+| Columna | Significa |
+|---|---|
+| **en uso** | La versión que el programa está usando **de verdad** (la del módulo cargado), no lo que digan los metadatos |
+| **de dónde** | `paquete` (viaja dentro del programa), `vendor` (la carpeta del proyecto) o `en uso`/`entorno` (el Python del sistema) |
+| **última** | La última publicada en PyPI |
+| **estado** | `al día`, `HAY NOVEDAD`, `presente (sin comprobar)` o `NO ENCONTRADO` |
+
+En una copia **empaquetada** las dependencias van **dentro** del ejecutable (no hay
+`.dist-info` sueltos), por eso el informe lo comprueba **importando** cada módulo y
+leyendo lo que anotó el flujo al empaquetar: así se ve la versión real en lugar de un
+«no instalado» engañoso. Al final resume **cuántas están presentes** (por ejemplo
+`9 de 9`) y el estado de los **motores de IA**.
+
+Lo mismo está disponible en la consola, en los tres sistemas y en los dos canales:
+
+```powershell
+Imaginteca.exe --dependencias     # Windows
+```
+```bash
+./Imaginteca --dependencias       # macOS y Linux
+```
+
 **Ayuda → 🧩 Dependencias del sistema** muestra el estado del **intérprete de
-Python**, de los **paquetes esenciales** (comparando la versión instalada con la
-última publicada en PyPI) y de los **motores de IA**, **en pantalla y en la
-consola**.
+Python**, de los **paquetes esenciales** y de los **motores de IA**, **en pantalla y
+en la consola**.
 
 - Con el **paquete de la release** no hay nada que actualizar por separado: las
   dependencias viajan dentro del programa (incluido Python) y se actualizan con el
@@ -876,5 +902,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.3 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.4 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

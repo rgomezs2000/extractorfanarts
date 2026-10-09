@@ -10,7 +10,7 @@ Gracias a ella, los paquetes del release se reconocen como **producción** (con 
 actualizaciones activadas) y cualquier copia hecha en un equipo —el código fuente o
 un `.exe` compilado a mano— se reconoce como **desarrollo** (sin actualizaciones).
 
-    python scripts\\marcar_release.py --version 0.1.5-beta.3 --destino dist/Imaginteca
+    python scripts\\marcar_release.py --version 0.1.5-beta.4 --destino dist/Imaginteca
 """
 from __future__ import annotations
 
@@ -41,9 +41,29 @@ def contenido(version: str, etiqueta: str) -> dict:
         "origen": "GitHub Actions",
         "flujo": os.environ.get("GITHUB_RUN_ID", ""),
         "commit": os.environ.get("GITHUB_SHA", ""),
+        "dependencias": versiones_dependencias(),
         "nota": ("Marca de la release: hace que esta copia se reconozca como "
                  "producción y active las actualizaciones."),
     }
+
+
+def versiones_dependencias() -> dict:
+    """Versiones de las dependencias esenciales justo cuando se empaqueta.
+
+    Se anotan en la marca para que el programa pueda decir **qué lleva dentro**
+    aunque dentro del ejecutable no queden los `.dist-info` (que es lo normal).
+    """
+    try:
+        from app import dependencias
+    except Exception as exc:  # noqa: BLE001
+        print(f"[aviso] no se pudieron leer las dependencias: {exc}")
+        return {}
+    datos: dict = {}
+    for importable, _ in dependencias.ESENCIALES:
+        version, _origen, presente = dependencias.version_en_uso(importable)
+        if presente and version:
+            datos[importable] = str(version)
+    return datos
 
 
 def main() -> int:

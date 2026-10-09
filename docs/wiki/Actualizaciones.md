@@ -28,7 +28,7 @@ registros. La actualización reemplaza **el programa**, no tus datos.
 
 Se comparan correctamente, incluidas las betas:
 
-- `0.1.5-beta.3` es **más nueva** que `0.1.0-beta.1`
+- `0.1.5-beta.4` es **más nueva** que `0.1.0-beta.1`
 - `0.1.0` (final) es **más nueva** que cualquier `0.1.0-beta.x`
 
 Las versiones **beta cuentan como versión nueva**, porque es lo que se publica por
@@ -53,6 +53,33 @@ copiar tu `config_local.py`) y abrirlo. Verifica el `.sha256` como se explica en
 [Instalación](Instalacion).
 
 ## Dependencias y consola (mantenimiento)
+
+**Qué te dice y de dónde lo saca.** El informe dice, para cada dependencia
+esencial (PySide6, shiboken6, Pillow, httpx, httpcore, h11, anyio, certifi y
+curl_cffi), **la versión que está en uso**, **de dónde sale** y cuál es la **última
+publicada**:
+
+| Columna | Significa |
+|---|---|
+| **en uso** | La versión que el programa está usando **de verdad** (la del módulo cargado), no lo que digan los metadatos |
+| **de dónde** | `paquete` (viaja dentro del programa), `vendor` (la carpeta del proyecto) o `en uso`/`entorno` (el Python del sistema) |
+| **última** | La última publicada en PyPI |
+| **estado** | `al día`, `HAY NOVEDAD`, `presente (sin comprobar)` o `NO ENCONTRADO` |
+
+En una copia **empaquetada** las dependencias van **dentro** del ejecutable (no hay
+`.dist-info` sueltos), por eso el informe lo comprueba **importando** cada módulo y
+leyendo lo que anotó el flujo al empaquetar: así se ve la versión real en lugar de un
+«no instalado» engañoso. Al final resume **cuántas están presentes** (por ejemplo
+`9 de 9`) y el estado de los **motores de IA**.
+
+Lo mismo está disponible en la consola, en los tres sistemas y en los dos canales:
+
+```powershell
+Imaginteca.exe --dependencias     # Windows
+```
+```bash
+./Imaginteca --dependencias       # macOS y Linux
+```
 
 En **Ayuda → 🧩 Dependencias del sistema** puedes ver el estado del **intérprete de
 Python**, de los **paquetes esenciales** (Qt/PySide6, Pillow, httpx, curl_cffi…) y de
@@ -126,8 +153,8 @@ avisa y no hace nada).
 
 ## Beta definitiva y releases oficiales
 
-Hasta la `0.1.5-beta.3` las versiones se publicaban como **pre-release**. Desde la
-**`0.1.5-beta.3` (beta definitiva)**, los releases se publican como **oficiales**: la
+Hasta la `0.1.5-beta.4` las versiones se publicaban como **pre-release**. Desde la
+**`0.1.5-beta.4` (beta definitiva)**, los releases se publican como **oficiales**: la
 versión sigue llamándose «beta», pero es la **última versión** del proyecto y la
 descarga recomendada. El programa sabe que una versión es beta por **su nombre**.
 
@@ -136,7 +163,7 @@ descarga recomendada. El programa sabe que una versión es beta por **su nombre*
 - **Ayuda → Acerca de** (o el botón **ℹ️**): versión instalada, entorno y rutas.
 - `Imaginteca.exe --version` en una consola.
 - El paquete se llama `Imaginteca-Windows.zip` / `-Linux` / `-macOS`, y el Release
-  indica la etiqueta (`v0.1.5-beta.3`).
+  indica la etiqueta (`v0.1.5-beta.4`).
 
 ---
 

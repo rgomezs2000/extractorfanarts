@@ -20,7 +20,9 @@ Dos situaciones muy distintas:
 """
 from __future__ import annotations
 
+import importlib
 import importlib.metadata as metadatos
+import importlib.util
 import json
 import logging
 import os
@@ -148,18 +150,79 @@ def empaquetado() -> bool:
 
 
 # ------------------------------------------------------------------ estado
+def _version_del_modulo(importable: str) -> tuple[str | None, bool]:
+    """(versión, ¿está?) leyendo el módulo que el programa tiene **en uso**.
+
+    Es la comprobación de verdad: si se puede importar, la dependencia está ahí,
+    aunque sus metadatos no aparezcan (es lo que pasa dentro del ejecutable
+    empaquetado, donde las dependencias van incluidas y no hay `.dist-info`).
+    """
+    try:
+        modulo = importlib.import_module(importable)
+    except Exception:  # noqa: BLE001  (no está, o falla al cargar)
+        try:
+            return None, importlib.util.find_spec(importable) is not None
+        except Exception:  # noqa: BLE001
+            return None, False
+    for atributo in ("__version__", "version", "VERSION", "version_info"):
+        valor = getattr(modulo, atributo, None)
+        if isinstance(valor, str) and valor.strip():
+            return valor.strip(), True
+        if isinstance(valor, tuple) and valor:
+            return ".".join(str(p) for p in valor), True
+    return None, True
+
+
+def _versiones_del_paquete() -> dict:
+    """Versiones que el flujo dejó anotadas al empaquetar (marca de la release)."""
+    try:
+        from . import canal
+
+        return dict((canal.marca() or {}).get("dependencias") or {})
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def version_en_uso(importable: str) -> tuple[str | None, str, bool]:
+    """(versión, de dónde sale, ¿está presente?) de una dependencia esencial.
+
+    Se mira, por este orden: el módulo importado (lo que se usa de verdad), los
+    metadatos del entorno o de `vendor/`, y lo que anotó el flujo al empaquetar.
+    """
+    version, presente = _version_del_modulo(importable)
+    origen = ""
+    if presente:
+        origen = "paquete" if empaquetado() else "en uso"
+    metadatos_version = version_instalada(importable)
+    if metadatos_version and not version:
+        version = metadatos_version
+        origen = "paquete" if empaquetado() else (
+            "vendor" if (Path(__file__).resolve().parents[1] / "vendor" / f"{importable}.py").exists()
+            or list((Path(__file__).resolve().parents[1] / "vendor").glob(
+                f"{importable.replace('-', '_')}*.dist-info")) else "entorno")
+    if not version:
+        anotada = _versiones_del_paquete().get(importable)
+        if anotada:
+            version = str(anotada)
+            origen = "paquete"
+            presente = True
+    return version, origen or "—", bool(presente or version)
+
+
 def estado(comprobar_red: bool = True) -> dict:
     """Estado completo: Python, paquetes esenciales y motores de IA."""
     paquetes = []
     for importable, en_pypi in ESENCIALES:
-        instalada = version_instalada(importable)
+        version, origen, presente = version_en_uso(importable)
         publicada = version_publicada(en_pypi) if comprobar_red else None
         paquetes.append({
             "paquete": importable,
             "pypi": en_pypi,
-            "instalada": instalada,
+            "instalada": version,
+            "origen": origen,
+            "presente": presente,
             "publicada": publicada,
-            "novedad": hay_novedad(instalada, publicada),
+            "novedad": hay_novedad(version, publicada),
         })
     return {
         "python": sys.version.split()[0],
@@ -179,20 +242,28 @@ def resumen(estado_datos: dict) -> list[str]:
     lineas.append(f"Python {estado_datos['python']} · {modo}")
     lineas.append(f"intérprete: {estado_datos['python_ruta']}")
     lineas.append("")
-    lineas.append(f"{'paquete':<12} {'instalada':<12} {'última':<12} estado")
-    lineas.append("-" * 52)
+    lineas.append(f"{'paquete':<12} {'en uso':<11} {'de dónde':<10} {'última':<11} estado")
+    lineas.append("-" * 62)
     for p in estado_datos["paquetes"]:
-        instalada = p["instalada"] or "—"
-        publicada = p["publicada"] or "—"
-        if not p["instalada"]:
-            estado_txt = "NO instalado"
-        elif p["publicada"] is None:
-            estado_txt = "sin comprobar"
-        elif p["novedad"]:
+        version = p.get("instalada") or "—"
+        publicada = p.get("publicada") or "—"
+        origen = p.get("origen") or "—"
+        if not p.get("presente"):
+            estado_txt = "NO ENCONTRADO"
+        elif p.get("publicada") is None:
+            estado_txt = "presente (sin comprobar)"
+        elif p.get("novedad"):
             estado_txt = "HAY NOVEDAD"
         else:
             estado_txt = "al día"
-        lineas.append(f"{p['paquete']:<12} {instalada:<12} {publicada:<12} {estado_txt}")
+        lineas.append(f"{p['paquete']:<12} {version:<11} {origen:<10} {publicada:<11} "
+                      f"{estado_txt}")
+    lineas.append("")
+    presentes = sum(1 for p in estado_datos["paquetes"] if p.get("presente"))
+    lineas.append(f"dependencias presentes: {presentes} de {len(estado_datos['paquetes'])}")
+    if estado_datos["empaquetado"]:
+        lineas.append("(en la copia empaquetada las dependencias viajan dentro del "
+                      "programa: «paquete»)")
     lineas.append("")
     for nombre, presente in estado_datos["motores"].items():
         lineas.append(f"motor IA {nombre}: {'sí' if presente else 'no'}")

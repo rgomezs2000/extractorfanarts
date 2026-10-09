@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.4 — la beta definitiva (4.ª entrega)
+
+- **Informe de dependencias arreglado**: ya distingue la versión **en uso** de cada
+  paquete y **de dónde sale** (paquete, vendor o entorno). Antes, en la copia
+  empaquetada, aparecía «NO instalado» aunque las dependencias van dentro.
+- **Comando nuevo**: `Imaginteca --dependencias` (también en macOS y Linux).
+
 ### 2026-10-09 · v0.1.5-beta.3 — la beta definitiva (3.ª entrega)
 
 - **Nueva página [Qué se descarga](Contenido)**: fanarts, imágenes oficiales, cómics y

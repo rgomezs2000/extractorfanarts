@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.4 — 9 de octubre de 2026 · la beta definitiva (4.ª entrega)
+
+**El informe de dependencias ahora dice la verdad**
+- Antes, dentro del paquete las dependencias salían como «NO instalado»: van
+  **dentro** del ejecutable y no quedan sus metadatos. Ahora se comprueba
+  **importando** cada módulo, se lee su versión real y se indica **de dónde sale**
+  (`paquete`, `vendor` o el entorno), además de lo que anotó el flujo al empaquetar.
+- Resumen final: **cuántas están presentes** (por ejemplo `9 de 9`) y el estado de los
+  motores de IA.
+- Comando nuevo en los tres sistemas: **`Imaginteca --dependencias`** (Windows:
+  `Imaginteca.exe --dependencias`).
+
+---
+
 ## v0.1.5-beta.3 — 9 de octubre de 2026 · la beta definitiva (3.ª entrega)
 
 **Contenido y contenido adulto**

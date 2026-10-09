@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.5-beta.3 - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta.4 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -258,9 +258,11 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
 
    COMANDOS DE ACTUALIZACION (los tres sistemas hacen lo mismo):
 
-     Windows        Imaginteca.exe --comprobar-actualizacion
+     Windows        Imaginteca.exe --dependencias
+                    Imaginteca.exe --comprobar-actualizacion
                     Imaginteca.exe --actualizar
-     macOS / Linux  ./Imaginteca --comprobar-actualizacion
+     macOS / Linux  ./Imaginteca --dependencias
+                    ./Imaginteca --comprobar-actualizacion
                     ./Imaginteca --actualizar
 
    COMANDOS DE INSTALACION:

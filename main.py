@@ -4,6 +4,7 @@ Opciones de línea de comandos:
 
     --selftest                   comprueba el entorno y sale (genera selftest.txt)
     --version                    muestra la versión
+    --dependencias               estado de Python, paquetes esenciales y motores de IA
     --comprobar-actualizacion    dice si hay versión nueva (no instala nada)
     --actualizar                 descarga, verifica e instala la versión nueva
                                  (reemplazo limpio y reinicio del programa)
@@ -176,6 +177,27 @@ def selftest() -> int:
     return 0 if problemas == 0 else 1
 
 
+def dependencias_por_consola() -> int:
+    """`--dependencias`: muestra el estado de las dependencias esenciales.
+
+    Sirve en los dos canales (desarrollo y producción) y en los tres sistemas: dice
+    **qué versión está en uso** de cada paquete, **de dónde sale** (paquete, vendor o
+    entorno) y cuál es la última publicada. Si la consola la abre el propio programa
+    (el `.exe` sin consola), espera antes de cerrarla para que se pueda leer.
+    """
+    from app import dependencias
+
+    creada = asegurar_consola(f"{config.APP_NAME} — dependencias")
+    setup_logging()
+    datos = dependencias.estado(comprobar_red=True)
+    lineas = dependencias.resumen(datos)
+    for linea in lineas:
+        print(linea)
+    if creada and consola_propia():
+        pausa_final("Pulse Intro para cerrar…")
+    return 0
+
+
 def mantenimiento_por_consola(solo_comprobar: bool) -> int:
     """`--comprobar-actualizacion` y `--actualizar`: mantenimiento desde la consola.
 
@@ -199,6 +221,8 @@ def main() -> int:
         return selftest()
     if "--comprobar-actualizacion" in sys.argv or "--check-update" in sys.argv:
         return mantenimiento_por_consola(solo_comprobar=True)
+    if "--dependencias" in sys.argv or "--deps" in sys.argv:
+        return dependencias_por_consola()
     if "--actualizar" in sys.argv or "--update" in sys.argv:
         return mantenimiento_por_consola(solo_comprobar=False)
 
