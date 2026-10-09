@@ -35,6 +35,7 @@ CAPTCHAs ni inicios de sesión**.
 15. [Solución de problemas](#15-solución-de-problemas)
 16. [Scripts del proyecto](#16-scripts-del-proyecto)
 17. [Licencia y avisos legales](#17-licencia-y-avisos-legales)
+18. [Comunidad, wiki y foro](#18-comunidad-wiki-y-foro)
 
 ---
 
@@ -1312,6 +1313,7 @@ restringido.
 | `scripts\build_exe.py` | empaqueta con PyInstaller (`--onefile`, `--consola`, `--probar`, `--firmar`) |
 | `scripts\release.py` | crea el `.zip` + `.sha256` y publica el Release (`--tag`, `--gh`, `--version`) |
 | `scripts\limpiar_release.py` | borra los adjuntos de un Release de GitHub antes de volver a publicar la misma versión (`--repo`, `--tag`) |
+| `scripts\publicar_wiki.py` | publica las páginas de `docs/wiki/` en la Wiki de GitHub (`--repo`, `--comprobar`) |
 | `scripts\make_icon.py` | regenera los iconos de `assets/` |
 | `scripts\hacer_certificado.py` / `.ps1` | crea un certificado autofirmado (`--simular`, `--confiar`) |
 | `scripts\pixiv_token.py` | asistente del refresh token de Pixiv (OAuth PKCE): sirve como script en desarrollo y es lo que se compila para el paquete |
@@ -1355,10 +1357,76 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
   documentación dice, a **corregir sin coste los defectos** que se le reporten y
   publicar la versión corregida, a **atender los avisos** y a responder de los
   **daños directos** que un defecto del programa cause en tus archivos o en tu
-  equipo. Para hacerla valer: escribe a **rogergomezs2003@gmail.com** con el
-  registro del día (`%USERPROFILE%\.imaginteca\logs`) y `selftest.txt`; se
-  contesta y se trabaja en ello en un plazo razonable, sin coste. **No cubre** el
+  equipo. **Para hacerla valer:** deja tu **comentario, contacto o reporte en la
+  [wiki](https://github.com/rgomezs2000/extractorfanarts/wiki) o en el
+  [foro](https://github.com/rgomezs2000/extractorfanarts/discussions)** —o en las
+  [incidencias](https://github.com/rgomezs2000/extractorfanarts/issues), o por
+  contacto directo— incluyendo el registro del día
+  (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
+  Linux/macOS) y `selftest.txt`; se contesta y se trabaja en ello en un plazo
+  razonable, sin coste. **No cubre** el
   contenido que descargues ni el uso que hagas de él, el uso ilícito, los cambios
   que hagas en tu equipo y tus claves, ni que un servicio de terceros cambie su
   API o cierre (eso se avisa y se adapta en cuanto se puede). El texto completo
   está en [LICENSE](LICENSE).
+
+---
+
+## 18. Comunidad, wiki y foro
+
+El proyecto tiene **wiki y foro dentro del repositorio** para que cualquiera pueda
+**comentar, preguntar y pedir asistencia técnica**. Todo se lee y se contesta, y es
+también la forma de hacer valer la **garantía del autor**
+([§17](#17-licencia-y-avisos-legales)).
+
+| Canal | Para qué | Dirección |
+|---|---|---|
+| 💬 **Foro (Discussions)** | preguntas, dudas de uso, ideas, anuncios y **asistencia técnica** | <https://github.com/rgomezs2000/extractorfanarts/discussions> |
+| 🐞 **Incidencias (Issues)** | fallos y mejoras **con seguimiento** | <https://github.com/rgomezs2000/extractorfanarts/issues> |
+| 📖 **Wiki** | documentación completa (se puede **comentar** en cada página) | <https://github.com/rgomezs2000/extractorfanarts/wiki> |
+| 🆘 **Soporte técnico** | qué incluir para que te ayuden a la primera | <https://github.com/rgomezs2000/extractorfanarts/wiki/Soporte-tecnico> |
+| ✉️ **Contacto** | lo que prefieras tratar en privado | `rogergomezs2003@gmail.com` |
+
+### 18.1 La wiki vive en el repositorio
+
+Las páginas **no** se escriben a mano en la wiki: viven en **`docs/wiki/`** dentro
+del repositorio y desde ahí se publican, para no mantener dos copias del mismo
+texto (16 páginas: inicio, instalación, guía rápida, plataformas, claves, calidad,
+datasets, actualizaciones, problemas frecuentes, soporte, foro, preguntas, licencia,
+historial y las barras `_Sidebar`/`_Footer`).
+
+```powershell
+python scripts\publicar_wiki.py --comprobar     # ver qué haría, sin publicar
+python scripts\publicar_wiki.py                 # publicar en la wiki
+```
+
+La wiki de GitHub es un repositorio aparte (`<repo>.wiki.git`). **La primera vez**
+hay que activarla y crear una página desde la web (GitHub crea el repositorio de la
+wiki con esa primera página); después el script hace el resto. Si todavía no existe,
+el script lo detecta y explica los tres pasos.
+
+### 18.2 El foro (Discussions)
+
+Se activa en **Settings → Features → Discussions** del repositorio. Las plantillas
+de hilo están en [`.github/DISCUSSION_TEMPLATE/`](.github/DISCUSSION_TEMPLATE):
+
+| Plantilla | Categoría sugerida |
+|---|---|
+| `soporte-tecnico.yml` | 🆘 Soporte técnico |
+| `preguntas.yml` | ❓ Preguntas y respuestas |
+| `ideas.yml` | 💡 Ideas y sugerencias |
+| `plataformas.yml` | 🌐 Plataformas y sitios |
+| `datasets.yml` | 🎨 Datasets y entrenamiento |
+
+### 18.3 Incidencias y escaparate del repositorio
+
+- Plantillas de incidencia en [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE)
+  (error, soporte técnico, mejora) y enlaces a la comunidad en su `config.yml`.
+- [SUPPORT.md](SUPPORT.md) — por dónde pedir ayuda (GitHub lo muestra al abrir una
+  incidencia).
+- [.github/SECURITY.md](.github/SECURITY.md) — cómo reportar un problema de
+  seguridad **en privado**.
+- [.github/CODE_OF_CONDUCT.md](.github/CODE_OF_CONDUCT.md) — normas de convivencia.
+
+**La aplicación enlaza a todo esto**: menú **Ayuda** (foro, soporte técnico, wiki e
+incidencias), la ventana de ayuda (`F1`) y el cuadro **Acerca de**.

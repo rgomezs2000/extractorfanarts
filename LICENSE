@@ -124,7 +124,8 @@ permitan.
    b) CORREGIR SIN COSTE los defectos que se le reporten y publicar la versión
       corregida (la aplicación puede actualizarse sola: ver el apartado de
       actualizaciones de la documentación);
-   c) ATENDER los avisos de fallo y las consultas de uso;
+   c) ATENDER los avisos de fallo y las consultas de uso: en el foro, la wiki o
+      las incidencias del repositorio, o por contacto directo;
    d) si algo no funcionara como se describe y no hubiera forma de arreglarlo,
       darte una solución alternativa o indicarte cómo seguir usando lo que ya
       tengas.
@@ -147,10 +148,18 @@ permitan.
       servicio ajeno, pero SÍ se compromete a avisarlo, a adaptar el programa
       cuando sea posible y a mantener todo lo que dependa de él.
 
- 7.5 CÓMO SE HACE VALER. Escribe a la dirección de contacto de esta licencia
- indicando qué pasa y adjuntando el registro del día
- (%USERPROFILE%\.imaginteca\logs) y el archivo selftest.txt. El autor contestará
- y trabajará en ello en un plazo razonable, sin coste alguno para ti.
+ 7.5 CÓMO SE HACE VALER. Deja tu comentario, contacto o reporte en los canales
+ públicos del proyecto —el foro, la wiki o las incidencias del repositorio— o
+ escribe a la dirección de contacto de esta licencia, indicando qué pasa e
+ incluyendo el registro del día (%USERPROFILE%\.imaginteca\logs en Windows,
+ ~/.imaginteca/logs en Linux y macOS) y el archivo selftest.txt. El autor
+ contestará y trabajará en ello en un plazo razonable, sin coste alguno para ti.
+
+     Repositorio : https://github.com/rgomezs2000/extractorfanarts
+     Foro        : https://github.com/rgomezs2000/extractorfanarts/discussions
+     Wiki        : https://github.com/rgomezs2000/extractorfanarts/wiki
+     Incidencias : https://github.com/rgomezs2000/extractorfanarts/issues
+     Contacto    : rogergomezs2003@gmail.com
 
  7.6 ALCANCE PERSONAL. Esta garantía es personal e intransferible y se extiende
  al uso permitido en el punto 1. Si cedes, vendes o redistribuyes el programa

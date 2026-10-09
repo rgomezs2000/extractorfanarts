@@ -174,6 +174,15 @@ class VentanaAyuda(QDialog):
         self.btn_manual.clicked.connect(self._abrir_manual)
         self.btn_manual.setEnabled(ruta is not None)
         fila.addWidget(self.btn_manual)
+        self.btn_wiki = QPushButton("🌐 Wiki")
+        self.btn_wiki.setToolTip("La documentación del proyecto en la web")
+        self.btn_wiki.clicked.connect(lambda: self._abrir_enlace(config.URL_WIKI))
+        fila.addWidget(self.btn_wiki)
+        self.btn_foro = QPushButton("💬 Foro y ayuda")
+        self.btn_foro.setToolTip(
+            "Preguntas, comentarios y asistencia técnica del proyecto")
+        self.btn_foro.clicked.connect(lambda: self._abrir_enlace(config.URL_FORO))
+        fila.addWidget(self.btn_foro)
         fila.addStretch(1)
         boton_cerrar = QPushButton("Cerrar")
         boton_cerrar.clicked.connect(self.accept)
@@ -233,6 +242,13 @@ class VentanaAyuda(QDialog):
     def _abrir_manual(self) -> None:
         if self._ruta_manual is not None:
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(self._ruta_manual)))
+
+    def _abrir_enlace(self, url: str) -> None:
+        """Abre la wiki o el foro del proyecto en el navegador."""
+        try:
+            QDesktopServices.openUrl(QUrl(url))
+        except Exception:  # noqa: BLE001
+            logger.warning("no se pudo abrir el enlace %s", url, exc_info=True)
 
 
 def abrir_ayuda(padre: QWidget | None = None, seccion: str = "") -> None:

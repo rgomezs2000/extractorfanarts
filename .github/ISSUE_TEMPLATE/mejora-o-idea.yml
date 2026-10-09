@@ -1,0 +1,48 @@
+name: 💡 Mejora o idea
+description: Proponer algo nuevo o un cambio en lo que ya hace
+title: "[Idea] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Las ideas son bienvenidas. Explícalas por el **problema** que resuelven,
+        no solo por la función: así se entiende mejor y se puede dar una vuelta.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: ¿Qué propones?
+    validations:
+      required: true
+
+  - type: textarea
+    id: para-que
+    attributes:
+      label: ¿Para qué te serviría?
+      description: Qué haces hoy, qué te falta y qué cambiaría con esto.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Interfaz y usabilidad
+        - Búsqueda y nuevas plataformas
+        - Filtros y legalidad
+        - Calidad y mejora de imagen
+        - Datasets para IA
+        - Organización de la colección / metadatos
+        - Actualizaciones
+        - Documentación y ayuda
+        - Otra
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas que has considerado
+    validations:
+      required: false

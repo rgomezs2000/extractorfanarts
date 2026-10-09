@@ -162,9 +162,16 @@ garantia corre por cuenta del autor. El autor se compromete a que el programa
 haga lo que dice la documentacion, a corregir SIN COSTE los defectos que le
 reportes y publicar la version corregida, a atender los avisos y a responder de
 los danos directos que un defecto del programa cause en tus archivos o equipo.
-Como pedirla: escribe a rogergomezs2003@gmail.com con el .log del dia
-(%USERPROFILE%\.imaginteca\logs) y selftest.txt; se contesta en un plazo
-razonable. NO cubre: el contenido que descargues ni su uso, el uso ilicito, los
+Como pedirla: deja tu comentario, contacto o reporte en el FORO, en la WIKI o en
+las INCIDENCIAS del repositorio (o escribe a rogergomezs2003@gmail.com), con el
+.log del dia (%USERPROFILE%\.imaginteca\logs en Windows, ~/.imaginteca/logs en
+Linux/macOS) y selftest.txt; se contesta y se trabaja en ello en un plazo
+razonable.
+  Repositorio : https://github.com/rgomezs2000/extractorfanarts
+  Foro        : https://github.com/rgomezs2000/extractorfanarts/discussions
+  Wiki        : https://github.com/rgomezs2000/extractorfanarts/wiki
+  Incidencias : https://github.com/rgomezs2000/extractorfanarts/issues
+NO cubre: el contenido que descargues ni su uso, el uso ilicito, los
 cambios que hagas en tu equipo o claves, ni que un servicio de terceros cambie
 su API o cierre (eso se avisa y se adapta en cuanto se puede).
 Licencia v2, revisada el 9 de octubre de 2026.

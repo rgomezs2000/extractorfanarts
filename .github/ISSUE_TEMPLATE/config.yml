@@ -1,0 +1,16 @@
+# Plantillas de incidencias: se ofrecen también los canales de la comunidad.
+# Las dudas de uso van al FORO; las incidencias se reservan a fallos y mejoras.
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Foro y comunidad (preguntas, dudas de uso y asistencia técnica)
+    url: https://github.com/rgomezs2000/extractorfanarts/discussions
+    about: El sitio recomendado para preguntar, comentar y pedir ayuda técnica.
+  - name: 📖 Wiki (documentación completa)
+    url: https://github.com/rgomezs2000/extractorfanarts/wiki
+    about: Instalación, guía rápida, claves, calidad, datasets, problemas frecuentes…
+  - name: 🆘 Soporte técnico (qué incluir para que te ayuden a la primera)
+    url: https://github.com/rgomezs2000/extractorfanarts/wiki/Soporte-tecnico
+    about: Versión, sistema, pasos, selftest.txt y el registro del día.
+  - name: 📥 Descargas (últimas versiones)
+    url: https://github.com/rgomezs2000/extractorfanarts/releases
+    about: Paquetes para Windows, macOS y Linux con sus huellas SHA-256.

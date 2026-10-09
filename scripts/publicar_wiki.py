@@ -1,0 +1,129 @@
+"""Publica las páginas de `docs/wiki/` en la Wiki de GitHub del repositorio.
+
+La wiki de GitHub es un repositorio git APARTE (`<repo>.wiki.git`). Este script
+evita mantener dos copias del mismo texto: las páginas viven **dentro** del
+repositorio principal (`docs/wiki/`) y desde ahí se publican en la wiki.
+
+    python scripts\\publicar_wiki.py                 # publica (usa config.REPO_GITHUB)
+    python scripts\\publicar_wiki.py --comprobar     # solo muestra qué haría
+    python scripts\\publicar_wiki.py --repo usuario/repo
+
+Necesita `git` instalado y permiso de escritura en la wiki. **La primera vez** hay
+que activar la wiki y crear una página desde la web (GitHub crea el repositorio de
+la wiki con esa primera página); el script lo detecta y lo explica.
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+try:
+    from app import config
+except Exception:  # noqa: BLE001
+    config = None
+
+ORIGEN = ROOT / "docs" / "wiki"
+
+
+def _git(argumentos: list[str], carpeta: Path | None = None,
+         permitir_fallo: bool = False) -> tuple[int, str]:
+    entorno = dict(os.environ)
+    entorno["GIT_TERMINAL_PROMPT"] = "0"     # sin preguntas interactivas
+    orden = ["git"] + argumentos
+    resultado = subprocess.run(orden, cwd=str(carpeta) if carpeta else str(ROOT),
+                               capture_output=True, text=True, env=entorno)
+    salida = f"{resultado.stdout}{resultado.stderr}".strip()
+    if resultado.returncode != 0 and not permitir_fallo:
+        print(f"  [error] {' '.join(orden)}\n{salida}")
+        raise SystemExit(1)
+    return resultado.returncode, salida
+
+
+def _repositorio_por_defecto() -> str:
+    if config is not None:
+        return str(getattr(config, "REPO_GITHUB", "") or "")
+    return ""
+
+
+def main() -> int:
+    analizador = argparse.ArgumentParser(
+        description="Publica docs/wiki/ en la Wiki de GitHub del repositorio.")
+    analizador.add_argument("--repo", default=_repositorio_por_defecto(),
+                            help="usuario/repositorio (por defecto, config.REPO_GITHUB)")
+    analizador.add_argument("--comprobar", action="store_true",
+                            help="no publica: solo dice qué haría")
+    argumentos = analizador.parse_args()
+
+    if not argumentos.repo:
+        print("[error] falta el repositorio: usa --repo usuario/repo")
+        return 1
+    if not ORIGEN.is_dir():
+        print(f"[error] no existe la carpeta de páginas: {ORIGEN}")
+        return 1
+
+    paginas = sorted(ORIGEN.glob("*.md"))
+    if not paginas:
+        print(f"[error] no hay páginas .md en {ORIGEN}")
+        return 1
+    print(f"[info] repositorio : {argumentos.repo}")
+    print(f"[info] páginas     : {len(paginas)} en {ORIGEN}")
+    for pagina in paginas:
+        print(f"          - {pagina.name}")
+
+    if argumentos.comprobar:
+        print("[ok] comprobación hecha: no se ha publicado nada (--comprobar)")
+        return 0
+
+    url_wiki = f"https://github.com/{argumentos.repo}.wiki.git"
+    temporal = Path(tempfile.mkdtemp(prefix="imaginteca-wiki-"))
+    try:
+        print(f"[info] clonando la wiki en {temporal} …")
+        codigo, salida = _git(["clone", "--depth", "1", url_wiki, str(temporal)],
+                              permitir_fallo=True)
+        if codigo != 0:
+            print("  [aviso] no se pudo clonar la wiki.")
+            print("  Si es la primera vez, GitHub todavía no ha creado el repositorio")
+            print("  de la wiki. Se crea al guardar la PRIMERA página desde la web:")
+            print(f"    1) Abre https://github.com/{argumentos.repo}/wiki")
+            print("    2) Pulsa «Create the first page» y guarda cualquier título")
+            print("       (por ejemplo «Inicio»); el contenido se reemplazará.")
+            print("    3) Vuelve a ejecutar este script.")
+            print(f"  Detalle de git: {salida}")
+            return 1
+
+        copiadas = 0
+        for pagina in paginas:
+            shutil.copy2(pagina, temporal / pagina.name)
+            copiadas += 1
+        print(f"[ok] {copiadas} páginas copiadas a la wiki")
+
+        _git(["add", "-A"], temporal)
+        codigo, estado = _git(["status", "--porcelain"], temporal)
+        if not estado.strip():
+            print("[ok] la wiki ya estaba al día: no hay cambios que publicar")
+            return 0
+
+        print("[info] cambios a publicar:")
+        for linea in estado.splitlines():
+            print(f"          {linea}")
+
+        _git(["-c", "user.name=Imaginteca", "-c", "user.email=rogergomezs2003@gmail.com",
+              "commit", "-m", "wiki: actualiza las páginas desde docs/wiki"], temporal)
+        _git(["push", "origin", "HEAD"], temporal)
+        print("[ok] wiki publicada")
+        print(f"     https://github.com/{argumentos.repo}/wiki")
+        return 0
+    finally:
+        shutil.rmtree(temporal, ignore_errors=True)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

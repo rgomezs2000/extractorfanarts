@@ -1,0 +1,31 @@
+title: "[Pregunta] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Pregunta lo que quieras: **no hay preguntas tontas**. Si alguien te
+        contesta y resuelve tu duda, **marca su respuesta** para que le sirva a
+        quien venga después.
+
+  - type: textarea
+    id: pregunta
+    attributes:
+      label: Tu pregunta
+    validations:
+      required: true
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto (qué quieres conseguir)
+      placeholder: "Estoy preparando un dataset de un personaje y quiero…"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Imaginteca (si viene al caso)
+      placeholder: "0.1.0-beta.2"
+    validations:
+      required: false

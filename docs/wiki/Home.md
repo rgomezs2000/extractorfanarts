@@ -1,0 +1,65 @@
+# 🖼️ Imaginteca — Wiki
+
+**Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
+una colección personal de imágenes**: busca en redes sociales, booros y wikis de
+fandom, deja que revises los resultados en una galería, guarda lo que elijas en
+un formato único (WebP) y, si quieres, mejora su calidad o **prepara con ellas un
+dataset** para entrenar modelos.
+
+> Está pensada para **coleccionar y preparar material**, no para extraerlo de
+> nadie: se descarga con **tus credenciales**, con peticiones espaciadas y **sin
+> evadir nunca CAPTCHAs ni inicios de sesión**.
+
+**Versión actual:** `0.1.0-beta.2` (fase beta) · **Licencia:** propietaria (ver
+[Licencia](Licencia))
+
+---
+
+## 🚀 Empezar
+
+| Si quieres… | Ve a |
+|---|---|
+| Instalarlo y abrirlo por primera vez | **[Instalación](Instalacion)** |
+| Buscar y descargar ya, en 5 minutos | **[Guía rápida](Guia-rapida)** |
+| Saber qué plataformas hay y cuáles piden claves | **[Plataformas](Plataformas)** |
+| Poner tus claves (Rule34, Gelbooru, Pixiv…) | **[Claves y configuración](Claves-y-configuracion)** |
+| Entender el formato, la calidad y la mejora con IA | **[Calidad y mejora](Calidad-y-mejora)** |
+| Preparar un dataset para LoRA / LyCORIS / checkpoint | **[Datasets para IA](Datasets-IA)** |
+| Actualizar el programa | **[Actualizaciones](Actualizaciones)** |
+| Resolver un problema | **[Problemas frecuentes](Problemas-frecuentes)** |
+| Pedir ayuda técnica | **[Soporte técnico](Soporte-tecnico)** |
+| Comentar, proponer o preguntar | **[Foro y comunidad](Foro-y-comunidad)** |
+
+---
+
+## 💬 Comunidad y soporte
+
+Aquí **puede comentar cualquiera**, también para **asistencia técnica**:
+
+- **[Foro (Discussions)](https://github.com/rgomezs2000/extractorfanarts/discussions)** —
+  preguntas, dudas de uso, ideas y anuncios. Es el sitio recomendado para hablar.
+- **[Incidencias (Issues)](https://github.com/rgomezs2000/extractorfanarts/issues)** —
+  fallos con pasos para reproducirlos y peticiones de mejora con seguimiento.
+- **[Soporte técnico](Soporte-tecnico)** — qué datos conviene incluir (registro
+  del día y `selftest.txt`) para que te puedan ayudar a la primera.
+- **[Foro y comunidad](Foro-y-comunidad)** — normas de convivencia y cómo participar.
+
+Los comentarios, las dudas y los reportes **se leen y se contestan**, y son
+también la forma de hacer valer la **garantía del autor** (ver
+[Licencia](Licencia)).
+
+---
+
+## 📄 Qué hay en esta wiki
+
+- [Instalación](Instalacion) · [Guía rápida](Guia-rapida) · [Plataformas](Plataformas)
+- [Claves y configuración](Claves-y-configuracion) · [Calidad y mejora](Calidad-y-mejora)
+- [Datasets para IA](Datasets-IA) · [Actualizaciones](Actualizaciones)
+- [Problemas frecuentes](Problemas-frecuentes) · [Preguntas frecuentes](Preguntas-frecuentes)
+- [Soporte técnico](Soporte-tecnico) · [Foro y comunidad](Foro-y-comunidad)
+- [Licencia](Licencia) · [Historial de versiones](Historial-de-versiones)
+
+---
+
+*Imaginteca no recoge datos: no hay telemetría, no hay servidor propio y tus
+claves nunca salen de tu ordenador.*

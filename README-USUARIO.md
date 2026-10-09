@@ -323,6 +323,29 @@ todo: bibliotecas, carpetas, permisos y si la ventana cabe en tu pantalla.
 **Al abrir el `.exe` se abre además una ventana de consola** con los mismos
 mensajes que el registro del día. Es normal y útil para ver qué está pasando.
 
+### ¿Dónde pido ayuda?
+
+- 💬 **[Foro](https://github.com/rgomezs2000/extractorfanarts/discussions)**: el
+  sitio para preguntar, comentar y pedir **asistencia técnica**.
+- 🌐 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**: la
+  documentación completa (también dentro del programa, con `F1`).
+- 🐞 **[Incidencias](https://github.com/rgomezs2000/extractorfanarts/issues)**:
+  fallos y mejoras, con seguimiento.
+- ✉️ **rogergomezs2003@gmail.com**: contacto directo.
+
+Todo esto está también en el menú **Ayuda** del programa (y en los botones de la
+ventana que se abre con `F1`).
+
+Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
+**sistema**, los **pasos**, y estos dos archivos:
+
+| Archivo | Dónde |
+|---|---|
+| **`selftest.txt`** | junto al programa, tras ejecutar `Imaginteca.exe --selftest` |
+| **Registro del día** | `%USERPROFILE%\.imaginteca\logs\app-AAAA-MM-DD.log` (Linux/macOS: `~/.imaginteca/logs/...`) |
+
+> 🔐 Quita tus claves de lo que compartas antes de publicarlo.
+
 ---
 
 ## 13. Preparar datasets para IA (LoRA, LyCORIS, checkpoints)
@@ -469,10 +492,14 @@ corre por cuenta del autor**.
 - Si algo **no hace lo que dice esta guía**, es un defecto del programa: el autor
   lo **corrige sin coste** y publica la versión corregida (la propia aplicación
   puede instalártela: mira *Actualizaciones*, en el apartado 14).
-- **Se atienden los avisos.** Escribe a **rogergomezs2003@gmail.com** contando qué
-  pasa, con el **registro del día** (`%USERPROFILE%\.imaginteca\logs`) y el
-  archivo **`selftest.txt`**. Se contesta y se trabaja en ello en un plazo
-  razonable, sin coste alguno.
+- **Se atienden los avisos.** Deja tu **comentario, contacto o reporte** donde
+  prefieras: el **[foro](https://github.com/rgomezs2000/extractorfanarts/discussions)**,
+  la **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**, las
+  **[incidencias](https://github.com/rgomezs2000/extractorfanarts/issues)** o el
+  contacto directo (**rogergomezs2003@gmail.com**). Incluye el **registro del día**
+  (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
+  Linux/macOS) y el archivo **`selftest.txt`**. Se contesta y se trabaja en ello en
+  un plazo razonable, sin coste alguno.
 - **Daños directos por un defecto del programa** (por ejemplo, que sobrescriba un
   archivo que no debía): responde el autor.
 - **Qué no cubre:** el contenido que descargues y el uso que hagas de él, el uso

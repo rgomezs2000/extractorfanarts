@@ -1,0 +1,46 @@
+title: "[Plataforma] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Para hablar de **plataformas y sitios**: un booru que cambió su API, un
+        sitio que falla, uno nuevo que te gustaría ver, o cómo va una instancia
+        concreta del fediverso.
+
+  - type: dropdown
+    id: que
+    attributes:
+      label: ¿De qué se trata?
+      options:
+        - Un sitio que ha dejado de funcionar
+        - Un sitio que va mal o va lento
+        - Una plataforma nueva que podría añadirse
+        - Cómo va una instancia del fediverso
+        - Claves o permisos de una plataforma
+        - Otro
+    validations:
+      required: true
+
+  - type: input
+    id: plataforma
+    attributes:
+      label: Plataforma o sitio
+      placeholder: "Gelbooru · baraag.net · una wiki de Fandom…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: detalle
+    attributes:
+      label: Detalle
+      description: Qué pasa, desde cuándo y qué mensaje aparece (sin claves).
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Imaginteca
+      placeholder: "0.1.0-beta.2"
+    validations:
+      required: false

@@ -1236,7 +1236,7 @@ class MainWindow(QMainWindow):
         return accion
 
     def _crear_menus(self) -> None:
-        """Menús mínimos: lo mismo que la barra, más el acceso a la ayuda."""
+        """Menús mínimos: lo mismo que la barra, más la ayuda y la comunidad."""
         archivo = self.menuBar().addMenu("&Archivo")
         archivo.addAction(self.act_carpeta)
         archivo.addSeparator()
@@ -1249,7 +1249,45 @@ class MainWindow(QMainWindow):
         menu_ayuda.addAction(self.act_ayuda)
         menu_ayuda.addAction(self.act_actualizar)
         menu_ayuda.addSeparator()
+        # Comunidad y asistencia técnica: el foro es donde se pregunta y se comenta,
+        # y también donde se hace valer la garantía del autor.
+        self.act_foro = self._accion_enlace(
+            "💬 Foro y comunidad", config.URL_FORO,
+            "Preguntas, comentarios y asistencia técnica (GitHub Discussions)")
+        self.act_soporte = self._accion_enlace(
+            "🆘 Soporte técnico", config.URL_SOPORTE,
+            "Qué incluir para que te ayuden a la primera (registro y selftest.txt)")
+        self.act_wiki = self._accion_enlace(
+            "🌐 Wiki (documentación)", config.URL_WIKI,
+            "Instalación, guía rápida, claves, calidad, datasets…")
+        self.act_incidencias = self._accion_enlace(
+            "🐞 Reportar un fallo", config.URL_INCIDENCIAS,
+            "Fallos y peticiones de mejora con seguimiento")
+        menu_ayuda.addAction(self.act_foro)
+        menu_ayuda.addAction(self.act_soporte)
+        menu_ayuda.addAction(self.act_wiki)
+        menu_ayuda.addAction(self.act_incidencias)
+        menu_ayuda.addSeparator()
         menu_ayuda.addAction(self.act_acerca)
+
+    def _accion_enlace(self, texto: str, url: str, descripcion: str = "") -> QAction:
+        """Acción que abre un enlace del proyecto en el navegador."""
+        accion = QAction(texto, self)
+        accion.setToolTip(f"{descripcion}\n{url}" if descripcion else url)
+        accion.triggered.connect(lambda _=False, destino=url: self._abrir_enlace(destino))
+        return accion
+
+    def _abrir_enlace(self, url: str) -> None:
+        """Abre un enlace (wiki, foro, incidencias, descargas) en el navegador."""
+        try:
+            QDesktopServices.openUrl(QUrl(url))
+            self.statusBar().showMessage(f"🌐 Abriendo {url}")
+            logger.info("enlace abierto: %s", url)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo abrir el enlace %s", url)
+            QMessageBox.warning(
+                self, "No se pudo abrir",
+                f"No se pudo abrir el navegador.\n\nLa dirección es:\n{url}\n\n{exc}")
 
     def _sincronizar_barra(self) -> None:
         """Copia a la barra el texto y el estado de los botones del formulario."""
@@ -1582,11 +1620,16 @@ class _DialogoAcerca(QDialog):
         redes sociales, booros y wikis de fandom.</p>
         <p><b>Versión instalada:</b> {config.APP_VERSION}
         {'(beta)' if 'beta' in config.APP_VERSION else ''}<br>
-        <b>Autor:</b> Roger Gomez &lt;rogergomezs2003@gmail.com&gt;<br>
+        <b>Autor:</b> Roger Gomez &lt;{config.CONTACTO_EMAIL}&gt;<br>
         <b>Licencia:</b> propietaria · todos los derechos reservados (ver
         <code>LICENSE</code>)<br>
-        <b>Proyecto:</b> <a href="https://github.com/{config.UPDATE_REPO}">
-        github.com/{config.UPDATE_REPO}</a></p>
+        <b>Proyecto:</b> <a href="{config.URL_REPO}">{config.REPO_GITHUB}</a></p>
+        <p><b>Comunidad y asistencia</b> (la garantía del autor se hace valer aquí):<br>
+        💬 <a href="{config.URL_FORO}">Foro y comunidad</a> ·
+        🆘 <a href="{config.URL_SOPORTE}">Soporte técnico</a> ·
+        🌐 <a href="{config.URL_WIKI}">Wiki</a> ·
+        🐞 <a href="{config.URL_INCIDENCIAS}">Incidencias</a> ·
+        📥 <a href="{config.URL_DESCARGAS}">Descargas</a></p>
         <p><b>Entorno:</b> Python {sys.version.split()[0]} · Qt {QtCore.qVersion()} ·
         {modo}</p>
         <p><b>Dónde queda todo:</b></p>

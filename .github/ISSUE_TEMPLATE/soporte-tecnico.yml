@@ -1,0 +1,80 @@
+name: 🆘 Soporte técnico
+description: Necesito ayuda para usarlo (instalación, claves, calidad, datasets…)
+title: "[Soporte] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Para **dudas y asistencia**, el sitio preferido es el
+        **[foro (Discussions)](https://github.com/rgomezs2000/extractorfanarts/discussions)**,
+        donde también puede contestarte otro usuario. Si prefieres una incidencia,
+        rellena esto.
+
+        Mira antes la **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**:
+        [Instalación](https://github.com/rgomezs2000/extractorfanarts/wiki/Instalacion),
+        [Claves](https://github.com/rgomezs2000/extractorfanarts/wiki/Claves-y-configuracion),
+        [Calidad](https://github.com/rgomezs2000/extractorfanarts/wiki/Calidad-y-mejora),
+        [Datasets](https://github.com/rgomezs2000/extractorfanarts/wiki/Datasets-IA).
+
+  - type: textarea
+    id: necesito
+    attributes:
+      label: ¿Qué necesitas conseguir?
+      description: Describe el objetivo, no solo el síntoma.
+      placeholder: "Quiero descargar 150 imágenes de un personaje listas para entrenar un LoRA"
+    validations:
+      required: true
+
+  - type: textarea
+    id: intentado
+    attributes:
+      label: ¿Qué has probado ya?
+      placeholder: "He leído la wiki, he probado con y sin Modo IA, con otro booru…"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: tema
+    attributes:
+      label: Tema
+      options:
+        - Instalación o primer arranque
+        - Claves y configuración (config_local.py)
+        - Pixiv (token)
+        - Buscar / filtrar resultados
+        - Calidad y mejora de imagen (Lanczos o IA)
+        - Preparar un dataset para IA
+        - Dónde se guardan las imágenes
+        - Actualizaciones
+        - Otro (lo explico abajo)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Imaginteca
+      placeholder: "0.1.0-beta.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sistema
+    attributes:
+      label: Sistema
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+    validations:
+      required: true
+
+  - type: textarea
+    id: adjuntos
+    attributes:
+      label: Informe y registro (opcional pero muy útil)
+      description: Pega **selftest.txt** y las líneas del **registro del día**.
+    validations:
+      required: false

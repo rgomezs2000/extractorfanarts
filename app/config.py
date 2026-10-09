@@ -23,6 +23,20 @@ UPDATE_REPO_ALTERNATIVO = "rgomezs2000/extractorfanarts"
 UPDATE_INCLUIR_BETAS = True    # el proyecto publica versiones beta: cuentan como versión
 UPDATE_TIMEOUT = 15            # segundos de espera al consultar GitHub
 
+# ------------------------------------------------------------------ comunidad
+# Enlaces que muestra la aplicación (menú Ayuda y «Acerca de»). Se usa el nombre con
+# el que el repositorio existe HOY: si se renombra, GitHub redirige automáticamente,
+# así que estos enlaces siguen funcionando siempre.
+REPO_GITHUB = "rgomezs2000/extractorfanarts"
+URL_REPO = f"https://github.com/{REPO_GITHUB}"
+URL_WIKI = f"{URL_REPO}/wiki"
+URL_FORO = f"{URL_REPO}/discussions"          # el foro: preguntas y asistencia
+URL_INCIDENCIAS = f"{URL_REPO}/issues"        # fallos y mejoras con seguimiento
+URL_DESCARGAS = f"{URL_REPO}/releases"
+URL_SOPORTE = f"{URL_WIKI}/Soporte-tecnico"   # qué incluir para pedir ayuda
+URL_PROBLEMAS = f"{URL_WIKI}/Problemas-frecuentes"
+CONTACTO_EMAIL = "rogergomezs2003@gmail.com"
+
 # User-Agent identificado (cortesía / transparencia con los sitios)
 # Nota: debe ser ASCII puro (los headers HTTP no admiten acentos).
 USER_AGENT = (
