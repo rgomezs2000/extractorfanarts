@@ -323,10 +323,36 @@ Fandom también):
   Skyrim, Dark Souls, Elden Ring, Hollow Knight, Undertale, Stardew Valley, Five
   Nights at Freddy's, Sonic, Super Mario, Resident Evil, Silent Hill, Animal
   Crossing.
-- **Animación occidental:** My Little Pony, Steven Universe, Gravity Falls,
-  Adventure Time, The Owl House, Star vs. the Forces of Evil, Rick and Morty, Los
-  Simpson, South Park, Avatar: la leyenda de Aang, She-Ra, Hazbin Hotel, Helluva
-  Boss, Miraculous, Bluey, Kim Possible, Danny Phantom.
+- **Animación occidental · Nickelodeon:** The Loud House, The Casagrandes,
+  SpongeBob (Bob Esponja), Fairly OddParents (Los padrinos mágicos), Danny
+  Phantom, Avatar: la leyenda de Aang y La leyenda de Korra, Rugrats, Hey
+  Arnold!, Invader Zim, Jimmy Neutron, My Life as a Teenage Robot, The Wild
+  Thornberrys, Rocko's Modern Life, CatDog, Teenage Mutant Ninja Turtles,
+  Wylde Pak, Harvey Beaks, Welcome to the Wayne.
+- **Animación occidental · Cartoon Network:** The Powerpuff Girls, Foster's Home
+  for Imaginary Friends, The Amazing World of Gumball, Adventure Time, Steven
+  Universe, Regular Show, We Bare Bears (Somos osos), Ben 10, Teen Titans y Teen
+  Titans Go!, Dexter's Laboratory, Samurai Jack, Courage the Cowardly Dog, Ed,
+  Edd n Eddy, Codename: Kids Next Door, The Grim Adventures of Billy & Mandy,
+  Over the Garden Wall, Infinity Train, Craig of the Creek, OK K.O.! Let's Be
+  Heroes, Mao Mao, Victor and Valentino, Summer Camp Island, Generator Rex,
+  Sym-Bionic Titan, The Secret Saturdays.
+- **Animación occidental · Disney:** Gravity Falls, Amphibia, The Owl House, Star
+  vs. the Forces of Evil, The Ghost and Molly McGee, Phineas and Ferb (y Milo
+  Murphy's Law), Kim Possible, DuckTales (2017), Wander Over Yonder, Big City
+  Greens, Kiff, Hailey's on It!, Moon Girl and Devil Dinosaur, Hamster & Gretel,
+  Recess, The Proud Family, Lilo & Stitch: The Series, American Dragon: Jake
+  Long, Dave the Barbarian, Brandy & Mr. Whiskers, Little Einsteins.
+- **Animación occidental · Streaming y web:** Hilda, The Amazing Digital Circus,
+  Murder Drones, Hazbin Hotel, Helluva Boss, Kipo and the Age of Wonderbeasts,
+  Carmen Sandiego, Centaurworld, The Dragon Prince, Voltron: Legendary Defender,
+  Trollhunters, She-Ra and the Princesses of Power, Arcane, Castlevania, Battle
+  for Dream Island (BFDI), Inanimate Insanity, Gameoverse, Planetonika,
+  Lackadaisy, Eddsworld.
+- **Animación occidental · clásicos y para adultos:** My Little Pony, Bluey,
+  Miraculous, Looney Tunes, Tom and Jerry, Scooby-Doo, Los Simpson, South Park,
+  Family Guy, Futurama, Bob's Burgers, American Dad, Rick and Morty, Total Drama,
+  6teen, Detentionaire, Winx Club.
 - **Cómics y superhéroes:** Marvel, DC, Spider-Man, Batman, X-Men, The Boys,
   Invincible.
 - **Cine, TV y libros:** Star Wars, Harry Potter, El Señor de los Anillos, Juego de
