@@ -76,7 +76,7 @@ def motivo_exclusion_propia(artwork: Artwork) -> str | None:
 
     Es independiente de la lista negra del núcleo: solo mira tus `EXCLUDED_TAG_TOKENS`,
     `EXCLUDED_DOMAINS` y `EXCLUDED_TEXT_TOKENS` (arrays de app/config.py, o de
-    app/config_local.py / ~/.extractorfanarts/config_local.py para que no se pierdan
+    app/config_local.py / ~/.imaginteca/config_local.py para que no se pierdan
     al actualizar la app).
     """
     entrada = _casa_lista(" ".join(artwork.tags or []), _lista(config.EXCLUDED_TAG_TOKENS))

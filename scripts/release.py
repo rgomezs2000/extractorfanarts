@@ -1,4 +1,4 @@
-"""Prepara y publica un release de ExtractorFanarts en GitHub.
+"""Prepara y publica un release de Imaginteca en GitHub.
 
 Uso:
     python scripts\\release.py                 # crea el .zip del compilado y muestra los pasos
@@ -29,7 +29,7 @@ for _ruta in (ROOT, VENDOR):
 from app import config  # noqa: E402
 
 DIST = ROOT / "dist"
-PAQUETE = DIST / "ExtractorFanarts"
+PAQUETE = DIST / "Imaginteca"
 LICENCIA = ROOT / "LICENSE"
 NOTICIAS = ROOT / "THIRD-PARTY-NOTICES.txt"
 LEEME = ROOT / "LEEME-PRIMERO.txt"
@@ -135,7 +135,7 @@ def crear_zip(etiqueta: str) -> Path | None:
             print("[info] config_local.py ya era la plantilla (sin claves)")
 
     sufijo = SISTEMAS.get(sys.platform, sys.platform)
-    destino = DIST / f"ExtractorFanarts-{etiqueta}-{sufijo}.zip"
+    destino = DIST / f"Imaginteca-{etiqueta}-{sufijo}.zip"
     print(f"[info] comprimiendo {PAQUETE.name} …")
     try:
         with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
@@ -180,7 +180,7 @@ def subir_etiqueta(etiqueta: str) -> int:
         print("        Confirma y sube primero:  git add -A && git commit -m '...' && git push")
         print()
 
-    if not _ejecutar(["git", "tag", "-a", etiqueta, "-m", f"ExtractorFanarts {etiqueta}"],
+    if not _ejecutar(["git", "tag", "-a", etiqueta, "-m", f"Imaginteca {etiqueta}"],
                      f"crear la etiqueta {etiqueta}"):
         print("[error] no se pudo crear la etiqueta (¿ya existe?)")
         return 1
@@ -193,7 +193,7 @@ def subir_etiqueta(etiqueta: str) -> int:
     print(f"  Etiqueta {etiqueta} subida.")
     print("  GitHub Actions está compilando Windows, macOS y Linux.")
     print("  El Release aparecerá aquí en unos minutos:")
-    print("    https://github.com/rgomezs2000/extractorfanarts/releases")
+    print("    https://github.com/rgomezs2000/imaginteca/releases")
     print("  (pestaña Actions para ver el progreso)")
     print("=" * 70)
     return 0
@@ -209,7 +209,7 @@ def publicar_con_gh(etiqueta: str, paquete: Path) -> int:
         return 1
     return 0 if _ejecutar(
         ["gh", "release", "create", etiqueta, str(paquete),
-         "--title", f"ExtractorFanarts {etiqueta}",
+         "--title", f"Imaginteca {etiqueta}",
          "--generate-notes"],
         f"publicar el Release {etiqueta}",
     ) else 1
@@ -227,11 +227,11 @@ def pasos(etiqueta: str, paquete: Path | None) -> None:
     print()
     print("  OPCIÓN B — desde este equipo con GitHub CLI (solo el .zip local)")
     if paquete is not None:
-        print(f"    gh release create {etiqueta} \"{paquete}\" --title \"ExtractorFanarts {etiqueta}\" --generate-notes")
+        print(f"    gh release create {etiqueta} \"{paquete}\" --title \"Imaginteca {etiqueta}\" --generate-notes")
     print("    (si no tienes gh:  winget install --id GitHub.cli  &&  gh auth login)")
     print()
     print("  OPCIÓN C — a mano desde la web")
-    print("    1. https://github.com/rgomezs2000/extractorfanarts/releases/new")
+    print("    1. https://github.com/rgomezs2000/imaginteca/releases/new")
     print(f"    2. Etiqueta nueva: {etiqueta}  (crear al publicar)")
     if paquete is not None:
         print(f"    3. Adjunta el archivo: {paquete}")
@@ -246,7 +246,7 @@ def main() -> int:
     if not etiqueta.startswith("v"):
         etiqueta = "v" + etiqueta
 
-    print(f"ExtractorFanarts · release {etiqueta}")
+    print(f"Imaginteca · release {etiqueta}")
     print(f"  paquete local: {PAQUETE}")
 
     quiere_todo = "--gh" in sys.argv

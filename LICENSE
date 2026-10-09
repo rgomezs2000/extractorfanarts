@@ -1,13 +1,13 @@
 ================================================================================
- ExtractorFanarts · LICENCIA DE USO
+ Imaginteca · LICENCIA DE USO
  Programa propietario · TODOS LOS DERECHOS RESERVADOS
 ================================================================================
 
- Proyecto : ExtractorFanarts
+ Proyecto : Imaginteca
  Autor    : Roger Gomez <rogergomezs2003@gmail.com>
  Año      : 2026
  Versión  : 0.1.0-beta.1
- Web      : https://github.com/rgomezs2000/extractorfanarts
+ Web      : https://github.com/rgomezs2000/imaginteca
 
  Copyright (c) 2026 Roger Gomez. TODOS LOS DERECHOS RESERVADOS.
 
@@ -21,7 +21,7 @@
 
 Se concede permiso, gratuito, no exclusivo y no transferible, para:
 
-  a) EJECUTAR el programa ya compilado (ExtractorFanarts.exe y su carpeta) en
+  a) EJECUTAR el programa ya compilado (Imaginteca.exe y su carpeta) en
      equipos de tu propiedad o bajo tu control;
   b) USARLO para tu archivo personal de imágenes, sin límite de tiempo ni de
      número de descargas;
@@ -56,7 +56,7 @@ Sin autorización previa y por escrito del autor, NO puedes:
  3. EL CÓDIGO FUENTE ES PROPIEDAD DEL AUTOR
 --------------------------------------------------------------------------------
 
-El código fuente de ExtractorFanarts es propiedad exclusiva del autor y NO se
+El código fuente de Imaginteca es propiedad exclusiva del autor y NO se
 cede, NO se licencia y NO se publica como software libre: no se concede ningún
 derecho sobre él, ni siquiera el de consultarlo o reutilizarlo.
 
@@ -87,7 +87,7 @@ venta, renuncia ni licencia de ningún derecho de autor, marca o patente.
 Esta licencia cubre el PROGRAMA, no el material que descargues con él.
 
 El fanart, el arte y las ilustraciones pertenecen a sus respectivos autores y a
-las plataformas donde se publican. ExtractorFanarts es solo una herramienta de
+las plataformas donde se publican. Imaginteca es solo una herramienta de
 descarga: el uso que hagas del material descargado —y el respeto de sus
 licencias y de las condiciones de cada plataforma— es tu responsabilidad
 exclusiva.
@@ -152,7 +152,7 @@ forma imperativa.
 
 Copyright (c) 2026 Roger Gomez. All rights reserved.
 
-ExtractorFanarts is PROPRIETARY software, not free or open-source software.
+Imaginteca is PROPRIETARY software, not free or open-source software.
 
 You are granted a free, non-exclusive, non-transferable permission to run and
 use the compiled program for personal, non-commercial purposes only.

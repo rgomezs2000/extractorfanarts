@@ -16,7 +16,7 @@
     🔐  certs\ contiene la clave privada: está en .gitignore, no lo subas nunca.
 #>
 param(
-    [string]$Nombre = "ExtractorFanarts (pruebas)",
+    [string]$Nombre = "Imaginteca (pruebas)",
     [string]$Clave = "",
     [switch]$Confiar
 )

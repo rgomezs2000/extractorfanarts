@@ -24,7 +24,7 @@ from .base import SearchAdapter
 from .mastodon import MastodonAdapter, host_de_handle, normalizar_instancia
 from .misskey import MisskeyAdapter
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 
 class FediversoAdapter(SearchAdapter):

@@ -35,7 +35,7 @@ CASOS = [
 def main() -> int:
     client = PoliteClient(min_interval=0.5, block_pause=5.0)
     checker = httpx.Client(follow_redirects=True, timeout=20.0,
-                           headers={"User-Agent": "ExtractorFanarts/0.1 (verificacion)"})
+                           headers={"User-Agent": "Imaginteca/0.1 (verificacion)"})
     try:
         for name, tag in CASOS:
             print(f"[{name}] tag={tag}", flush=True)

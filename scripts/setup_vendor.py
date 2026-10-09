@@ -131,7 +131,7 @@ def pick_wheel(files: list[dict]) -> dict | None:
 def _json(url: str) -> dict:
     """GET JSON con User-Agent propio y token de GitHub si está disponible."""
     peticion = urllib.request.Request(
-        url, headers={"User-Agent": "ExtractorFanarts-setup_vendor"})
+        url, headers={"User-Agent": "Imaginteca-setup_vendor"})
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if token and "api.github.com" in url:
         peticion.add_header("Authorization", f"Bearer {token}")

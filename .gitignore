@@ -219,7 +219,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# ===== ExtractorFanarts: cachés, temporales y basura del proyecto =====
+# ===== Imaginteca: cachés, temporales y basura del proyecto =====
 # Dependencias regenerables (python scripts\setup_vendor.py [--ai])
 vendor/
 vendor_broken/

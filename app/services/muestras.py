@@ -26,7 +26,7 @@ import logging
 from .. import config
 from . import enhance
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 
 def _pillow():

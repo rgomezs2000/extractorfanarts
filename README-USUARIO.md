@@ -1,15 +1,15 @@
-# ExtractorFanarts — Guía del usuario
+# Imaginteca — Guía del usuario
 
 **Versión 0.1.0-beta.1 (fase beta)** · Windows · macOS · Linux
 
-ExtractorFanarts es un programa de escritorio para **buscar, revisar y guardar
-arte y fanart** de redes sociales, booros y wikis de fandom, todo desde una sola
-ventana: eliges la plataforma, escribes lo que buscas, revisas los resultados en
-una galería y descargas lo que te interese. Todo lo que guarda lo convierte a
-**WebP** y, si quieres, le **mejora la calidad** antes de guardarlo.
+Imaginteca es un programa de escritorio para **reunir y ordenar tu colección
+personal de imágenes**: busca en redes sociales, booros y wikis de fandom, revisa
+los resultados en una galería, guarda lo que elijas en un formato único (**WebP**)
+y, si quieres, **mejóralas de calidad** o **prepara con ellas un dataset** para
+entrenar modelos. Todo desde una sola ventana.
 
 > **Programa propietario.** © 2026 Roger Gomez · Todos los derechos reservados.
-> Puedes usarlo gratis para tu archivo personal. No puedes copiarlo,
+> Puedes usarlo gratis para tu colección personal. No puedes copiarlo,
 > redistribuirlo, venderlo ni modificarlo. Ver **Licencia** al final.
 
 Este README es la guía completa. Si es tu primera vez, empieza por el archivo
@@ -41,9 +41,9 @@ Este README es la guía completa. Si es tu primera vez, empieza por el archivo
 El programa **no se instala**: se descomprime y se ejecuta.
 
 1. **Descomprime el `.zip` completo** en una carpeta tuya (por ejemplo
-   `C:\ExtractorFanarts`). No lo ejecutes desde dentro del archivo comprimido:
+   `C:\Imaginteca`). No lo ejecutes desde dentro del archivo comprimido:
    necesita la carpeta `_internal` que va a su lado.
-2. **Windows:** haz doble clic en **`ExtractorFanarts.exe`**.
+2. **Windows:** haz doble clic en **`Imaginteca.exe`**.
    - La primera vez Windows puede mostrar un aviso azul, *«Windows protegió su
      PC»*. Es normal: el programa no está firmado digitalmente (un certificado
      de firma es de pago), no es un virus.
@@ -52,28 +52,28 @@ El programa **no se instala**: se descomprime y se ejecuta.
      **Desbloquear** → **Aceptar**.
 3. **macOS:** si dice *«no se puede abrir»*, haz clic derecho en la aplicación →
    **Abrir**. Si aun así se resiste, ejecuta en Terminal:
-   `xattr -dr com.apple.quarantine ExtractorFanarts.app`
+   `xattr -dr com.apple.quarantine Imaginteca.app`
    Lo mismo vale para el asistente: si macOS bloquea `pixiv-token`, haz clic
    derecho sobre él → **Abrir**.
 4. **Linux:** da permisos de ejecución la primera vez:
-   `chmod +x ExtractorFanarts` y luego ejecútalo.
+   `chmod +x Imaginteca` y luego ejecútalo.
 
 **Verifica que la descarga es íntegra** con el archivo `.sha256` que acompaña al
 paquete:
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\ExtractorFanarts-*.zip -Algorithm SHA256
+Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
 ```
 ```bash
 # Linux / macOS
-shasum -a 256 ExtractorFanarts-*.zip
+shasum -a 256 Imaginteca-*.zip
 ```
 
 El resultado debe coincidir con el contenido del `.sha256`.
 
-Al abrirlo por primera vez se crea la carpeta `%USERPROFILE%\.extractorfanarts`
-(en Linux/macOS: `~/.extractorfanarts`), donde viven tus registros y tu
+Al abrirlo por primera vez se crea la carpeta `%USERPROFILE%\.imaginteca`
+(en Linux/macOS: `~/.imaginteca`), donde viven tus registros y tu
 historial.
 
 ---
@@ -82,7 +82,7 @@ historial.
 
 | Archivo | Para qué sirve |
 |---|---|
-| `ExtractorFanarts.exe` | **El programa.** Es lo único que tienes que abrir |
+| `Imaginteca.exe` | **El programa.** Es lo único que tienes que abrir |
 | `config_local.py` | Tus claves y ajustes (viene vacío, como plantilla) |
 | `LEEME-PRIMERO.txt` | Los primeros pasos, en texto plano |
 | `LICENSE` | Las condiciones de uso del programa |
@@ -116,8 +116,8 @@ CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 
 1. junto al ejecutable (lo más cómodo),
 2. dentro de la carpeta del programa,
-3. en `%USERPROFILE%\.extractorfanarts\config_local.py` (Windows) o
-   `~/.extractorfanarts/config_local.py` (Linux/macOS) — la mejor opción si
+3. en `%USERPROFILE%\.imaginteca\config_local.py` (Windows) o
+   `~/.imaginteca/config_local.py` (Linux/macOS) — la mejor opción si
    quieres que sobreviva a las actualizaciones.
 
 **Reinicia el programa** después de cambiar el archivo.
@@ -138,7 +138,7 @@ CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 que el programa tienes un asistente: haz **doble clic en `pixiv-token.exe`** (o
 `pixiv-token` en Linux/macOS) y sigue lo que te diga. Te dará un enlace para
 iniciar sesión en Pixiv, le pegarás la dirección final y **el token se guarda
-solo**. Después, **reinicia ExtractorFanarts**.
+solo**. Después, **reinicia Imaginteca**.
 
 > 🔐 Guarda tus claves en `config_local.py`. Ese archivo queda en tu equipo: el
 > programa no envía nada a ningún servidor propio y no incluye ninguna clave.
@@ -239,14 +239,14 @@ a medias.
 
 | Qué | Dónde |
 |---|---|
-| **Imágenes** | Carpeta de **Imágenes** del sistema, subcarpeta `ExtractorFanarts`, con una subcarpeta por plataforma |
-| **Registros** | `%USERPROFILE%\.extractorfanarts\logs\app-AAAA-MM-DD.log` (un archivo por día) |
-| **Historial** | `%USERPROFILE%\.extractorfanarts\historial.db` |
+| **Imágenes** | Carpeta de **Imágenes** del sistema, subcarpeta `Imaginteca`, con una subcarpeta por plataforma |
+| **Registros** | `%USERPROFILE%\.imaginteca\logs\app-AAAA-MM-DD.log` (un archivo por día) |
+| **Historial** | `%USERPROFILE%\.imaginteca\historial.db` |
 
 - Puedes cambiar la carpeta de salida con el botón de la carpeta 📂.
 - Si esa carpeta no se puede escribir (permisos, protección contra ransomware…),
   el programa **te avisa al arrancar** y, al descargar, prueba alternativas
-  (Descargas, `~/.extractorfanarts/descargas`, una carpeta junto al programa) y
+  (Descargas, `~/.imaginteca/descargas`, una carpeta junto al programa) y
   te dice cuál ha usado.
 - Las descargas **nunca** van a Documentos.
 - Junto a cada imagen se puede guardar un archivo `.json` con sus datos, si
@@ -305,14 +305,14 @@ Puedes ver y ajustar todo esto: en **Opciones**, botón
 |---|---|
 | Aviso azul de Windows al abrir | Normal (no está firmado): *Más información → Ejecutar de todas formas* |
 | «0 resultados» pero la conexión va bien | El contenido es adulto: marca **Permitir contenido adulto** en Opciones |
-| **Acceso denegado** al guardar en Imágenes o Descargas | Abre el programa **con doble clic desde el Explorador** (no desde una terminal restringida). Si sigue igual, ejecuta `ExtractorFanarts.exe --selftest` y revisa `selftest.txt` |
+| **Acceso denegado** al guardar en Imágenes o Descargas | Abre el programa **con doble clic desde el Explorador** (no desde una terminal restringida). Si sigue igual, ejecuta `Imaginteca.exe --selftest` y revisa `selftest.txt` |
 | Cloudflare pide un CAPTCHA (p. ej. Rule34.xxx) | Abre el sitio en tu navegador, resuélvelo, y copia en `config_local.py` la cookie `cf_clearance` y tu `User-Agent` (F12 → Red → la primera petición → Cabeceras). El programa **nunca** evade CAPTCHAs |
 | Una wiki o un sitio devuelve error 403 | Suele ser una defensa contra programas. Anótalo y avisa al autor |
 | **El 🤖 Modo IA no mejora nada** (sigue usando Lanczos) | Los motores de IA pueden traer una etiqueta de Windows que les impide escribir su resultado (en el registro verás `encode image … failed`). Si sabes abrir una consola, ejecuta en la carpeta del programa: `icacls _internal\vendor /setintegritylevel Medium /T`. Si no, avisa al autor y usa **✨ Mejorar calidad** sin modo IA |
 | Búsqueda muy lenta | Se espacian las peticiones a propósito (cortesía con los sitios). Con muchos hashtags o palabras clave tarda más |
 | Cualquier error raro | Mira el `.log` del día: ahí está exactamente qué respondió cada servidor |
 
-**Diagnóstico:** ejecuta `ExtractorFanarts.exe --selftest` (en Windows también
+**Diagnóstico:** ejecuta `Imaginteca.exe --selftest` (en Windows también
 desde una consola) y se generará un archivo **`selftest.txt`** con el estado de
 todo: bibliotecas, carpetas, permisos y si la ventana cabe en tu pantalla.
 
@@ -384,7 +384,7 @@ pasada.
 
 ### Licencia del programa
 
-**ExtractorFanarts es un programa propietario.** © 2026 Roger Gomez.
+**Imaginteca es un programa propietario.** © 2026 Roger Gomez.
 **Todos los derechos reservados.**
 
 - **Sí puedes:** ejecutarlo y usarlo **gratis**, para tu archivo personal, en tus
@@ -419,6 +419,6 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*ExtractorFanarts 0.1.0-beta.1 · fase beta: si encuentras un fallo, el registro
-del día (`.extractorfanarts\logs`) y el `selftest.txt` son lo más útil para
+*Imaginteca 0.1.0-beta.1 · fase beta: si encuentras un fallo, el registro
+del día (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para
 reportarlo.*

@@ -10,7 +10,7 @@
   día): el `.log` se lee por sesiones y la consola empieza limpia en cada apertura.
 
 Carpeta del log (la primera que se pueda escribir):
-  `~/.extractorfanarts/logs`  →  `<proyecto>/logs`  →  `<temporal>/ExtractorFanarts/logs`
+  `~/.imaginteca/logs`  →  `<proyecto>/logs`  →  `<temporal>/Imaginteca/logs`
 """
 from __future__ import annotations
 
@@ -117,7 +117,7 @@ def _limpiar_antiguos(carpeta: Path, prefijo: str = "app") -> None:
 
 
 def setup_logging(log_dir: Path | None = None) -> logging.Logger:
-    logger = logging.getLogger("extractorfanarts")
+    logger = logging.getLogger("imaginteca")
     if logger.handlers:
         return logger  # ya configurado
 

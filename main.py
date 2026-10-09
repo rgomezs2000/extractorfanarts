@@ -1,4 +1,4 @@
-"""Punto de entrada de ExtractorFanarts (aplicación de escritorio).
+"""Punto de entrada de Imaginteca (aplicación de escritorio).
 
 Opciones de línea de comandos:
     --selftest    comprueba el entorno (dependencias, adaptadores, carpetas) y sale
@@ -160,7 +160,7 @@ def selftest() -> int:
     else:
         destinos.append(Path(__file__).resolve().parent / "selftest.txt")
     import tempfile as _tempfile2
-    destinos.append(Path(_tempfile2.gettempdir()) / "ExtractorFanarts-selftest.txt")
+    destinos.append(Path(_tempfile2.gettempdir()) / "Imaginteca-selftest.txt")
     for destino in destinos:
         try:
             destino.write_text(texto, encoding="utf-8")
@@ -209,7 +209,7 @@ def main() -> int:
         import logging
         import traceback
 
-        logging.getLogger("extractorfanarts").exception("error fatal al iniciar la aplicación")
+        logging.getLogger("imaginteca").exception("error fatal al iniciar la aplicación")
         if consola_propia():
             # La consola es nuestra: se deja abierta para poder leer el error
             traceback.print_exc()

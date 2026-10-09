@@ -44,7 +44,7 @@ CANDIDATES = [
 
 def main() -> int:
     with httpx.Client(follow_redirects=True, timeout=20.0,
-                      headers={"User-Agent": "ExtractorFanarts/0.1 (sondeo de compatibilidad)"}) as c:
+                      headers={"User-Agent": "Imaginteca/0.1 (sondeo de compatibilidad)"}) as c:
         for name, family, url in CANDIDATES:
             t0 = time.monotonic()
             try:

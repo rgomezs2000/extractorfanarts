@@ -2,7 +2,7 @@
 
 Genera un único archivo (`pixiv-token.exe` en Windows, `pixiv-token` en Linux/macOS)
 y lo deja **junto al ejecutable de la aplicación**, dentro del paquete
-(`dist/ExtractorFanarts/`), para que quien descarga el release pueda activar Pixiv
+(`dist/Imaginteca/`), para que quien descarga el release pueda activar Pixiv
 sin tener Python instalado.
 
 Uso:
@@ -82,7 +82,7 @@ def main() -> int:
 
     argumentos = sys.argv[1:]
     probar = "--probar" in argumentos
-    destino = ROOT / "dist" / "ExtractorFanarts"
+    destino = ROOT / "dist" / "Imaginteca"
     for indice, argumento in enumerate(argumentos):
         if argumento == "--destino" and indice + 1 < len(argumentos):
             destino = Path(argumentos[indice + 1]).expanduser().resolve()

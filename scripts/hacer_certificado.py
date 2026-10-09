@@ -105,10 +105,10 @@ def _pasos_siguientes(pfx: Path, clave: str) -> None:
     signtool = (r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe")
     print(f'    "{signtool}" sign /f "{pfx}" /p "{clave}" /fd sha256 `')
     print('        /tr http://timestamp.digicert.com /td sha256 `')
-    print('        "dist\\ExtractorFanarts\\ExtractorFanarts.exe"')
+    print('        "dist\\Imaginteca\\Imaginteca.exe"')
     print()
     print("  Comprobar la firma:")
-    print(f'    "{signtool}" verify /pa /v "dist\\ExtractorFanarts\\ExtractorFanarts.exe"')
+    print(f'    "{signtool}" verify /pa /v "dist\\Imaginteca\\Imaginteca.exe"')
     print()
     print("  Para quitar el certificado de tu equipo:")
     print('    Get-ChildItem Cert:\\CurrentUser\\My -CodeSigningCert | Remove-Item')
@@ -120,7 +120,7 @@ def main() -> int:
     simular = "--simular" in argumentos
     confiar = "--confiar" in argumentos
 
-    nombre = "ExtractorFanarts (pruebas)"
+    nombre = "Imaginteca (pruebas)"
     clave = _clave_aleatoria()
     for indice, argumento in enumerate(argumentos):
         if argumento == "--nombre" and indice + 1 < len(argumentos):

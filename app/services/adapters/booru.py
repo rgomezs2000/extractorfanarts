@@ -31,7 +31,7 @@ from ...models.artwork import Artwork, SearchQuery
 from ..http_client import BlockedError, ConfigError, PoliteClient, SinResultados
 from .base import SearchAdapter, split_tags
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 # Señales de que el servidor rechazó la consulta por llevar demasiados tags
 _LIMITE_TAGS_RE = re.compile(

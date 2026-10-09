@@ -14,7 +14,7 @@ Qué hace:
   3. El navegador acaba en una URL con `?code=...` (la página puede dar error: es normal).
   4. Pegas esa URL (o solo el código) y se obtiene el refresh token.
   5. Lo escribe en el MISMO `config_local.py` que lee la aplicación, así que basta con
-     reiniciar ExtractorFanarts.
+     reiniciar Imaginteca.
 
 Tu contraseña nunca pasa por este asistente ni por la aplicación: solo el refresh token,
 que puedes revocar cerrando sesión en Pixiv.
@@ -60,7 +60,7 @@ def _destino_config() -> Path:
     """El `config_local.py` que lee la aplicación: en ese mismo se escribe el token.
 
     La app lo busca, por este orden: junto al ejecutable, dentro del paquete y en
-    `~/.extractorfanarts/config_local.py`. `config.CONFIG_LOCAL_USADO` ya contiene la
+    `~/.imaginteca/config_local.py`. `config.CONFIG_LOCAL_USADO` ya contiene la
     ruta del que encontró, así que escribir ahí garantiza que la app lo verá.
     """
     usado = str(getattr(config, "CONFIG_LOCAL_USADO", "") or "")
@@ -150,7 +150,7 @@ def _guardar_en_config(token: str) -> Path | None:
         else:
             destino.parent.mkdir(parents=True, exist_ok=True)
             contenido = (
-                '"""Ajustes y credenciales locales de ExtractorFanarts.\n\n'
+                '"""Ajustes y credenciales locales de Imaginteca.\n\n'
                 "Cualquier constante en MAYUSCULAS de aqui sobreescribe app/config.py.\n"
                 '"""\n'
             )
@@ -234,7 +234,7 @@ def main() -> int:
 
     if not code_arg:
         print("=" * 78)
-        print("ASISTENTE DE PIXIV — ExtractorFanarts")
+        print("ASISTENTE DE PIXIV — Imaginteca")
         print("=" * 78)
         print("PASO 1 — Abre este enlace e inicia sesión con TU cuenta de Pixiv:")
         print()
@@ -323,7 +323,7 @@ def main() -> int:
         guardado = _guardar_en_config(refresh)
         if guardado is not None:
             print(f"[ok] guardado en {guardado}")
-            print("[ok] reinicia ExtractorFanarts y Pixiv quedará activado")
+            print("[ok] reinicia Imaginteca y Pixiv quedará activado")
         else:
             print("[aviso] no se pudo guardar automáticamente; copia el token a mano")
             print(f'      PIXIV_REFRESH_TOKEN = "{refresh}"')

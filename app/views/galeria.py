@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 
 from .. import config
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 MENSAJE_INICIAL = "🖼️ (aquí se mostrará una galería con las imágenes encontradas)"
 MENSAJE_BUSCANDO = "⏳ (buscando imágenes…)"

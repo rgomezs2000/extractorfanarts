@@ -12,7 +12,7 @@ from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
 from .social_filtros import Criterios
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 TOKEN_URL = "https://www.deviantart.com/oauth2/token"
 API_BASE = "https://www.deviantart.com/api/v1/oauth2"

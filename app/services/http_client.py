@@ -23,7 +23,7 @@ import httpx
 
 from .. import config
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 try:  # transporte opcional con huella de navegador
     from curl_cffi import requests as _curl_requests

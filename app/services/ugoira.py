@@ -24,7 +24,7 @@ from .. import config
 from ..models.artwork import Artwork
 from .http_client import BlockedError, ConfigError, PoliteClient
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 
 def _pillow():

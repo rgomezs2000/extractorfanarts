@@ -1,11 +1,11 @@
-THIRD-PARTY NOTICES — ExtractorFanarts
+THIRD-PARTY NOTICES — Imaginteca
 ======================================
 
 Este programa empaqueta y distribuye componentes de terceros. Se listan aquí con
 sus licencias para cumplir con sus condiciones de redistribución. Las licencias
 completas están en los repositorios oficiales de cada proyecto.
 
-NOTA: ExtractorFanarts en sí (su código y su ejecutable) NO es software libre:
+NOTA: Imaginteca en sí (su código y su ejecutable) NO es software libre:
 es un programa PROPIETARIO con todos los derechos reservados (ver LICENSE). Las
 licencias de esta lista se aplican exclusivamente a los componentes de terceros
 que se indican; no conceden ningún derecho sobre la aplicación.

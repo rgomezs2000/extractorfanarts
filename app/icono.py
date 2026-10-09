@@ -54,7 +54,7 @@ def aplicar_icono(app) -> bool:
         return False
 
 
-def configurar_app_user_model_id(nombre: str = "ExtractorFanarts.App") -> bool:
+def configurar_app_user_model_id(nombre: str = "Imaginteca.App") -> bool:
     """Windows: identificador propio para que la BARRA DE TAREAS use nuestro icono.
 
     Sin esto, Windows agrupa el proceso bajo el ejecutable anfitrión (python.exe) y

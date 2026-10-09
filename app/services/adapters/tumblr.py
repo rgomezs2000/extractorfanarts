@@ -16,7 +16,7 @@ from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
 from .social_filtros import Criterios
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 API_BASE = "https://api.tumblr.com/v2"
 

@@ -34,7 +34,7 @@ from pathlib import Path
 from .. import config
 from .http_client import ConfigError
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 
 class ImagenCorruptaError(Exception):
@@ -265,7 +265,7 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
     # restringido: arranca, pero no puede escribir su salida).
     # El registro es SOLO para diagnosticar: se lee y se borra en la misma llamada,
     # así no queda ni un archivo suelto (ni en la salida ni en el temporal).
-    registro = Path(tempfile.gettempdir()) / f"extractorfanarts-ia-{os.getpid()}.log"
+    registro = Path(tempfile.gettempdir()) / f"imaginteca-ia-{os.getpid()}.log"
     error_ejecucion = ""
     motivo_motor = ""
     try:

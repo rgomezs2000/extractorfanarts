@@ -24,7 +24,7 @@ from .base import SearchAdapter
 from .mastodon import host_de_handle, normalizar_instancia
 from .social_filtros import Criterios, etiquetas_de
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 

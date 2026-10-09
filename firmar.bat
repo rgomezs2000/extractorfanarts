@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM  Firma ExtractorFanarts.exe con el certificado de certs\
+REM  Firma Imaginteca.exe con el certificado de certs\
 REM
 REM  Se hace SIN Python: el Python de la Microsoft Store lanza
 REM  sus procesos hijos en un contenedor que no puede usar el
@@ -13,7 +13,7 @@ REM ============================================================
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
-set "EXE=dist\ExtractorFanarts\ExtractorFanarts.exe"
+set "EXE=dist\Imaginteca\Imaginteca.exe"
 set "PFX=%~dp0certs\codigo.pfx"
 
 if not exist "%EXE%" (

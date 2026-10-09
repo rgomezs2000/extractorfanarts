@@ -26,13 +26,13 @@ jobs:
         include:
           - os: windows-latest
             nombre: Windows (.exe)
-            artefacto: ExtractorFanarts-Windows
+            artefacto: Imaginteca-Windows
           - os: macos-latest
             nombre: macOS
-            artefacto: ExtractorFanarts-macOS
+            artefacto: Imaginteca-macOS
           - os: ubuntu-latest
             nombre: Linux
-            artefacto: ExtractorFanarts-Linux
+            artefacto: Imaginteca-Linux
 
     steps:
       - uses: actions/checkout@v4
@@ -97,17 +97,17 @@ jobs:
           if (-not $signtool) { Write-Host "::warning::no se encontró signtool"; exit 0 }
           & $signtool.FullName sign /f $pfx /p $env:CERT_PASSWORD `
               /fd sha256 /td sha256 /tr http://timestamp.digicert.com `
-              "dist\ExtractorFanarts\ExtractorFanarts.exe"
+              "dist\Imaginteca\Imaginteca.exe"
           Remove-Item $pfx -Force
 
       - name: Añadir licencia, avisos, LEEME y README de usuario al paquete
         shell: bash
         run: |
-          cp LICENSE dist/ExtractorFanarts/ 2>/dev/null || true
-          cp THIRD-PARTY-NOTICES.txt dist/ExtractorFanarts/ 2>/dev/null || true
-          cp LEEME-PRIMERO.txt dist/ExtractorFanarts/ 2>/dev/null || true
+          cp LICENSE dist/Imaginteca/ 2>/dev/null || true
+          cp THIRD-PARTY-NOTICES.txt dist/Imaginteca/ 2>/dev/null || true
+          cp LEEME-PRIMERO.txt dist/Imaginteca/ 2>/dev/null || true
           # La guía del usuario viaja como README.md; el README técnico se queda en el repo
-          cp README-USUARIO.md dist/ExtractorFanarts/README.md 2>/dev/null || true
+          cp README-USUARIO.md dist/Imaginteca/README.md 2>/dev/null || true
 
       - name: Subir artefacto
         uses: actions/upload-artifact@v4

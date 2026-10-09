@@ -35,7 +35,7 @@ from ..services import filters as filtros
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
 from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 TIPOS = ("Red social", "Booru", "Wiki fandom")
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
     def __init__(self, controller: MainController):
         super().__init__()
         self.controller = controller
-        self.setWindowTitle(f"🎨 {config.APP_NAME} — archivo personal de fanarts")
+        self.setWindowTitle(f"🖼️ {config.APP_NAME} — tu colección de imágenes")
         self._muestra_recibida = False
         self._error_mostrado = False      # se avisó de un error crítico en esta operación
         self._tarea = "descargar"
@@ -1093,7 +1093,7 @@ class MainWindow(QMainWindow):
             "  • BLOCKED_PAID_DOMAINS     → dominios de pago excluidos\n"
             "  • EXCLUDED_TAG_TOKENS · EXCLUDED_DOMAINS · EXCLUDED_TEXT_TOKENS → tu lista\n"
             "Para cambiarla NO hace falta tocar el código: copia el array que quieras en\n"
-            "config_local.py (junto al .exe, o en ~/.extractorfanarts/config_local.py) con\n"
+            "config_local.py (junto al .exe, o en ~/.imaginteca/config_local.py) con\n"
             "tus valores y reinicia; config_local.py sobreescribe app/config.py y no se\n"
             "pierde al actualizar. Los valores por defecto traen el ejemplo comentado."
         )

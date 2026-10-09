@@ -1,10 +1,10 @@
 ========================================================================
- ExtractorFanarts - LEEME PRIMERO
+ Imaginteca - LEEME PRIMERO
 ========================================================================
 
 1) COMO ABRIRLO (aviso de Windows)
 -----------------------------------
-Al ejecutar ExtractorFanarts.exe puede aparecer un aviso azul:
+Al ejecutar Imaginteca.exe puede aparecer un aviso azul:
 "Windows protegio su PC".
 
 Es NORMAL: el programa no esta firmado digitalmente (los certificados de
@@ -16,14 +16,14 @@ Si Windows lo bloquea del todo:
   -> Clic derecho en el .exe -> Propiedades -> marca "Desbloquear" -> Aceptar.
 
 Verifica la descarga con el archivo .sha256 que acompana al paquete:
-  PowerShell:  Get-FileHash .\ExtractorFanarts-*.zip -Algorithm SHA256
+  PowerShell:  Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
 
 2) TUS CLAVES (opcional, pero recomendable)
 -------------------------------------------
 El ejecutable NO incluye ninguna credencial. Para usar plataformas que
 necesitan clave (Rule34, DeviantArt, Pixiv, X, Pinterest, Tumblr...) crea un
 archivo de texto llamado exactamente  config_local.py  EN LA MISMA CARPETA
-que ExtractorFanarts.exe  y escribe dentro, por ejemplo:
+que Imaginteca.exe  y escribe dentro, por ejemplo:
 
     RULE34_API_KEY = "tu_clave"
     RULE34_USER_ID = "tu_id"
@@ -31,7 +31,7 @@ que ExtractorFanarts.exe  y escribe dentro, por ejemplo:
     CF_USER_AGENT = "tu user-agent"
     PIXIV_REFRESH_TOKEN = "tu_token"
 
-Tambien se lee desde:  C:\Users\<tu_usuario>\.extractorfanarts\config_local.py
+Tambien se lee desde:  C:\Users\<tu_usuario>\.imaginteca\config_local.py
 (el archivo config_local.py que viene en el paquete es solo una plantilla).
 
 ATAJOS DE TECLADO:
@@ -69,7 +69,7 @@ config_local.py los arrays que quieras con tus valores y reinicia.
     EXCLUDED_TEXT_TOKENS = ["commission open"]
 
 config_local.py se busca: 1) junto al .exe, 2) dentro del paquete, 3) en
-%USERPROFILE%\.extractorfanarts\config_local.py (lo mejor con el .exe: sobrevive a las
+%USERPROFILE%\.imaginteca\config_local.py (lo mejor con el .exe: sobrevive a las
 actualizaciones). Cualquier constante en MAYUSCULAS de ese archivo sobreescribe
 app\config.py. En la app: boton "¿Que se filtra? (lista negra)" en Opciones, que muestra
 los arrays tal como estan y la ruta del config_local.py que se esta usando.
@@ -80,7 +80,7 @@ el asistente  pixiv-token.exe  (o pixiv-token en Linux/macOS):
   2) Abre el enlace que muestra e inicia sesion con tu cuenta de Pixiv
   3) El navegador acabara en una pagina de error: copia la URL COMPLETA
      (la que lleva "code=...") y pegala en la ventana del asistente
-  4) El asistente guarda el token solo. Reinicia ExtractorFanarts.
+  4) El asistente guarda el token solo. Reinicia Imaginteca.
 Tu contrasena nunca se guarda; puedes revocar el acceso cerrando sesion en Pixiv.
 
 En "Red social" puedes combinar los campos: usuario + palabra(s) clave + hashtag(s).
@@ -96,19 +96,19 @@ como su etiqueta equivalente (Lola Loud -> #lola_loud).
 
 3) DONDE SE GUARDA TODO
 -----------------------
-  Imagenes :  la carpeta de IMAGENES del sistema, subcarpeta ExtractorFanarts
-              (Windows: C:\Users\<tu_usuario>\Pictures\ExtractorFanarts
-               Linux :  ~/Imagenes  o  ~/Pictures/ExtractorFanarts
-               macOS :  ~/Pictures/ExtractorFanarts)
+  Imagenes :  la carpeta de IMAGENES del sistema, subcarpeta Imaginteca
+              (Windows: C:\Users\<tu_usuario>\Pictures\Imaginteca
+               Linux :  ~/Imagenes  o  ~/Pictures/Imaginteca
+               macOS :  ~/Pictures/Imaginteca)
               Puedes cambiarla con el boton de carpeta de la ventana.
               Si la app no puede escribir en tus carpetas (por ejemplo si la
               abriste desde la terminal de un agente/IDE con sandbox), te avisa al
               arrancar en la barra de estado y usa una carpeta "descargas" junto al
               programa; para evitarlo, abrela con doble clic desde el Explorador.
-  Registros:  C:\Users\<tu_usuario>\.extractorfanarts\logs\app-AAAA-MM-DD.log
+  Registros:  C:\Users\<tu_usuario>\.imaginteca\logs\app-AAAA-MM-DD.log
               (un archivo por dia; los dias anteriores se conservan)
               Al abrir el .exe se abre una consola con esos mismos registros.
-  Historial:  C:\Users\<tu_usuario>\.extractorfanarts\historial.db
+  Historial:  C:\Users\<tu_usuario>\.imaginteca\historial.db
 
 Con el BOTON DERECHO sobre cualquier imagen (la grande, una miniatura o la vista
 ampliada) se abre un menu para copiarla, guardarla en la carpeta de salida
@@ -125,7 +125,7 @@ siguen siendo ligeras. En la vista ampliada la rueda del raton acerca Y aleja
 (del 10 % al 800 %), con el boton izquierdo arrastras para mover la imagen.
 
 Si algo falla, revisa el .log: ahi aparece exactamente que respondio cada
-servidor. Tambien puedes ejecutar  ExtractorFanarts.exe --selftest  y se
+servidor. Tambien puedes ejecutar  Imaginteca.exe --selftest  y se
 generara un archivo selftest.txt con el diagnostico.
 
 SI LA APP NO PUEDE GUARDAR EN TUS CARPETAS (Imagenes, Descargas...):
@@ -144,7 +144,7 @@ SI EL MODO IA NO MEJORA NADA (se queda en Lanczos):
 
 4) LICENCIA Y CONDICIONES DE USO
 --------------------------------
-ExtractorFanarts es un programa PROPIETARIO: su autor conserva TODOS los
+Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los
 derechos (Copyright (c) 2026 Roger Gomez). No es software libre.
 
   SI puedes:  ejecutarlo y usarlo gratis, para tu archivo personal, en tus

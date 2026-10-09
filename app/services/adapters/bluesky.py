@@ -15,7 +15,7 @@ from ..http_client import PoliteClient
 from .base import SearchAdapter
 from .social_filtros import Criterios, repartir_en_lotes
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 API_BASE = "https://public.api.bsky.app/xrpc"

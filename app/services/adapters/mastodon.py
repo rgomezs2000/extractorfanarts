@@ -36,7 +36,7 @@ from ..http_client import BlockedError, ConfigError, PoliteClient, SinResultados
 from .base import SearchAdapter
 from .social_filtros import Criterios, etiquetas_de
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
 _IMG_SRC_RE = re.compile(r'<img[^>]+src="([^"]+)"', re.IGNORECASE)

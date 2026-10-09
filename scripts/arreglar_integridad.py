@@ -64,7 +64,7 @@ def arreglar(carpeta: Path) -> int:
         print("[error] no se pudo arreglar el paquete")
         return 1
     print("[ok] listo: el ejecutable se abrirá con permisos normales.\n"
-          "     Vuelve a abrir ExtractorFanarts (el proceso anterior mantiene la etiqueta).")
+          "     Vuelve a abrir Imaginteca (el proceso anterior mantiene la etiqueta).")
     return 0
 
 
@@ -97,7 +97,7 @@ def main() -> int:
         return arreglar_motores()
     argumentos = [a for a in sys.argv[1:] if not a.startswith("--")]
     destino = (Path(argumentos[0]).expanduser() if argumentos
-               else ROOT / "dist" / "ExtractorFanarts")
+               else ROOT / "dist" / "Imaginteca")
     codigo = arreglar(destino.resolve())
     return arreglar_motores() or codigo
 

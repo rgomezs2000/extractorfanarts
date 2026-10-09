@@ -28,7 +28,7 @@ from ..http_client import BlockedError, ConfigError, PoliteClient, SinResultados
 from .base import SearchAdapter
 from .social_filtros import Criterios
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 API = "https://app-api.pixiv.net"
 TOKEN_URL = "https://oauth.secure.pixiv.net/auth/token"

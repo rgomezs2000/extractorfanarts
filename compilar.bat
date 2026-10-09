@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM  Compila ExtractorFanarts en un .exe para Windows
+REM  Compila Imaginteca en un .exe para Windows
 REM  NO usa pip: las dependencias se instalan en .\vendor
 REM  (asi se evita el error de rutas largas de la Microsoft Store)
 REM ============================================================
@@ -8,7 +8,7 @@ setlocal
 cd /d "%~dp0"
 
 echo ============================================================
-echo   ExtractorFanarts - compilacion para Windows
+echo   Imaginteca - compilacion para Windows
 echo ============================================================
 echo.
 
@@ -52,14 +52,14 @@ if errorlevel 1 goto error
 echo.
 echo ============================================================
 echo   LISTO
-echo   Ejecutable: dist\ExtractorFanarts\ExtractorFanarts.exe
-echo   Asistente : dist\ExtractorFanarts\pixiv-token.exe
+echo   Ejecutable: dist\Imaginteca\Imaginteca.exe
+echo   Asistente : dist\Imaginteca\pixiv-token.exe
 echo.
 echo   Al abrirlo se abre tambien una consola con los registros
-echo   (los mismos que el .log del dia, en .extractorfanarts\logs).
+echo   (los mismos que el .log del dia, en .imaginteca\logs).
 echo.
 echo   Antes de ejecutarlo, copia tu app\config_local.py a
-echo   dist\ExtractorFanarts\config_local.py (tus claves van ahi,
+echo   dist\Imaginteca\config_local.py (tus claves van ahi,
 echo   nunca dentro del .exe).
 echo ============================================================
 echo.

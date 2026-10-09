@@ -1,8 +1,8 @@
 """Borra los archivos de metadatos (.json) generados junto a las imágenes.
 
 Uso:
-    python scripts\\limpiar_sidecars.py "C:\\Users\\usuario\\Documents\\ExtractorFanarts"
-    python scripts\\limpiar_sidecars.py "C:\\...\\ExtractorFanarts" --borrar
+    python scripts\\limpiar_sidecars.py "C:\\Users\\usuario\\Documents\\Imaginteca"
+    python scripts\\limpiar_sidecars.py "C:\\...\\Imaginteca" --borrar
 
 Sin `--borrar` solo muestra qué se eliminaría (modo seguro).
 """

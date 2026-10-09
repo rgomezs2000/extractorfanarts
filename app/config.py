@@ -1,4 +1,4 @@
-"""Configuración central de ExtractorFanarts.
+"""Configuración central de Imaginteca.
 
 Por ahora NO hay autenticación interna ni gestión de usuarios: las claves de
 las APIs se colocan aquí (ver README). Los datos sensibles deberían migrarse
@@ -8,13 +8,13 @@ import os
 import sys
 from pathlib import Path
 
-APP_NAME = "ExtractorFanarts"
+APP_NAME = "Imaginteca"
 APP_VERSION = "0.1.0-beta.1"
 
 # User-Agent identificado (cortesía / transparencia con los sitios)
 # Nota: debe ser ASCII puro (los headers HTTP no admiten acentos).
 USER_AGENT = (
-    f"{APP_NAME}/{APP_VERSION} (herramienta personal de archivo de fanarts; "
+    f"{APP_NAME}/{APP_VERSION} (archivo personal de imagenes; "
     "respeta los limites y terminos de cada API; contacto: usuario-local)"
 )
 
@@ -80,9 +80,9 @@ def carpeta_imagenes() -> Path:
 
 # Las descargas van a la carpeta de IMÁGENES del sistema (Imágenes en Windows,
 # ~/Imágenes (XDG) en Linux, ~/Pictures en macOS). Nunca a Documentos.
-DEFAULT_OUTPUT_DIR = carpeta_imagenes() / "ExtractorFanarts"
-DB_PATH = Path.home() / ".extractorfanarts" / "history.db"
-LOG_DIR = Path.home() / ".extractorfanarts" / "logs"
+DEFAULT_OUTPUT_DIR = carpeta_imagenes() / "Imaginteca"
+DB_PATH = Path.home() / ".imaginteca" / "history.db"
+LOG_DIR = Path.home() / ".imaginteca" / "logs"
 
 # Registros: la app escribe un archivo .log POR DÍA (app-AAAA-MM-DD.log) y muestra en
 # la consola los mismos mensajes. En el .exe de Windows la consola se abre sola.
@@ -418,7 +418,7 @@ MAX_RETRIES = 3                # reintentos máximos por petición
 # ================================================================== LISTA NEGRA
 # TODA la lista negra vive AQUÍ, en arrays, y el código solo los lee (no hay valores
 # escondidos en el código): para cambiarla, edita estas listas —o mejor sus copias en
-# app/config_local.py / ~/.extractorfanarts/config_local.py, que sobreescriben este
+# app/config_local.py / ~/.imaginteca/config_local.py, que sobreescriben este
 # archivo y no se pierden al actualizar la app— y reinicia. Se admiten listas, tuplas o
 # conjuntos; un "*" al final de una entrada significa «empieza por».
 
@@ -467,7 +467,7 @@ FREE_LICENSE_HINTS = (
 # tanto en desarrollo como con la app empaquetada (.exe/.app/binario):
 #   1) junto al ejecutable (o junto a main.py en desarrollo)
 #   2) dentro del paquete empaquetado (por si se incluyó una plantilla)
-#   3) en la carpeta de usuario:  ~/.extractorfanarts/config_local.py
+#   3) en la carpeta de usuario:  ~/.imaginteca/config_local.py
 import importlib.util as _importlib_util
 import sys as _sys
 
@@ -481,6 +481,10 @@ def _cargar_config_local():
             candidatos.append(Path(interior) / "config_local.py")
     else:
         candidatos.append(Path(__file__).resolve().parent / "config_local.py")
+    candidatos.append(Path.home() / ".imaginteca" / "config_local.py")
+    # Compatibilidad: hasta el cambio de nombre la carpeta de datos se llamaba
+    # «.extractorfanarts». Si tus claves se quedaron ahí, se siguen leyendo (y
+    # puedes moverlas a la carpeta nueva cuando quieras).
     candidatos.append(Path.home() / ".extractorfanarts" / "config_local.py")
 
     for ruta in candidatos:

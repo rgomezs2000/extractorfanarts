@@ -1,11 +1,18 @@
-# ExtractorFanarts
+# Imaginteca
 
 **Versión 0.1.0-beta.1 (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
-Aplicación de escritorio para **buscar, revisar y archivar arte y fanart** desde
-redes sociales, boorus e wikis de fandom, con **restricciones legales y éticas
-integradas en el núcleo** y conversión de todo lo descargado a **WebP** con
-mejora de calidad opcional.
+**Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
+una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
+fandom, deja que revises los resultados en una galería, guarda lo que elijas en un
+formato único (WebP) y, si quieres, mejora su calidad o **prepara con ellas un
+dataset** para entrenar modelos.
+
+Está pensada para **coleccionar y preparar material**, no para extraerlo de nadie:
+todo se descarga con **tus credenciales** y con las **restricciones legales y
+éticas integradas en el núcleo** (lista negra, plataformas de pago, control de
+licencias y de contenido adulto), con peticiones espaciadas y **sin evadir nunca
+CAPTCHAs ni inicios de sesión**.
 
 ---
 
@@ -33,7 +40,7 @@ mejora de calidad opcional.
 
 ## 1. Concepto
 
-**ExtractorFanarts** es una herramienta de escritorio de **uso personal y
+**Imaginteca** es una herramienta de escritorio de **uso personal y
 privado** que reúne en una sola ventana la búsqueda y el archivado de fanart
 disperso en muchas plataformas distintas. La aplicación actúa como un
 **cliente unificado**: no aloja, indexa ni redistribuye contenido; se conecta a
@@ -42,7 +49,7 @@ propio usuario** y guarda en su equipo lo que ese usuario decide descargar.
 
 El problema que resuelve es concreto: quien archiva fanart suele acabar con
 decenas de pestañas, descargas manuales y nombres de archivo inconsistentes.
-ExtractorFanarts convierte ese trabajo en una operación única —elegir
+Imaginteca convierte ese trabajo en una operación única —elegir
 plataforma, escribir el criterio de búsqueda, revisar la galería de resultados y
 descargar— aplicando siempre las mismas reglas de filtrado, el mismo formato de
 salida y el mismo registro auditable.
@@ -59,14 +66,14 @@ de pago.
 
 ### 1.1 Uso principal: preparar datasets para entrenar modelos de IA
 
-Además del archivado personal, ExtractorFanarts está pensado como **herramienta de
+Además del archivado personal, Imaginteca está pensado como **herramienta de
 curación de datasets** para entrenar modelos de imagen: **LoRA**, **LyCORIS**
 (LoCon, LoHa), **embeddings textuales**, **checkpoints / DreamBooth** y ajustes de
 estilo. Todo el trabajo previo que exige un dataset —reunir el concepto correcto,
 quitar repetidas, dejar un formato y un tamaño homogéneos y guardar las etiquetas—
 lo resuelve el programa en una sola pasada, sin encadenar cinco herramientas.
 
-| Lo que necesita un dataset | Cómo lo resuelve ExtractorFanarts |
+| Lo que necesita un dataset | Cómo lo resuelve Imaginteca |
 |---|---|
 | **Imágenes del concepto correcto** | Búsqueda por **etiqueta exacta** en 14 boorus (el etiquetado de la comunidad es el mejor que existe para arte), por `@usuario` en redes sociales y por personaje/franquicia en wikis |
 | **Sin repetidas** | **Deduplicación por hash (md5)** dentro de cada búsqueda: el mismo archivo no entra dos veces |
@@ -77,7 +84,7 @@ lo resuelve el programa en una sola pasada, sin encadenar cinco herramientas.
 | **Nombres trazables** | `<Plataforma>_<id>_<hash8>.webp`: se sabe de dónde salió cada archivo y se puede cruzar con el historial |
 | **Dataset limpio** | Filtros obligatorios (lista negra, plataformas de pago, contenido adulto, licencia) más tus exclusiones por etiqueta, dominio o texto |
 | **Revisión antes de descargar** | Galería con carrusel y visor: se descartan las malas imágenes **antes** de bajarlas |
-| **Inventario de lo bajado** | Historial SQLite (`~/.extractorfanarts/historial.db`) con `md5`, `url`, `ruta` y fecha de cada descarga |
+| **Inventario de lo bajado** | Historial SQLite (`~/.imaginteca/historial.db`) con `md5`, `url`, `ruta` y fecha de cada descarga |
 | **Procedencia y permisos** | Los boorus y las wikis aportan `artista`, `licencia` y `origen`: útil para atribuir y para respetar listas de «no entrenar» |
 
 **Flujo recomendado para un LoRA de personaje**
@@ -139,7 +146,7 @@ En la práctica, la misión se concreta en cinco compromisos:
 **Un archivo personal de arte, ordenado y sostenible, construido sin dañar el
 ecosistema que lo hace posible.**
 
-A medio plazo, ExtractorFanarts aspira a ser el instrumento de referencia para
+A medio plazo, Imaginteca aspira a ser el instrumento de referencia para
 quien archiva fanart de forma sistemática:
 
 - **Multiplataforma y sin ataduras:** un único flujo de trabajo idéntico en
@@ -396,7 +403,7 @@ diario (`resultados filtrados: N aceptados; descartados -> …`).
   error. Nunca los dos.
 - **Errores resumidos en pantalla, detalle en el registro:** el diálogo muestra
   solo la primera línea; el texto completo con traceback va al `.log` y a la consola.
-- **Log por día:** `~/.extractorfanarts/logs/app-AAAA-MM-DD.log` (o
+- **Log por día:** `~/.imaginteca/logs/app-AAAA-MM-DD.log` (o
   `<proyecto>/logs/…` si esa ruta no es escribible), con
   `LOG_DIAS_A_CONSERVAR = 30` días (0 = no borrar nunca). Si la app sigue abierta
   al cambiar el día, **pasa sola** al archivo nuevo. Cada arranque deja una
@@ -432,7 +439,7 @@ diario (`resultados filtrados: N aceptados; descartados -> …`).
   | `assets/icon_preview.png` | Tira de comprobación en todos los tamaños |
 
 - **Icono propio en la barra de tareas (Windows):** la app fija un
-  **AppUserModelID** (`ExtractorFanarts.App`) antes de crear la aplicación Qt;
+  **AppUserModelID** (`Imaginteca.App`) antes de crear la aplicación Qt;
   sin eso Windows agruparía el proceso bajo el intérprete y mostraría el icono de Python.
 - **La ventana nunca tapa la barra de tareas:** se ajusta a
   `QScreen.availableGeometry()` (que ya descuenta barra de tareas, dock o panel).
@@ -600,7 +607,7 @@ store.py (historial SQLite)  +  logging_setup.py (.log del día)
 | Decisión | Por qué |
 |---|---|
 | **Sin servidor propio ni telemetría** | Privacidad: el historial y las claves nunca salen del equipo |
-| **Credenciales fuera del paquete** | `config_local.py` se lee junto al ejecutable o en `~/.extractorfanarts/`; el build deja solo una plantilla |
+| **Credenciales fuera del paquete** | `config_local.py` se lee junto al ejecutable o en `~/.imaginteca/`; el build deja solo una plantilla |
 | **Deduplicación por md5** | Evita volver a descargar y procesar lo ya archivado |
 | **Muestras propias en vez de miniaturas de la API** | La miniatura de la API se ve borrosa al ampliarla; la muestra se genera del original |
 | **Modo IA solo para archivos guardados** | Aplicar IA a cada muestra de pantalla multiplicaría el tiempo sin nitidez visible |
@@ -627,22 +634,22 @@ store.py (historial SQLite)  +  logging_setup.py (.log del día)
 ### 9.1 Usuario final (ejecutable)
 
 1. Descarga el `.zip` de tu sistema desde
-   [Releases](https://github.com/rgomezs2000/extractorfanarts/releases) y
+   [Releases](https://github.com/rgomezs2000/imaginteca/releases) y
    **verifica la descarga** con el `.sha256` que lo acompaña:
    ```powershell
-   Get-FileHash .\ExtractorFanarts-*.zip -Algorithm SHA256
+   Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
    ```
-2. Descomprime y ejecuta `ExtractorFanarts.exe` (o el binario / `.app`).
+2. Descomprime y ejecuta `Imaginteca.exe` (o el binario / `.app`).
    En Windows aparecerá el aviso de SmartScreen la primera vez: ver [§13](#13-firma-digital-y-smartscreen).
 3. **Opcional:** crea `config_local.py` **junto al ejecutable** (o en
-   `~/.extractorfanarts/config_local.py`) con tus claves. Ver [§10](#10-configuración).
+   `~/.imaginteca/config_local.py`) con tus claves. Ver [§10](#10-configuración).
 4. Lee **`LEEME-PRIMERO.txt`**, incluido en el paquete, para los primeros pasos.
 
 ### 9.2 Desde el código fuente
 
 ```powershell
-git clone https://github.com/rgomezs2000/extractorfanarts.git
-cd extractorfanarts
+git clone https://github.com/rgomezs2000/imaginteca.git
+cd imaginteca
 
 # Opción A — con pip, instalando en ./vendor
 python -m pip install --target vendor PySide6 httpx Pillow curl_cffi
@@ -702,7 +709,7 @@ Con el ejecutable, `config_local.py` se busca **por este orden**:
 
 1. junto al ejecutable (o junto a `main.py` en desarrollo),
 2. dentro del paquete empaquetado,
-3. `~/.extractorfanarts/config_local.py` ← lo más cómodo con el `.exe`.
+3. `~/.imaginteca/config_local.py` ← lo más cómodo con el `.exe`.
 
 El archivo que viene en el paquete es **solo una plantilla sin claves**, y
 `scripts/release.py` verifica que el `.zip` no contenga credenciales antes de
@@ -886,14 +893,14 @@ para Misskey/CherryPick) y guarda el resultado en caché por host.
   lo es, lo dice desde el principio en la barra de estado.
 - **Buscar nunca falla por la carpeta**; **Descargar** sí necesita una carpeta
   escribible: si la elegida da *Acceso denegado*, la app prueba alternativas
-  (`~/Downloads/ExtractorFanarts`, `~/.extractorfanarts/descargas`,
-  `~/ExtractorFanarts` y, como último recurso, `descargas` junto a la aplicación)
+  (`~/Downloads/Imaginteca`, `~/.imaginteca/descargas`,
+  `~/Imaginteca` y, como último recurso, `descargas` junto a la aplicación)
   y **actualiza el campo «Salida»** con la que funcione.
 - **Por defecto apunta a la carpeta de IMÁGENES del sistema** con la subcarpeta
-  `ExtractorFanarts`, nunca a Documentos:
-  - **Windows:** valor `My Pictures` del registro (funciona también si OneDrive la redirige) → `C:\Users\<usuario>\Pictures\ExtractorFanarts`
-  - **Linux:** `XDG_PICTURES_DIR` de `~/.config/user-dirs.dirs` (puede estar en tu idioma, p. ej. `~/Imágenes`) → `~/Imágenes/ExtractorFanarts`
-  - **macOS:** `~/Pictures/ExtractorFanarts`
+  `Imaginteca`, nunca a Documentos:
+  - **Windows:** valor `My Pictures` del registro (funciona también si OneDrive la redirige) → `C:\Users\<usuario>\Pictures\Imaginteca`
+  - **Linux:** `XDG_PICTURES_DIR` de `~/.config/user-dirs.dirs` (puede estar en tu idioma, p. ej. `~/Imágenes`) → `~/Imágenes/Imaginteca`
+  - **macOS:** `~/Pictures/Imaginteca`
 
 ### 11.4 Otros controles
 
@@ -952,21 +959,21 @@ compilas desde un entorno restringido; para un paquete ya compilado:
 **Notas importantes:**
 
 - **El paquete incluye dos ejecutables:** la aplicación
-  (`ExtractorFanarts.exe`) y el **asistente de token de Pixiv**
+  (`Imaginteca.exe`) y el **asistente de token de Pixiv**
   (`pixiv-token.exe`), compilado con `scripts\build_token_exe.py`. Es
   independiente de la app (solo necesita `httpx`) y ronda los 10 MB.
 - **Las credenciales NO se empaquetan.** El build deja una **plantilla** al lado
   del binario. Así tus claves nunca entran en el paquete.
-- **Registros y base de datos** viven en `~/.extractorfanarts/`, fuera del paquete.
+- **Registros y base de datos** viven en `~/.imaginteca/`, fuera del paquete.
 - **Tamaño:** el paquete `onedir` ronda los cientos de MB por Qt y los binarios de IA.
 - **macOS:** un `.app` sin firmar muestra *«no se puede abrir»* → clic derecho →
-  **Abrir**, o `xattr -dr com.apple.quarantine ExtractorFanarts.app`. Para
+  **Abrir**, o `xattr -dr com.apple.quarantine Imaginteca.app`. Para
   distribuirlo a terceros hace falta un certificado de Apple (Developer ID) y notarización.
 - **Linux:** conviene compilar en una distribución antigua (o contenedor) para
   que el binario funcione en más sistemas; también puede empaquetarse como AppImage.
 - ⚠️ **No ejecutes nunca el `.exe` de `build\`.** Esa carpeta contiene un paso
   intermedio incompleto y falla con *«Failed to load Python DLL …»*. El ejecutable
-  bueno es **`dist\ExtractorFanarts\ExtractorFanarts.exe`**. La compilación borra
+  bueno es **`dist\Imaginteca\Imaginteca.exe`**. La compilación borra
   `build\` automáticamente al terminar.
 
 ---
@@ -1072,14 +1079,14 @@ python scripts\release.py --tag        # crea y sube la etiqueta v0.1.0-beta.1
 ```
 
 Resultado en unos minutos:
-[github.com/rgomezs2000/extractorfanarts/releases](https://github.com/rgomezs2000/extractorfanarts/releases)
+[github.com/rgomezs2000/imaginteca/releases](https://github.com/rgomezs2000/imaginteca/releases)
 
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\ExtractorFanarts-v0.1.0-beta.1-windows.zip
-gh release create v0.1.0-beta.1 "dist\ExtractorFanarts-v0.1.0-beta.1-windows.zip" `
-   --title "ExtractorFanarts v0.1.0-beta.1" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.0-beta.1-windows.zip
+gh release create v0.1.0-beta.1 "dist\Imaginteca-v0.1.0-beta.1-windows.zip" `
+   --title "Imaginteca v0.1.0-beta.1" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
@@ -1160,7 +1167,7 @@ Hay **dos causas** y las dos se arreglan sin tocar tus permisos:
 
 **1) La app se lanzó desde una consola restringida** (p. ej. la terminal de un
 agente/IDE con sandbox), que solo permite escribir dentro del proyecto.
-*Síntoma:* mientras la app está abierta, su log (`~/.extractorfanarts/logs`) no
+*Síntoma:* mientras la app está abierta, su log (`~/.imaginteca/logs`) no
 se actualiza. *Solución:* ábrela **con doble clic desde el Explorador**
 (`ejecutar.bat` o el `.exe`) o desde una consola normal.
 
@@ -1168,16 +1175,16 @@ se actualiza. *Solución:* ábrela **con doble clic desde el Explorador**
 cualquier compilación hecha dentro de un entorno restringido: los archivos
 heredan esa etiqueta y Windows abre el proceso en modo restringido **aunque lo
 lances desde el Explorador**, porque la etiqueta viaja con el archivo).
-*Síntoma:* `ExtractorFanarts.exe --selftest` dice `escritura: FALLO … Permission
-denied` aunque `~/.extractorfanarts` e `Imágenes` tengan control total para tu
+*Síntoma:* `Imaginteca.exe --selftest` dice `escritura: FALLO … Permission
+denied` aunque `~/.imaginteca` e `Imágenes` tengan control total para tu
 usuario. *Solución:*
 
 ```powershell
-python scripts\arreglar_integridad.py                 # repara dist\ExtractorFanarts
+python scripts\arreglar_integridad.py                 # repara dist\Imaginteca
 python scripts\arreglar_integridad.py "otra\carpeta"  # o el paquete que quieras
 ```
 
-(equivale a `icacls "dist\ExtractorFanarts" /setintegritylevel Medium /T`).
+(equivale a `icacls "dist\Imaginteca" /setintegritylevel Medium /T`).
 `compilar.bat` y `ejecutar.bat` **ya lo aplican solos**.
 
 ### 15.4 El modo IA no mejora nada (se queda en Lanczos)
@@ -1188,7 +1195,7 @@ restringido). Windows los lanza entonces en modo restringido: **arrancan** —el
 registro muestra que detectan la GPU— pero **no pueden escribir su imagen de
 salida**, y la aplicación cae a Lanczos.
 
-*Síntoma exacto en el registro* (`~/.extractorfanarts/logs/app-AAAA-MM-DD.log`):
+*Síntoma exacto en el registro* (`~/.imaginteca/logs/app-AAAA-MM-DD.log`):
 
 ```
 WARNING | el motor IA (realesrgan-ncnn-vulkan.exe) no generó ninguna imagen ·
@@ -1258,7 +1265,7 @@ Scripts auxiliares de Windows: `compilar.bat`, `ejecutar.bat`,
 - **Componentes de terceros:** las licencias de Qt/PySide6 (LGPL v3), Pillow,
   httpx, curl_cffi y los motores de IA están en
   [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
-- **Uso responsable:** ExtractorFanarts es una herramienta de archivo personal.
+- **Uso responsable:** Imaginteca es una herramienta de archivo personal.
   **Respeta el trabajo de los artistas** y las condiciones de uso de cada
   plataforma. No redistribuyas el material descargado ni lo uses con fines
   comerciales sin la licencia correspondiente. El análisis completo está en

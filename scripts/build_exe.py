@@ -1,7 +1,7 @@
-"""Empaqueta ExtractorFanarts en un ejecutable con PyInstaller.
+"""Empaqueta Imaginteca en un ejecutable con PyInstaller.
 
 Uso:
-    python scripts\\build_exe.py              # carpeta dist/ExtractorFanarts/ (onedir)
+    python scripts\\build_exe.py              # carpeta dist/Imaginteca/ (onedir)
     python scripts\\build_exe.py --onefile    # un único archivo
     python scripts\\build_exe.py --consola    # conserva la ventana de consola
     python scripts\\build_exe.py --probar     # además ejecuta --selftest del resultado
@@ -27,7 +27,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT / "vendor"
-NOMBRE = "ExtractorFanarts"
+NOMBRE = "Imaginteca"
 
 # Permite usar el PyInstaller instalado en ./vendor (sin instalación global)
 if VENDOR.is_dir() and str(VENDOR) not in sys.path:
@@ -47,9 +47,9 @@ EXCLUIR = [
 
 PLANTILLA_CONFIG = '''# PLANTILLA-VACIA: este archivo solo es un ejemplo, sin claves.
 # Escribe aquí tus credenciales, o ejecuta ejecutar.bat (copia las tuyas).
-"""Ajustes y credenciales locales de ExtractorFanarts.
+"""Ajustes y credenciales locales de Imaginteca.
 
-Este archivo vive JUNTO AL EJECUTABLE (o en ~/.extractorfanarts/config_local.py).
+Este archivo vive JUNTO AL EJECUTABLE (o en ~/.imaginteca/config_local.py).
 Cualquier constante en MAYÚSCULAS sobreescribe app/config.py.
 
 Ejemplos:
@@ -341,7 +341,7 @@ def main() -> int:
     print(f"  LISTO -> {ejecutable}")
     print()
     print("  Ejecuta SIEMPRE ese archivo (el de dist\\).")
-    print("  NUNCA ejecutes build\\ExtractorFanarts\\ExtractorFanarts.exe:")
+    print("  NUNCA ejecutes build\\Imaginteca\\Imaginteca.exe:")
     print("  es un paso intermedio incompleto y da error de 'Python DLL'.")
     print("=" * 74)
 

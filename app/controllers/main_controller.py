@@ -33,7 +33,7 @@ from ..services.http_client import (
     SinResultados,
 )
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 _SAFE_RE = re.compile(r"[^\w.\- ]+")
 _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".bmp"}
@@ -494,7 +494,7 @@ class MainController(QObject):
                     if accion == "copiar":
                         # La copia también pasa por la política de calidad: se procesa
                         # en una carpeta temporal y solo se entregan los bytes .webp.
-                        temporal = Path(tempfile.mkdtemp(prefix="extractorfanarts-"))
+                        temporal = Path(tempfile.mkdtemp(prefix="imaginteca-"))
                         try:
                             dest, meta = _procesar_obra(cliente, obra, temporal, settings,
                                                         subcarpeta=False, aviso=aviso)
@@ -621,7 +621,7 @@ class MainController(QObject):
         """Carpetas de reserva si la elegida no se puede escribir."""
         return [
             Path.home() / "Downloads" / config.APP_NAME,
-            Path.home() / ".extractorfanarts" / "descargas",
+            Path.home() / ".imaginteca" / "descargas",
             Path.home() / config.APP_NAME,
             # Último recurso: junto a la aplicación. Es la única que funciona si el
             # proceso está confinado a la carpeta del proyecto (app lanzada desde la
@@ -696,19 +696,19 @@ class MainController(QObject):
                 "con sandbox): el proceso solo puede escribir DENTRO de la carpeta del\n"
                 "proyecto, así que Windows rechaza Imágenes, Descargas, Documentos… aunque\n"
                 "tus permisos sean correctos. Solución: cierra la app y ábrela con doble clic\n"
-                "desde el Explorador (ExtractorFanarts.exe o ejecutar.bat) o desde una consola\n"
+                "desde el Explorador (Imaginteca.exe o ejecutar.bat) o desde una consola\n"
                 "normal.\n\n"
                 "Otras causas habituales en Windows:\n"
                 "  · Protección contra ransomware (Seguridad de Windows → Protección\n"
                 "    contra virus y amenazas → Protección contra ransomware → Acceso\n"
-                "    controlado a carpetas): añade ExtractorFanarts.exe a las\n"
+                "    controlado a carpetas): añade Imaginteca.exe a las\n"
                 "    aplicaciones permitidas.\n"
                 "  · Permisos de la carpeta o carpeta marcada como solo lectura.\n"
                 "  · Una política de tu organización (WDAC/AppLocker).\n\n"
                 "Solución rápida: pulsa 📂 y elige otra carpeta (por ejemplo, una\n"
                 "dentro de tu carpeta de usuario) o define DEFAULT_OUTPUT_DIR en\n"
                 "app/config_local.py. Para un diagnóstico completo:\n"
-                "ExtractorFanarts.exe --selftest  (deja un selftest.txt con el detalle)."
+                "Imaginteca.exe --selftest  (deja un selftest.txt con el detalle)."
             )
         else:
             logger.warning("no se pudo preparar la carpeta de salida (%s); la búsqueda continúa",

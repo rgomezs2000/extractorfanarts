@@ -21,7 +21,7 @@ import sys
 
 from . import config
 
-logger = logging.getLogger("extractorfanarts")
+logger = logging.getLogger("imaginteca")
 
 _SC_CLOSE = 0xF060            # cerrar (menú de sistema)
 _MF_BYCOMMAND = 0x00000000
