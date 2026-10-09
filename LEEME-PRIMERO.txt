@@ -1,153 +1,208 @@
-========================================================================
- Imaginteca - LEEME PRIMERO
-========================================================================
+================================================================================
+ IMAGINTECA 0.1.0-beta.3 - LEEME PRIMERO
+ Tu coleccion personal de imagenes (y datasets para IA)
+================================================================================
 
-1) COMO ABRIRLO (aviso de Windows)
------------------------------------
-Al ejecutar Imaginteca.exe puede aparecer un aviso azul:
-"Windows protegio su PC".
+ Lee esto y en cinco minutos estas descargando. La guia completa esta en
+ README.md (tambien dentro del programa, con la tecla F1) y ampliada en la wiki:
 
-Es NORMAL: el programa no esta firmado digitalmente (los certificados de
-firma de codigo cuestan dinero). NO es un virus.
+     https://github.com/rgomezs2000/extractorfanarts/wiki
 
-  -> Pulsa "Mas informacion"  y luego  "Ejecutar de todas formas".
+ Ahi estan tambien el FORO (soporte tecnico, fallos, ideas, plataformas y
+ datasets) y las preguntas frecuentes. Para algo privado:
+     Discord: rgomezs2010
 
-Si Windows lo bloquea del todo:
-  -> Clic derecho en el .exe -> Propiedades -> marca "Desbloquear" -> Aceptar.
 
-Verifica la descarga con el archivo .sha256 que acompana al paquete:
-  PowerShell:  Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
+1) INSTALAR Y ABRIR
+-------------------
+El programa NO se instala: se descomprime y se ejecuta. No se paga nada, no hay
+que registrarse y no se recogen datos.
 
-2) TUS CLAVES (opcional, pero recomendable)
--------------------------------------------
-El ejecutable NO incluye ninguna credencial. Para usar plataformas que
-necesitan clave (Rule34, DeviantArt, Pixiv, X, Pinterest, Tumblr...) crea un
-archivo de texto llamado exactamente  config_local.py  EN LA MISMA CARPETA
-que Imaginteca.exe  y escribe dentro, por ejemplo:
+  1. Descarga el paquete de tu sistema desde la pagina de Releases:
+         Imaginteca-Windows.zip / Imaginteca-Linux.zip / Imaginteca-macOS.zip
+     Al lado hay un archivo .sha256 para comprobar que la descarga llego entera:
+         Windows (PowerShell):  Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
+         Linux / macOS:         shasum -a 256 Imaginteca-*.zip
+  2. Descomprime el .zip COMPLETO en una carpeta tuya (por ejemplo C:\Imaginteca).
+     No lo ejecutes desde dentro del archivo comprimido: necesita la carpeta
+     _internal que va a su lado.
+  3. Abrelo:
+       Windows : doble clic en Imaginteca.exe
+                 (si sale el aviso azul "Windows protegio su PC" es normal: no
+                  esta firmado. "Mas informacion" -> "Ejecutar de todas formas")
+       macOS   : clic derecho en la aplicacion -> Abrir
+                 (si se resiste: xattr -dr com.apple.quarantine Imaginteca.app)
+       Linux   : chmod +x Imaginteca   y luego ejecutalo
+
+  Comprobacion recomendada (genera selftest.txt, muy util si pides ayuda):
+         Imaginteca.exe --selftest
+
+
+2) QUE HAY EN ESTA CARPETA
+--------------------------
+  Imaginteca.exe          el programa (es lo unico que hay que abrir)
+  pixiv-token.exe         asistente para tu token de Pixiv (opcional)
+  config_local.py         tus claves y ajustes (viene vacio, como plantilla)
+  README.md               la guia del usuario (tambien con F1 dentro del programa)
+  LICENSE                 las condiciones de uso
+  THIRD-PARTY-NOTICES.txt licencias de las bibliotecas incluidas
+  _internal\              biblioteca del programa: NO la borres ni la muevas
+
+
+3) USARLO EN CINCO PASOS
+------------------------
+  1. Elige TIPO (Red social / Booru / Wiki) y PLATAFORMA.
+  2. Escribe lo que buscas:
+       Red social : @usuario, palabras clave y/o #hashtags (puedes combinarlos)
+       Booru      : etiquetas separadas por espacios (lola_loud 1girl solo)
+       Wiki       : el fandom, el personaje y/o la URL de la wiki
+  3. Pulsa BUSCAR (Ctrl+B o Enter). Los resultados salen en una galeria para que
+     los revises ANTES de descargar nada.
+  4. Ajusta cantidad, calidad, mejora, metadatos y carpeta de destino.
+  5. Pulsa DESCARGAR (Ctrl+D o Shift+Enter). Te dira cuantos archivos guardo y
+     donde. Durante el trabajo el boton pasa a CANCELAR (Esc) y no deja archivos
+     a medias. LIMPIAR (Ctrl+L) vacia el formulario.
+
+  Arriba tienes la barra de herramientas: Buscar, Descargar/Cancelar, Limpiar,
+  Carpeta (Ctrl+O), Filtros, Ayuda (F1), Actualizaciones y Acerca de.
+
+  Con CLIC DERECHO sobre cualquier imagen puedes copiarla (Ctrl+C), guardar solo
+  esa (Ctrl+S), guardar como (Ctrl+Shift+S), abrir el original en el navegador o
+  copiar su enlace (Ctrl+Shift+C). Funciona aunque solo hayas pulsado Buscar.
+
+
+4) CLAVES (opcional) Y PIXIV
+----------------------------
+Muchas plataformas funcionan sin nada: Fediverso, Bluesky, wikis, Newgrounds,
+Safebooru, Danbooru y la mayoria de booros publicos.
+
+Para las que piden credenciales, edita config_local.py (junto al ejecutable) y
+escribe dentro tus claves, por ejemplo:
 
     RULE34_API_KEY = "tu_clave"
     RULE34_USER_ID = "tu_id"
-    CF_CLEARANCE = "valor_de_la_cookie"
-    CF_USER_AGENT = "tu user-agent"
-    PIXIV_REFRESH_TOKEN = "tu_token"
-
-Tambien se lee desde:  C:\Users\<tu_usuario>\.imaginteca\config_local.py
-(el archivo config_local.py que viene en el paquete es solo una plantilla).
-
-ATAJOS DE TECLADO:
-  Enter ......... en cualquier campo o control de busqueda -> Buscar
-  Shift+Enter ... en cualquier campo o control -> Descargar
-  Enter ......... en el campo "Salida" -> elegir carpeta (no busca)
-  Enter ......... sobre el boton enfocado (Buscar / Descargar / Limpiar) -> lo pulsa
-  Enter o Esc ... mientras busca o descarga (boton "Cancelar") -> cancela
-  Enter ......... sobre la imagen o la miniatura seleccionada -> verla ampliada
-  Esc ........... cierra el visor ampliado
-  Alt+F4 ........ cierra la aplicacion (tambien Ctrl+Q); si hay algo en curso, pregunta
-
-Plataformas sin claves: Fediverso (Mastodon/Misskey/CherryPick), Bluesky,
-Safebooru, Danbooru, Rule34 Paheal y las wikis de Fandom.
-
-Boorus: Safebooru, Gelbooru, Rule34.xxx, TBIB, Xbooru, Hypnohub, Danbooru,
-Safebooru (Donmai), Yande.re, Konachan (x2), Derpibooru, ATF Booru y Rule34 Paheal
-(Shimmie). Todos se configuran en el array BOORU_SITES de app\config.py con su
-nombre, su sitio y sus tokens; puedes anadir los tuyos con BOORU_SITES_EXTRA en
-config_local.py. Rule34 Paheal es adulto: marca "Contenido adulto" para verlo.
-
-En los boorus, el campo de tags admite los que quieras, separados con espacios o comas:
-lori_loud 1girl solo blonde_hair  ->  se buscan TODOS a la vez. Tambien valen los
-operadores del booru: -tag para excluir, rating:general, score:>10.
-
-LISTA NEGRA: toda ella son ARRAYS en app\config.py y el codigo solo los lee (no hay
-valores escondidos en el codigo). Para cambiarla NO toques el codigo: copia en
-config_local.py los arrays que quieras con tus valores y reinicia.
-
-    PROHIBITED_TAG_TOKENS = ["childporn", "child_porn"]     # tags exactos
-    PROHIBITED_TAG_PREFIXES = ["pedo"]                      # tags que empiezan por...
-    BLOCKED_PAID_DOMAINS = ["patreon.com", "onlyfans.com"]  # dominios de pago
-    EXCLUDED_TAG_TOKENS = ["gore", "vore", "guroli*"]       # tu lista ("*" = empieza por)
-    EXCLUDED_DOMAINS = ["deviantart.com"]
-    EXCLUDED_TEXT_TOKENS = ["commission open"]
+    GELBOORU_API_KEY = "tu_clave"
+    GELBOORU_USER_ID = "tu_id"
+    DEVIANTART_CLIENT_ID = "tu_id"
+    DEVIANTART_CLIENT_SECRET = "tu_secreto"
+    TUMBLR_API_KEY = "tu_clave"
+    CF_CLEARANCE = "valor_de_la_cookie"       (solo si Cloudflare lo pide)
+    CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 
 config_local.py se busca: 1) junto al .exe, 2) dentro del paquete, 3) en
-%USERPROFILE%\.imaginteca\config_local.py (lo mejor con el .exe: sobrevive a las
-actualizaciones). Cualquier constante en MAYUSCULAS de ese archivo sobreescribe
-app\config.py. En la app: boton "Que se filtra? (lista negra)" en Opciones, que muestra
-los arrays tal como estan y la ruta del config_local.py que se esta usando.
+%USERPROFILE%\.imaginteca\config_local.py (lo mejor: sobrevive a las
+actualizaciones). Reinicia el programa despues de cambiarlo. Cualquier constante
+en MAYUSCULAS de ese archivo sobreescribe app\config.py. En la app, el boton
+"Filtros" muestra los arrays tal como estan y la ruta del config_local.py usado.
 
-PIXIV (opcional): Pixiv no permite entrar sin cuenta. En esta misma carpeta tienes
-el asistente  pixiv-token.exe  (o pixiv-token en Linux/macOS):
+PIXIV (opcional): no permite entrar sin cuenta. En esta misma carpeta tienes el
+asistente pixiv-token.exe (o pixiv-token en Linux/macOS):
   1) Doble clic en pixiv-token.exe
   2) Abre el enlace que muestra e inicia sesion con tu cuenta de Pixiv
-  3) El navegador acabara en una pagina de error: copia la URL COMPLETA
-     (la que lleva "code=...") y pegala en la ventana del asistente
+  3) El navegador acabara en una pagina de error: copia la URL COMPLETA (la que
+     lleva "code=...") y pegala en la ventana del asistente
   4) El asistente guarda el token solo. Reinicia Imaginteca.
 Tu contrasena nunca se guarda; puedes revocar el acceso cerrando sesion en Pixiv.
 
-En "Red social" puedes combinar los campos: usuario + palabra(s) clave + hashtag(s).
-Se exigen todos los campos que rellenes y cada campo admite valores SIN LIMITE:
-  hashtags      ->  #lola_loud  o  #lola_loud #the_loud_house  (separalos con espacios)
-  palabras clave->  Lola Loud   o  Lola Loud, Lincoln Loud     (separalas con comas)
-De cada campo vale cualquiera de sus valores (arte de Lola o de Lincoln). Si prefieres
-exigirlos todos, pon SOCIAL_VARIOS_EN_CAMPO = "todos" en app\config_local.py.
-Cada valor se consulta por separado (aprox. 1,5 s entre peticiones, configurable con
-MIN_REQUEST_INTERVAL), asi que con muchos valores la busqueda tarda mas.
-Si la instancia no permite buscar por texto sin cuenta, las palabras clave se buscan
-como su etiqueta equivalente (Lola Loud -> #lola_loud).
+Tus claves no salen de tu ordenador: no hay servidor propio ni telemetria.
 
-3) DONDE SE GUARDA TODO
+
+5) DONDE SE GUARDA TODO
 -----------------------
-  Imagenes :  la carpeta de IMAGENES del sistema, subcarpeta Imaginteca
-              (Windows: C:\Users\<tu_usuario>\Pictures\Imaginteca
-               Linux :  ~/Imagenes  o  ~/Pictures/Imaginteca
-               macOS :  ~/Pictures/Imaginteca)
-              Puedes cambiarla con el boton de carpeta de la ventana.
-              Si la app no puede escribir en tus carpetas (por ejemplo si la
-              abriste desde la terminal de un agente/IDE con sandbox), te avisa al
-              arrancar en la barra de estado y usa una carpeta "descargas" junto al
-              programa; para evitarlo, abrela con doble clic desde el Explorador.
-  Registros:  C:\Users\<tu_usuario>\.imaginteca\logs\app-AAAA-MM-DD.log
-              (un archivo por dia; los dias anteriores se conservan)
-              Al abrir el .exe se abre una consola con esos mismos registros.
-  Historial:  C:\Users\<tu_usuario>\.imaginteca\historial.db
+  Imagenes : la carpeta de IMAGENES del sistema, subcarpeta Imaginteca
+             (Windows: C:\Users\<tu_usuario>\Pictures\Imaginteca)
+             Se cambia con el boton de carpeta (Ctrl+O).
+  Registros: %USERPROFILE%\.imaginteca\logs\app-AAAA-MM-DD.log
+  Historial: %USERPROFILE%\.imaginteca\historial.db
+  Claves   : config_local.py (junto al programa o en .imaginteca)
 
-Con el BOTON DERECHO sobre cualquier imagen (la grande, una miniatura o la vista
-ampliada) se abre un menu para copiarla, guardarla en la carpeta de salida
-("Guardar imagen"), guardarla donde tu quieras ("Guardar como..."), abrirla en tu
-navegador o copiar su enlace original. Lo que copies o guardes suelto pasa por la
-misma calidad que la descarga masiva: se convierte a .webp y, si marcas "Mejorar
-calidad" (con o sin modo IA), se le aplica el mismo aumento de calidad. Puedes
-guardar una sola imagen incluso despues de solo pulsar BUSCAR: no hace falta
-descargar todo antes.
+Las descargas NUNCA van a Documentos. Si la carpeta no se puede escribir, el
+programa avisa al arrancar y prueba alternativas (Descargas, .imaginteca\descargas,
+una carpeta junto al programa) diciendote cual uso.
 
-Las imagenes que ves en la galeria se preparan en .webp y salen de la imagen
-original (no de la miniatura pequena), asi que al ampliarlas se ven nitidas y
-siguen siendo ligeras. En la vista ampliada la rueda del raton acerca Y aleja
-(del 10 % al 800 %), con el boton izquierdo arrastras para mover la imagen.
 
-Si algo falla, revisa el .log: ahi aparece exactamente que respondio cada
-servidor. Tambien puedes ejecutar  Imaginteca.exe --selftest  y se
-generara un archivo selftest.txt con el diagnostico.
+6) CALIDAD, IA Y DATASETS (resumen)
+-----------------------------------
+  - Todo se guarda en .webp, con la calidad que elijas (1-100).
+  - "Mejorar calidad" reescala segun el tamano de partida:
+        hasta 699 px -> x4   |   700-799 px -> x3   |   800 px o mas -> x2
+    con tope de 8K y un afilado suave. Veras siempre el resultado real en la
+    barra de estado (por ejemplo: 153x153 -> 612x612 - Lanczos 4x).
+  - "Modo IA" usa Real-ESRGAN / waifu2x (incluidos) para sacar mas detalle. Si
+    no estan disponibles, lo dice y usa el reescalado clasico: nunca guarda una
+    imagen corrupta ni a medias. El proceso no deja archivos temporales.
+  - Para preparar un DATASET (LoRA, LyCORIS, embedding, checkpoint): busca en un
+    booru por etiqueta exacta, marca "Mejorar calidad" y "Guardar metadatos
+    .json", descarga 100-200 imagenes por personaje (30-50 por estilo), revisa en
+    la galeria y usa las etiquetas del .json para las captions.
+  - Se filtran SIEMPRE: contenido prohibido, plataformas de pago, contenido
+    adulto (salvo que lo permitas) y, si quieres, todo lo que no declare licencia
+    liberada. El boton "Filtros" explica cada descarte.
+  - Aviso: en Rule34.xxx y Rule34 Paheal casi todo es adulto; sin marcar
+    "Permitir contenido adulto" veras 0 resultados aunque todo funcione bien.
 
-SI LA APP NO PUEDE GUARDAR EN TUS CARPETAS (Imagenes, Descargas...):
-  casi siempre es que el .exe trae la etiqueta de integridad "baja" (le pasa a
-  las compilaciones hechas dentro de un entorno restringido o sandbox). Se
-  arregla con:   python scripts\arreglar_integridad.py
-  (o recompilando con compilar.bat, que ya lo corrige solo). Cierra la app
-  antes de arreglarlo y vuelve a abrirla despues.
 
-SI EL MODO IA NO MEJORA NADA (se queda en Lanczos):
-  los motores de IA (realesrgan / waifu2x) pueden traer esa misma etiqueta baja.
-  Arrancan y ven tu tarjeta grafica, pero Windows no les deja escribir su
-  resultado. Se arregla igual, en la carpeta del programa:
-      icacls _internal\vendor /setintegritylevel Medium /T
-  Si no, desmarca "Modo IA": con "Mejorar calidad" sigue mejorando (Lanczos).
+7) ACTUALIZACIONES
+------------------
+Boton "Actualizaciones": mira si hay version nueva, te dice cual tienes y cual
+hay, la descarga con progreso, COMPRUEBA su huella SHA-256 y la instala cerrandose
+y volviendo a abrirse sola. No pierdes nada: tus imagenes, tus claves y tu
+historial se quedan como estan. En Windows es automatico; en macOS y Linux la
+descarga se verifica igual pero el reemplazo lo haces tu (te avisa).
 
-4) LICENCIA Y CONDICIONES DE USO
---------------------------------
-Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los
-derechos (Copyright (c) 2026 Roger Gomez). No es software libre.
 
-  SI puedes:  ejecutarlo y usarlo gratis, para tu archivo personal, en tus
+8) SI ALGO VA MAL
+-----------------
+  Aviso azul de Windows al abrir ....... normal (no esta firmado): "Mas
+                                        informacion" -> "Ejecutar de todas formas"
+  "Python DLL" u error al abrir ........ estas usando el .exe de la carpeta
+                                        build\ (paso intermedio incompleto)
+  0 resultados y la conexion va bien ... el contenido es adulto: marca
+                                        "Permitir contenido adulto" en Opciones
+  Acceso denegado al guardar ........... abre el programa con doble clic desde el
+                                        Explorador, no desde una consola limitada
+  Cloudflare pide un CAPTCHA ........... abrelo en tu navegador, resolvelo y copia
+                                        la cookie cf_clearance y tu User-Agent en
+                                        config_local.py (el programa NUNCA evade
+                                        CAPTCHAs)
+  El modo IA no mejora nada ............ los motores pueden traer una etiqueta de
+                                        Windows que les impide escribir. En la
+                                        carpeta del programa:
+                                            icacls _internal\vendor /setintegritylevel Medium /T
+                                        Si no, usa "Mejorar calidad" sin modo IA
+  Cualquier error raro ................. mira el .log del dia: ahi esta
+                                        exactamente que respondio cada servidor
+
+Si vas a pedir ayuda, adjunta el registro del dia y el archivo selftest.txt
+(se genera con:  Imaginteca.exe --selftest ) y BORRA TUS CLAVES de lo que
+compartas.
+
+
+9) MAS INFORMACION, FORO Y CONTACTO
+-----------------------------------
+Toda la documentacion ampliada y el FORO estan en la wiki del proyecto:
+
+    https://github.com/rgomezs2000/extractorfanarts/wiki
+
+  Wiki .................... guia ampliada, instalacion, claves, calidad, datasets
+  Foro - Soporte tecnico .. dudas de uso y asistencia tecnica
+  Foro - Fallos ........... algo no funciona como deberia
+  Foro - Ideas ............ propuestas y mejoras
+  Problemas frecuentes .... la mayoria de los avisos, explicados
+
+Para publicar en el foro: abre el tablero, pulsa "Edit", copia la plantilla al
+final de "Mensajes" y guarda. Solo hace falta una cuenta de GitHub (gratis).
+
+CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
+    Discord: rgomezs2010
+
+
+10) LICENCIA Y GARANTIA
+-----------------------
+Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los derechos
+(Copyright (c) 2026 Roger Gomez). No es software libre.
+
+  SI puedes:  ejecutarlo y usarlo gratis, para tu coleccion personal, en tus
               equipos, y hacerte una copia de seguridad.
   NO puedes:  copiarlo, compartirlo, subirlo a ningun sitio, venderlo,
               modificarlo, descompilarlo ni reutilizar su codigo fuente.
@@ -156,34 +211,33 @@ derechos (Copyright (c) 2026 Roger Gomez). No es software libre.
 El codigo fuente es propiedad del autor y no se licencia.
 El texto legal completo esta en el archivo LICENSE, junto al ejecutable.
 
-GARANTIA: el programa se entrega "tal cual" (sin instalador, sin registro y sin
-coste), pero eso es la forma de entrega, no una renuncia a responder: la
-garantia corre por cuenta del autor. El autor se compromete a que el programa
-haga lo que dice la documentacion, a corregir SIN COSTE los defectos que le
-reportes y publicar la version corregida, a atender los avisos y a responder de
+GARANTIA (licencia v2): el programa se entrega "tal cual" (sin instalador, sin
+registro y sin coste), pero eso es la forma de entrega, no una renuncia a
+responder: la garantia corre por cuenta del autor. El autor se compromete a que el
+programa haga lo que dice la documentacion, a corregir SIN COSTE los defectos que
+le reportes y publicar la version corregida, a atender los avisos y a responder de
 los danos directos que un defecto del programa cause en tus archivos o equipo.
-Como pedirla: deja tu comentario, contacto o reporte en el FORO DE LA WIKI (o en
-la propia wiki), con el
-.log del dia (%USERPROFILE%\.imaginteca\logs en Windows, ~/.imaginteca/logs en
-Linux/macOS) y selftest.txt; se contesta y se trabaja en ello en un plazo
-razonable.
-  Repositorio : https://github.com/rgomezs2000/extractorfanarts
-  Foro        : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro
-  Wiki        : https://github.com/rgomezs2000/extractorfanarts/wiki
-  Fallos      : https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos
-NO cubre: el contenido que descargues ni su uso, el uso ilicito, los
-cambios que hagas en tu equipo o claves, ni que un servicio de terceros cambie
-su API o cierre (eso se avisa y se adapta en cuanto se puede).
-Licencia v2, revisada el 9 de octubre de 2026.
+Como pedirla: deja tu comentario o reporte en el FORO de la wiki; para algo
+privado, escribe por Discord (rgomezs2010). Incluye el .log del dia
+(%USERPROFILE%\.imaginteca\logs) y selftest.txt; se contesta y se trabaja en ello
+en un plazo razonable, sin coste.
+NO cubre: el contenido que descargues ni su uso, el uso ilicito, los cambios que
+hagas en tu equipo o claves, ni que un servicio de terceros cambie su API o cierre
+(eso se avisa y se adapta en cuanto se puede).
 
-Puedes hacer tantas descargas como quieras: lo que no se permite es
-redistribuir el PROGRAMA (el .exe), no lo que descargues con el.
+USO RESPONSABLE: herramienta para archivo personal de contenido al que tengas
+acceso legitimo. Respeta los terminos de servicio de cada plataforma y los
+derechos de autor. Las imagenes se guardan siempre en .webp (el original no se
+conserva). El programa no evade CAPTCHAs, inicios de sesion ni bloqueos.
 
-5) USO RESPONSABLE
-------------------
-Herramienta para archivo personal de contenido al que tengas acceso legitimo.
-Respeta los terminos de servicio de cada plataforma y los derechos de autor.
-Las imagenes se guardan siempre en .webp (el original no se conserva).
 
-Licencia del programa: LICENSE  -  Componentes de terceros: THIRD-PARTY-NOTICES.txt
-========================================================================
+
+ Repositorio ...... https://github.com/rgomezs2000/extractorfanarts
+ Wiki y foro ...... https://github.com/rgomezs2000/extractorfanarts/wiki
+ Estado (fallos) .. https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos
+ Descargas ........ https://github.com/rgomezs2000/extractorfanarts/releases
+ Contacto privado . Discord: rgomezs2010
+ Licencia ......... LICENSE  |  Terceros: THIRD-PARTY-NOTICES.txt
+
+ Licencia v2, revisada el 9 de octubre de 2026.
+================================================================================

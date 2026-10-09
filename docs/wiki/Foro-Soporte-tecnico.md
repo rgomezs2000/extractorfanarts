@@ -29,7 +29,7 @@ Si es un **fallo** (algo que debería funcionar y no funciona), mejor en
 
 **Qué he probado:** 
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 
 **Adjunto:** selftest.txt · líneas del registro del día
 ```
@@ -44,7 +44,7 @@ Si es un **fallo** (algo que debería funcionar y no funciona), mejor en
 
 **Qué he probado:** nada, estrena el hilo 🙂
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 
 **Adjunto:** —
 

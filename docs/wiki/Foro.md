@@ -35,7 +35,7 @@ Para **responder** a alguien, copia su mensaje citado (`>`) o menciona su usuari
 (una frase clara; si es un fallo, el mensaje exacto que ves)
 
 **Versión y sistema:**
-Imaginteca 0.1.0-beta.2 · Windows 11 / Linux / macOS
+Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11 / Linux / macOS
 
 **Detalles:**
 - Qué intentaba hacer:

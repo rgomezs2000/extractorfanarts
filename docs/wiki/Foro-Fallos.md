@@ -36,7 +36,7 @@ defecto del programa, **se corrige sin coste** y se publica la versión corregid
 
 **Esperaba:** 
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 
 **Plataforma:** (booru / red / wiki / guardado / calidad / actualización)
 
@@ -56,7 +56,7 @@ defecto del programa, **se corrige sin coste** y se publica la versión corregid
 **Esperaba:** que sirva para dejar constancia y poder cerrarlos cuando se
 arreglen.
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de)
 
 **Adjunto:** —
 

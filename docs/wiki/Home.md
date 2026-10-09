@@ -10,7 +10,7 @@ dataset** para entrenar modelos.
 > nadie: se descarga con **tus credenciales**, con peticiones espaciadas y **sin
 > evadir nunca CAPTCHAs ni inicios de sesión**.
 
-**Versión actual:** `0.1.0-beta.2` (fase beta) · **Licencia:** propietaria (ver
+**Versión actual:** `0.1.0-beta.3` (fase beta) · **Licencia:** propietaria (ver
 [Licencia](Licencia))
 
 ---
@@ -48,6 +48,9 @@ falta una cuenta de GitHub, gratis).
 | 🌐 [Plataformas y sitios](Foro-Plataformas) | cambios y problemas de las fuentes |
 | 🎨 [Datasets y entrenamiento](Foro-Datasets) | LoRA, LyCORIS, checkpoints, captions |
 | 📣 [Anuncios](Foro-Anuncios) | versiones nuevas y avisos (solo lectura) |
+
+🔒 **Contacto privado** (fallos de seguridad o asuntos que no deban ser públicos):
+**Discord `rgomezs2010`**.
 
 Las normas están en **[Foro y comunidad](Foro-y-comunidad)**, y qué incluir en cada
 mensaje, en **[Soporte técnico](Soporte-tecnico)**.

@@ -20,6 +20,16 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.0-beta.3
+
+- **Documentación reescrita y al día**: guía del usuario, `LEEME-PRIMERO.txt` y
+  README técnico, con la versión nueva y enlazados con esta wiki.
+- **El foro ya está abierto** (estás en él): soporte técnico, fallos, ideas,
+  plataformas, datasets, presentaciones y anuncios.
+- **Contacto privado: Discord `rgomezs2010`**.
+- El publicador de la wiki **protege los mensajes del foro** al actualizar la
+  documentación.
+
 ### 2026-10-09 · v0.1.0-beta.2
 
 - **Barra de herramientas** con lo esencial y lo de apoyo, menús **Archivo** y

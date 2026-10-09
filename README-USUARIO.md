@@ -1,105 +1,151 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.0-beta.2 (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.0-beta.3 (fase beta)** · Windows · macOS · Linux
 
-Imaginteca es un programa de escritorio para **reunir y ordenar tu colección
-personal de imágenes**: busca en redes sociales, booros y wikis de fandom, revisa
-los resultados en una galería, guarda lo que elijas en un formato único (**WebP**)
-y, si quieres, **mejóralas de calidad** o **prepara con ellas un dataset** para
-entrenar modelos. Todo desde una sola ventana.
+**Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
+colección personal de imágenes**: busca en redes sociales, booros y wikis de
+fandom, revisa los resultados en una galería, guarda lo que elijas en un formato
+único (**WebP**) y, si quieres, **mejóralas de calidad** o **prepara con ellas un
+dataset** para entrenar modelos.
+
+> Está pensada para **coleccionar y preparar material**, no para extraerlo de
+> nadie: se descarga con **tus credenciales**, con peticiones espaciadas y **sin
+> evadir nunca CAPTCHAs ni inicios de sesión**.
+
+> 📖 **Más información, ayuda y foro:**
+> **https://github.com/rgomezs2000/extractorfanarts/wiki**
+> Ahí está esta guía ampliada, los tableros del **foro** (soporte técnico, fallos,
+> ideas, plataformas y datasets) y las respuestas a las dudas más comunes.
+> **Contacto privado: Discord `rgomezs2010`.**
 
 > **Programa propietario.** © 2026 Roger Gomez · Todos los derechos reservados.
 > Puedes usarlo gratis para tu colección personal. No puedes copiarlo,
-> redistribuirlo, venderlo ni modificarlo. Ver **Licencia** al final.
-
-Este README es la guía completa. Si es tu primera vez, empieza por el archivo
-**`LEEME-PRIMERO.txt`**, que trae los pasos mínimos.
+> redistribuirlo, venderlo ni modificarlo. La **garantía corre por cuenta del
+> autor**: ver **Licencia** al final.
 
 ---
 
 ## Índice
 
-1. [Instalar y abrir](#1-instalar-y-abrir)
-2. [Qué hay en esta carpeta](#2-qué-hay-en-esta-carpeta)
-3. [Tus claves (opcional)](#3-tus-claves-opcional)
-4. [Buscar y descargar, paso a paso](#4-buscar-y-descargar-paso-a-paso)
-5. [Plataformas disponibles](#5-plataformas-disponibles)
-6. [La galería y el visor](#6-la-galería-y-el-visor)
-7. [Menú contextual (clic derecho)](#7-menú-contextual-clic-derecho)
-8. [Atajos de teclado](#8-atajos-de-teclado)
-9. [Dónde se guarda todo](#9-dónde-se-guarda-todo)
-10. [Calidad y mejora de imagen](#10-calidad-y-mejora-de-imagen)
-11. [Qué se filtra](#11-qué-se-filtra)
-12. [Si algo va mal](#12-si-algo-va-mal)
+1. [Qué es y para qué sirve](#1-qué-es-y-para-qué-sirve)
+2. [Instalar y abrir](#2-instalar-y-abrir)
+3. [Qué hay en esta carpeta](#3-qué-hay-en-esta-carpeta)
+4. [Tus claves (opcional)](#4-tus-claves-opcional)
+5. [Buscar y descargar, paso a paso](#5-buscar-y-descargar-paso-a-paso)
+6. [Plataformas disponibles](#6-plataformas-disponibles)
+7. [La galería y el visor](#7-la-galería-y-el-visor)
+8. [Menú contextual (clic derecho)](#8-menú-contextual-clic-derecho)
+9. [Barra de herramientas, menús y atajos](#9-barra-de-herramientas-menús-y-atajos)
+10. [La ayuda dentro del programa (F1) y «Acerca de»](#10-la-ayuda-dentro-del-programa-f1-y-acerca-de)
+11. [Dónde se guarda todo](#11-dónde-se-guarda-todo)
+12. [Calidad y mejora de imagen](#12-calidad-y-mejora-de-imagen)
 13. [Preparar datasets para IA (LoRA, LyCORIS, checkpoints)](#13-preparar-datasets-para-ia-lora-lycoris-checkpoints)
-14. [Barra, ayuda y actualizaciones](#14-barra-ayuda-y-actualizaciones)
-15. [Licencia y uso responsable](#15-licencia-y-uso-responsable)
+14. [Qué se filtra](#14-qué-se-filtra)
+15. [Actualizaciones](#15-actualizaciones)
+16. [Si algo va mal](#16-si-algo-va-mal)
+17. [Más información, foro y contacto](#17-más-información-foro-y-contacto)
+18. [Licencia y uso responsable](#18-licencia-y-uso-responsable)
 
 ---
 
-## 1. Instalar y abrir
+## 1. Qué es y para qué sirve
 
-El programa **no se instala**: se descomprime y se ejecuta.
+Imaginteca reúne en una sola ventana lo que normalmente se hace con cinco
+programas:
 
-1. **Descomprime el `.zip` completo** en una carpeta tuya (por ejemplo
-   `C:\Imaginteca`). No lo ejecutes desde dentro del archivo comprimido:
-   necesita la carpeta `_internal` que va a su lado.
-2. **Windows:** haz doble clic en **`Imaginteca.exe`**.
-   - La primera vez Windows puede mostrar un aviso azul, *«Windows protegió su
-     PC»*. Es normal: el programa no está firmado digitalmente (un certificado
-     de firma es de pago), no es un virus.
-   - Pulsa **Más información → Ejecutar de todas formas**.
-   - Si sigue bloqueado: clic derecho en el `.exe` → **Propiedades** → marca
-     **Desbloquear** → **Aceptar**.
-3. **macOS:** si dice *«no se puede abrir»*, haz clic derecho en la aplicación →
-   **Abrir**. Si aun así se resiste, ejecuta en Terminal:
-   `xattr -dr com.apple.quarantine Imaginteca.app`
-   Lo mismo vale para el asistente: si macOS bloquea `pixiv-token`, haz clic
-   derecho sobre él → **Abrir**.
-4. **Linux:** da permisos de ejecución la primera vez:
-   `chmod +x Imaginteca` y luego ejecútalo.
+- **Buscar** imágenes en **8 redes sociales, 14 booros y wikis de fandom**.
+- **Revisarlas** antes de descargar nada, en una galería con visor.
+- **Guardarlas** siempre en **`.webp`**, con la calidad que elijas.
+- **Mejorar su calidad** (reescalado clásico o con **IA**, Real-ESRGAN / waifu2x).
+- **Prepararlas para entrenar**: metadatos `.json` con las etiquetas de cada
+  imagen, tamaños homogéneos y sin repetidas.
 
-**Verifica que la descarga es íntegra** con el archivo `.sha256` que acompaña al
-paquete:
-
-```powershell
-# Windows (PowerShell)
-Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
-```
-```bash
-# Linux / macOS
-shasum -a 256 Imaginteca-*.zip
-```
-
-El resultado debe coincidir con el contenido del `.sha256`.
-
-Al abrirlo por primera vez se crea la carpeta `%USERPROFILE%\.imaginteca`
-(en Linux/macOS: `~/.imaginteca`), donde viven tus registros y tu
-historial.
+Y lo hace con **filtros legales y éticos en el núcleo**: lista negra de contenido
+prohibido, bloqueo de plataformas de pago, control de contenido adulto y opción de
+quedarse solo con licencias liberadas.
 
 ---
 
-## 2. Qué hay en esta carpeta
+## 2. Instalar y abrir
+
+**El programa no se instala**: se descomprime y se ejecuta. No hay que pagar nada,
+no hay que registrarse y no se recogen datos.
+
+1. **Descarga** el paquete de tu sistema desde
+   **[Releases](https://github.com/rgomezs2000/extractorfanarts/releases)**:
+
+   | Sistema | Archivo |
+   |---|---|
+   | Windows | `Imaginteca-Windows.zip` |
+   | Linux | `Imaginteca-Linux.zip` |
+   | macOS | `Imaginteca-macOS.zip` |
+
+2. **Comprueba la descarga** con el `.sha256` que acompaña al paquete:
+
+   ```powershell
+   # Windows (PowerShell)
+   Get-FileHash .\Imaginteca-*.zip -Algorithm SHA256
+   ```
+   ```bash
+   # Linux / macOS
+   shasum -a 256 Imaginteca-*.zip
+   ```
+
+   El resultado debe coincidir con el contenido del `.sha256`.
+
+3. **Descomprime el `.zip` completo** en una carpeta tuya (por ejemplo
+   `C:\Imaginteca`). No lo ejecutes desde dentro del archivo comprimido: necesita
+   la carpeta `_internal` que va a su lado.
+
+4. **Ábrelo**:
+   - **Windows:** doble clic en **`Imaginteca.exe`**. La primera vez puede salir
+     el aviso azul *«Windows protegió su PC»*: es normal (el programa no está
+     firmado digitalmente; un certificado de firma es de pago). Pulsa **Más
+     información → Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en
+     el `.exe` → **Propiedades** → marca **Desbloquear** → **Aceptar**.
+   - **macOS:** si dice *«no se puede abrir»*, clic derecho en la aplicación →
+     **Abrir**. Si se resiste: `xattr -dr com.apple.quarantine Imaginteca.app`
+   - **Linux:** `chmod +x Imaginteca` la primera vez y luego ejecútalo.
+
+5. **Comprueba que todo está bien** (opcional pero recomendable). En una consola,
+   dentro de la carpeta del programa:
+
+   ```powershell
+   Imaginteca.exe --selftest
+   ```
+
+   Genera **`selftest.txt`** con el estado de bibliotecas, carpetas, permisos,
+   motores de IA y si la ventana cabe en tu pantalla. Es lo primero que se pide
+   cuando pides ayuda.
+
+Al abrirlo por primera vez se crea la carpeta de datos
+(`%USERPROFILE%\.imaginteca` en Windows, `~/.imaginteca` en Linux/macOS), donde
+viven tus registros, tu historial y —si quieres— tus claves.
+
+---
+
+## 3. Qué hay en esta carpeta
 
 | Archivo | Para qué sirve |
 |---|---|
 | `Imaginteca.exe` | **El programa.** Es lo único que tienes que abrir |
-| `config_local.py` | Tus claves y ajustes (viene vacío, como plantilla) |
+| `pixiv-token.exe` | Asistente para conseguir tu token de Pixiv (opcional) |
+| `config_local.py` | Tus claves y ajustes (viene como plantilla vacía) |
+| `README.md` | Esta guía (también dentro del programa, con `F1`) |
 | `LEEME-PRIMERO.txt` | Los primeros pasos, en texto plano |
-| `LICENSE` | Las condiciones de uso del programa |
+| `LICENSE` | Las condiciones de uso |
 | `THIRD-PARTY-NOTICES.txt` | Licencias de las bibliotecas incluidas |
-| `_internal/` | Biblioteca del programa. **No la borres ni la muevas**: el `.exe` la necesita |
+| `_internal/` | Biblioteca del programa. **No la borres ni la muevas** |
 
-Puedes mover la carpeta entera a donde quieras (por ejemplo al Escritorio), pero
-mantén todos esos archivos **juntos en la misma carpeta**.
+Puedes mover la carpeta entera donde quieras, pero mantén esos archivos **juntos**.
 
 ---
 
-## 3. Tus claves (opcional)
+## 4. Tus claves (opcional)
 
-El programa funciona sin configurar nada en varias plataformas. Para las que
-piden credenciales, crea (o edita) el archivo **`config_local.py`** que está
-**junto al ejecutable** y escribe dentro tus claves, una por línea:
+El programa funciona **sin configurar nada** en varias plataformas. Para las que
+piden credenciales, edita el archivo **`config_local.py`** que está **junto al
+ejecutable** y escribe dentro tus claves, una por línea:
 
 ```python
 RULE34_API_KEY = "tu_clave"
@@ -118,14 +164,15 @@ CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 1. junto al ejecutable (lo más cómodo),
 2. dentro de la carpeta del programa,
 3. en `%USERPROFILE%\.imaginteca\config_local.py` (Windows) o
-   `~/.imaginteca/config_local.py` (Linux/macOS) — la mejor opción si
-   quieres que sobreviva a las actualizaciones.
+   `~/.imaginteca/config_local.py` (Linux/macOS) — **la mejor opción si quieres
+   que sobreviva a las actualizaciones**.
 
-**Reinicia el programa** después de cambiar el archivo.
+**Reinicia el programa** después de cambiar el archivo. El botón **🛡️ Filtros** te
+dice qué archivo se está usando.
 
 | Plataforma | Clave que necesita | Dónde se consigue |
 |---|---|---|
-| Safebooru, Danbooru, wikis, Fediverso, Bluesky | **ninguna** | — |
+| Safebooru, Danbooru, wikis, Fediverso, Bluesky, Newgrounds | **ninguna** | — |
 | Rule34.xxx | `RULE34_API_KEY` + `RULE34_USER_ID` | Opciones de tu cuenta → *API Access Credentials* |
 | Gelbooru | `GELBOORU_API_KEY` + `GELBOORU_USER_ID` | Opciones de tu cuenta → *API Access Credentials* |
 | DeviantArt | `DEVIANTART_CLIENT_ID` + `DEVIANTART_CLIENT_SECRET` | deviantart.com/developers |
@@ -134,19 +181,19 @@ CF_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ..."
 | X (Twitter) | `X_BEARER_TOKEN` | App de desarrollador **de pago** |
 | Pinterest | `PINTEREST_ACCESS_TOKEN` | App aprobada + permiso del usuario |
 
-**Pixiv.** No permite el acceso anónimo: hay que usar tu propia cuenta con un
+**Pixiv.** No permite el acceso anónimo: hay que usar **tu cuenta** con un
 *refresh token* (el programa **no guarda tu contraseña**). En la **misma carpeta**
 que el programa tienes un asistente: haz **doble clic en `pixiv-token.exe`** (o
 `pixiv-token` en Linux/macOS) y sigue lo que te diga. Te dará un enlace para
-iniciar sesión en Pixiv, le pegarás la dirección final y **el token se guarda
-solo**. Después, **reinicia Imaginteca**.
+iniciar sesión en Pixiv, le pegarás la dirección final (la que lleva `code=...`) y
+**el token se guarda solo**. Después, **reinicia Imaginteca**.
 
 > 🔐 Guarda tus claves en `config_local.py`. Ese archivo queda en tu equipo: el
 > programa no envía nada a ningún servidor propio y no incluye ninguna clave.
 
 ---
 
-## 4. Buscar y descargar, paso a paso
+## 5. Buscar y descargar, paso a paso
 
 1. **Tipo:** elige *Red social*, *Booru* o *Wiki*.
 2. **Plataforma:** el sitio concreto (la lista cambia según el tipo).
@@ -158,26 +205,27 @@ solo**. Después, **reinicia Imaginteca**.
      (`lola_loud 1girl solo`). También valen los operadores del sitio
      (`-etiqueta` para excluir, `rating:general`, `score:>10`).
    - *Wiki:* el fandom, el personaje y/o la URL de la wiki.
-4. Pulsa **🔍 Buscar**. Aparecerán los resultados en una **galería** para que los
-   revises antes de descargar nada.
-5. Ajusta lo que quieras (cantidad, calidad, mejora, carpeta de destino) y pulsa
-   **⬇️ Descargar**. Te pedirá confirmación y te dirá al terminar cuántos
-   archivos guardó y dónde.
-6. **⏹️ Cancelar** detiene la operación en cualquier momento (no se queda a
-   medias). **🧹 Limpiar** vacía el formulario.
+4. Pulsa **🔍 Buscar** (`Ctrl+B`, o `Enter` en cualquier campo). Aparecerán los
+   resultados en una **galería** para que los revises antes de descargar nada.
+5. Ajusta lo que quieras (cantidad, calidad, mejora, metadatos, carpeta de
+   destino) y pulsa **⬇️ Descargar** (`Ctrl+D`, o `Shift+Enter`). Te pedirá
+   confirmación y te dirá al terminar **cuántos archivos guardó y dónde**.
+6. **⏹️ Cancelar** (`Esc`) detiene la operación en cualquier momento y **no deja
+   archivos a medias**. **🧹 Limpiar** (`Ctrl+L`) vacía el formulario.
 
 Puedes lanzar una búsqueda y, sin descargar nada, usar el **clic derecho** sobre
 una imagen para guardar solo esa (ver más abajo).
 
 ---
 
-## 5. Plataformas disponibles
+## 6. Plataformas disponibles
 
 | Tipo | Plataformas |
 |---|---|
-| **Redes sociales** | Fediverso (**cualquier** servidor de Mastodon, Misskey o CherryPick), Bluesky, DeviantArt, Tumblr, Pixiv, X (Twitter), Pinterest, Newgrounds |
-| **Boorus** | Safebooru, Gelbooru, Rule34.xxx, The Big ImageBoard, Xbooru, Hypnohub, Danbooru, Safebooru (Donmai), Yande.re, Konachan, Konachan (SFW), Derpibooru, ATF Booru y Rule34 Paheal |
-| **Wikis** | Fandom.com y cualquier wiki MediaWiki (búsqueda por franquicia, personaje y concepto) |
+| **Redes sociales (8)** | Fediverso (**cualquier** servidor de Mastodon, Misskey o CherryPick), Bluesky, DeviantArt, Tumblr, Pixiv, X (Twitter), Pinterest, Newgrounds |
+| **Boorus (14)** | Safebooru, Gelbooru, Rule34.xxx, The Big ImageBoard, Xbooru, Hypnohub, Danbooru, Safebooru (Donmai), Yande.re, Konachan, Konachan (SFW), Derpibooru, ATF Booru y Rule34 Paheal |
+| **Familias de booru (5)** | `gelbooru`, `danbooru`, `moebooru`, `philomena` y `shimmie` |
+| **Wikis (1 tipo)** | Fandom.com y cualquier wiki MediaWiki (búsqueda por franquicia, personaje y concepto) |
 
 **En el fediverso** no hace falta elegir servidor: escribe `@usuario@servidor`
 (por ejemplo `@alguien@baraag.net`) y se consulta su servidor; o escribe
@@ -185,23 +233,23 @@ una imagen para guardar solo esa (ver más abajo).
 
 ---
 
-## 6. La galería y el visor
+## 7. La galería y el visor
 
 - Los resultados aparecen en un **carrusel**: contador, imagen grande y una tira
-  de miniaturas del mismo ancho. Hay **una casilla por cada resultado**.
+  de miniaturas. Hay **una casilla por cada resultado**.
 - **Clic en la imagen grande** → se abre un **visor** dentro de la misma ventana:
   - **rueda del ratón**: acercar y alejar (del 10 % al 800 %),
   - **arrastrar**: mover la imagen,
   - **doble clic** o tecla `0`: ajustar a la ventana,
   - `←` / `→`: imagen anterior y siguiente,
   - `+` / `-`: zoom, **`Esc`**: cerrar.
-- Las imágenes de la galería se preparan a partir del **original**, así que se
-  ven nítidas al ampliarlas, y se cargan **de una en una con cortesía** hacia los
-  sitios (por eso la tira se va llenando poco a poco).
+- Las imágenes se preparan a partir del **original**, así que se ven nítidas al
+  ampliarlas, y se cargan **de una en una con cortesía** hacia los sitios (por eso
+  la tira se va llenando poco a poco).
 
 ---
 
-## 7. Menú contextual (clic derecho)
+## 8. Menú contextual (clic derecho)
 
 Con **clic derecho** sobre cualquier imagen (la grande, una miniatura o dentro
 del visor):
@@ -219,7 +267,25 @@ hayas pulsado Buscar**.
 
 ---
 
-## 8. Atajos de teclado
+## 9. Barra de herramientas, menús y atajos
+
+Arriba tienes los accesos directos a todo lo importante, primero lo esencial y
+luego lo de apoyo:
+
+| Botón | Atajo | Qué hace |
+|---|---|---|
+| 🔍 **Buscar** | `Ctrl+B` | busca con el criterio del formulario |
+| ⬇️ **Descargar** / ⏹️ **Cancelar** | `Ctrl+D` | descarga lo encontrado; mientras trabaja, cancela |
+| 🧹 **Limpiar** | `Ctrl+L` | vacía el formulario |
+| 📂 **Carpeta** | `Ctrl+O` | elige la carpeta de salida |
+| 🛡️ **Filtros** | — | explica qué se filtra y por qué |
+| 📖 **Ayuda** | `F1` | abre esta guía dentro del programa |
+| 🔄 **Actualizaciones** | — | busca e instala la versión nueva |
+| ℹ️ **Acerca de** | — | versión, licencia, autor y rutas |
+
+Los botones de la barra se apagan y se encienden **a la vez** que los del
+formulario: si algo no se puede pulsar, en la barra tampoco. En los menús
+**Archivo** y **Ayuda** tienes lo mismo, además del foro y la wiki.
 
 | Tecla | Dónde | Qué hace |
 |---|---|---|
@@ -229,249 +295,216 @@ hayas pulsado Buscar**.
 | `Enter` | sobre un botón enfocado | pulsarlo |
 | `Enter` o `Esc` | mientras busca o descarga | **cancelar** |
 | `Esc` | con el visor abierto | cerrarlo |
-| `Alt+F4` o `Ctrl+Q` | en cualquier parte | cerrar el programa |
-| `Ctrl+B` · `Ctrl+D` · `Ctrl+L` | en cualquier parte | **Buscar** · **Descargar** · **Limpiar** |
+| `Ctrl+B` · `Ctrl+D` · `Ctrl+L` | en cualquier parte | buscar · descargar · limpiar |
 | `Ctrl+O` | en cualquier parte | elegir la carpeta de salida |
-| `F1` | en cualquier parte | abrir esta guía dentro del programa |
+| `F1` | en cualquier parte | abrir la ayuda |
+| `Alt+F4` o `Ctrl+Q` | en cualquier parte | cerrar el programa |
 
-Si hay una descarga en curso y cierras, te preguntará antes y no dejará archivos
-a medias.
+Si hay una descarga en curso y cierras, te preguntará antes y no dejará archivos a
+medias.
 
 ---
 
-## 9. Dónde se guarda todo
+## 10. La ayuda dentro del programa (F1) y «Acerca de»
+
+- **`F1`** (o **Ayuda → Ayuda**) abre esta guía **dentro del programa**: a la
+  izquierda el **índice** con todas las secciones y un **buscador** para dar con la
+  tuya; a la derecha el texto. El botón **🗂️ Abrir el manual completo** lo abre con
+  tu programa de textos, por si prefieres leerlo entero o imprimirlo.
+- **Ayuda → Acerca de** (o el botón **ℹ️**) te dice **qué versión tienes
+  instalada**, quién la hizo, la licencia y **dónde queda todo**: registros,
+  historial, tus claves y la carpeta de salida. Desde ahí mismo puedes buscar
+  actualizaciones.
+
+---
+
+## 11. Dónde se guarda todo
 
 | Qué | Dónde |
 |---|---|
 | **Imágenes** | Carpeta de **Imágenes** del sistema, subcarpeta `Imaginteca`, con una subcarpeta por plataforma |
 | **Registros** | `%USERPROFILE%\.imaginteca\logs\app-AAAA-MM-DD.log` (un archivo por día) |
 | **Historial** | `%USERPROFILE%\.imaginteca\historial.db` |
+| **Tus claves** | `config_local.py` (junto al programa o en `~/.imaginteca`) |
 
-- Puedes cambiar la carpeta de salida con el botón de la carpeta 📂.
+- Puedes cambiar la carpeta de salida con **📂 Carpeta** (`Ctrl+O`).
 - Si esa carpeta no se puede escribir (permisos, protección contra ransomware…),
   el programa **te avisa al arrancar** y, al descargar, prueba alternativas
-  (Descargas, `~/.imaginteca/descargas`, una carpeta junto al programa) y
-  te dice cuál ha usado.
+  (Descargas, `~/.imaginteca/descargas`, una carpeta junto al programa) y te dice
+  cuál ha usado.
 - Las descargas **nunca** van a Documentos.
-- Junto a cada imagen se puede guardar un archivo `.json` con sus datos, si
-  marcas **«Guardar metadatos .json»** en Opciones (desactivado por defecto).
+- Junto a cada imagen se puede guardar un archivo `.json` con sus datos, si marcas
+  **«Guardar metadatos .json»** en Opciones (desactivado por defecto).
 
 ---
 
-## 10. Calidad y mejora de imagen
+## 12. Calidad y mejora de imagen
 
 - **Todo se guarda en `.webp`**, con la calidad que elijas en el deslizador
   (1–100). El archivo original no se conserva.
 - **✨ Mejorar calidad** aumenta la resolución según el tamaño de partida:
   **hasta 699 px → ×4** · **700–799 px → ×3** · **800 px o más → ×2**, con un tope
-  de 8K, y aplica un afilado suave. Por encima de 7679 px solo se convierte a WebP.
+  de 8K, y aplica un afilado suave y calibrado. Por encima de 7679 px solo se
+  convierte a WebP.
 - **Siempre verás lo que se ha hecho:** al guardar o copiar, la barra de estado
   indica el tamaño de partida y el resultado real
   (`153x153 → 612x612 · Lanczos 4x`). Si el origen era muy pequeño (menos de
   300 px) te avisa, porque **agrandar una imagen diminuta no crea detalle real**:
   para preparar un dataset conviene saberlo antes de entrenar.
-- **🤖 Modo IA** usa los motores Real-ESRGAN / waifu2x si están incluidos en el
+- **🤖 Modo IA** usa los motores **Real-ESRGAN / waifu2x** que van incluidos en el
   paquete (dan más detalle, sobre todo en dibujos). Si no están disponibles, el
   programa lo dice y usa el reescalado clásico: **nunca** guarda una imagen
   corrupta ni a medias.
+- **Sin dejar basura:** el proceso no deja carpetas temporales, ni PNG
+  intermedios, ni registros del motor en tu carpeta de salida. Cada archivo se
+  comprueba al guardarlo.
 - **🔢 Limitar cantidad**: descarga solo el número que indiques (1–1000). Sin
   marcar, descarga todo lo encontrado.
 
----
-
-## 11. Qué se filtra
-
-El programa aplica **siempre** unos filtros antes de mostrarte o guardarte nada,
-y te dice el motivo exacto de cada descarte:
-
-- **Lista negra de contenido prohibido** (etiquetas y prefijos).
-- **Plataformas de pago** (Patreon, Pixiv Fanbox, OnlyFans, Fansly, Unifans…):
-  se descartan los enlaces a contenido exclusivo.
-- **Contenido adulto (🔞):** por defecto **no** aparece. Si marcas
-  «Permitir contenido adulto» en Opciones, sí.
-- **Solo licencia liberada (⚖️):** opcional; solo procesa lo que declare
-  CC0/CC-BY/dominio público.
-- **Tu propia lista de exclusiones** (etiquetas, dominios o palabras) que puedes
-  añadir en `config_local.py`.
-
-Puedes ver y ajustar todo esto: en **Opciones**, botón
-**«ℹ️ ¿Qué se filtra? (lista negra)»**.
-
-> ⚠️ En **Rule34.xxx** y **Rule34 Paheal** casi todo el contenido es adulto: si
-> no marcas «Permitir contenido adulto» verás **0 resultados** aunque la conexión
-> funcione bien.
-
----
-
-## 12. Si algo va mal
-
-| Síntoma | Qué pasa y qué hacer |
-|---|---|
-| Aviso azul de Windows al abrir | Normal (no está firmado): *Más información → Ejecutar de todas formas* |
-| «0 resultados» pero la conexión va bien | El contenido es adulto: marca **Permitir contenido adulto** en Opciones |
-| **Acceso denegado** al guardar en Imágenes o Descargas | Abre el programa **con doble clic desde el Explorador** (no desde una terminal restringida). Si sigue igual, ejecuta `Imaginteca.exe --selftest` y revisa `selftest.txt` |
-| Cloudflare pide un CAPTCHA (p. ej. Rule34.xxx) | Abre el sitio en tu navegador, resuélvelo, y copia en `config_local.py` la cookie `cf_clearance` y tu `User-Agent` (F12 → Red → la primera petición → Cabeceras). El programa **nunca** evade CAPTCHAs |
-| Una wiki o un sitio devuelve error 403 | Suele ser una defensa contra programas. Anótalo y avisa al autor |
-| **El 🤖 Modo IA no mejora nada** (sigue usando Lanczos) | Los motores de IA pueden traer una etiqueta de Windows que les impide escribir su resultado (en el registro verás `encode image … failed`). Si sabes abrir una consola, ejecuta en la carpeta del programa: `icacls _internal\vendor /setintegritylevel Medium /T`. Si no, avisa al autor y usa **✨ Mejorar calidad** sin modo IA |
-| Búsqueda muy lenta | Se espacian las peticiones a propósito (cortesía con los sitios). Con muchos hashtags o palabras clave tarda más |
-| Cualquier error raro | Mira el `.log` del día: ahí está exactamente qué respondió cada servidor |
-
-**Diagnóstico:** ejecuta `Imaginteca.exe --selftest` (en Windows también
-desde una consola) y se generará un archivo **`selftest.txt`** con el estado de
-todo: bibliotecas, carpetas, permisos y si la ventana cabe en tu pantalla.
-
-**Al abrir el `.exe` se abre además una ventana de consola** con los mismos
-mensajes que el registro del día. Es normal y útil para ver qué está pasando.
-
-### ¿Dónde pido ayuda?
-
-- 💬 **[Foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**: el
-  sitio para preguntar, comentar y pedir **asistencia técnica**.
-- 🌐 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**: la
-  documentación completa (también dentro del programa, con `F1`).
-- 🐞 **[Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**:
-  fallos y mejoras, con seguimiento.
-- 🔒 **Algo privado** (fallos de seguridad): **Discord: `rgomezs2010`**.
-
-Todo esto está también en el menú **Ayuda** del programa (y en los botones de la
-ventana que se abre con `F1`).
-
-Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
-**sistema**, los **pasos**, y estos dos archivos:
-
-| Archivo | Dónde |
-|---|---|
-| **`selftest.txt`** | junto al programa, tras ejecutar `Imaginteca.exe --selftest` |
-| **Registro del día** | `%USERPROFILE%\.imaginteca\logs\app-AAAA-MM-DD.log` (Linux/macOS: `~/.imaginteca/logs/...`) |
-
-> 🔐 Quita tus claves de lo que compartas antes de publicarlo.
+> **Si el modo IA «no mejora nada»:** casi siempre es la etiqueta de integridad de
+> Windows sobre los motores, y se arregla en un paso. Lo explica
+> **[Problemas frecuentes](https://github.com/rgomezs2000/extractorfanarts/wiki/Problemas-frecuentes)**.
 
 ---
 
 ## 13. Preparar datasets para IA (LoRA, LyCORIS, checkpoints)
 
 Este programa también sirve para **preparar las imágenes con las que se entrena un
-modelo de IA**: un **LoRA** de tu personaje, un **LyCORIS** (LoCon, LoHa) de estilo,
-un **embedding** o un **checkpoint / DreamBooth**. Todo lo que hace falta antes de
-entrenar —reunir el concepto correcto, quitar repetidas, dejar un formato y un
-tamaño homogéneos y guardar las etiquetas de cada imagen— lo resuelve en una sola
-pasada.
-
-### Por qué sirve para esto
+modelo**: un **LoRA** de tu personaje, un **LyCORIS** (LoCon, LoHa) de estilo, un
+**embedding** o un **checkpoint / DreamBooth**.
 
 | Lo que necesita un dataset | Cómo te lo da el programa |
 |---|---|
-| Imágenes **del concepto correcto** | Búsqueda por **etiqueta exacta** en 14 boorus (el mejor etiquetado que existe para arte), por `@usuario` en redes y por personaje o franquicia en wikis |
+| Imágenes **del concepto correcto** | Búsqueda por **etiqueta exacta** en 14 booros (el mejor etiquetado que existe para arte), por `@usuario` en redes y por personaje o franquicia en wikis |
 | **Sin repetidas** | Deduplicación por hash: el mismo archivo no entra dos veces en una misma búsqueda |
 | **Un solo formato** | Todo se guarda en `.webp`, con la calidad que elijas |
-| **Tamaños coherentes** | Reescala automáticamente las imágenes pequeñas (hasta 4x) para que el dataset no mezcle 300 px con 3000 px |
-| **Más definición** | ✨ *Mejorar calidad*, y con 🤖 *Modo IA* (Real-ESRGAN / waifu2x) recupera detalle de originales pequeños o bocetos |
+| **Tamaños coherentes** | Reescala automáticamente las imágenes pequeñas (hasta ×4) para que el dataset no mezcle 300 px con 3000 px |
+| **Más definición** | ✨ *Mejorar calidad*, y con 🤖 *Modo IA* recupera detalle de originales pequeños |
 | **Etiquetas para las captions** | Marcando **🏷️ Guardar metadatos .json** obtienes un `.json` por imagen con sus **tags**, artista, licencia, origen, rating y fecha |
 | **Dataset limpio** | Filtros de contenido prohibido, plataformas de pago, contenido adulto y licencias |
 | **Revisar antes de descargar** | La galería te deja ver y descartar **antes** de bajarte 300 archivos |
-| **Saber de dónde salió cada imagen** | Los nombres son `Plataforma_id_hash.webp` y el `.json` guarda el enlace original |
 
-### Cómo preparar un dataset, paso a paso
+**Paso a paso:** Booru → Danbooru o Gelbooru → escribe el personaje o concepto
+(afina con `solo`, `1girl`, `highres`; excluye con `-comic`, `-text`, `-sketch`) →
+marca **✨ Mejorar calidad** (+ **🤖 Modo IA** si el original es pequeño) y
+**🏷️ Guardar metadatos .json** → descarga **100–200 imágenes** para un personaje o
+**30–50** para un estilo → revisa en la galería → usa las etiquetas del `.json`
+para las captions y entrena con tu herramienta habitual.
 
-1. **Tipo: Booru** → **Plataforma: Danbooru o Gelbooru** (tienen el etiquetado más
-   completo).
-2. En **Tags**, escribe el personaje o el concepto y afina con etiquetas de calidad
-   y encuadre: `solo`, `1girl`, `highres`. Excluye lo que no quieras con un guion
-   delante: `-comic`, `-text`, `-sketch`.
-3. Marca **✨ Mejorar calidad** (y **🤖 Modo IA** si el arte original es pequeño)
-   para que todas las imágenes queden con una definición parecida.
-4. Marca **🏷️ Guardar metadatos .json**: tendrás las etiquetas de cada imagen listas
-   para convertirlas en captions.
-5. **⬇️ Descargar** con un límite razonable: para un personaje suelen bastar
-   **100–200 imágenes**; para un estilo, **30–50**.
-6. **Revisa en la galería** y quédate con las buenas: variedad de poses, fondos y
-   expresiones. Fuera las de cuerpo cortado, con marcas de agua o borrosas.
-7. Usa las **etiquetas** del `.json` para escribir los archivos de caption (`.txt`)
-   y entrena con tu herramienta habitual (kohya-ss, OneTrainer, ai-toolkit…).
+**Consejos:** variedad antes que cantidad (40 distintas entrenan mejor que 200 casi
+iguales) · elige un tamaño objetivo (512, 768, 1024) y sé constante · el programa
+**no recorta** · respeta a los artistas y sus listas de «no entrenar» (con
+**⚖️ Solo licencia liberada** te quedas solo con obras de licencia abierta).
 
-### Consejos para que el dataset salga bien
-
-- **Variedad antes que cantidad:** 40 imágenes distintas entrenan mejor que 200
-  casi iguales.
-- **Elige un tamaño objetivo:** decide si entrenas a 512, 768 o 1024 y quédate en
-  esa franja. El programa reescala **hacia arriba**.
-- **El programa no recorta:** si necesitas encuadres concretos, recórtalos con tu
-  editor antes de entrenar.
-- **¿Tu entrenador no acepta WebP?** Convierte la carpeta por lotes a PNG o JPG.
-- **Entre sesiones puede repetir alguna imagen:** evita repetidos dentro de una
-  misma búsqueda, pero si vuelves a buscar lo mismo otro día puede bajar algo que
-  ya tenías.
-- **Respeta a los artistas:** usa los campos `licencia` y `artista` del `.json` y
-  ten en cuenta las listas de «no entrenar» de algunos autores. Si quieres quedarte
-  solo con obras de licencia abierta, activa **⚖️ Solo licencia liberada**.
+> Guía ampliada: **[Datasets para IA](https://github.com/rgomezs2000/extractorfanarts/wiki/Datasets-IA)**.
 
 ---
 
-## 14. Barra, ayuda y actualizaciones
+## 14. Qué se filtra
 
-### La barra de herramientas
+El programa aplica **siempre** unos filtros antes de mostrarte o guardarte nada, y
+te dice el motivo exacto de cada descarte:
 
-Arriba del todo tienes los accesos directos a lo importante, en orden:
+- **Lista negra de contenido prohibido** (etiquetas y prefijos).
+- **Plataformas de pago** (Patreon, Pixiv Fanbox, OnlyFans, Fansly, Unifans…): se
+  descartan los enlaces a contenido exclusivo.
+- **Contenido adulto (🔞):** por defecto **no** aparece. Si marcas «Permitir
+  contenido adulto» en Opciones, sí.
+- **Solo licencia liberada (⚖️):** opcional; solo procesa lo que declare
+  CC0 / CC-BY / dominio público.
+- **Tu propia lista de exclusiones** (etiquetas, dominios o palabras) que puedes
+  añadir en `config_local.py`.
 
-| Botón | Qué hace |
-|---|---|
-| 🔍 **Buscar** | busca con lo que hayas escrito |
-| ⬇️ **Descargar** | descarga lo encontrado (mientras trabaja pasa a ⏹️ **Cancelar**) |
-| 🧹 **Limpiar** | vacía el formulario |
-| 📂 **Carpeta** | cambia la carpeta de salida |
-| 🛡️ **Filtros** | te cuenta qué se filtra y por qué |
-| 📖 **Ayuda** | abre esta guía dentro del programa |
-| 🔄 **Actualizaciones** | busca e instala una versión nueva |
-| ℹ️ **Acerca de** | versión, licencia, autor y dónde queda todo |
+Puedes ver y ajustar todo esto en **🛡️ Filtros**.
 
-Los botones se apagan y se encienden a la vez que los del formulario: si algo no se
-puede pulsar, en la barra tampoco. En los menús **Archivo** y **Ayuda** tienes lo
-mismo, con sus atajos a la vista.
+> ⚠️ En **Rule34.xxx** y **Rule34 Paheal** casi todo el contenido es adulto: si no
+> marcas «Permitir contenido adulto» verás **0 resultados** aunque la conexión
+> funcione bien.
 
-### La ayuda, sin salir del programa (`F1`)
+---
 
-Pulsa **`F1`** en cualquier momento (o **Ayuda → Ayuda**) y se abre esta guía dentro de
-una ventana: a la izquierda el **índice** con todas las secciones y un **buscador**
-para dar con la tuya, y a la derecha el texto. El botón **🗂️ Abrir el manual completo**
-lo abre con tu programa de textos, por si prefieres leerlo entero o imprimirlo.
+## 15. Actualizaciones
 
-### Acerca de
-
-**Ayuda → Acerca de** (o el botón ℹ️) te dice **qué versión tienes instalada**, quién
-la hizo, la licencia y **dónde queda todo**: registros, historial, tus claves y la
-carpeta de salida. Desde ahí mismo puedes **buscar actualizaciones**.
-
-### Actualizaciones: se instala sola
-
-Pulsa 🔄 **Actualizaciones** y el programa mirará si hay una versión más nueva
-publicada. Te dirá **cuál tienes y cuál hay**, con la fecha, el peso de la descarga y
-lo que trae de nuevo.
+Pulsa **🔄 Actualizaciones** y el programa mirará si hay una versión más nueva
+publicada. Te dirá **cuál tienes y cuál hay**, con la fecha, el peso de la descarga
+y lo que trae de nuevo.
 
 - Si **no hay nada nuevo**, te lo dice y ya está.
-- Si **hay una versión nueva**, pulsa **⬇️ Descargar e instalar**: se descarga (verás
-  el progreso), se **comprueba que la descarga llegó íntegra** y, cuando aceptes, el
-  programa **se cierra, se instala y se vuelve a abrir solo** con la versión nueva.
-  No pierdes nada: tus imágenes, tus claves y tu historial se quedan como están.
+- Si **hay una versión nueva**, pulsa **⬇️ Descargar e instalar**: se descarga
+  (verás el progreso), se **comprueba que la descarga llegó íntegra** (SHA-256) y,
+  cuando aceptes, el programa **se cierra, se instala y se vuelve a abrir solo**
+  con la versión nueva. **No pierdes nada**: tus imágenes, tus claves y tu
+  historial se quedan como están.
 - Si la descarga viniera dañada, **no se instala**: te avisa y puedes repetirlo.
 
-Las **versiones beta** cuentan como versión nueva, que es lo que se publica por ahora.
-Si no tienes internet, o GitHub te limita las consultas, te lo dirá sin más: no pasa
-nada.
+Las **versiones beta** cuentan como versión nueva, que es lo que se publica por
+ahora. Si no tienes internet, o GitHub te limita las consultas, te lo dirá sin
+más.
 
-> En **Windows** el reemplazo y el reinicio son automáticos. En **macOS y Linux** la
-> descarga se hace igual y se verifica igual, pero te avisará para que sustituyas la
-> aplicación a mano, porque depende de cómo la tengas instalada.
+> En **Windows** el reemplazo y el reinicio son automáticos. En **macOS y Linux**
+> la descarga se hace igual y se verifica igual, pero te avisará para que
+> sustituyas la aplicación a mano, porque depende de cómo la tengas instalada.
 
 ---
 
-## 15. Licencia y uso responsable
+## 16. Si algo va mal
+
+| Síntoma | Qué pasa y qué hacer |
+|---|---|
+| Aviso azul de Windows al abrir | Normal (no está firmado): *Más información → Ejecutar de todas formas* |
+| «Python DLL» u error al abrir | Estás ejecutando el `.exe` de la carpeta `build\`, que es un paso intermedio incompleto. Usa siempre el de la carpeta que descomprimiste |
+| «0 resultados» pero la conexión va bien | El contenido es adulto: marca **Permitir contenido adulto** en Opciones |
+| **Acceso denegado** al guardar en Imágenes o Descargas | Abre el programa **con doble clic desde el Explorador** (no desde una terminal restringida). Si sigue igual, ejecuta `Imaginteca.exe --selftest` y revisa `selftest.txt` |
+| Cloudflare pide un CAPTCHA (p. ej. Rule34.xxx) | Abre el sitio en tu navegador, resuélvelo, y copia en `config_local.py` la cookie `cf_clearance` y tu `User-Agent`. El programa **nunca** evade CAPTCHAs |
+| Una wiki o un sitio devuelve error 403 | Suele ser una defensa contra programas. Anótalo y avísalo en el foro |
+| **El 🤖 Modo IA no mejora nada** (sigue usando Lanczos) | Los motores pueden traer una etiqueta de Windows que les impide escribir su resultado (en el registro verás `encode image … failed`). Se arregla en la carpeta del programa con `icacls _internal\vendor /setintegritylevel Medium /T`. Si no, usa **✨ Mejorar calidad** sin modo IA |
+| Una imagen sale borrosa tras mejorarla | Si el original era diminuto (menos de 300 px), el programa te avisa: **agrandar no crea detalle real** |
+| Búsqueda muy lenta | Se espacian las peticiones a propósito (cortesía con los sitios). Con muchos hashtags o palabras clave tarda más |
+| Cualquier error raro | Mira el `.log` del día: ahí está exactamente qué respondió cada servidor |
+
+**Diagnóstico:** ejecuta `Imaginteca.exe --selftest` y se genera **`selftest.txt`**
+con el estado de todo: bibliotecas, carpetas, permisos y si la ventana cabe en tu
+pantalla. Es lo más útil que puedes adjuntar si pides ayuda.
+
+---
+
+## 17. Más información, foro y contacto
+
+La documentación ampliada y el **foro** viven en la **wiki del proyecto**:
+
+**https://github.com/rgomezs2000/extractorfanarts/wiki**
+
+| Dónde | Para qué |
+|---|---|
+| 📖 **[Wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)** | esta guía ampliada, instalación, claves, calidad, datasets, actualizaciones… |
+| 🆘 **[Foro · Soporte técnico](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Soporte-tecnico)** | dudas de uso y **asistencia técnica** |
+| 🐞 **[Foro · Fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)** | algo no funciona como debería |
+| 💡 **[Foro · Ideas](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Ideas)** | propuestas y mejoras |
+| 🛠️ **[Problemas frecuentes](https://github.com/rgomezs2000/extractorfanarts/wiki/Problemas-frecuentes)** | la mayoría de los avisos, explicados |
+| 🔒 **Contacto privado** | **Discord `rgomezs2010`** (fallos de seguridad y asuntos que no deban ser públicos) |
+
+**Para publicar en el foro**: abre el tablero, pulsa **✏️ Edit**, copia la
+plantilla al final de «Mensajes» y guarda. Solo hace falta una cuenta de GitHub
+(gratis).
+
+Todo esto está también **dentro del programa**: menú **Ayuda** y la ventana que se
+abre con **`F1`**.
+
+Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
+**sistema**, los **pasos**, el **`selftest.txt`** y el **registro del día**.
+**Borra tus claves** de lo que compartas.
+
+---
+
+## 18. Licencia y uso responsable
 
 ### Licencia del programa
 
 **Imaginteca es un programa propietario.** © 2026 Roger Gomez.
-**Todos los derechos reservados.**
+**Todos los derechos reservados.** · **Licencia v2** (revisada el 9 de octubre de
+2026).
 
-- **Sí puedes:** ejecutarlo y usarlo **gratis**, para tu archivo personal, en tus
+- **Sí puedes:** ejecutarlo y usarlo **gratis**, para tu colección personal, en tus
   equipos, y hacerte una copia de seguridad.
 - **No puedes:** copiarlo, publicarlo, compartirlo, subirlo a ningún sitio,
   venderlo, alquilarlo, modificarlo, descompilarlo ni reutilizar su código
@@ -479,9 +512,9 @@ nada.
 - **El código fuente es propiedad del autor** y no se licencia.
 
 El texto legal completo está en el archivo **`LICENSE`** que acompaña al
-ejecutable (**licencia v2, revisada el 9 de octubre de 2026**). Para cualquier
-permiso distinto (uso comercial, redistribución, integración en otro producto…),
-pídelo por escrito al autor **desde el foro de la wiki**, indicando qué necesitas.
+ejecutable. Para cualquier permiso distinto (uso comercial, redistribución,
+integración en otro producto…), pídelo por escrito al autor **desde el foro de la
+wiki**, indicando qué necesitas.
 
 ### Garantía: responde el autor
 
@@ -491,26 +524,22 @@ corre por cuenta del autor**.
 
 - Si algo **no hace lo que dice esta guía**, es un defecto del programa: el autor
   lo **corrige sin coste** y publica la versión corregida (la propia aplicación
-  puede instalártela: mira *Actualizaciones*, en el apartado 14).
-- **Se atienden los avisos.** Deja tu **comentario, contacto o reporte** donde
-  prefieras: el **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**,
-  la **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)**, las
-  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**.
-  Incluye el **registro del día**
-  (`%USERPROFILE%\.imaginteca\logs` en Windows, `~/.imaginteca/logs` en
-  Linux/macOS) y el archivo **`selftest.txt`**. Se contesta y se trabaja en ello en
-  un plazo razonable, sin coste alguno.
+  puede instalártela: mira *Actualizaciones*).
+- **Se atienden los avisos.** Deja tu comentario o reporte en el **foro de la
+  wiki**; para asuntos que no deban ser públicos, escribe por
+  **Discord `rgomezs2010`**. Incluye el **registro del día** y el archivo
+  **`selftest.txt`**. Se contesta y se trabaja en ello en un plazo razonable, sin
+  coste alguno.
 - **Daños directos por un defecto del programa** (por ejemplo, que sobrescriba un
   archivo que no debía): responde el autor.
 - **Qué no cubre:** el contenido que descargues y el uso que hagas de él, el uso
   ilícito o contra las condiciones de una plataforma, los cambios que hagas en tu
-  equipo o en tus claves, y que un servicio de terceros cambie su API o cierre
-  (eso se avisa y se adapta en cuanto se puede).
+  equipo o en tus claves, y que un servicio de terceros cambie su API o cierre.
 
 ### Componentes de terceros
 
-El programa incluye bibliotecas de terceros (Qt/PySide6, Pillow, httpx,
-curl_cffi y los motores de IA) que conservan **sus propias licencias**,
+El programa incluye bibliotecas de terceros (Qt/PySide6, Pillow, httpx, curl_cffi
+y los motores de IA Real-ESRGAN / waifu2x) que conservan **sus propias licencias**,
 detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ### Uso responsable
@@ -527,6 +556,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.0-beta.2 · fase beta: si encuentras un fallo, el registro
-del día (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para
-reportarlo.*
+*Imaginteca 0.1.0-beta.3 · fase beta: si encuentras un fallo, el registro del día
+(`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

@@ -6,7 +6,7 @@ del proyecto) sin tocar los archivos actuales. Así el Release nunca se queda si
 publicar aunque la limpieza falle: el trabajo avisa y sigue.
 
     # conservar solo los archivos que hay en una carpeta (lo que hace el CI)
-    python scripts\\limpiar_release.py --repo usuario/repo --tag v0.1.0-beta.2 \\
+    python scripts\\limpiar_release.py --repo usuario/repo --tag v0.1.0-beta.3 \\
         --carpeta paquetes
 
     # conservar una lista explícita de nombres

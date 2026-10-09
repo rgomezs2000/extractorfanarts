@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.0-beta.3 — 9 de octubre de 2026
+
+**Documentación**
+- **Redacción limpia y actualizada** de los tres documentos: la guía del usuario,
+  el `LEEME-PRIMERO.txt` y el README técnico, con la versión al día.
+- **La wiki con su foro es la fuente de más información**: los tres documentos
+  enlazan con ella desde el principio.
+- **Contacto privado unificado: Discord `rgomezs2010`** (fallos de seguridad y
+  asuntos que no deban ser públicos). No se publica ningún correo.
+
+**Wiki y foro**
+- La **wiki está publicada**: documentación y **9 tableros de foro**, con índice,
+  barra lateral y pie.
+- El publicador de la wiki **protege las páginas del foro**: actualizar la
+  documentación **ya no puede borrar los mensajes** de nadie.
+
+---
+
 ## v0.1.0-beta.2 — 9 de octubre de 2026
 
 **Interfaz y ayuda**

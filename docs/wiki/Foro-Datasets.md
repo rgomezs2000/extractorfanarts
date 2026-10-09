@@ -22,7 +22,7 @@ Modo IA, metadatos .json; tamaño objetivo)
 **Qué necesito:** (elegir imágenes · tamaño/reescalado · etiquetas/captions ·
 compartir mi flujo de trabajo)
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 ```
 
 ## Recordatorios
@@ -47,7 +47,7 @@ compartir mi flujo de trabajo)
 
 **Qué necesito:** que se puedan comparar formas de preparar el material.
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de)
 
 > Pulsa **✏️ Edit** arriba, baja hasta aquí, copia la plantilla y **añade tu
 > mensaje al final**. Guarda con **Save page**.

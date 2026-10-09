@@ -19,7 +19,7 @@ No es obligatorio presentarse para preguntar, pero ayuda. 🙂
 
 **Para qué lo uso:** (archivo personal, un dataset para un LoRA…)
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 ```
 
 > **Consejo de privacidad:** no hace falta que pongas tu nombre real, tu correo ni
@@ -41,7 +41,7 @@ dibujo de línea limpia.
 **Para qué lo uso:** para archivo personal y para preparar datasets pequeños de
 estilo.
 
-**Versión y sistema:** Imaginteca 0.1.0-beta.2 · Windows 11
+**Versión y sistema:** Imaginteca (tu versión: Ayuda → Acerca de) · Windows 11
 
 > Pulsa **✏️ Edit** arriba, baja hasta aquí, copia la plantilla y **añade tu
 > mensaje al final**. Guarda con **Save page**.

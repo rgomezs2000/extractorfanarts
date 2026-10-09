@@ -38,11 +38,12 @@ garantía corre por cuenta del autor**.
 - **Atiende los avisos** y las consultas.
 - Responde de los **daños directos** que un defecto del programa cause en tus
   archivos o en tu equipo.
-- **Cómo hacerla valer:** deja tu comentario, contacto o reporte en el
-  **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)**, en la
-  **[wiki](https://github.com/rgomezs2000/extractorfanarts/wiki)** o en las
-  **[fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos)**,
-  incluyendo el **registro del día**
+- **Cómo hacerla valer:** deja tu comentario o reporte en el
+  **[foro](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro)** (tableros de
+  [soporte](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Soporte-tecnico)
+  y [fallos](https://github.com/rgomezs2000/extractorfanarts/wiki/Foro-Fallos));
+  para algo **privado**, escribe por **Discord `rgomezs2010`**. Incluye el
+  **registro del día**
   (`%USERPROFILE%\.imaginteca\logs`) y el **`selftest.txt`**. Se contesta y se
   trabaja en ello **en un plazo razonable, sin coste**.
 

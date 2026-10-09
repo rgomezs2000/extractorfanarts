@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.0-beta.2"
+APP_VERSION = "0.1.0-beta.3"
 
 # ------------------------------------------------------------------ actualizaciones
 # Repositorio del que se leen las versiones nuevas (Releases de GitHub). Si renombras
