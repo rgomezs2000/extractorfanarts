@@ -521,10 +521,17 @@ def main() -> int:
     hay_certificado = any(os.environ.get(v) for v in (
         "EF_CERT_PFX", "EF_CERT_THUMBPRINT", "WINDOWS_CERT_PFX_BASE64",
         "WINDOWS_CERT_THUMBPRINT", "TRUSTED_SIGNING_DLIB"))
+    if sys.platform.startswith("win"):
+        if hay_certificado:
+            print(f"[ok] firma: hay certificado configurado -> se firma {ejecutable.name}")
+        else:
+            print("[info] firma: SIN CERTIFICADO -> el ejecutable sale sin firmar "
+                  "(SmartScreen seguirá avisando)")
+            print("       para firmar: EF_CERT_PFX (+ EF_CERT_PASSWORD) o "
+                  "EF_CERT_THUMBPRINT; o --firmar con un certificado")
     if firmar or (hay_certificado and "--sin-firmar" not in sys.argv):
         if sys.platform.startswith("win") and not hay_certificado:
-            print("[aviso] no hay certificado configurado: la compilación sale SIN FIRMAR")
-            print("        (SmartScreen seguirá avisando; mira el README, sección de firma)")
+            print("[aviso] se pidió --firmar pero no hay certificado configurado")
             return 0
         return _firmar(ejecutable)
     return 0
