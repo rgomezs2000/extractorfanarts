@@ -115,6 +115,16 @@ def main() -> int:
         icono = ROOT / "assets" / ("icon.ico" if sys.platform.startswith("win") else "icon.png")
         if icono.is_file():
             comando += ["--icon", str(icono)]
+        # Propiedades del ejecutable: producto, versión y copyright (Windows)
+        try:
+            import build_exe
+            archivo_version = build_exe._archivo_version(
+                NOMBRE, "Asistente de Pixiv de Imaginteca (InfoArte)")
+        except Exception as exc:  # noqa: BLE001
+            print(f"[aviso] sin recurso de versión: {exc}")
+            archivo_version = None
+        if archivo_version is not None:
+            comando += ["--version-file", str(archivo_version)]
         comando.append(str(ROOT / "scripts" / "pixiv_token.py"))
 
         codigo = subprocess.call(comando, cwd=str(ROOT), env=entorno)

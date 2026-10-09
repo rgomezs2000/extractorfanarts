@@ -28,7 +28,7 @@ registros. La actualización reemplaza **el programa**, no tus datos.
 
 Se comparan correctamente, incluidas las betas:
 
-- `0.1.0-beta.4` es **más nueva** que `0.1.0-beta.1`
+- `0.1.2-beta` es **más nueva** que `0.1.0-beta.1`
 - `0.1.0` (final) es **más nueva** que cualquier `0.1.0-beta.x`
 
 Las versiones **beta cuentan como versión nueva**, porque es lo que se publica por
@@ -57,7 +57,7 @@ copiar tu `config_local.py`) y abrirlo. Verifica el `.sha256` como se explica en
 - **Ayuda → Acerca de** (o el botón **ℹ️**): versión instalada, entorno y rutas.
 - `Imaginteca.exe --version` en una consola.
 - El paquete se llama `Imaginteca-Windows.zip` / `-Linux` / `-macOS`, y el Release
-  indica la etiqueta (`v0.1.0-beta.4`).
+  indica la etiqueta (`v0.1.2-beta`).
 
 ---
 

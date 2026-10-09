@@ -20,6 +20,14 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.2-beta
+
+- Nueva **versión 0.1.2-beta**.
+- El **ejecutable muestra su versión y su copyright** en las propiedades del
+  archivo (Detalles).
+- **Copyright dinámico**: «© 2026 InfoArte» y, al cambiar el año,
+  «© 2026-2027 InfoArte».
+
 ### 2026-10-09 · v0.1.0-beta.4
 
 - **«Acerca de» sin datos personales**: **InfoArte** y **Discord `rgomezs2010`**,

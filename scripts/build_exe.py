@@ -20,6 +20,7 @@ Requisitos en la máquina que compila:
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -32,6 +33,14 @@ NOMBRE = "Imaginteca"
 # Permite usar el PyInstaller instalado en ./vendor (sin instalación global)
 if VENDOR.is_dir() and str(VENDOR) not in sys.path:
     sys.path.insert(0, str(VENDOR))
+
+# La versión y el aviso de copyright se leen de app/config.py (una sola fuente)
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+try:
+    from app import config as config_app
+except Exception:  # noqa: BLE001
+    config_app = None
 
 # Módulos de Qt que la app no usa (slim del paquete)
 EXCLUIR = [
@@ -103,6 +112,82 @@ def _icono_para_empaquetar() -> Path | None:
     return None
 
 
+def _literal_version(texto: str) -> str:
+    """Texto listo para el archivo de versión: ASCII puro, con escapes de Python.
+
+    PyInstaller evalúa ese archivo como código, así que los acentos y el símbolo
+    «©» van escapados (`\\u00a9`): el recurso queda correcto y el archivo que se
+    escribe es ASCII, sin depender de la codificación de la consola.
+    """
+    return texto.encode("unicode_escape").decode("ascii").replace("'", "\\'")
+
+
+def _partes_version() -> tuple[int, int, int, int]:
+    """(mayor, menor, parche, 0) a partir de la versión del proyecto."""
+    texto = getattr(config_app, "APP_VERSION", "0.0.0") if config_app else "0.0.0"
+    numeros = [int(n) for n in re.findall(r"\d+", texto)][:3]
+    while len(numeros) < 3:
+        numeros.append(0)
+    return (numeros[0], numeros[1], numeros[2], 0)
+
+
+def _archivo_version(nombre: str = NOMBRE,
+                     descripcion: str | None = None) -> Path | None:
+    """Recurso de versión de Windows: lo que sale en «Propiedades → Detalles».
+
+    Lleva el **aviso de copyright con el año en curso**, así que un ejecutable
+    compilado en 2027 dirá «© 2026-2027 InfoArte» sin tocar nada.
+    """
+    if not sys.platform.startswith("win") or config_app is None:
+        return None
+    mayor, menor, parche, _ = _partes_version()
+    version = f"{mayor}.{menor}.{parche}"
+    completa = str(getattr(config_app, "APP_VERSION", version))
+    autor = _literal_version(str(getattr(config_app, "AUTOR", "InfoArte")))
+    aviso = _literal_version(
+        f"{getattr(config_app, 'AUTOR_COPYRIGHT', '')} · Todos los derechos reservados.")
+    texto_descripcion = descripcion or (
+        f"{NOMBRE} — tu colección de imágenes y datasets para IA")
+    descripcion_final = _literal_version(texto_descripcion)
+    contenido = f"""VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=({mayor}, {menor}, {parche}, 0),
+    prodvers=({mayor}, {menor}, {parche}, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        '040904B0',
+        [StringStruct('CompanyName', '{autor}'),
+         StringStruct('FileDescription', '{descripcion_final}'),
+         StringStruct('FileVersion', '{_literal_version(completa)}'),
+         StringStruct('InternalName', '{nombre}'),
+         StringStruct('LegalCopyright', '{aviso}'),
+         StringStruct('OriginalFilename', '{nombre}.exe'),
+         StringStruct('ProductName', '{NOMBRE}'),
+         StringStruct('ProductVersion', '{_literal_version(completa)}')])
+    ]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)
+"""
+    seguro = "".join(c if c.isalnum() else "_" for c in nombre)
+    destino = ROOT / "build" / f"version_info_{seguro}.txt"
+    try:
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_text(contenido, encoding="ascii")
+    except OSError as exc:
+        print(f"[aviso] no se pudo crear el recurso de versión: {exc}")
+        return None
+    return destino
+
+
 def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
     separador = ";" if sys.platform.startswith("win") else ":"
     args = [
@@ -128,6 +213,13 @@ def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
     icono = _icono_para_empaquetar()
     if icono is not None:
         args += ["--icon", str(icono)]
+    # Propiedades del ejecutable: producto, versión y copyright (solo Windows)
+    archivo_version = _archivo_version()
+    if archivo_version is not None:
+        args += ["--version-file", str(archivo_version)]
+        print(f"[ok] recurso de versión: {archivo_version} "
+              f"(versión {getattr(config_app, 'APP_VERSION', '?')} · "
+              f"{getattr(config_app, 'AUTOR_COPYRIGHT', '')})")
     assets = ROOT / "assets"
     if assets.is_dir():
         args += ["--add-data", f"{assets}{separador}assets"]

@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.0-beta.4 (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.2-beta (fase beta)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -668,5 +668,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.0-beta.4 · fase beta: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.2-beta · fase beta: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

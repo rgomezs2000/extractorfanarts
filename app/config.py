@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.0-beta.4"
+APP_VERSION = "0.1.2-beta"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:

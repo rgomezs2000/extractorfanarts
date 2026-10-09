@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.2-beta — 9 de octubre de 2026
+
+**Versión y propiedades del ejecutable**
+- La versión pasa a **0.1.2-beta**.
+- El ejecutable lleva **recurso de versión**: en «Propiedades → Detalles» se ven el
+  **producto**, la **versión** y el **copyright** («{© 2026 InfoArte} · Todos los
+  derechos reservados»), calculado con el año en curso al compilar.
+
+**Copyright dinámico**
+- El aviso es «© 2026 InfoArte» y pasa solo a «© 2026-2027 InfoArte» cuando cambia
+  el año: en el programa, en la ayuda `F1` y en la documentación
+  (`scripts\actualizar_copyright.py`).
+
+---
+
 ## v0.1.0-beta.4 — 9 de octubre de 2026
 
 **Sin datos personales**
