@@ -46,8 +46,11 @@ que registrarse y no se recogen datos.
      _internal que va a su lado.
   3. Abrelo:
        Windows : doble clic en Imaginteca.exe
-                 (si sale el aviso azul "Windows protegio su PC" es normal: no
-                  esta firmado. "Mas informacion" -> "Ejecutar de todas formas")
+                 (si sale el aviso azul "Windows protegio su PC" es normal
+                  cuando el paquete NO esta firmado: "Mas informacion" ->
+                  "Ejecutar de todas formas". Cuando venga FIRMADO
+                  digitalmente este aviso no aparece; un certificado
+                  autofirmado no sirve para quitarlo)
        macOS   : clic derecho en la aplicacion -> Abrir
                  (si se resiste: xattr -dr com.apple.quarantine Imaginteca.app)
        Linux   : chmod +x Imaginteca   y luego ejecutalo
