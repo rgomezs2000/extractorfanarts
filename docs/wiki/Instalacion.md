@@ -3,19 +3,25 @@
 > **Antes de empezar:** comprueba los **[Requisitos](Requisitos)** (sistema,
 > espacio, pantalla y el modo IA). Se tarda un minuto.
 
-**Imaginteca no se instala**: se descomprime y se ejecuta. No hay que pagar nada,
-no hay que registrarse y no se recogen datos.
+**Hay tres formas de tenerlo**, las tres con el mismo programa y sin pagar nada,
+sin registrarse y sin recoger datos:
+
+| Forma | Archivo | Para quién |
+|---|---|---|
+| **1. Portátil** | `Imaginteca-Windows.zip`, `Imaginteca-Linux.tar.gz`, `Imaginteca-macOS.tar.gz` (y los `.zip`) | Probar sin tocar el sistema |
+| **2. Instalador** | `…-windows-installer.exe`, `…-macos-installer.dmg`, `…-linux-installer.deb` | El día a día: asistente, accesos directos y desinstalador |
+| **3. Consola** | `Imaginteca --actualizar` | Terminal y automatización |
 
 ## 1. Descarga
 
 Ve a **[Releases](https://github.com/rgomezs2000/extractorfanarts/releases)** y
 baja el paquete de tu sistema:
 
-| Sistema | Archivo | Tamaño aproximado |
+| Sistema | Portátil | Instalador |
 |---|---|---|
-| Windows | `Imaginteca-Windows.zip` | ~147 MB |
-| Linux | `Imaginteca-Linux.zip` | ~240 MB |
-| macOS | `Imaginteca-macOS.zip` | ~557 MB |
+| Windows | `Imaginteca-Windows.zip` | `Imaginteca-<versión>-windows-installer.exe` |
+| Linux | `Imaginteca-Linux.zip` · `Imaginteca-Linux.tar.gz` | `Imaginteca-<versión>-linux-installer.deb` |
+| macOS | `Imaginteca-macOS.zip` · `Imaginteca-macOS.tar.gz` | `Imaginteca-<versión>-macos-installer.dmg` |
 
 Junto a cada paquete hay un `.sha256`. **Comprueba la descarga** (es lo que
 garantiza que el archivo llegó íntegro y no manipulado):
@@ -60,7 +66,39 @@ Descomprime el `.zip` **completo** en una carpeta tuya, por ejemplo
   ./Imaginteca
   ```
 
-## 4. Primer arranque
+## 4. O instálalo con el asistente
+
+Si prefieres instalarlo como cualquier otro programa (con accesos directos y
+desinstalador), usa el **instalador** de tu sistema:
+
+- **Windows** (`…-windows-installer.exe`): doble clic y sigue el **asistente**
+  (idioma, licencia, carpeta, accesos directos). Se instala **por usuario** en
+  `%LOCALAPPDATA%\Programs\Imaginteca` (sin pedir administrador), deja acceso en el
+  menú Inicio y, si quieres, en el Escritorio. Al instalar encima de una versión
+  anterior, **tus claves se conservan**.
+- **macOS** (`…-macos-installer.dmg`): ábrelo y **arrastra Imaginteca a
+  Aplicaciones**.
+- **Linux** (`…-linux-installer.deb`):
+  ```bash
+  sudo apt install ./Imaginteca-<versión>-linux-installer.deb
+  ```
+  Queda en `/opt/imaginteca` con el lanzador `imaginteca`, su icono y su entrada de
+  menú. Se desinstala con `sudo apt remove imaginteca`.
+
+## 5. Desde la consola
+
+```bash
+Imaginteca --selftest                 # estado del entorno → selftest.txt
+Imaginteca --version                  # versión instalada
+Imaginteca --comprobar-actualizacion  # ¿hay versión nueva? (no instala)
+Imaginteca --actualizar               # descarga, verifica e instala (limpio) y reinicia
+```
+
+`--actualizar` muestra el proceso paso a paso y hace un **reemplazo limpio**:
+conserva tus claves, borra la versión anterior, los temporales y el paquete
+descargado, y vuelve a abrir el programa (la consola se queda abierta).
+
+## 6. Primer arranque
 
 Al abrirlo por primera vez se crea la carpeta de datos:
 
@@ -75,7 +113,7 @@ si quieres, tus **claves** (`config_local.py`).
 Las imágenes se guardan en la **carpeta de Imágenes** del sistema, subcarpeta
 `Imaginteca` (la puedes cambiar con el botón **📂 Carpeta** o el atajo `Ctrl+O`).
 
-## 5. Comprueba que todo está bien
+## 7. Comprueba que todo está bien
 
 En una consola, dentro de la carpeta del programa:
 

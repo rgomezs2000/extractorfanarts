@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.3-beta (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.4-beta (fase beta)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -99,19 +99,25 @@ incluido** dentro del programa.
 > intérprete de Python, los paquetes esenciales y los motores de IA, lo muestra en
 > pantalla **y en la consola**, y permite actualizarlos de una vez (ver el punto 16).
 
-## 3. Instalar y abrir
+**Hay tres formas de tenerlo**, y las tres dan el mismo programa. No hay que pagar
+nada, no hay que registrarse y no se recogen datos.
 
-**El programa no se instala**: se descomprime y se ejecuta. No hay que pagar nada,
-no hay que registrarse y no se recogen datos.
+| Forma | Archivo | Para quién |
+|---|---|---|
+| **1. Portátil** | `Imaginteca-Windows.zip` · `Imaginteca-Linux.tar.gz` · `Imaginteca-macOS.tar.gz` (y los `.zip`) | Probar sin tocar el sistema: se descomprime y se ejecuta |
+| **2. Instalador** | `Imaginteca-<versión>-windows-installer.exe` · `…-macos-installer.dmg` · `…-linux-installer.deb` | El día a día: asistente, accesos directos y desinstalador |
+| **3. Consola** | `Imaginteca --actualizar` | Terminal y automatización |
+
+### 3.1 Portátil: descomprimir y ejecutar
 
 1. **Descarga** el paquete de tu sistema desde
    **[Releases](https://github.com/rgomezs2000/extractorfanarts/releases)**:
 
-   | Sistema | Archivo |
+   | Sistema | Portátil |
    |---|---|
    | Windows | `Imaginteca-Windows.zip` |
-   | Linux | `Imaginteca-Linux.zip` |
-   | macOS | `Imaginteca-macOS.zip` |
+   | Linux | `Imaginteca-Linux.zip` o `Imaginteca-Linux.tar.gz` |
+   | macOS | `Imaginteca-macOS.zip` o `Imaginteca-macOS.tar.gz` |
 
 2. **Comprueba la descarga** con el `.sha256` que acompaña al paquete:
 
@@ -126,30 +132,54 @@ no hay que registrarse y no se recogen datos.
 
    El resultado debe coincidir con el contenido del `.sha256`.
 
-3. **Descomprime el `.zip` completo** en una carpeta tuya (por ejemplo
+3. **Descomprime el paquete completo** en una carpeta tuya (por ejemplo
    `C:\Imaginteca`). No lo ejecutes desde dentro del archivo comprimido: necesita
    la carpeta `_internal` que va a su lado.
 
 4. **Ábrelo**:
-   - **Windows:** doble clic en **`Imaginteca.exe`**. La primera vez puede salir
-     el aviso azul *«Windows protegió su PC»*: es normal (el programa no está
-     firmado digitalmente; un certificado de firma es de pago). Pulsa **Más
-     información → Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en
-     el `.exe` → **Propiedades** → marca **Desbloquear** → **Aceptar**.
+   - **Windows:** doble clic en **`Imaginteca.exe`**. La primera vez puede salir el
+     aviso azul *«Windows protegió su PC»*: es normal (el programa no está firmado
+     digitalmente; un certificado de firma es de pago). Pulsa **Más información →
+     Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en el `.exe` →
+     **Propiedades** → marca **Desbloquear** → **Aceptar**.
    - **macOS:** si dice *«no se puede abrir»*, clic derecho en la aplicación →
      **Abrir**. Si se resiste: `xattr -dr com.apple.quarantine Imaginteca.app`
    - **Linux:** `chmod +x Imaginteca` la primera vez y luego ejecútalo.
 
-5. **Comprueba que todo está bien** (opcional pero recomendable). En una consola,
-   dentro de la carpeta del programa:
+### 3.2 Instalador con asistente
 
-   ```powershell
-   Imaginteca.exe --selftest
-   ```
+- **Windows** (`…-windows-installer.exe`): doble clic → **asistente** (idioma,
+  licencia, carpeta, accesos directos) → se instala **en tu usuario**
+  (`%LOCALAPPDATA%\Programs\Imaginteca`, sin pedir administrador; puedes elegir
+  instalarlo para todos) → deja acceso en el **menú Inicio** y, si marcas la casilla,
+  en el **Escritorio**, además del **desinstalador** en *Aplicaciones instaladas*.
+  Si lo instalas **encima de una versión anterior**, tus claves
+  (`config_local.py`) **se conservan**.
+- **macOS** (`…-macos-installer.dmg`): ábrelo y **arrastra Imaginteca a
+  Aplicaciones** (el gesto de siempre). La primera vez, clic derecho → **Abrir**.
+- **Linux** (`…-linux-installer.deb`):
 
-   Genera **`selftest.txt`** con el estado de bibliotecas, carpetas, permisos,
-   motores de IA y si la ventana cabe en tu pantalla. Es lo primero que se pide
-   cuando pides ayuda.
+  ```bash
+  sudo apt install ./Imaginteca-<versión>-linux-installer.deb
+  ```
+
+  Queda en `/opt/imaginteca`, con el lanzador **`imaginteca`**, su icono y la entrada
+  de menú. Se desinstala con `sudo apt remove imaginteca`. En otras distribuciones,
+  usa el `.tar.gz` portátil.
+
+### 3.3 Desde la consola
+
+```powershell
+Imaginteca.exe --selftest                 # estado del entorno → selftest.txt
+Imaginteca.exe --version                  # versión instalada
+Imaginteca.exe --comprobar-actualizacion  # ¿hay versión nueva? (no instala nada)
+Imaginteca.exe --actualizar               # descarga, verifica (SHA-256) e instala
+```
+
+`--actualizar` informa paso a paso (versión, paquete, descarga con porcentaje,
+huella) y hace un **reemplazo limpio**: conserva tus claves, borra la versión
+anterior, los temporales y el paquete descargado, y **vuelve a abrir el programa**.
+La consola se queda abierta con el informe. En Linux/macOS: `./Imaginteca --actualizar`.
 
 Al abrirlo por primera vez se crea la carpeta de datos
 (`%USERPROFILE%\.imaginteca` en Windows, `~/.imaginteca` en Linux/macOS), donde
@@ -743,5 +773,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.3-beta · fase beta: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.4-beta · fase beta: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

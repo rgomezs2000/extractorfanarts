@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.3-beta (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.4-beta (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -647,6 +647,20 @@ store.py (historial SQLite)  +  logging_setup.py (.log del día)
 
 ## 9. Instalación
 
+**Tres modos, los tres con el mismo programa** (ver la guía del usuario, §3, y la
+wiki: [Instalación](https://github.com/rgomezs2000/extractorfanarts/wiki/Instalacion)):
+
+1. **Portátil**: `.zip` (los tres) y `.tar.gz` (Linux/macOS). Se descomprime y listo.
+2. **Instalador con asistente**: `…-windows-installer.exe` (Inno Setup, por usuario,
+   con accesos directos y desinstalador), `…-macos-installer.dmg` (arrastrar a
+   Aplicaciones) y `…-linux-installer.deb` (`/opt/imaginteca` + lanzador + menú).
+3. **Consola**: `--selftest`, `--version`, `--comprobar-actualizacion` y
+   `--actualizar` (descarga, verifica la huella, **reemplazo limpio** —conserva
+   `config_local.py` y borra versión anterior, temporales y descarga— y reinicia).
+
+Los instaladores los genera el propio flujo de compilación en cada sistema
+(`scripts/instaladores/`), porque **PyInstaller no compila cruzado**.
+
 ### 9.1 Usuario final (ejecutable)
 
 1. Descarga el `.zip` de tu sistema desde
@@ -982,7 +996,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.3-beta > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.4-beta > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1152,7 +1166,7 @@ verifique su descarga.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Fase beta.** Una etiqueta con sufijo (`v0.1.3-beta`) se publica
+> **Fase beta.** Una etiqueta con sufijo (`v0.1.4-beta`) se publica
 > automáticamente como **pre-release** de GitHub: queda marcada como beta, no
 > sustituye a la última versión estable y no se ofrece como descarga recomendada.
 
@@ -1163,9 +1177,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.3-beta"
+git commit -m "release v0.1.4-beta"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.3-beta
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.4-beta
 ```
 
 Resultado en unos minutos:
@@ -1174,16 +1188,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.3-beta-windows.zip
-gh release create v0.1.3-beta "dist\Imaginteca-v0.1.3-beta-windows.zip" `
-   --title "Imaginteca v0.1.3-beta" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.4-beta-windows.zip
+gh release create v0.1.4-beta "dist\Imaginteca-v0.1.4-beta-windows.zip" `
+   --title "Imaginteca v0.1.4-beta" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.3-beta` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.4-beta` (crear al publicar) →
 marca **«Set as a pre-release»** → adjuntar el `.zip`.
 
 **Notas:**
@@ -1326,6 +1340,9 @@ restringido.
 | `scripts\release.py` | crea el `.zip` + `.sha256` y publica el Release (`--tag`, `--gh`, `--version`) |
 | `scripts\limpiar_release.py` | borra los adjuntos de un Release de GitHub antes de volver a publicar la misma versión (`--repo`, `--tag`) |
 | `scripts\publicar_wiki.py` | publica las páginas de `docs/wiki/` en la Wiki de GitHub (`--repo`, `--comprobar`) |
+| `scripts\instaladores\crear_instalador_windows.py` | instalador de Windows con asistente (Inno Setup) |
+| `scripts\instaladores\crear_instalador_macos.sh` | instalador de macOS (`.dmg` con acceso a Aplicaciones) |
+| `scripts\instaladores\crear_instalador_linux.sh` | instalador de Linux (`.deb` con lanzador y entrada de menú) |
 | `scripts\actualizar_copyright.py` | pone el aviso de copyright al **año en curso** en todos los documentos (`--comprobar` para ver qué cambiaría) |
 | `scripts\make_icon.py` | regenera los iconos de `assets/` |
 | `scripts\hacer_certificado.py` / `.ps1` | crea un certificado autofirmado (`--simular`, `--confiar`) |

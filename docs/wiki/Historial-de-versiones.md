@@ -1,5 +1,25 @@
 # Historial de versiones
 
+## v0.1.4-beta — 9 de octubre de 2026
+
+**Instaladores y modos de instalación**
+- **Tres modos**: **portátil** (`.zip` y `.tar.gz`), **instalador con asistente**
+  (`…-windows-installer.exe` con Inno Setup, `…-macos-installer.dmg` con acceso a
+  Aplicaciones y `…-linux-installer.deb`) y **consola**.
+- Los instaladores se generan en cada sistema dentro del flujo de compilación y se
+  publican junto a los paquetes portátiles, con su `.sha256`.
+- El instalador de Windows instala **por usuario** (sin administrador), deja accesos
+  directos y desinstalador, y **conserva `config_local.py`** al actualizar.
+
+**Actualizaciones limpias y comando de consola**
+- `--comprobar-actualizacion` y `--actualizar`: mantenimiento desde la consola, con
+  el proceso paso a paso (versión, paquete, descarga y huella SHA-256).
+- La actualización ahora es **limpia**: descomprime aparte, conserva tus claves,
+  reemplaza la carpeta entera y **borra la versión anterior, los temporales y el
+  paquete descargado**.
+
+---
+
 ## v0.1.3-beta — 9 de octubre de 2026
 
 **Requisitos y dependencias**

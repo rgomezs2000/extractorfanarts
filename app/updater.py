@@ -45,7 +45,7 @@ _SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
 def clave_version(texto: str) -> tuple[int, int, int, int, int]:
     """Clave comparable: (mayor, menor, parche, es_final, número de beta).
 
-    Así `0.1.3-beta > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    Así `0.1.4-beta > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
     final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
     """
     texto = (texto or "").strip().lstrip("vV")
@@ -236,13 +236,18 @@ def carpeta_aplicacion() -> Path:
 
 
 def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
-    """Crea el script que espera a que la app cierre, instala y la vuelve a abrir.
+    """Crea el script que espera a que la app cierre, instala **limpio** y la reabre.
+
+    Actualización LIMPIA: la versión nueva se descomprime aparte, se **conserva tu
+    `config_local.py`**, se reemplaza la carpeta entera (la anterior se borra) y al
+    final se retiran los restos: la versión anterior, los temporales y **el paquete
+    descargado**. Así no queda nada viejo ni a medias.
 
     Devuelve la ruta del script. NO lo ejecuta: de eso se encarga la ventana tras
     cerrarse, para que el reemplazo ocurra cuando el ejecutable ya no está en uso.
     """
     carpeta = (carpeta or carpeta_aplicacion()).resolve()
-    destino = carpeta.parent                      # el .zip trae la carpeta de la app
+    padre = carpeta.parent                        # el .zip trae la carpeta de la app
     temporal = Path(tempfile.mkdtemp(prefix=f"{config.APP_NAME}-actualizar-"))
     ejecutable = carpeta / f"{config.APP_NAME}.exe"
     if not ejecutable.is_file():
@@ -254,9 +259,16 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
         guion.write_text(
             "@echo off\r\n"
             "chcp 65001 >nul\r\n"
-            f"title {config.APP_NAME} - actualizacion\r\n"
+            f"title {config.APP_NAME} - actualizacion limpia\r\n"
+            "setlocal\r\n"
+            f'set "PADRE={padre}"\r\n'
+            f'set "CARPETA={carpeta}"\r\n'
+            f'set "PAQUETE={paquete}"\r\n'
+            'set "BAJADA=%PADRE%\\.imaginteca-tmp"\r\n'
+            'set "NUEVA=%PADRE%\\.imaginteca-nueva"\r\n'
+            'set "VIEJA=%PADRE%\\.imaginteca-anterior"\r\n'
             "echo ======================================================================\r\n"
-            f"echo   {config.APP_NAME} - instalando la version nueva\r\n"
+            f"echo   {config.APP_NAME} - actualizacion limpia\r\n"
             "echo ======================================================================\r\n"
             "echo.\r\n"
             "echo   Esperando a que se cierre la aplicacion...\r\n"
@@ -266,17 +278,44 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
             "  timeout /t 1 /nobreak >nul\r\n"
             "  goto espera\r\n"
             ")\r\n"
-            f'echo   Instalando en "{destino}"...\r\n'
+            "echo   [1/5] Descomprimiendo la version nueva...\r\n"
+            'rmdir /s /q "%BAJADA%" 2>nul\r\n'
+            'rmdir /s /q "%NUEVA%" 2>nul\r\n'
             "powershell -NoProfile -ExecutionPolicy Bypass -Command "
-            f"\"Expand-Archive -LiteralPath '{paquete}' -DestinationPath '{destino}' -Force\"\r\n"
-            "echo   Copiado. Abriendo la aplicacion...\r\n"
+            "\"Expand-Archive -LiteralPath '%PAQUETE%' -DestinationPath '%BAJADA%' -Force\"\r\n"
+            f'move "%BAJADA%\\{config.APP_NAME}" "%NUEVA%" >nul 2>&1\r\n'
+            'if not exist "%NUEVA%\\' + f'{config.APP_NAME}.exe" (\r\n'
+            "  echo   [ERROR] no se pudo preparar la version nueva. No se toca nada.\r\n"
+            "  goto :final\r\n"
+            ")\r\n"
+            "echo   [2/5] Conservando tu config_local.py...\r\n"
+            'if exist "%CARPETA%\\config_local.py" copy /y "%CARPETA%\\config_local.py" '
+            '"%NUEVA%\\config_local.py" >nul\r\n'
+            "echo   [3/5] Reemplazando la version anterior...\r\n"
+            'rmdir /s /q "%VIEJA%" 2>nul\r\n'
+            'move "%CARPETA%" "%VIEJA%" >nul 2>&1\r\n'
+            'move "%NUEVA%" "%CARPETA%" >nul 2>&1\r\n'
+            'if not exist "%CARPETA%\\' + f'{config.APP_NAME}.exe" (\r\n'
+            "  echo   [ERROR] no se pudo mover la version nueva: restaurando la anterior.\r\n"
+            '  move "%VIEJA%" "%CARPETA%" >nul 2>&1\r\n'
+            "  goto :final\r\n"
+            ")\r\n"
+            "echo   [4/5] Abriendo la aplicacion...\r\n"
             f'start "" "{ejecutable}"\r\n'
+            "echo   [5/5] Limpiando restos (version anterior, temporales y descarga)...\r\n"
+            'rmdir /s /q "%VIEJA%" 2>nul\r\n'
+            'rmdir /s /q "%BAJADA%" 2>nul\r\n'
+            'rmdir /s /q "%NUEVA%" 2>nul\r\n'
+            'del /q "%PAQUETE%" 2>nul\r\n'
+            ":final\r\n"
             "echo.\r\n"
             "echo ======================================================================\r\n"
             "echo   Listo. ESTA CONSOLA NO SE CIERRA NI SE REINICIA:\r\n"
-            "echo   el programa se ha reiniciado por su cuenta; dejala abierta\r\n"
-            "echo   para leer el informe y cierrala cuando quieras.\r\n"
-            "echo ======================================================================\r\n",
+            "echo   el programa se ha reiniciado por su cuenta, todo quedo limpio\r\n"
+            "echo   (sin version anterior, sin temporales y sin la descarga) y la\r\n"
+            "echo   consola se queda para que leas el informe.\r\n"
+            "echo ======================================================================\r\n"
+            f'start "" cmd /c rmdir /s /q "{temporal}"\r\n',
             encoding="utf-8",
         )
         return guion
@@ -284,13 +323,34 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
     guion = temporal / "actualizar.sh"
     guion.write_text(
         "#!/bin/sh\n"
+        f'echo "== {config.APP_NAME} · actualización limpia =="\n'
         f'echo "Esperando a que se cierre {config.APP_NAME}..."\n'
         f"while kill -0 {os.getpid()} 2>/dev/null; do sleep 1; done\n"
-        f'echo "Instalando en {destino}..."\n'
-        f'unzip -oq "{paquete}" -d "{destino}"\n'
-        f'echo "Abriendo {config.APP_NAME}..."\n'
-        f'open "{ejecutable}" 2>/dev/null || "{ejecutable}" &\n'
-        'rm -f "$0"\n',
+        f'PADRE="{padre}"\n'
+        f'CARPETA="{carpeta}"\n'
+        f'EXE="{ejecutable}"\n'
+        'BAJADA="$PADRE/.imaginteca-tmp"\n'
+        'NUEVA="$PADRE/.imaginteca-nueva"\n'
+        'VIEJA="$PADRE/.imaginteca-anterior"\n'
+        'echo "[1/5] Descomprimiendo la versión nueva..."\n'
+        'rm -rf "$BAJADA" "$NUEVA"\n'
+        f'mkdir -p "$BAJADA" && unzip -oq "{paquete}" -d "$BAJADA"\n'
+        f'mv "$BAJADA/{config.APP_NAME}" "$NUEVA" 2>/dev/null || true\n'
+        'if [ ! -e "$NUEVA" ]; then\n'
+        '  echo "[ERROR] no se pudo preparar la versión nueva. No se toca nada."\n'
+        '  exit 1\n'
+        'fi\n'
+        'echo "[2/5] Conservando tu config_local.py..."\n'
+        '[ -f "$CARPETA/config_local.py" ] && cp -f "$CARPETA/config_local.py" "$NUEVA/config_local.py"\n'
+        'echo "[3/5] Reemplazando la versión anterior..."\n'
+        'rm -rf "$VIEJA"; mv "$CARPETA" "$VIEJA"; mv "$NUEVA" "$CARPETA"\n'
+        'echo "[4/5] Abriendo la aplicación..."\n'
+        'if [ -d "$EXE" ]; then open "$EXE" 2>/dev/null || true; else "$EXE" & fi\n'
+        'echo "[5/5] Limpiando restos (versión anterior, temporales y descarga)..."\n'
+        'rm -rf "$VIEJA" "$BAJADA" "$NUEVA"\n'
+        f'rm -f "{paquete}"\n'
+        f'rm -rf "{temporal}"\n'
+        'echo "Listo: el programa se ha reiniciado y todo quedó limpio."\n',
         encoding="utf-8",
     )
     guion.chmod(0o755)
@@ -308,6 +368,86 @@ def lanzar_actualizador(guion: Path) -> None:
                           "cmd", "/k", str(guion)], close_fds=True)
     else:
         subprocess.Popen(["/bin/sh", str(guion)], close_fds=True, start_new_session=True)
+
+
+def actualizar_desde_consola(solo_comprobar: bool = False, decir=print) -> int:
+    """Actualiza el sistema desde la consola (o solo informa).
+
+    Es lo que usan `Imaginteca --actualizar` y `--comprobar-actualizacion`: muestra
+    paso a paso lo que hace (versión, paquete, descarga, huella) y, al instalar,
+    lanza el instalador **limpio** que reemplaza esta copia y vuelve a abrirla.
+    Devuelve el código de salida (0 = bien).
+    """
+    decir("")
+    decir("=" * 70)
+    decir(f"  {config.APP_NAME} · actualización desde la consola")
+    decir("=" * 70)
+    decir(f"  instalada : {version_actual()}")
+    decir(f"  sistema   : {sistema_actual()}")
+    try:
+        version = consultar_ultima()
+    except OSError as exc:
+        decir(f"  [error] {exc}")
+        return 1
+    decir(f"  publicada : {version['version']}"
+          f"{' (beta)' if version.get('beta') else ''}")
+    if not hay_novedad(version_actual(), version.get("version", "")):
+        decir("  [ok] estás al día: no hay nada que instalar")
+        return 0
+    paquete = elegir_paquete(version.get("activos") or [])
+    if paquete is None:
+        decir(f"  [error] la versión nueva no trae paquete para {sistema_actual()}")
+        return 1
+    megas = int(paquete.get("size") or 0) / 1024 / 1024
+    decir(f"  paquete   : {paquete.get('name')} ({megas:.0f} MB)")
+    if solo_comprobar:
+        decir("  [ok] hay una versión nueva (modo comprobación: no se instala nada)")
+        return 0
+
+    decir("")
+    decir("  descargando…")
+    ultimo = [-10]
+
+    def progreso(descargado: int, total: int) -> None:
+        if not total:
+            return
+        porcentaje = int(descargado * 100 / total)
+        if porcentaje >= ultimo[0] + 10 or porcentaje == 100:
+            ultimo[0] = porcentaje
+            decir(f"    {porcentaje:3d} %   ({descargado / 1024 / 1024:.0f} de "
+                  f"{total / 1024 / 1024:.0f} MB)")
+
+    try:
+        archivo, huella_ok = descargar_version(version, progreso)
+    except OSError as exc:
+        decir(f"  [error] {exc}")
+        return 1
+    if not huella_ok:
+        decir("  [error] la huella SHA-256 NO coincide: no se instala nada")
+        try:
+            archivo.unlink()
+        except OSError:
+            pass
+        return 1
+    decir("  [ok] descarga verificada (SHA-256)")
+
+    try:
+        guion = escribir_actualizador(archivo)
+    except Exception as exc:  # noqa: BLE001
+        decir(f"  [error] no se pudo preparar la instalación: {exc}")
+        return 1
+    decir("  [ok] instalador preparado (reemplazo limpio: conserva tu config_local.py)")
+    try:
+        lanzar_actualizador(guion)
+    except Exception as exc:  # noqa: BLE001
+        decir(f"  [error] no se pudo abrir el instalador: {exc}")
+        return 1
+    decir("")
+    decir("  La ventana de instalación esperará, reemplazará esta copia y volverá a")
+    decir("  abrir el programa. Al terminar no queda nada viejo: se borran la versión")
+    decir("  anterior, los temporales y el paquete descargado.")
+    decir("")
+    return 0
 
 
 def descargar_version(version: dict, progreso=None) -> tuple[Path, bool]:

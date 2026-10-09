@@ -20,6 +20,15 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.4-beta
+
+- **Tres modos de instalación**: portátil (`.zip` y `.tar.gz`), **instalador con
+  asistente** para Windows, macOS y Linux, y **consola**.
+- **Actualizaciones limpias**: al actualizar no queda nada viejo (se borran la
+  versión anterior, los temporales y la descarga) y **tus claves se conservan**.
+- Nuevo comando de consola: `Imaginteca --comprobar-actualizacion` y
+  `Imaginteca --actualizar`.
+
 ### 2026-10-09 · v0.1.3-beta
 
 - **[Requisitos](Requisitos)**, la página nueva: qué necesitas para usarlo y qué

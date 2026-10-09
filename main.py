@@ -1,8 +1,12 @@
 """Punto de entrada de Imaginteca (aplicación de escritorio).
 
 Opciones de línea de comandos:
-    --selftest    comprueba el entorno (dependencias, adaptadores, carpetas) y sale
-    --version     muestra la versión
+
+    --selftest                   comprueba el entorno y sale (genera selftest.txt)
+    --version                    muestra la versión
+    --comprobar-actualizacion    dice si hay versión nueva (no instala nada)
+    --actualizar                 descarga, verifica e instala la versión nueva
+                                 (reemplazo limpio y reinicio del programa)
 """
 from __future__ import annotations
 
@@ -172,12 +176,31 @@ def selftest() -> int:
     return 0 if problemas == 0 else 1
 
 
+def mantenimiento_por_consola(solo_comprobar: bool) -> int:
+    """`--comprobar-actualizacion` y `--actualizar`: mantenimiento desde la consola.
+
+    Abre (si hace falta) una consola propia para ver el proceso, informa paso a paso
+    y, al instalar, lanza el reemplazo limpio que reinicia el programa.
+    """
+    asegurar_consola(f"{config.APP_NAME} — actualización")
+    setup_logging()
+    from app import updater
+
+    codigo = updater.actualizar_desde_consola(solo_comprobar=solo_comprobar)
+    pausa_final("Pulse Intro para cerrar…")
+    return codigo
+
+
 def main() -> int:
     if "--version" in sys.argv:
         print(f"{config.APP_NAME} {config.APP_VERSION}")
         return 0
     if "--selftest" in sys.argv:
         return selftest()
+    if "--comprobar-actualizacion" in sys.argv or "--check-update" in sys.argv:
+        return mantenimiento_por_consola(solo_comprobar=True)
+    if "--actualizar" in sys.argv or "--update" in sys.argv:
+        return mantenimiento_por_consola(solo_comprobar=False)
 
     # Consola de registros: en el .exe de Windows se abre una ventana con los mismos
     # mensajes que van al .log del día (en desarrollo se usa tu terminal).

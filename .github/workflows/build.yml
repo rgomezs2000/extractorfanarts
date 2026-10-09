@@ -109,11 +109,41 @@ jobs:
           # La guía del usuario viaja como README.md; el README técnico se queda en el repo
           cp README-USUARIO.md dist/Imaginteca/README.md 2>/dev/null || true
 
+      # ── Versión portátil también en .tar.gz (además del .zip del release) ───────
+      - name: Versión portátil en .tar.gz
+        shell: bash
+        run: |
+          cd dist
+          tar -czf "${{ matrix.artefacto }}.tar.gz" Imaginteca
+          ls -lh *.tar.gz
+
+      # ── Instaladores por sistema ────────────────────────────────────────────────
+      - name: Instalador de Windows (Inno Setup, con asistente)
+        if: runner.os == 'Windows'
+        run: python scripts/instaladores/crear_instalador_windows.py --dist dist/Imaginteca --salida dist/instaladores
+
+      - name: Instalador de macOS (.dmg)
+        if: runner.os == 'macOS'
+        run: |
+          sh scripts/instaladores/crear_instalador_macos.sh \
+             "$(python -c "from app import config; print(config.APP_VERSION)")" \
+             dist/Imaginteca dist/instaladores
+
+      - name: Instalador de Linux (.deb)
+        if: runner.os == 'Linux'
+        run: |
+          sh scripts/instaladores/crear_instalador_linux.sh \
+             "$(python -c "from app import config; print(config.APP_VERSION)")" \
+             dist/Imaginteca dist/instaladores
+
       - name: Subir artefacto
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artefacto }}
-          path: dist/
+          path: |
+            dist/Imaginteca
+            dist/*.tar.gz
+            dist/instaladores
           if-no-files-found: error
           retention-days: 5
 
@@ -134,22 +164,27 @@ jobs:
         with:
           path: paquetes
 
-      - name: Empaquetar cada sistema en un .zip
+      - name: Empaquetar la versión portátil de cada sistema en .zip
         run: |
           cd paquetes
           for d in */; do
             nombre="${d%/}"
-            # -y conserva los enlaces simbólicos (imprescindible en el .app de macOS)
-            (cd "$nombre" && zip -qry "../${nombre}.zip" .)
+            # -y conserva los enlaces simbólicos (imprescindible en el .app de macOS).
+            # Solo la carpeta de la aplicación: los instaladores y el .tar.gz van aparte.
+            (cd "$nombre" && zip -qry "../${nombre}.zip" Imaginteca)
           done
-          ls -lh *.zip
+          # El .tar.gz portátil y el instalador de cada sistema salen a la raíz
+          mv */*.tar.gz . 2>/dev/null || true
+          mv */instaladores/* . 2>/dev/null || true
+          ls -lh
 
       - name: Generar huellas SHA-256 (para verificar la descarga)
         run: |
           cd paquetes
-          for z in *.zip; do
-            sha256sum "$z" > "$z.sha256"
-            cat "$z.sha256"
+          for f in *.zip *.tar.gz *.exe *.dmg *.deb; do
+            [ -f "$f" ] || continue
+            sha256sum "$f" > "$f.sha256"
+            cat "$f.sha256"
           done
 
       - name: Crear el Release con los paquetes adjuntos
@@ -157,10 +192,14 @@ jobs:
         with:
           files: |
             paquetes/*.zip
+            paquetes/*.tar.gz
+            paquetes/*.exe
+            paquetes/*.dmg
+            paquetes/*.deb
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Una etiqueta con sufijo (p. ej. v0.1.3-beta) se publica como
+          # Una etiqueta con sufijo (p. ej. v0.1.4-beta) se publica como
           # pre-release: queda marcada como beta y no sustituye a la estable.
           prerelease: ${{ contains(github.ref_name, '-') }}
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
@@ -177,10 +216,14 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: python scripts/limpiar_release.py --carpeta paquetes
 
-      # Guardia: el Release debe quedar con EXACTAMENTE 6 adjuntos (3 .zip + 3 .sha256).
-      # Si aparece cualquier otro (resto de un nombre antiguo, de otra versión…), el
-      # trabajo falla y se ve en el registro en vez de dejar el Release sucio.
-      - name: Comprobar que el Release tiene exactamente 6 adjuntos
+      # Guardia: el Release debe quedar EXACTAMENTE con los adjuntos de esta versión
+      # (portátil .zip y .tar.gz, instalador y .sha256 de cada sistema). Si sobra
+      # alguno (resto de un nombre antiguo, de otra versión…), el trabajo falla y se
+      # ve en el registro en vez de dejar el Release sucio.
+      - name: Comprobar que el Release tiene exactamente los adjuntos esperados
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python scripts/limpiar_release.py --comprobar 6
+        run: |
+          esperados=$(find paquetes -maxdepth 1 -type f | wc -l)
+          echo "Adjuntos esperados: $esperados"
+          python scripts/limpiar_release.py --comprobar "$esperados"

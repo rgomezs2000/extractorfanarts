@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.3-beta - LEEME PRIMERO
+ IMAGINTECA 0.1.4-beta - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -14,6 +14,24 @@
 
 
 1) INSTALAR Y ABRIR
+
+   Hay TRES formas de tenerlo, las tres con el mismo programa:
+
+     a) PORTATIL   Imaginteca-Windows.zip   (o .tar.gz en Linux/macOS)
+                   Se descomprime y se ejecuta, sin instalar nada.
+
+     b) INSTALADOR Con asistente, accesos directos y desinstalador:
+                     Windows : Imaginteca-<version>-windows-installer.exe
+                     macOS   : Imaginteca-<version>-macos-installer.dmg
+                     Linux   : Imaginteca-<version>-linux-installer.deb
+                               sudo apt install ./Imaginteca-...-linux-installer.deb
+                   Al instalar encima de otra version, tus claves se conservan.
+
+     c) CONSOLA    Actualizar sin abrir la ventana:
+                     Imaginteca --comprobar-actualizacion   (solo mira si hay nueva)
+                     Imaginteca --actualizar                (instala y reinicia)
+                   El reemplazo es limpio: conserva tus claves y borra la version
+                   anterior, los temporales y la descarga.
 -------------------
 El programa NO se instala: se descomprime y se ejecuta. No se paga nada, no hay
 que registrarse y no se recogen datos.
