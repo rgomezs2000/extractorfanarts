@@ -9,7 +9,19 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.0-beta.1"
+APP_VERSION = "0.1.0-beta.2"
+
+# ------------------------------------------------------------------ actualizaciones
+# Repositorio del que se leen las versiones nuevas (Releases de GitHub). Si renombras
+# el repositorio en GitHub, cambia esto para que el botón «Actualizaciones» siga
+# encontrando los paquetes.
+UPDATE_REPO = "rgomezs2000/imaginteca"
+# Nombre anterior del repositorio. GitHub redirige las llamadas de un repositorio
+# renombrado, así que tener los dos hace que la comprobación funcione tanto si el
+# renombrado ya se hizo como si todavía no.
+UPDATE_REPO_ALTERNATIVO = "rgomezs2000/extractorfanarts"
+UPDATE_INCLUIR_BETAS = True    # el proyecto publica versiones beta: cuentan como versión
+UPDATE_TIMEOUT = 15            # segundos de espera al consultar GitHub
 
 # User-Agent identificado (cortesía / transparencia con los sitios)
 # Nota: debe ser ASCII puro (los headers HTTP no admiten acentos).

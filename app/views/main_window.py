@@ -20,16 +20,19 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QEvent, QMimeData, Qt, QTimer, QUrl
+from PySide6.QtCore import (
+    QByteArray, QEvent, QMimeData, QObject, QRunnable, Qt, QThreadPool, QTimer,
+    QUrl, Signal,
+)
 from PySide6.QtGui import QAction, QDesktopServices, QImage, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QApplication, QCheckBox, QComboBox, QFileDialog, QGridLayout, QGroupBox,
-    QHBoxLayout, QLabel, QLineEdit, QListWidget, QMainWindow, QMenu, QMessageBox,
-    QProgressBar, QPushButton, QSizePolicy, QSlider, QSpinBox, QStackedWidget,
-    QVBoxLayout, QWidget,
+    QApplication, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog,
+    QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
+    QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy,
+    QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QVBoxLayout, QWidget,
 )
 
-from .. import config
+from .. import ayuda, config, updater
 from ..controllers.main_controller import MainController
 from ..services import filters as filtros
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
@@ -724,6 +727,9 @@ class MainWindow(QMainWindow):
         self.btn_descargar.clicked.connect(self._on_descargar)
         self.btn_limpiar.clicked.connect(self._on_limpiar)
         self._atajos_de_teclado()
+        # Barra de herramientas y menús (después de existir los botones que reflejan)
+        self._crear_barra_herramientas()
+        self._crear_menus()
 
         c = self.controller
         c.status_changed.connect(lambda m: self.statusBar().showMessage(m))
@@ -1162,6 +1168,7 @@ class MainWindow(QMainWindow):
             self.progress.setRange(0, 0)  # indeterminado hasta el primer avance
             self.progress.setFormat("⬇️ %p%")
         self.progress.setVisible(True)
+        self._sincronizar_barra()
 
     def _set_idle(self) -> None:
         self.btn_descargar.setText("⬇️ Descargar")
@@ -1180,3 +1187,414 @@ class MainWindow(QMainWindow):
         self.progress.setVisible(True)
         # Al cancelar se conservan el formulario, los resultados y la imagen de ejemplo.
         self._actualizar_acciones_imagen()
+        self._sincronizar_barra()
+
+    # ------------------------------------------------------------------ barra de herramientas
+    def _crear_barra_herramientas(self) -> None:
+        """Barra con las funciones clave: esenciales primero, luego las de apoyo.
+
+        La barra no sustituye a los botones, los REFLEJA: el texto y la habilitación
+        se copian del botón correspondiente (`_sincronizar_barra`), así nunca se
+        puede pulsar algo que esté deshabilitado en el formulario.
+        """
+        barra = QToolBar("Funciones", self)
+        barra.setObjectName("barra_funciones")
+        barra.setMovable(False)
+        barra.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.addToolBar(barra)
+        self.barra_funciones = barra
+
+        self.act_buscar = self._accion_barra(
+            "🔍 Buscar", "Ctrl+B", self._on_buscar,
+            "Busca con el criterio del formulario (Enter en cualquier campo)")
+        self.act_descargar = self._accion_barra(
+            "⬇️ Descargar", "Ctrl+D", self._on_descargar,
+            "Descarga los resultados encontrados (Shift+Enter)")
+        self.act_limpiar = self._accion_barra(
+            "🧹 Limpiar", "Ctrl+L", self._on_limpiar, "Vacía el formulario")
+        barra.addSeparator()
+        self.act_carpeta = self._accion_barra(
+            "📂 Carpeta", "Ctrl+O", self._elegir_carpeta, "Elige la carpeta de salida")
+        self.act_filtros = self._accion_barra(
+            "🛡️ Filtros", "", self._mostrar_filtros, "Qué se filtra y por qué")
+        barra.addSeparator()
+        self.act_ayuda = self._accion_barra(
+            "📖 Ayuda", "F1", self._abrir_ayuda, "Manual de uso, punto por punto")
+        self.act_actualizar = self._accion_barra(
+            "🔄 Actualizaciones", "", self._buscar_actualizaciones,
+            "Comprueba si hay una versión nueva y la instala")
+        self.act_acerca = self._accion_barra(
+            "ℹ️ Acerca de", "", self._mostrar_acerca, "Versión, licencia y créditos")
+        self._sincronizar_barra()
+
+    def _accion_barra(self, texto: str, atajo: str, manejador, descripcion: str) -> QAction:
+        accion = QAction(texto, self)
+        if atajo:
+            accion.setShortcut(QKeySequence(atajo))
+        accion.setToolTip(f"{descripcion}  ({atajo})" if atajo else descripcion)
+        accion.triggered.connect(manejador)
+        return accion
+
+    def _crear_menus(self) -> None:
+        """Menús mínimos: lo mismo que la barra, más el acceso a la ayuda."""
+        archivo = self.menuBar().addMenu("&Archivo")
+        archivo.addAction(self.act_carpeta)
+        archivo.addSeparator()
+        salir = QAction("Salir", self)
+        salir.setToolTip("También Alt+F4 o Ctrl+Q")
+        salir.triggered.connect(self.close)
+        archivo.addAction(salir)
+
+        menu_ayuda = self.menuBar().addMenu("A&yuda")
+        menu_ayuda.addAction(self.act_ayuda)
+        menu_ayuda.addAction(self.act_actualizar)
+        menu_ayuda.addSeparator()
+        menu_ayuda.addAction(self.act_acerca)
+
+    def _sincronizar_barra(self) -> None:
+        """Copia a la barra el texto y el estado de los botones del formulario."""
+        if not hasattr(self, "act_buscar"):
+            return
+        # Las tres funciones principales cambian de texto (Descargar↔Cancelar); la de
+        # carpeta conserva su etiqueta y solo hereda si está disponible o no.
+        for accion, boton in ((self.act_buscar, self.btn_buscar),
+                              (self.act_descargar, self.btn_descargar),
+                              (self.act_limpiar, self.btn_limpiar)):
+            try:
+                accion.setText(boton.text())
+                accion.setEnabled(boton.isEnabled())
+            except RuntimeError:
+                continue
+        try:
+            self.act_carpeta.setEnabled(self.btn_carpeta.isEnabled())
+        except RuntimeError:
+            pass
+
+    # ------------------------------------------------------------------ ayuda
+    def _abrir_ayuda(self, seccion: str = "") -> None:
+        """Abre el manual de uso (también con F1)."""
+        try:
+            ayuda.abrir_ayuda(self, seccion)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo abrir la ayuda")
+            QMessageBox.warning(self, "Ayuda", f"No se pudo abrir la ayuda:\n{exc}")
+
+    def _mostrar_acerca(self) -> None:
+        try:
+            _DialogoAcerca(self).exec()
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo mostrar «Acerca de»")
+            QMessageBox.warning(self, "Acerca de", f"Error: {exc}")
+
+    # ------------------------------------------------------------------ actualizaciones
+    def _buscar_actualizaciones(self) -> None:
+        """Consulta las versiones publicadas en segundo plano."""
+        if getattr(self, "_consulta_actualizacion", False):
+            return
+        self._consulta_actualizacion = True
+        self.act_actualizar.setEnabled(False)
+        self.statusBar().showMessage("🔄 Consultando si hay una versión nueva…")
+        senales = self._senales_actualizacion()
+        QThreadPool.globalInstance().start(_TrabajoActualizacion(senales, consultar=True))
+
+    def _senales_actualizacion(self) -> "_SenalesActualizacion":
+        if getattr(self, "_senales_act", None) is None:
+            senales = _SenalesActualizacion()
+            senales.consulta_lista.connect(self._on_consulta_lista)
+            senales.consulta_fallo.connect(self._on_consulta_fallo)
+            senales.descarga_avance.connect(self._on_descarga_avance)
+            senales.descarga_lista.connect(self._on_descarga_lista)
+            senales.descarga_fallo.connect(self._on_descarga_fallo)
+            self._senales_act = senales
+        return self._senales_act
+
+    def _on_consulta_lista(self, version: dict) -> None:
+        self._consulta_actualizacion = False
+        self.act_actualizar.setEnabled(True)
+        actual = updater.version_actual()
+        nueva = str(version.get("version") or "")
+        if not updater.hay_novedad(actual, nueva):
+            self.statusBar().showMessage(f"✅ Estás al día ({actual})")
+            QMessageBox.information(
+                self, "Sin novedades",
+                f"Tienes la última versión publicada.\n\n"
+                f"    Instalada: {actual}\n"
+                f"    Publicada: {nueva}")
+            return
+        self.statusBar().showMessage(f"🎉 Hay una versión nueva: {nueva}")
+        self._ofrecer_actualizacion(version)
+
+    def _on_consulta_fallo(self, motivo: str) -> None:
+        self._consulta_actualizacion = False
+        self.act_actualizar.setEnabled(True)
+        self.statusBar().showMessage(f"⚠ No se pudo consultar: {motivo}")
+        QMessageBox.warning(
+            self, "No se pudo consultar",
+            f"No se pudo comprobar si hay versiones nuevas:\n\n{motivo}\n\n"
+            f"Puedes mirarlo a mano en https://github.com/{config.UPDATE_REPO}/releases")
+
+    def _ofrecer_actualizacion(self, version: dict) -> None:
+        """Diálogo con la versión instalada, la nueva y qué trae."""
+        activos = version.get("activos") or []
+        paquete = updater.elegir_paquete(activos)
+        tamano = ""
+        if paquete:
+            try:
+                tamano = f" ({int(paquete.get('size') or 0) / 1024 / 1024:.0f} MB)"
+            except (TypeError, ValueError):
+                tamano = ""
+        notas = (version.get("notas") or "").strip()
+        if len(notas) > 700:
+            notas = notas[:700] + "…"
+        etiqueta = "beta" if version.get("beta") else "estable"
+        texto = (
+            f"<b>Versión nueva: {version.get('version')} ({etiqueta})</b><br><br>"
+            f"Instalada ahora: <b>{updater.version_actual()}</b><br>"
+            f"Disponible: <b>{version.get('version')}</b>"
+            + (f" · {str(version.get('publicado'))[:10]}" if version.get("publicado") else "")
+        )
+        if paquete:
+            texto += (f"<br><br>Paquete para {updater.sistema_actual()}: "
+                      f"{paquete.get('name')}{tamano}")
+        else:
+            texto += ("<br><br><b>⚠ Esta versión no trae paquete para "
+                      f"{updater.sistema_actual()}.</b>")
+        if notas:
+            texto += f"<hr>{_markdown_a_html(notas)}"
+
+        caja = QMessageBox(self)
+        caja.setWindowTitle("Actualización disponible")
+        caja.setTextFormat(Qt.RichText)
+        caja.setText(texto)
+        boton_instalar = (caja.addButton("⬇️ Descargar e instalar", QMessageBox.AcceptRole)
+                          if paquete else None)
+        boton_web = caja.addButton("🌐 Ver en GitHub", QMessageBox.ActionRole)
+        caja.addButton("Ahora no", QMessageBox.RejectRole)
+        caja.exec()
+        elegido = caja.clickedButton()
+        if boton_instalar is not None and elegido is boton_instalar:
+            self._descargar_e_instalar(version)
+        elif elegido is boton_web and version.get("url"):
+            QDesktopServices.openUrl(QUrl(str(version["url"])))
+
+    def _descargar_e_instalar(self, version: dict) -> None:
+        """Descarga el paquete con progreso y, al terminar, ofrece instalarlo."""
+        from PySide6.QtWidgets import QProgressDialog   # solo se usa aquí
+
+        self._version_nueva = str(version.get("version") or "")
+        ventana = QProgressDialog(
+            f"Descargando {self._version_nueva}…\n\nLa aplicación se reiniciará sola.",
+            "Cancelar", 0, 0, self)
+        ventana.setWindowTitle("Descargando la versión nueva")
+        ventana.setWindowModality(Qt.WindowModal)
+        ventana.setMinimumDuration(0)
+        self._progreso_actualizacion = ventana
+        self.statusBar().showMessage("⬇️ Descargando la versión nueva…")
+        senales = self._senales_actualizacion()
+        QThreadPool.globalInstance().start(
+            _TrabajoActualizacion(senales, consultar=False, version=version,
+                                  cancelar=ventana))
+
+    def _on_descarga_avance(self, descargado: int, total: int) -> None:
+        ventana = getattr(self, "_progreso_actualizacion", None)
+        if ventana is None:
+            return
+        mb = descargado / 1024 / 1024
+        if total:
+            ventana.setMaximum(100)
+            ventana.setValue(int(descargado * 100 / total))
+            ventana.setLabelText(f"Descargando… {mb:.0f} MB de {total / 1024 / 1024:.0f} MB")
+        else:
+            ventana.setMaximum(0)
+            ventana.setLabelText(f"Descargando… {mb:.0f} MB")
+
+    def _on_descarga_lista(self, ruta: str, huella_ok: bool) -> None:
+        ventana = getattr(self, "_progreso_actualizacion", None)
+        if ventana is not None:
+            ventana.close()
+            self._progreso_actualizacion = None
+        paquete = Path(ruta)
+        if not huella_ok:
+            QMessageBox.critical(
+                self, "Descarga dañada",
+                "El archivo descargado NO coincide con la huella SHA-256 que publica\n"
+                "el Release. Por seguridad no se instala nada.\n\n"
+                "Vuelve a intentarlo o descarga el paquete a mano.")
+            self.statusBar().showMessage("⚠ La huella del paquete no coincide: no se instala")
+            return
+        try:
+            guion = updater.escribir_actualizador(paquete)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo preparar la instalación")
+            QMessageBox.critical(self, "No se pudo instalar",
+                                 f"Error al preparar la instalación:\n{exc}")
+            return
+        carpeta = updater.carpeta_aplicacion()
+        respuesta = QMessageBox.question(
+            self, "Instalar y reiniciar",
+            f"La versión {getattr(self, '_version_nueva', '')} ya está descargada y "
+            f"verificada.\n\nSe instalará en:\n    {carpeta}\n\n"
+            f"La aplicación se cerrará y volverá a abrirse sola.\n"
+            f"Termina lo que tengas a medias antes de continuar.\n\n¿Instalar ahora?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        if respuesta != QMessageBox.Yes:
+            self.statusBar().showMessage("Instalación cancelada: el paquete queda descargado")
+            return
+        try:
+            updater.lanzar_actualizador(guion)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo lanzar el actualizador")
+            QMessageBox.critical(
+                self, "No se pudo reiniciar",
+                f"No se pudo lanzar el instalador:\n{exc}\n\nEl paquete está en:\n{paquete}")
+            return
+        logger.info("actualización %s preparada: se cierra para instalarla",
+                    getattr(self, "_version_nueva", "?"))
+        self.statusBar().showMessage("Instalando la versión nueva…")
+        QTimer.singleShot(600, QApplication.quit)
+
+    def _on_descarga_fallo(self, motivo: str) -> None:
+        ventana = getattr(self, "_progreso_actualizacion", None)
+        if ventana is not None:
+            ventana.close()
+            self._progreso_actualizacion = None
+        self.statusBar().showMessage(f"⚠ Falló la descarga: {motivo}")
+        if "cancelada" not in motivo.lower():
+            QMessageBox.critical(self, "Falló la descarga", motivo)
+
+
+def _markdown_a_html(texto: str) -> str:
+    """Lo justo de Markdown para las notas del Release (negritas, listas, enlaces)."""
+    import html
+    import re
+
+    lineas = []
+    for linea in html.escape(texto).splitlines():
+        linea = linea.rstrip()
+        if linea.startswith(("- ", "* ")):
+            lineas.append(f"• {linea[2:]}")
+        elif linea.startswith("#"):
+            lineas.append(f"<b>{linea.lstrip('# ').strip()}</b>")
+        else:
+            lineas.append(linea)
+    unido = "<br>".join(lineas)
+    unido = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", unido)
+    unido = re.sub(r"`(.+?)`", r"<code>\1</code>", unido)
+    unido = re.sub(r"\[(.+?)\]\((.+?)\)", r'<a href="\2">\1</a>', unido)
+    return unido
+
+
+class _SenalesActualizacion(QObject):
+    """Señales del trabajo de actualización (se emiten desde otro hilo)."""
+
+    consulta_lista = Signal(dict)
+    consulta_fallo = Signal(str)
+    descarga_avance = Signal(int, int)
+    descarga_lista = Signal(str, bool)
+    descarga_fallo = Signal(str)
+
+
+class _TrabajoActualizacion(QRunnable):
+    """Consulta o descarga en segundo plano, sin congelar la ventana."""
+
+    def __init__(self, senales: _SenalesActualizacion, consultar: bool = True,
+                 version: dict | None = None, cancelar=None):
+        super().__init__()
+        self.senales = senales
+        self._consultar = consultar
+        self._version = version or {}
+        self._cancelar = cancelar
+        self.setAutoDelete(True)
+
+    def run(self) -> None:
+        try:
+            if self._consultar:
+                self.senales.consulta_lista.emit(updater.consultar_ultima())
+                return
+
+            def progreso(descargado: int, total: int) -> None:
+                if self._cancelar is not None and self._cancelar.wasCanceled():
+                    raise InterruptedError("descarga cancelada")
+                self.senales.descarga_avance.emit(descargado, total)
+
+            ruta, huella_ok = updater.descargar_version(self._version, progreso)
+            self.senales.descarga_lista.emit(str(ruta), bool(huella_ok))
+        except InterruptedError:
+            self.senales.descarga_fallo.emit("descarga cancelada por el usuario")
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("fallo en el trabajo de actualización")
+            if self._consultar:
+                self.senales.consulta_fallo.emit(str(exc))
+            else:
+                self.senales.descarga_fallo.emit(str(exc))
+
+
+class _DialogoAcerca(QDialog):
+    """«Acerca de»: qué es, versión instalada, licencia, autor y rutas útiles."""
+
+    def __init__(self, padre=None):
+        super().__init__(padre)
+        self.setWindowTitle(f"Acerca de {config.APP_NAME}")
+        self._padre = padre
+        diseño = QVBoxLayout(self)
+        encabezado = QLabel(f"<h2>{config.APP_NAME}</h2>")
+        encabezado.setTextFormat(Qt.RichText)
+        diseño.addWidget(encabezado)
+
+        detalles = QTextBrowser()
+        detalles.setOpenExternalLinks(True)
+        detalles.setHtml(self._html())
+        detalles.setMinimumSize(440, 280)
+        diseño.addWidget(detalles, 1)
+
+        botones = QDialogButtonBox()
+        self.btn_actualizar = botones.addButton("🔄 Buscar actualizaciones",
+                                                QDialogButtonBox.ActionRole)
+        self.btn_actualizar.setToolTip("Comprueba la última versión publicada y la instala")
+        botones.addButton("Cerrar", QDialogButtonBox.RejectRole)
+        botones.rejected.connect(self.reject)
+        self.btn_actualizar.clicked.connect(self._buscar)
+        diseño.addWidget(botones)
+
+        pantalla = self.screen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            self.resize(max(520, min(760, util.width() - 80)),
+                        max(430, min(620, util.height() - 80)))
+
+    def _html(self) -> str:
+        import sys
+
+        from PySide6 import QtCore
+
+        filas = "".join(
+            f"<tr><td><b>{etiqueta}</b>&nbsp;&nbsp;</td><td><code>{valor}</code></td></tr>"
+            for etiqueta, valor in (
+                ("Registros", config.LOG_DIR),
+                ("Historial", config.DB_PATH),
+                ("Config local", config.CONFIG_LOCAL_USADO or "(ninguno)"),
+                ("Carpeta de salida", config.DEFAULT_OUTPUT_DIR),
+            ))
+        modo = "empaquetado" if getattr(sys, "frozen", False) else "desde el código"
+        return f"""
+        <p><b>Tu colección personal de imágenes.</b><br>
+        Busca, ordena y prepara imágenes —y datasets para entrenar modelos— desde
+        redes sociales, booros y wikis de fandom.</p>
+        <p><b>Versión instalada:</b> {config.APP_VERSION}
+        {'(beta)' if 'beta' in config.APP_VERSION else ''}<br>
+        <b>Autor:</b> Roger Gomez &lt;rogergomezs2003@gmail.com&gt;<br>
+        <b>Licencia:</b> propietaria · todos los derechos reservados (ver
+        <code>LICENSE</code>)<br>
+        <b>Proyecto:</b> <a href="https://github.com/{config.UPDATE_REPO}">
+        github.com/{config.UPDATE_REPO}</a></p>
+        <p><b>Entorno:</b> Python {sys.version.split()[0]} · Qt {QtCore.qVersion()} ·
+        {modo}</p>
+        <p><b>Dónde queda todo:</b></p>
+        <table cellspacing="3">{filas}</table>
+        """
+
+    def _buscar(self) -> None:
+        self.accept()
+        padre = self._padre
+        if padre is not None and hasattr(padre, "_buscar_actualizaciones"):
+            padre._buscar_actualizaciones()

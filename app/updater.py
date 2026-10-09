@@ -1,0 +1,323 @@
+"""Actualizaciones: consulta los Releases de GitHub, descarga y aplica la nueva versión.
+
+Por qué existe: al publicar una versión nueva (una etiqueta `vX.Y.Z` en GitHub) la
+aplicación debe poder **avisar, descargar e instalar** esa versión sin que el usuario
+toque nada. Aquí vive toda esa lógica, separada de la ventana para poder probarla.
+
+Cómo funciona el reemplazo (Windows):
+  1. Se descarga el `.zip` del sistema y se comprueba su SHA-256 contra el que
+     publica el Release.
+  2. Se genera un pequeño `.bat` que espera a que ESTE proceso termine (no se puede
+     sobrescribir un `.exe` en ejecución), descomprime encima y vuelve a abrir.
+  3. La aplicación se cierra y el `.bat` hace el resto.
+
+En macOS y Linux se descarga y se abre la carpeta con el paquete, porque reemplazar
+una aplicación en marcha allí depende de cómo la tenga instalada cada usuario.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import urllib.error
+import urllib.request
+import zipfile
+from pathlib import Path
+
+from . import config
+
+logger = logging.getLogger("imaginteca")
+
+API = "https://api.github.com"
+_CABECERAS = {
+    "Accept": "application/vnd.github+json",
+    "User-Agent": f"{config.APP_NAME}-actualizador",
+}
+_SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
+
+
+# ------------------------------------------------------------------ versiones
+def clave_version(texto: str) -> tuple[int, int, int, int, int]:
+    """Clave comparable: (mayor, menor, parche, es_final, número de beta).
+
+    Así `0.1.0-beta.2 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
+    """
+    texto = (texto or "").strip().lstrip("vV")
+    coincidencia = re.match(r"^(\d+)\.(\d+)\.(\d+)(?:[-+.]?([A-Za-z]+)\.?(\d+)?)?", texto)
+    if not coincidencia:
+        return (0, 0, 0, 1, 0)
+    mayor, menor, parche, etiqueta, numero = coincidencia.groups()
+    return (int(mayor), int(menor), int(parche), 0 if etiqueta else 1, int(numero or 0))
+
+
+def version_actual() -> str:
+    return str(config.APP_VERSION)
+
+
+def hay_novedad(actual: str, nueva: str) -> bool:
+    """¿La versión publicada es más nueva que la que se está ejecutando?"""
+    return clave_version(nueva) > clave_version(actual)
+
+
+def sistema_actual() -> str:
+    return _SISTEMAS.get(sys.platform, "Linux")
+
+
+# ------------------------------------------------------------------ consulta
+def _pedir_json(url: str, timeout: int) -> object:
+    peticion = urllib.request.Request(url, headers=_CABECERAS)
+    with urllib.request.urlopen(peticion, timeout=timeout) as respuesta:
+        return json.loads(respuesta.read().decode("utf-8"))
+
+
+def _repositorios() -> list[str]:
+    """Repositorio principal y, si el proyecto se renombró, el nombre anterior.
+
+    GitHub redirige las llamadas de un repositorio renombrado, así que teniendo los
+    dos la comprobación funciona antes y después de un cambio de nombre.
+    """
+    repos: list[str] = []
+    for candidato in (getattr(config, "UPDATE_REPO", ""),
+                      getattr(config, "UPDATE_REPO_ALTERNATIVO", "")):
+        candidato = str(candidato or "").strip()
+        if candidato and candidato not in repos:
+            repos.append(candidato)
+    return repos
+
+
+def consultar_ultima(incluir_betas: bool | None = None,
+                     timeout: int | None = None) -> dict:
+    """Devuelve la última versión publicada, o lanza OSError con el motivo.
+
+    Se miran los Releases (no las etiquetas sueltas) porque ahí están los paquetes.
+    Si `incluir_betas` está activo se aceptan las pre-release: este proyecto publica
+    versiones beta, que son justo las que interesan.
+    """
+    if incluir_betas is None:
+        incluir_betas = bool(getattr(config, "UPDATE_INCLUIR_BETAS", True))
+    if timeout is None:
+        timeout = int(getattr(config, "UPDATE_TIMEOUT", 15))
+    repos = _repositorios()
+    if not repos:
+        raise OSError("no hay repositorio configurado para las actualizaciones "
+                      "(config.UPDATE_REPO)")
+
+    publicados = None
+    problemas: list[str] = []
+    for repo in repos:
+        try:
+            publicados = _pedir_json(f"{API}/repos/{repo}/releases?per_page=20", timeout)
+            logger.info("versiones leídas del repositorio %s", repo)
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code == 403:
+                raise OSError(
+                    "GitHub ha limitado las consultas desde tu conexión (HTTP 403).\n"
+                    "Suele ser temporal: espera unos minutos y vuelve a intentarlo."
+                ) from exc
+            problemas.append(f"{repo}: HTTP {exc.code}")
+        except Exception as exc:  # noqa: BLE001
+            problemas.append(f"{repo}: {exc}")
+    if publicados is None:
+        raise OSError("no se pudo consultar GitHub (" + "; ".join(problemas) + ")")
+
+    candidatos: list[dict] = []
+    for release in publicados if isinstance(publicados, list) else []:
+        if release.get("draft"):
+            continue
+        if release.get("prerelease") and not incluir_betas:
+            continue
+        candidatos.append(release)
+    if not candidatos:
+        raise OSError("no hay ninguna versión publicada todavía")
+
+    candidatos.sort(key=lambda r: clave_version(r.get("tag_name") or ""), reverse=True)
+    elegido = candidatos[0]
+    etiqueta = elegido.get("tag_name") or ""
+    return {
+        "etiqueta": etiqueta,
+        "version": etiqueta.lstrip("vV"),
+        "nombre": elegido.get("name") or etiqueta,
+        "notas": elegido.get("body") or "",
+        "publicado": elegido.get("published_at") or "",
+        "url": elegido.get("html_url") or "",
+        "beta": bool(elegido.get("prerelease")),
+        "activos": elegido.get("assets") or [],
+    }
+
+
+def elegir_paquete(activos: list[dict], sistema: str | None = None) -> dict | None:
+    """El `.zip` de este sistema (por ejemplo «Imaginteca-Windows.zip»)."""
+    sistema = (sistema or sistema_actual()).lower()
+    for activo in activos:
+        nombre = str(activo.get("name") or "")
+        if nombre.lower().endswith(".zip") and sistema in nombre.lower():
+            return activo
+    return None
+
+
+def elegir_huella(activos: list[dict], paquete: dict) -> dict | None:
+    """El `.sha256` que acompaña al paquete (para comprobar la descarga)."""
+    esperado = f"{paquete.get('name') or ''}.sha256"
+    for activo in activos:
+        if str(activo.get("name") or "") == esperado:
+            return activo
+    return None
+
+
+# ------------------------------------------------------------------ descarga
+def sha256_de(archivo: Path) -> str:
+    resumen = hashlib.sha256()
+    with archivo.open("rb") as manejador:
+        for bloque in iter(lambda: manejador.read(1024 * 1024), b""):
+            resumen.update(bloque)
+    return resumen.hexdigest()
+
+
+def descargar(url: str, destino: Path, progreso=None, timeout: int = 60) -> Path:
+    """Descarga con progreso. `progreso(descargado, total)` puede ser None."""
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    peticion = urllib.request.Request(url, headers=_CABECERAS)
+    with urllib.request.urlopen(peticion, timeout=timeout) as respuesta:
+        total = int(respuesta.headers.get("Content-Length") or 0)
+        recibido = 0
+        with destino.open("wb") as salida:
+            while True:
+                bloque = respuesta.read(256 * 1024)
+                if not bloque:
+                    break
+                salida.write(bloque)
+                recibido += len(bloque)
+                if progreso is not None:
+                    progreso(recibido, total)
+    return destino
+
+
+def leer_huella_publicada(activo_huella: dict | None, timeout: int = 30) -> str:
+    """Primer campo del `.sha256` publicado (o cadena vacía si no se pudo leer)."""
+    if not activo_huella:
+        return ""
+    url = activo_huella.get("browser_download_url") or ""
+    if not url:
+        return ""
+    try:
+        peticion = urllib.request.Request(url, headers=_CABECERAS)
+        with urllib.request.urlopen(peticion, timeout=timeout) as respuesta:
+            texto = respuesta.read().decode("utf-8", "replace").strip()
+        return (texto.split() or [""])[0].lower()
+    except Exception:  # noqa: BLE001
+        logger.warning("no se pudo leer la huella publicada", exc_info=True)
+        return ""
+
+
+def comprobar_paquete(archivo: Path) -> bool:
+    """¿El `.zip` trae de verdad la aplicación? (evita instalar un paquete ajeno)."""
+    try:
+        with zipfile.ZipFile(archivo) as comprimido:
+            nombres = comprimido.namelist()
+    except Exception:  # noqa: BLE001
+        return False
+    prefijos = (f"{config.APP_NAME}/", f"{config.APP_NAME}.app/")
+    return any(nombre.startswith(prefijos) for nombre in nombres)
+
+
+# ------------------------------------------------------------------ instalación
+def carpeta_aplicacion() -> Path:
+    """Carpeta donde vive la aplicación (junto al ejecutable o el propio proyecto)."""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parents[1]
+
+
+def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
+    """Crea el script que espera a que la app cierre, instala y la vuelve a abrir.
+
+    Devuelve la ruta del script. NO lo ejecuta: de eso se encarga la ventana tras
+    cerrarse, para que el reemplazo ocurra cuando el ejecutable ya no está en uso.
+    """
+    carpeta = (carpeta or carpeta_aplicacion()).resolve()
+    destino = carpeta.parent                      # el .zip trae la carpeta de la app
+    temporal = Path(tempfile.mkdtemp(prefix=f"{config.APP_NAME}-actualizar-"))
+    ejecutable = carpeta / f"{config.APP_NAME}.exe"
+    if not ejecutable.is_file():
+        candidatos = sorted(carpeta.glob(f"{config.APP_NAME}*"))
+        ejecutable = candidatos[0] if candidatos else ejecutable
+
+    if sys.platform.startswith("win"):
+        guion = temporal / "actualizar.bat"
+        guion.write_text(
+            "@echo off\r\n"
+            f"title Actualizando {config.APP_NAME}\r\n"
+            "echo Esperando a que se cierre la aplicacion...\r\n"
+            ":espera\r\n"
+            f'tasklist /FI "PID eq {os.getpid()}" | find "{os.getpid()}" >nul 2>&1\r\n'
+            "if not errorlevel 1 (\r\n"
+            "  timeout /t 1 /nobreak >nul\r\n"
+            "  goto espera\r\n"
+            ")\r\n"
+            f'echo Instalando la version nueva en "{destino}"...\r\n'
+            "powershell -NoProfile -ExecutionPolicy Bypass -Command "
+            f"\"Expand-Archive -LiteralPath '{paquete}' -DestinationPath '{destino}' -Force\"\r\n"
+            f'echo Abriendo {config.APP_NAME}...\r\n'
+            f'start "" "{ejecutable}"\r\n'
+            'start "" cmd /c del "%~f0"\r\n',
+            encoding="utf-8",
+        )
+        return guion
+
+    guion = temporal / "actualizar.sh"
+    guion.write_text(
+        "#!/bin/sh\n"
+        f'echo "Esperando a que se cierre {config.APP_NAME}..."\n'
+        f"while kill -0 {os.getpid()} 2>/dev/null; do sleep 1; done\n"
+        f'echo "Instalando en {destino}..."\n'
+        f'unzip -oq "{paquete}" -d "{destino}"\n'
+        f'echo "Abriendo {config.APP_NAME}..."\n'
+        f'open "{ejecutable}" 2>/dev/null || "{ejecutable}" &\n'
+        'rm -f "$0"\n',
+        encoding="utf-8",
+    )
+    guion.chmod(0o755)
+    return guion
+
+
+def lanzar_actualizador(guion: Path) -> None:
+    """Arranca el script desenganchado del proceso actual."""
+    if sys.platform.startswith("win"):
+        banderas = 0
+        for nombre in ("DETACHED_PROCESS", "CREATE_NEW_PROCESS_GROUP"):
+            banderas |= int(getattr(subprocess, nombre, 0))
+        subprocess.Popen(["cmd", "/c", str(guion)], close_fds=True,
+                         creationflags=banderas)
+    else:
+        subprocess.Popen(["/bin/sh", str(guion)], close_fds=True, start_new_session=True)
+
+
+def descargar_version(version: dict, progreso=None) -> tuple[Path, bool]:
+    """Descarga el paquete de esta versión y comprueba su huella.
+
+    Devuelve (ruta_del_zip, huella_correcta). Lanza OSError si no hay paquete para
+    este sistema o si la descarga falla.
+    """
+    activos = version.get("activos") or []
+    paquete = elegir_paquete(activos)
+    if paquete is None:
+        raise OSError(f"la versión {version.get('version')} no trae paquete para "
+                      f"{sistema_actual()}")
+    destino = Path(tempfile.mkdtemp(prefix=f"{config.APP_NAME}-descarga-")) / \
+        str(paquete.get("name"))
+    descargar(str(paquete.get("browser_download_url") or ""), destino, progreso)
+    if not comprobar_paquete(destino):
+        raise OSError("el paquete descargado no contiene la aplicación "
+                      "(¿es el archivo correcto?)")
+    publicada = leer_huella_publicada(elegir_huella(activos, paquete))
+    if not publicada:
+        logger.warning("el Release no publica .sha256: no se puede comprobar la descarga")
+        return destino, True
+    return destino, sha256_de(destino) == publicada

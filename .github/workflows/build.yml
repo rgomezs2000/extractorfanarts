@@ -160,7 +160,7 @@ jobs:
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Una etiqueta con sufijo (p. ej. v0.1.0-beta.1) se publica como
+          # Una etiqueta con sufijo (p. ej. v0.1.0-beta.2) se publica como
           # pre-release: queda marcada como beta y no sustituye a la estable.
           prerelease: ${{ contains(github.ref_name, '-') }}
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.

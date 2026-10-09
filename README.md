@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.0-beta.1 (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.0-beta.2 (fase beta)** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -239,6 +239,14 @@ y se añaden sin programar nada: ver [§10.4](#104-añadir-o-cambiar-un-booru).
 
 **Sin claves:** Fediverso, Bluesky, Safebooru, Danbooru, wikis y la mayoría de
 boorus públicos.
+
+**Interfaz:** el programa lleva una **barra de herramientas** con las funciones
+esenciales y las de apoyo, menús **Archivo** y **Ayuda**, **ayuda integrada con
+`F1`** (el manual completo, con índice, dentro de la ventana), un cuadro **Acerca
+de** con la versión, la licencia y las rutas, y un **actualizador** que descarga,
+verifica e instala la versión nueva desde los Releases: ver
+[§11.6](#116-barra-de-herramientas-menús-y-atajos), [§11.7](#117-ayuda-integrada-f1-y-acerca-de)
+y [§11.8](#118-actualizaciones).
 
 ### 6.2 Búsqueda
 
@@ -484,7 +492,7 @@ entre plataformas.
 ```
         ┌──────────────────────────────────────────────────────┐
         │                      VISTA (Qt)                      │
-        │  main_window.py · galeria.py · icono.py              │
+        │  main_window.py · galeria.py · ayuda.py · icono.py  │
         │  Solo presenta y captura intención del usuario.      │
         └───────────────┬──────────────────────────────────────┘
                         │ señales / llamadas
@@ -501,6 +509,7 @@ entre plataformas.
         │  muestras.py     → muestras .webp de la galería      │
         │  enhance.py      → WebP, upscaling, integridad       │
         │  ugoira.py       → animaciones de Pixiv              │
+        │  updater.py      → versiones nuevas (GitHub Releases)│
         │  adapters/       → UNA plantilla por plataforma      │
         └───────────────┬──────────────────────────────────────┘
                         │
@@ -845,6 +854,10 @@ marcar **«Contenido adulto»** en Opciones.
 | `MAX_OUTPUT_SIDE = 7680` | tope de lado de salida (8K) |
 | `AI_MAX_MAE = 12` | umbral de descarte de salidas anómalas de la IA |
 | `AI_PALETA_TOLERANCIA = 1` | desviación de color que se tolera a la IA antes de devolverle la paleta del original |
+| `UPDATE_REPO = "rgomezs2000/imaginteca"` | repositorio del que se leen las versiones nuevas |
+| `UPDATE_REPO_ALTERNATIVO` | nombre anterior del repositorio (GitHub redirige, así funciona antes y después del renombrado) |
+| `UPDATE_INCLUIR_BETAS = True` | las versiones beta cuentan como versión nueva |
+| `UPDATE_TIMEOUT = 15` | segundos de espera al consultar GitHub |
 | `LOG_DIAS_A_CONSERVAR = 30` | días de `.log` que se conservan (0 = nunca borrar) |
 | `LOG_EN_CONSOLA = False` | desactiva la consola de registros |
 
@@ -921,6 +934,70 @@ python main.py --selftest                    # informe completo del entorno
 python scripts\diag_conexion.py Rule34.xxx   # credenciales + conexión de un sitio
 python scripts\diag_conexion.py Safebooru    # control sin claves
 ```
+
+### 11.6 Barra de herramientas, menús y atajos
+
+La ventana lleva una **barra de herramientas** con todas las funciones clave —primero
+las esenciales, luego las de apoyo— y los mismos accesos en los menús **Archivo** y
+**Ayuda**:
+
+| Botón | Atajo | Qué hace | Tipo |
+|---|---|---|---|
+| 🔍 **Buscar** | `Ctrl+B` | busca con el criterio del formulario | esencial |
+| ⬇️ **Descargar** / ⏹️ **Cancelar** | `Ctrl+D` | descarga lo encontrado; mientras trabaja, cancela | esencial |
+| 🧹 **Limpiar** | `Ctrl+L` | vacía el formulario | esencial |
+| 📂 **Carpeta** | `Ctrl+O` | elige la carpeta de salida | apoyo |
+| 🛡️ **Filtros** | — | explica qué se filtra y por qué | apoyo |
+| 📖 **Ayuda** | `F1` | abre el manual dentro del programa | apoyo |
+| 🔄 **Actualizaciones** | — | busca e instala la versión nueva | apoyo |
+| ℹ️ **Acerca de** | — | versión, licencia, autor y rutas | apoyo |
+
+La barra **refleja** el estado del formulario (`_sincronizar_barra`): si Buscar está
+deshabilitado porque hay una descarga en curso, en la barra también lo está, y el
+botón de descarga se convierte en **Cancelar** a la vez. No existen dos estados
+posibles, así que la barra nunca permite pulsar algo que el formulario tenga bloqueado.
+
+### 11.7 Ayuda integrada (`F1`) y «Acerca de»
+
+`F1` (o **Ayuda → Ayuda**) abre el manual **dentro del programa**: a la izquierda el
+**índice** de secciones y un **buscador del índice**; a la derecha el contenido, con
+las tablas y el formato del manual. El texto **no se duplica**: `app/ayuda.py` lee el
+manual que viaja con la aplicación (en el paquete, `README.md`, que es la guía del
+usuario; en desarrollo, `README-USUARIO.md`) y lo divide por sus títulos `## `. Si el
+archivo faltara, muestra un resumen mínimo en vez de fallar.
+
+**Acerca de** (menú **Ayuda**, o el botón ℹ️) muestra la versión instalada, el autor,
+la licencia, el repositorio y **dónde queda todo** (registros, historial, config local
+y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
+
+### 11.8 Actualizaciones
+
+El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
+(`config.UPDATE_REPO`) y compara la publicada con la instalada
+(`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
+`0.1.0-beta.2 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+—etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
+instalar**.
+
+El proceso, en orden:
+
+1. **Descarga** el `.zip` de tu sistema (Windows/macOS/Linux) con barra de progreso.
+2. **Comprueba la huella SHA-256** contra el `.sha256` que publica el Release: si no
+   coincide, **no se instala nada** y lo dice.
+3. **Comprueba que el paquete trae la aplicación** (evita instalar un archivo ajeno).
+4. Genera un instalador que **espera a que el programa se cierre**
+   (`updater.escribir_actualizador`), descomprime la versión nueva encima, **vuelve a
+   abrir la aplicación** y se borra a sí mismo. La ventana se cierra sola para que el
+   ejecutable deje de estar en uso.
+
+En **Windows** el reemplazo y el reinicio son automáticos. En **macOS y Linux** se
+descarga y se verifica igual, pero el reemplazo depende de cómo esté instalada la
+aplicación, así que se avisa para hacerlo a mano. Si el programa está en una carpeta
+protegida (por ejemplo `Program Files`), el reemplazo fallará: el aviso lo explica y
+el paquete queda descargado.
+
+La consulta **no envía nada tuyo**: es una lectura pública de los Releases. Si GitHub
+limita las peticiones (HTTP 403) o no hay red, se avisa y no ocurre nada más.
 
 ---
 
@@ -1062,7 +1139,7 @@ verifique su descarga.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Fase beta.** Una etiqueta con sufijo (`v0.1.0-beta.1`) se publica
+> **Fase beta.** Una etiqueta con sufijo (`v0.1.0-beta.2`) se publica
 > automáticamente como **pre-release** de GitHub: queda marcada como beta, no
 > sustituye a la última versión estable y no se ofrece como descarga recomendada.
 
@@ -1073,9 +1150,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.0-beta.1"
+git commit -m "release v0.1.0-beta.2"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.0-beta.1
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.0-beta.2
 ```
 
 Resultado en unos minutos:
@@ -1084,16 +1161,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.0-beta.1-windows.zip
-gh release create v0.1.0-beta.1 "dist\Imaginteca-v0.1.0-beta.1-windows.zip" `
-   --title "Imaginteca v0.1.0-beta.1" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.0-beta.2-windows.zip
+gh release create v0.1.0-beta.2 "dist\Imaginteca-v0.1.0-beta.2-windows.zip" `
+   --title "Imaginteca v0.1.0-beta.2" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.0-beta.1` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.0-beta.2` (crear al publicar) →
 marca **«Set as a pre-release»** → adjuntar el `.zip`.
 
 **Notas:**

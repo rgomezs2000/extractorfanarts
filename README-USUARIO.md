@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.0-beta.1 (fase beta)** · Windows · macOS · Linux
+**Versión 0.1.0-beta.2 (fase beta)** · Windows · macOS · Linux
 
 Imaginteca es un programa de escritorio para **reunir y ordenar tu colección
 personal de imágenes**: busca en redes sociales, booros y wikis de fandom, revisa
@@ -32,7 +32,8 @@ Este README es la guía completa. Si es tu primera vez, empieza por el archivo
 11. [Qué se filtra](#11-qué-se-filtra)
 12. [Si algo va mal](#12-si-algo-va-mal)
 13. [Preparar datasets para IA (LoRA, LyCORIS, checkpoints)](#13-preparar-datasets-para-ia-lora-lycoris-checkpoints)
-14. [Licencia y uso responsable](#14-licencia-y-uso-responsable)
+14. [Barra, ayuda y actualizaciones](#14-barra-ayuda-y-actualizaciones)
+15. [Licencia y uso responsable](#15-licencia-y-uso-responsable)
 
 ---
 
@@ -229,6 +230,9 @@ hayas pulsado Buscar**.
 | `Enter` o `Esc` | mientras busca o descarga | **cancelar** |
 | `Esc` | con el visor abierto | cerrarlo |
 | `Alt+F4` o `Ctrl+Q` | en cualquier parte | cerrar el programa |
+| `Ctrl+B` · `Ctrl+D` · `Ctrl+L` | en cualquier parte | **Buscar** · **Descargar** · **Limpiar** |
+| `Ctrl+O` | en cualquier parte | elegir la carpeta de salida |
+| `F1` | en cualquier parte | abrir esta guía dentro del programa |
 
 Si hay una descarga en curso y cierras, te preguntará antes y no dejará archivos
 a medias.
@@ -380,7 +384,64 @@ pasada.
 
 ---
 
-## 14. Licencia y uso responsable
+## 14. Barra, ayuda y actualizaciones
+
+### La barra de herramientas
+
+Arriba del todo tienes los accesos directos a lo importante, en orden:
+
+| Botón | Qué hace |
+|---|---|
+| 🔍 **Buscar** | busca con lo que hayas escrito |
+| ⬇️ **Descargar** | descarga lo encontrado (mientras trabaja pasa a ⏹️ **Cancelar**) |
+| 🧹 **Limpiar** | vacía el formulario |
+| 📂 **Carpeta** | cambia la carpeta de salida |
+| 🛡️ **Filtros** | te cuenta qué se filtra y por qué |
+| 📖 **Ayuda** | abre esta guía dentro del programa |
+| 🔄 **Actualizaciones** | busca e instala una versión nueva |
+| ℹ️ **Acerca de** | versión, licencia, autor y dónde queda todo |
+
+Los botones se apagan y se encienden a la vez que los del formulario: si algo no se
+puede pulsar, en la barra tampoco. En los menús **Archivo** y **Ayuda** tienes lo
+mismo, con sus atajos a la vista.
+
+### La ayuda, sin salir del programa (`F1`)
+
+Pulsa **`F1`** en cualquier momento (o **Ayuda → Ayuda**) y se abre esta guía dentro de
+una ventana: a la izquierda el **índice** con todas las secciones y un **buscador**
+para dar con la tuya, y a la derecha el texto. El botón **🗂️ Abrir el manual completo**
+lo abre con tu programa de textos, por si prefieres leerlo entero o imprimirlo.
+
+### Acerca de
+
+**Ayuda → Acerca de** (o el botón ℹ️) te dice **qué versión tienes instalada**, quién
+la hizo, la licencia y **dónde queda todo**: registros, historial, tus claves y la
+carpeta de salida. Desde ahí mismo puedes **buscar actualizaciones**.
+
+### Actualizaciones: se instala sola
+
+Pulsa 🔄 **Actualizaciones** y el programa mirará si hay una versión más nueva
+publicada. Te dirá **cuál tienes y cuál hay**, con la fecha, el peso de la descarga y
+lo que trae de nuevo.
+
+- Si **no hay nada nuevo**, te lo dice y ya está.
+- Si **hay una versión nueva**, pulsa **⬇️ Descargar e instalar**: se descarga (verás
+  el progreso), se **comprueba que la descarga llegó íntegra** y, cuando aceptes, el
+  programa **se cierra, se instala y se vuelve a abrir solo** con la versión nueva.
+  No pierdes nada: tus imágenes, tus claves y tu historial se quedan como están.
+- Si la descarga viniera dañada, **no se instala**: te avisa y puedes repetirlo.
+
+Las **versiones beta** cuentan como versión nueva, que es lo que se publica por ahora.
+Si no tienes internet, o GitHub te limita las consultas, te lo dirá sin más: no pasa
+nada.
+
+> En **Windows** el reemplazo y el reinicio son automáticos. En **macOS y Linux** la
+> descarga se hace igual y se verifica igual, pero te avisará para que sustituyas la
+> aplicación a mano, porque depende de cómo la tengas instalada.
+
+---
+
+## 15. Licencia y uso responsable
 
 ### Licencia del programa
 
@@ -419,6 +480,6 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.0-beta.1 · fase beta: si encuentras un fallo, el registro
+*Imaginteca 0.1.0-beta.2 · fase beta: si encuentras un fallo, el registro
 del día (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para
 reportarlo.*
