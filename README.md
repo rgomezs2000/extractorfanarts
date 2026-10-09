@@ -1010,6 +1010,12 @@ limita las peticiones (HTTP 403) o no hay red, se avisa y no ocurre nada más.
 
 ## 12. Empaquetado como ejecutable
 
+**Propiedades del ejecutable:** el `.exe` lleva un **recurso de versión**, así que
+en *Propiedades → Detalles* aparecen el producto, la versión y el **copyright**
+(«© 2026 InfoArte · Todos los derechos reservados»), calculado con el **año en
+curso** al compilar (`scripts\build_exe.py::_archivo_version`; el asistente
+`pixiv-token.exe` también lo lleva, con su propia descripción).
+
 **PyInstaller no compila de forma cruzada**: cada sistema operativo genera su
 propio ejecutable.
 

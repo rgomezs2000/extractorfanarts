@@ -61,15 +61,88 @@ funcionan; y **cualquier otra** de Fandom también.
 
 ### Animación occidental
 
+#### Nickelodeon
+
+| Fandom | Qué encuentras |
+|---|---|
+| **The Loud House** (+ *The Casagrandes*) | La familia Loud al completo: personajes, *fanart* y mucha arte de la comunidad |
+| **SpongeBob SquarePants** (Bob Esponja) | Personajes, escenarios y arte de todas las temporadas |
+| **Fairly OddParents** (Los padrinos mágicos) | Cosmo, Wanda, Timmy y todo el mundo de las hadas |
+| **Danny Phantom** | Fantasmas, personajes y arte clásico de Butch Hartman |
+| **Avatar: la leyenda de Aang** · **La leyenda de Korra** | Naciones, personajes y arte de las dos series |
+| **Rugrats** | Bebés, aventuras y arte nostálgico |
+| **Hey Arnold!** | La ciudad, sus personajes y arte de los 90 |
+| **Invader Zim** | Estilo único y una comunidad de arte muy fiel |
+| **Jimmy Neutron** · **My Life as a Teenage Robot** | Inventos, robots y arte |
+| **The Wild Thornberrys** · **Rocko's Modern Life** · **CatDog** | Clásicos de los 90 |
+| **Teenage Mutant Ninja Turtles** (y *Rise of the TMNT*) | Tortugas, villanos y arte de todas las versiones |
+| **Wylde Pak** | Serie reciente: personajes y arte nuevo |
+| **Harvey Beaks** · **Welcome to the Wayne** | Series con fandom fiel |
+
+#### Cartoon Network
+
+| Fandom | Qué encuentras |
+|---|---|
+| **The Powerpuff Girls** (Las chicas superpoderosas) | Las tres superheroínas y todo su universo |
+| **Foster's Home for Imaginary Friends** | Amigos imaginarios: personajes y arte muy querido |
+| **The Amazing World of Gumball** | Gumball, Darwin y un estilo visual único |
+| **Adventure Time** | Ooo, personajes y arte de toda la serie |
+| **Steven Universe** | Gemas, fusiones y una de las comunidades más activas |
+| **Regular Show** · **We Bare Bears** (Somos osos) | Personajes, gags y arte |
+| **Ben 10** | Aliens, transformaciones y arte de todas las etapas |
+| **Teen Titans** · **Teen Titans Go!** | Los Jóvenes Titanes en sus dos versiones |
+| **Dexter's Laboratory** · **Samurai Jack** · **Courage the Cowardly Dog** | Clásicos con un arte muy reconocible |
+| **Ed, Edd n Eddy** · **Codename: Kids Next Door** · **The Grim Adventures of Billy & Mandy** | Humor de los 2000 y mucho *fanart* |
+| **Over the Garden Wall** · **Infinity Train** · **Craig of the Creek** | Series de culto, arte cuidado |
+| **OK K.O.! Let's Be Heroes** · **Mao Mao** · **Victor and Valentino** · **Summer Camp Island** | Series modernas con su fandom |
+| **Generator Rex** · **Sym-Bionic Titan** · **The Secret Saturdays** | Acción y arte de culto |
+
+#### Disney
+
+| Fandom | Qué encuentras |
+|---|---|
+| **Gravity Falls** | Dipper, Mabel y el misterio: comunidad enorme de arte |
+| **Amphibia** | Anne, Sasha, Marcy y el mundo de las ranas |
+| **The Owl House** | Luz, Eda y el Boiling Isles |
+| **Star vs. the Forces of Evil** | Star, Marco y arte colorido |
+| **The Ghost and Molly McGee** | Molly y Scratch: arte alegre y personajes |
+| **Phineas and Ferb** (+ *Milo Murphy's Law*) | Inventos, canciones y arte |
+| **Kim Possible** | Acción, personajes y arte de los 2000 |
+| **DuckTales (2017)** · **Wander Over Yonder** | Aventuras y arte de culto |
+| **Big City Greens** · **Kiff** · **Hailey's on It!** | Series actuales con fandom creciente |
+| **Moon Girl and Devil Dinosaur** · **Hamster & Gretel** | Superhéroes y humor |
+| **Recess** · **The Proud Family** · **Lilo & Stitch: The Series** | Clásicos de Disney TV |
+| **American Dragon: Jake Long** · **Dave the Barbarian** · **Brandy & Mr. Whiskers** | Series de los 2000 |
+| **Little Einsteins** | Arte y música para los más pequeños |
+
+#### Streaming y web
+
+| Fandom | Qué encuentras |
+|---|---|
+| **Hilda** (Netflix) | Trolls, criaturas y un arte preciosista |
+| **The Amazing Digital Circus** (Glitch) | Pomni y compañía: comunidad muy activa |
+| **Murder Drones** (Glitch) | Robots, terror y arte de la comunidad |
+| **Hazbin Hotel** · **Helluva Boss** | Humor adulto, personajes y arte abundante |
+| **Kipo and the Age of Wonderbeasts** · **Carmen Sandiego** · **Centaurworld** | Series de Netflix con arte propio |
+| **The Dragon Prince** · **Voltron: Legendary Defender** · **Trollhunters** | Fantasía y aventuras |
+| **She-Ra and the Princesses of Power** | Personajes y una comunidad muy viva |
+| **Arcane** (League of Legends) · **Castlevania** | Animación adulta de gran calidad |
+| **Battle for Dream Island (BFDI)** · **Inanimate Insanity** | *Object shows*: comunidades enormes de arte |
+| **Gameoverse** · **Planetonika** | Proyectos de animación con su propio fandom |
+| **Lackadaisy** · **Eddsworld** | Animación web clásica |
+
+#### Clásicos y animación para adultos
+
 | Fandom | Qué encuentras |
 |---|---|
 | **My Little Pony** | La comunidad de arte más grande de internet (mira también [Derpibooru](Boorus)) |
-| **Steven Universe** · **Gravity Falls** · **Adventure Time** | Personajes, gemas, arte de la comunidad |
-| **The Owl House** · **Star vs. the Forces of Evil** · **She-Ra** | Series modernas con mucho *fanart* |
-| **Rick and Morty** · **Los Simpson** · **South Park** | Humor, personajes, arte alternativo |
-| **Avatar: la leyenda de Aang** | Naciones, doblaje, arte de las dos series |
-| **Hazbin Hotel** · **Helluva Boss** | Comunidad muy activa de arte |
-| **Miraculous** · **Bluey** · **Kim Possible** · **Danny Phantom** | Series con fandoms fieles |
+| **Bluey** | La serie familiar con más arte de los últimos años |
+| **Miraculous** | Ladybug y Cat Noir: arte y personajes |
+| **Looney Tunes** · **Tom and Jerry** · **Scooby-Doo** | Los clásicos de siempre, arte de todas las épocas |
+| **The Simpsons** (Los Simpson) · **South Park** · **Family Guy** · **Futurama** · **Bob's Burgers** · **American Dad** | Animación para adultos con mucho arte alternativo |
+| **Rick and Morty** | Ciencia ficción, personajes y arte |
+| **Total Drama** · **6teen** · **Detentionaire** | Animación canadiense |
+| **Winx Club** | Hadas, magia y arte |
 
 ### Cómics y superhéroes
 
