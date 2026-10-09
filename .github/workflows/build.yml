@@ -84,28 +84,22 @@ jobs:
 
       # El contexto `secrets` NO se admite dentro de un `if:`: si se usa ahí, GitHub
       # marca el flujo entero como inválido y no arranca ningún trabajo. Se pasa por
-      # `env` (que sí lo admite) y el propio script decide si hay certificado o no.
-      - name: Firmar el ejecutable (opcional; solo si hay certificado)
+      # `env` (que sí lo admite) y el script decide si hay certificado o no.
+      #
+      # Sin certificado NO se firma nada y el aviso azul de SmartScreen sigue
+      # apareciendo: eso solo lo quita un certificado de una autoridad (o Microsoft
+      # Trusted Signing). Un certificado autofirmado NO sirve para eso.
+      - name: Firmar los ejecutables (opcional; solo si hay certificado)
         if: ${{ matrix.os == 'windows-latest' }}
         continue-on-error: true
         shell: pwsh
         env:
-          CERT_PFX_BASE64: ${{ secrets.WINDOWS_CERT_PFX_BASE64 }}
-          CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
-        run: |
-          if (-not $env:CERT_PFX_BASE64) {
-            Write-Host "No hay certificado configurado (secret WINDOWS_CERT_PFX_BASE64): no se firma."
-            exit 0
-          }
-          $pfx = Join-Path $env:RUNNER_TEMP "certificado.pfx"
-          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:CERT_PFX_BASE64))
-          $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue |
-                      Sort-Object FullName | Select-Object -Last 1
-          if (-not $signtool) { Write-Host "::warning::no se encontró signtool"; exit 0 }
-          & $signtool.FullName sign /f $pfx /p $env:CERT_PASSWORD `
-              /fd sha256 /td sha256 /tr http://timestamp.digicert.com `
-              "dist\Imaginteca\Imaginteca.exe"
-          Remove-Item $pfx -Force
+          WINDOWS_CERT_PFX_BASE64: ${{ secrets.WINDOWS_CERT_PFX_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+          WINDOWS_CERT_THUMBPRINT: ${{ secrets.WINDOWS_CERT_THUMBPRINT }}
+          TRUSTED_SIGNING_DLIB: ${{ secrets.TRUSTED_SIGNING_DLIB }}
+          TRUSTED_SIGNING_METADATA: ${{ secrets.TRUSTED_SIGNING_METADATA }}
+        run: pwsh -File scripts/firmar_windows.ps1 dist\Imaginteca\Imaginteca.exe dist\Imaginteca\pixiv-token.exe
 
       - name: Añadir licencia, avisos, LEEME y README de usuario al paquete
         shell: bash
@@ -130,6 +124,23 @@ jobs:
       - name: Instalador de Windows (Inno Setup, con asistente)
         if: runner.os == 'Windows'
         run: python scripts/instaladores/crear_instalador_windows.py --dist dist/Imaginteca --salida dist/instaladores
+
+      # El instalador también se firma (si hay certificado): es el archivo que la
+      # gente ejecuta al descargarlo, así que es el que dispara el aviso de SmartScreen.
+      - name: Firmar el instalador de Windows (opcional; solo si hay certificado)
+        if: ${{ matrix.os == 'windows-latest' }}
+        continue-on-error: true
+        shell: pwsh
+        env:
+          WINDOWS_CERT_PFX_BASE64: ${{ secrets.WINDOWS_CERT_PFX_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+          WINDOWS_CERT_THUMBPRINT: ${{ secrets.WINDOWS_CERT_THUMBPRINT }}
+          TRUSTED_SIGNING_DLIB: ${{ secrets.TRUSTED_SIGNING_DLIB }}
+          TRUSTED_SIGNING_METADATA: ${{ secrets.TRUSTED_SIGNING_METADATA }}
+        run: |
+          $instaladores = Get-ChildItem dist\instaladores\*.exe -ErrorAction SilentlyContinue
+          if (-not $instaladores) { Write-Host "No hay instalador que firmar"; exit 0 }
+          pwsh -File scripts/firmar_windows.ps1 @($instaladores.FullName)
 
       - name: Instalador de macOS (.dmg)
         if: runner.os == 'macOS'
@@ -223,10 +234,10 @@ jobs:
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Desde v0.1.5-beta.4 (la beta DEFINITIVA) los releases se publican como
+          # Desde v0.1.5-beta.5 (la beta DEFINITIVA) los releases se publican como
           # OFICIALES, no como pre-release: la versión sigue llamándose «beta», pero
           # el release es el oficial y GitHub lo marca como «Latest». Las betas
-          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.4) quedaron como pre-release.
+          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.5) quedaron como pre-release.
           prerelease: false
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true

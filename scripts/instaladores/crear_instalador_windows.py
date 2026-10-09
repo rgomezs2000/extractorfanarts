@@ -51,9 +51,53 @@ def localizar_iscc() -> Path | None:
     return None
 
 
-def escribir_iss(dist: Path, salida: Path) -> Path:
+def localizar_signtool() -> Path | None:
+    """Busca signtool.exe (Windows SDK)."""
+    en_path = shutil.which("signtool")
+    if en_path:
+        return Path(en_path)
+    for base in (Path(r"C:\Program Files (x86)\Windows Kits\10\bin"),
+                 Path(r"C:\Program Files\Windows Kits\10\bin")):
+        if base.is_dir():
+            candidatos = sorted(base.glob("*/x64/signtool.exe"))
+            if candidatos:
+                return candidatos[-1]
+    return None
+
+
+def firma_configurada() -> tuple[Path, list[str]] | None:
+    """(signtool, argumentos del certificado) si hay firma configurada, o None.
+
+    Sin certificado, el instalador sale **sin firmar** y el aviso azul de SmartScreen
+    seguirá apareciendo (un certificado autofirmado tampoco lo quita).
+    """
+    tiene = any(os.environ.get(v) for v in (
+        "WINDOWS_CERT_PFX_BASE64", "WINDOWS_CERT_THUMBPRINT", "TRUSTED_SIGNING_DLIB"))
+    if not tiene:
+        return None
+    signtool = localizar_signtool()
+    if signtool is None:
+        print("[aviso] hay certificado configurado, pero no se encontró signtool.exe")
+        return None
+    if os.environ.get("WINDOWS_CERT_PFX_BASE64"):
+        pfx = Path(os.environ.get("RUNNER_TEMP") or os.environ.get("TEMP") or ".")
+        pfx = pfx / "certificado.pfx"
+        import base64
+        pfx.write_bytes(base64.b64decode(os.environ["WINDOWS_CERT_PFX_BASE64"]))
+        extra = ["/f", str(pfx)]
+        if os.environ.get("WINDOWS_CERT_PASSWORD"):
+            extra += ["/p", os.environ["WINDOWS_CERT_PASSWORD"]]
+        return signtool, extra
+    if os.environ.get("WINDOWS_CERT_THUMBPRINT"):
+        return signtool, ["/sha1", os.environ["WINDOWS_CERT_THUMBPRINT"]]
+    return signtool, ["/dlib", os.environ["TRUSTED_SIGNING_DLIB"],
+                      "/dmdf", os.environ.get("TRUSTED_SIGNING_METADATA", "")]
+
+
+def escribir_iss(dist: Path, salida: Path, firmar: bool = False) -> Path:
     """Escribe el archivo de Inno Setup con los datos de esta versión."""
     version = config.APP_VERSION
+    linea_firma = "SignTool=imagintecafirma\n" if firmar else ""
     iss = salida / "imaginteca.iss"
     iss.write_text(
         f"""; Instalador de {config.APP_NAME} para Windows (generado automáticamente)
@@ -91,6 +135,7 @@ PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+{linea_firma}
 
 [Languages]
 Name: "spanish"; MessagesFile: "compiler:Languages\\Spanish.isl"
@@ -148,9 +193,20 @@ def main() -> int:
         print("        INNO_SETUP_ISCC con la ruta del compilador.")
         return 1
 
-    iss = escribir_iss(dist, salida)
+    firma = firma_configurada()
+    iss = escribir_iss(dist, salida, firmar=firma is not None)
     print(f"[ok] guion de Inno Setup: {iss}")
-    codigo = subprocess.call([str(iscc), str(iss)])
+    comando = [str(iscc), str(iss)]
+    if firma is not None:
+        signtool, extra = firma
+        orden_firma = '"{}" sign /fd sha256 /td sha256 /tr http://timestamp.digicert.com {} $f'.format(
+            signtool, " ".join(f'"{a}"' if " " in a else a for a in extra))
+        comando.append(f"/Simagintecafirma={orden_firma}")
+        print("[ok] el instalador se firmará con el certificado configurado")
+    else:
+        print("[aviso] sin certificado: el instalador saldrá SIN FIRMAR y SmartScreen")
+        print("        seguirá mostrando el aviso azul (un certificado autofirmado no lo quita)")
+    codigo = subprocess.call(comando)
     if codigo != 0:
         print(f"[error] Inno Setup terminó con código {codigo}")
         return codigo

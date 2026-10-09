@@ -20,6 +20,15 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.5 — la beta definitiva (5.ª entrega)
+
+- **Informe de dependencias completo**: se corrigió el nombre de importación
+  (`Pillow` → `PIL`) y se anota lo que va dentro al compilar. Ahora dice **9 de 9** en
+  desarrollo y en la copia empaquetada.
+- **Firma digital cableada**: ejecutable, asistente e instalador se firman solos en
+  cuanto haya certificado (incluido Microsoft Trusted Signing). Sin certificado no se
+  firma nada: el aviso de SmartScreen solo lo quita un certificado de una autoridad.
+
 ### 2026-10-09 · v0.1.5-beta.4 — la beta definitiva (4.ª entrega)
 
 - **Informe de dependencias arreglado**: ya distingue la versión **en uso** de cada

@@ -40,17 +40,19 @@ logger = logging.getLogger("imaginteca")
 PYPI = "https://pypi.org/pypi"
 _CABECERAS = {"User-Agent": f"{config.APP_NAME}-dependencias"}
 
-# (nombre importable, nombre en PyPI)
-ESENCIALES: tuple[tuple[str, str], ...] = (
-    ("PySide6", "PySide6"),
-    ("shiboken6", "shiboken6"),
-    ("Pillow", "pillow"),
-    ("httpx", "httpx"),
-    ("httpcore", "httpcore"),
-    ("h11", "h11"),
-    ("anyio", "anyio"),
-    ("certifi", "certifi"),
-    ("curl_cffi", "curl-cffi"),
+# (nombre del paquete, módulo que se importa, nombre en PyPI)
+# OJO: no siempre coinciden (Pillow se importa como «PIL»), y de eso depende que el
+# informe pueda leer la versión real de lo que está en uso.
+ESENCIALES: tuple[tuple[str, str, str], ...] = (
+    ("PySide6", "PySide6", "PySide6"),
+    ("shiboken6", "shiboken6", "shiboken6"),
+    ("Pillow", "PIL", "pillow"),
+    ("httpx", "httpx", "httpx"),
+    ("httpcore", "httpcore", "httpcore"),
+    ("h11", "h11", "h11"),
+    ("anyio", "anyio", "anyio"),
+    ("certifi", "certifi", "certifi"),
+    ("curl_cffi", "curl_cffi", "curl-cffi"),
 )
 
 MOTORES = ("realesrgan-ncnn-vulkan", "waifu2x-ncnn-vulkan")
@@ -173,50 +175,72 @@ def _version_del_modulo(importable: str) -> tuple[str | None, bool]:
     return None, True
 
 
-def _versiones_del_paquete() -> dict:
-    """Versiones que el flujo dejó anotadas al empaquetar (marca de la release)."""
+def _versiones_anotadas() -> dict:
+    """Versiones que quedaron anotadas al compilar/empaquetar.
+
+    Se miran dos sitios: la marca de la release (`release.json`, la escribe el flujo
+    de publicación) y la nota de la compilación (`dependencies.json`, la escribe
+    `scripts\\build_exe.py`). Dentro del ejecutable no quedan los `.dist-info`, así que
+    esta es la forma de saber la versión exacta de cada paquete.
+    """
+    datos: dict = {}
     try:
         from . import canal
 
-        return dict((canal.marca() or {}).get("dependencias") or {})
+        datos.update(dict((canal.marca() or {}).get("dependencias") or {}))
     except Exception:  # noqa: BLE001
-        return {}
+        pass
+    candidatas = []
+    interior = getattr(sys, "_MEIPASS", None)
+    if interior:
+        candidatas.append(Path(interior) / "dependencies.json")
+    if getattr(sys, "frozen", False):
+        candidatas.append(Path(sys.executable).resolve().parent / "dependencies.json")
+    candidatas.append(Path(__file__).resolve().parents[1] / "dependencies.json")
+    for ruta in candidatas:
+        try:
+            if ruta.is_file():
+                contenido = json.loads(ruta.read_text(encoding="utf-8"))
+                datos.update(dict(contenido.get("dependencias") or {}))
+                break
+        except (OSError, ValueError):
+            continue
+    return datos
 
 
-def version_en_uso(importable: str) -> tuple[str | None, str, bool]:
+def version_en_uso(nombre: str, importable: str | None = None) -> tuple[str | None, str, bool]:
     """(versión, de dónde sale, ¿está presente?) de una dependencia esencial.
 
-    Se mira, por este orden: el módulo importado (lo que se usa de verdad), los
-    metadatos del entorno o de `vendor/`, y lo que anotó el flujo al empaquetar.
+    Se mira, por este orden: el **módulo importado** (lo que se usa de verdad), los
+    metadatos del entorno o de `vendor/`, y lo que quedó **anotado** al compilar.
     """
+    importable = importable or nombre
     version, presente = _version_del_modulo(importable)
     origen = ""
     if presente:
         origen = "paquete" if empaquetado() else "en uso"
-    metadatos_version = version_instalada(importable)
-    if metadatos_version and not version:
-        version = metadatos_version
-        origen = "paquete" if empaquetado() else (
-            "vendor" if (Path(__file__).resolve().parents[1] / "vendor" / f"{importable}.py").exists()
-            or list((Path(__file__).resolve().parents[1] / "vendor").glob(
-                f"{importable.replace('-', '_')}*.dist-info")) else "entorno")
     if not version:
-        anotada = _versiones_del_paquete().get(importable)
+        metadatos_version = version_instalada(nombre)
+        if metadatos_version:
+            version = metadatos_version
+            if not presente:
+                origen = "paquete" if empaquetado() else "vendor"
+    if not version:
+        anotada = _versiones_anotadas().get(nombre)
         if anotada:
             version = str(anotada)
-            origen = "paquete"
-            presente = True
+            origen = "paquete" if empaquetado() else "anotada"
     return version, origen or "—", bool(presente or version)
 
 
 def estado(comprobar_red: bool = True) -> dict:
     """Estado completo: Python, paquetes esenciales y motores de IA."""
     paquetes = []
-    for importable, en_pypi in ESENCIALES:
-        version, origen, presente = version_en_uso(importable)
+    for nombre, importable, en_pypi in ESENCIALES:
+        version, origen, presente = version_en_uso(nombre, importable)
         publicada = version_publicada(en_pypi) if comprobar_red else None
         paquetes.append({
-            "paquete": importable,
+            "paquete": nombre,
             "pypi": en_pypi,
             "instalada": version,
             "origen": origen,
@@ -250,6 +274,8 @@ def resumen(estado_datos: dict) -> list[str]:
         origen = p.get("origen") or "—"
         if not p.get("presente"):
             estado_txt = "NO ENCONTRADO"
+        elif not version.strip("—") or version == "—":
+            estado_txt = "presente (versión no legible)"
         elif p.get("publicada") is None:
             estado_txt = "presente (sin comprobar)"
         elif p.get("novedad"):
@@ -294,7 +320,7 @@ def comando_actualizacion(python: str | None = None) -> list[str]:
     interprete = python or sys.executable
     raiz = Path(__file__).resolve().parents[1]
     setup = raiz / "scripts" / "setup_vendor.py"
-    paquetes = ",".join(en_pypi for _, en_pypi in ESENCIALES)
+    paquetes = ",".join(en_pypi for _, _, en_pypi in ESENCIALES)
     if setup.is_file():
         return [interprete, str(setup), "vendor", f"--only={paquetes}"]
     return [interprete, "-m", "pip", "install", "--upgrade", "--no-input",

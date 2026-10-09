@@ -398,6 +398,39 @@ def _ruta_ejecutable(destino: Path) -> Path:
     return destino / NOMBRE
 
 
+def _anotar_dependencias(carpeta: Path) -> None:
+    """Escribe `dependencies.json` con las versiones que van dentro de la compilación.
+
+    Sirve para que el informe de dependencias pueda decir la versión real de cada
+    paquete incluso dentro del ejecutable (donde no hay `.dist-info`). No confundir
+    con la marca de la release (`release.json`): esto es solo informativo y lo lleva
+    cualquier compilación, también las de desarrollo.
+    """
+    try:
+        import json
+
+        from app import dependencias
+
+        datos = {"compilado": _ahora(), "sistema": sys.platform, "dependencias": {}}
+        for nombre, importable, _pypi in dependencias.ESENCIALES:
+            version, _origen, presente = dependencias.version_en_uso(nombre, importable)
+            if presente and version:
+                datos["dependencias"][nombre] = str(version)
+        destino = carpeta / "dependencies.json"
+        destino.write_text(json.dumps(datos, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8")
+        print(f"[ok] dependencias anotadas: {destino} "
+              f"({len(datos['dependencias'])} paquetes)")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[aviso] no se pudieron anotar las dependencias: {exc}")
+
+
+def _ahora() -> str:
+    import datetime
+
+    return datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+
+
 def _probar(destino: Path) -> int:
     ejecutable = _ruta_ejecutable(destino)
     if not ejecutable.exists():
@@ -457,6 +490,10 @@ def main() -> int:
     _copiar_documentos(carpeta_dist)
     # Que el paquete NO quede con etiqueta de integridad baja (app en modo restringido)
     _arreglar_etiqueta_integridad(carpeta_dist)
+    # Anota qué versiones de las dependencias esenciales van DENTRO de esta compilación
+    # (dentro del ejecutable no quedan los .dist-info y sin esta nota el informe de
+    # dependencias no podría decir la versión real de paquetes como anyio).
+    _anotar_dependencias(carpeta_dist)
 
     # La carpeta build/ contiene un ejecutable INTERMEDIO e incompleto: si alguien
     # lo ejecuta por error falla con "Failed to load Python DLL ... _internal\python312.dll".

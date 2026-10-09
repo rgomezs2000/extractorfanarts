@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.4 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.5 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -137,10 +137,11 @@ nada, no hay que registrarse y no se recogen datos.
    la carpeta `_internal` que va a su lado.
 
 4. **Ábrelo**:
-   - **Windows:** doble clic en **`Imaginteca.exe`**. La primera vez puede salir el
-     aviso azul *«Windows protegió su PC»*: es normal (el programa no está firmado
-     digitalmente; un certificado de firma es de pago). Pulsa **Más información →
-     Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en el `.exe` →
+   - **Windows:** doble clic en **`Imaginteca.exe`**. Si el paquete viene **firmado
+     digitalmente**, no aparece ningún aviso. Si no lo está, la primera vez sale el
+     aviso azul *«Windows protegió su PC»*: es normal (un certificado de firma es de
+     pago y, sin él, Windows avisa de todo lo que se descarga). Pulsa **Más información
+     → Ejecutar de todas formas**. Si sigue bloqueado: clic derecho en el `.exe` →
      **Propiedades** → marca **Desbloquear** → **Aceptar**.
    - **macOS:** si dice *«no se puede abrir»*, clic derecho en la aplicación →
      **Abrir**. Si se resiste: `xattr -dr com.apple.quarantine Imaginteca.app`
@@ -902,5 +903,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.4 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.5 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

@@ -28,7 +28,7 @@ registros. La actualización reemplaza **el programa**, no tus datos.
 
 Se comparan correctamente, incluidas las betas:
 
-- `0.1.5-beta.4` es **más nueva** que `0.1.0-beta.1`
+- `0.1.5-beta.5` es **más nueva** que `0.1.0-beta.1`
 - `0.1.0` (final) es **más nueva** que cualquier `0.1.0-beta.x`
 
 Las versiones **beta cuentan como versión nueva**, porque es lo que se publica por
@@ -153,8 +153,8 @@ avisa y no hace nada).
 
 ## Beta definitiva y releases oficiales
 
-Hasta la `0.1.5-beta.4` las versiones se publicaban como **pre-release**. Desde la
-**`0.1.5-beta.4` (beta definitiva)**, los releases se publican como **oficiales**: la
+Hasta la `0.1.5-beta.5` las versiones se publicaban como **pre-release**. Desde la
+**`0.1.5-beta.5` (beta definitiva)**, los releases se publican como **oficiales**: la
 versión sigue llamándose «beta», pero es la **última versión** del proyecto y la
 descarga recomendada. El programa sabe que una versión es beta por **su nombre**.
 
@@ -163,7 +163,7 @@ descarga recomendada. El programa sabe que una versión es beta por **su nombre*
 - **Ayuda → Acerca de** (o el botón **ℹ️**): versión instalada, entorno y rutas.
 - `Imaginteca.exe --version` en una consola.
 - El paquete se llama `Imaginteca-Windows.zip` / `-Linux` / `-macOS`, y el Release
-  indica la etiqueta (`v0.1.5-beta.4`).
+  indica la etiqueta (`v0.1.5-beta.5`).
 
 ---
 

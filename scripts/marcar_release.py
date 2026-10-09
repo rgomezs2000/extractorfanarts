@@ -10,7 +10,7 @@ Gracias a ella, los paquetes del release se reconocen como **producción** (con 
 actualizaciones activadas) y cualquier copia hecha en un equipo —el código fuente o
 un `.exe` compilado a mano— se reconoce como **desarrollo** (sin actualizaciones).
 
-    python scripts\\marcar_release.py --version 0.1.5-beta.4 --destino dist/Imaginteca
+    python scripts\\marcar_release.py --version 0.1.5-beta.5 --destino dist/Imaginteca
 """
 from __future__ import annotations
 
@@ -59,10 +59,10 @@ def versiones_dependencias() -> dict:
         print(f"[aviso] no se pudieron leer las dependencias: {exc}")
         return {}
     datos: dict = {}
-    for importable, _ in dependencias.ESENCIALES:
-        version, _origen, presente = dependencias.version_en_uso(importable)
+    for nombre, importable, _pypi in dependencias.ESENCIALES:
+        version, _origen, presente = dependencias.version_en_uso(nombre, importable)
         if presente and version:
-            datos[importable] = str(version)
+            datos[nombre] = str(version)
     return datos
 
 

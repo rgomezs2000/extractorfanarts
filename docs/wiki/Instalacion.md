@@ -49,10 +49,10 @@ Descomprime el `.zip` **completo** en una carpeta tuya, por ejemplo
 ## 3. Ábrelo
 
 - **Windows:** doble clic en **`Imaginteca.exe`**.
-  - La primera vez puede salir el aviso azul *«Windows protegió su PC»*. Es
-    normal: el programa no está firmado digitalmente (un certificado de firma es
-    de pago), no es un virus. Pulsa **Más información → Ejecutar de todas
-    formas**.
+  - La primera vez puede salir el aviso azul *«Windows protegió su PC»*. Si el
+    paquete viene **firmado**, no aparece; si no, es normal (un certificado de firma
+    es de pago), y no es un virus. Pulsa **Más información → Ejecutar de todas
+    formas**. El proyecto tiene la **firma cableada** para cuando haya certificado.
   - Si sigue bloqueado: clic derecho en el `.exe` → **Propiedades** → marca
     **Desbloquear** → **Aceptar**.
 - **macOS:** si dice *«no se puede abrir»*, clic derecho en la aplicación →

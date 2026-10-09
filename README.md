@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.5-beta.4 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.5-beta.5 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -1052,7 +1052,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.5-beta.4 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.5-beta.5 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1135,6 +1135,58 @@ compilas desde un entorno restringido; para un paquete ya compilado:
   intermedio incompleto y falla con *«Failed to load Python DLL …»*. El ejecutable
   bueno es **`dist\Imaginteca\Imaginteca.exe`**. La compilación borra
   `build\` automáticamente al terminar.
+
+---
+
+## Firma digital (y el aviso azul de Windows)
+
+Al abrir por primera vez un programa descargado de internet, Windows muestra el aviso
+azul *«Windows protegió su PC»* (SmartScreen). **Ese aviso solo desaparece cuando el
+programa está firmado con un certificado emitido por una autoridad de certificación**
+(o con Microsoft Trusted Signing). Un certificado **autofirmado no sirve** para eso: no
+es de confianza para otros equipos.
+
+Este proyecto ya tiene la firma **cableada**: el flujo firma el **ejecutable**, el
+**asistente de Pixiv** y el **instalador**, y solo hay que darle un certificado por
+secretos del repositorio (`Settings → Secrets and variables → Actions`):
+
+| Secreto | Para qué |
+|---|---|
+| `WINDOWS_CERT_PFX_BASE64` + `WINDOWS_CERT_PASSWORD` | Certificado `.pfx` (el archivo en base64) — la vía clásica |
+| `WINDOWS_CERT_THUMBPRINT` | Certificado ya instalado en el equipo de compilación |
+| `TRUSTED_SIGNING_DLIB` + `TRUSTED_SIGNING_METADATA` | **Microsoft Trusted Signing** (Azure): certificado de una autoridad sin comprar un token físico — la vía más económica |
+
+Sin certificado configurado el flujo **no firma nada** y lo dice en el registro: el
+paquete se publica igual, con el aviso azul (y con el texto de «no está firmado» en la
+documentación, que es la verdad).
+
+**En tu equipo** también puedes firmar (para probar o para repartirlo tú):
+
+```powershell
+# El ejecutable ya compilado (certificado en .pfx)
+$env:EF_CERT_PFX = "C:\ruta\certificado.pfx"; $env:EF_CERT_PASSWORD = "…"
+python scripts\build_exe.py --firmar
+
+# O cualquier archivo suelto (ejecutable, asistente, instalador)
+pwsh -File scripts\firmar_windows.ps1 dist\Imaginteca\Imaginteca.exe
+```
+
+El instalador de Inno Setup también se firma solo si hay certificado (usa `SignTool`
+por dentro), así que **el archivo que la gente ejecuta al descargar** queda firmado.
+
+### macOS
+
+En macOS el equivalente es un **Apple Developer ID** (99 $/año) + **notarización** de
+Apple: sin ello, Gatekeeper avisa la primera vez. El proyecto documenta el paso
+(código firmado y notarizado) para cuando haya cuenta de desarrollador.
+
+### Lo que la firma no arregla sola
+
+Aun con certificado, SmartScreen y Gatekeeper dan menos avisos **a medida que el
+programa se descarga y se instala sin incidentes** (reputación). Un certificado de
+validación extendida (EV) tiene reputación inmediata; Microsoft Trusted Signing y los
+certificados normales la van ganando con el tiempo. Lo importante: **sin certificado no
+hay nada que ganar**, y con él el aviso deja de ser un bloqueo para los usuarios.
 
 ---
 
@@ -1236,12 +1288,12 @@ notas del release.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Betas y releases.** Hasta `v0.1.5-beta.4` las etiquetas se publicaban como
-> **pre-release** de GitHub. Desde **`v0.1.5-beta.4` (la beta definitiva)** el flujo
+> **Betas y releases.** Hasta `v0.1.5-beta.5` las etiquetas se publicaban como
+> **pre-release** de GitHub. Desde **`v0.1.5-beta.5` (la beta definitiva)** el flujo
 > publica **releases OFICIALES** (`prerelease: false`): la versión sigue llamándose
 > «beta», pero aparece como la **última versión** del proyecto y se ofrece como
 > descarga recomendada. El programa marca una versión como beta por **su nombre**
-> (`0.1.5-beta.4`), no por la marca de GitHub.
+> (`0.1.5-beta.5`), no por la marca de GitHub.
 
 ### Opción A — automática (recomendada)
 
@@ -1250,9 +1302,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.5-beta.4"
+git commit -m "release v0.1.5-beta.5"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.4
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.5
 ```
 
 Resultado en unos minutos:
@@ -1261,16 +1313,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.4-windows.zip
-gh release create v0.1.5-beta.4 "dist\Imaginteca-v0.1.5-beta.4-windows.zip" `
-   --title "Imaginteca v0.1.5-beta.4" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.5-windows.zip
+gh release create v0.1.5-beta.5 "dist\Imaginteca-v0.1.5-beta.5-windows.zip" `
+   --title "Imaginteca v0.1.5-beta.5" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.5-beta.4` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.5-beta.5` (crear al publicar) →
 deja **sin marcar** «Set as a pre-release» (desde la beta definitiva los
 releases son oficiales) → adjuntar los paquetes.
 

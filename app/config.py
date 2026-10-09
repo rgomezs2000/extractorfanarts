@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.5-beta.4"
+APP_VERSION = "0.1.5-beta.5"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -347,7 +347,7 @@ BOORU_SITES = [
 # ------------------------------------------------------------------ políticas de descarga
 # Ratings permitidos por defecto. Los ratings "questionable"/"explicit" exigen
 # activación explícita en la UI (verificación de mayoría de edad del usuario).
-ALLOW_ADULT_RATINGS = ["general", "sensitive"]
+ALLOW_ADULT_RATINGS = ["general", "sensitive", "questionable", "explicit"]
 
 # Si es True (o se marca "Solo material liberado" en la UI) únicamente se
 # descargan obras con licencia permisiva explícita.

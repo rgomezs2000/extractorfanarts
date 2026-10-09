@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.5 — 9 de octubre de 2026 · la beta definitiva (5.ª entrega)
+
+**Informe de dependencias, corregido del todo**
+- Los paquetes cuyo módulo no se llama igual que el paquete salían como «NO
+  ENCONTRADO»: ahora se importa el módulo correcto (**Pillow se importa como `PIL`**) y
+  se anota la versión de lo que va dentro al compilar (`dependencies.json`), así que
+  **anyio** y compañía también muestran su versión. Resultado: **9 de 9** en desarrollo
+  y en la copia empaquetada.
+
+**Firma digital preparada**
+- El flujo firma el **ejecutable**, el **asistente de Pixiv** y el **instalador** en
+  cuanto haya certificado (`.pfx`, certificado instalado o **Microsoft Trusted
+  Signing**), con `scripts\firmar_windows.ps1`.
+- Sin certificado **no se firma nada** (y se dice): el aviso azul de SmartScreen solo
+  desaparece con un certificado de una autoridad; uno autofirmado no sirve.
+
+---
+
 ## v0.1.5-beta.4 — 9 de octubre de 2026 · la beta definitiva (4.ª entrega)
 
 **El informe de dependencias ahora dice la verdad**
