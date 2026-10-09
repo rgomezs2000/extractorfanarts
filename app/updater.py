@@ -46,7 +46,7 @@ _SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
 def clave_version(texto: str) -> tuple[int, int, int, int, int]:
     """Clave comparable: (mayor, menor, parche, es_final, número de beta).
 
-    Así `0.1.5-beta.5 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    Así `0.1.5-beta.6 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
     final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
     """
     texto = (texto or "").strip().lstrip("vV")
@@ -148,7 +148,7 @@ def consultar_ultima(incluir_betas: bool | None = None,
         "notas": elegido.get("body") or "",
         "publicado": elegido.get("published_at") or "",
         "url": elegido.get("html_url") or "",
-        # «beta» se deduce del NOMBRE de la versión (0.1.5-beta.5), no de la marca
+        # «beta» se deduce del NOMBRE de la versión (0.1.5-beta.6), no de la marca
         # pre-release de GitHub: desde la beta definitiva los releases son oficiales
         # y, aun así, la versión sigue siendo una beta.
         "beta": bool(elegido.get("prerelease"))

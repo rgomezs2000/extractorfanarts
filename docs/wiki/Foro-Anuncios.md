@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.6 — la beta definitiva (6.ª entrega)
+
+- **Scoop va dentro del release**: `imaginteca.json` se publica como adjunto de cada
+  versión, así que instalar sin el aviso de Windows es **una sola orden** (sin crear
+  ningún repositorio aparte).
+- **La firma es automática**: cada compilación firma el ejecutable si hay certificado.
+
 ### 2026-10-09 · v0.1.5-beta.5 — la beta definitiva (5.ª entrega)
 
 - **Informe de dependencias completo**: se corrigió el nombre de importación

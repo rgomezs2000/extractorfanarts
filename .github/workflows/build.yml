@@ -199,10 +199,22 @@ jobs:
           mv */instaladores/*.exe */instaladores/*.dmg */instaladores/*.deb . 2>/dev/null || true
           ls -lh
 
+      # El manifiesto de Scoop viaja CON el release (no hay bucket aparte): se genera
+      # desde el propio .zip ya construido, así que el hash es el de este paquete.
+      - name: Generar el manifiesto de Scoop (instalación sin aviso de Windows)
+        run: |
+          cd paquetes
+          python "$GITHUB_WORKSPACE/scripts/scoop/generar_manifiesto.py" \
+            --zip "Imaginteca-Windows.zip" \
+            --version "${GITHUB_REF_NAME#v}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --salida imaginteca.json
+          cat imaginteca.json
+
       - name: Generar huellas SHA-256 (para verificar la descarga)
         run: |
           cd paquetes
-          for f in *.zip *.tar.gz *.exe *.dmg *.deb; do
+          for f in *.zip *.tar.gz *.exe *.dmg *.deb *.json; do
             [ -f "$f" ] || continue
             sha256sum "$f" > "$f.sha256"
             cat "$f.sha256"
@@ -231,13 +243,14 @@ jobs:
             paquetes/*.exe
             paquetes/*.dmg
             paquetes/*.deb
+            paquetes/imaginteca.json
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Desde v0.1.5-beta.5 (la beta DEFINITIVA) los releases se publican como
+          # Desde v0.1.5-beta.6 (la beta DEFINITIVA) los releases se publican como
           # OFICIALES, no como pre-release: la versión sigue llamándose «beta», pero
           # el release es el oficial y GitHub lo marca como «Latest». Las betas
-          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.5) quedaron como pre-release.
+          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.6) quedaron como pre-release.
           prerelease: false
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true
@@ -261,9 +274,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          # Solo lo que se publica: portátil (.zip y .tar.gz), instalador y huellas.
+          # Solo lo que se publica: portátil (.zip y .tar.gz), instalador, el manifiesto
+          # de Scoop y las huellas.
           esperados=$(find paquetes -maxdepth 1 -type f \
             \( -name '*.zip' -o -name '*.tar.gz' -o -name '*.exe' \
-               -o -name '*.dmg' -o -name '*.deb' -o -name '*.sha256' \) | wc -l)
+               -o -name '*.dmg' -o -name '*.deb' -o -name '*.sha256' \
+               -o -name 'imaginteca.json' \) | wc -l)
           echo "Adjuntos esperados: $esperados"
           python scripts/limpiar_release.py --comprobar "$esperados"

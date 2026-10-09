@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.6 — 9 de octubre de 2026 · la beta definitiva (6.ª entrega)
+
+**Scoop, dentro del propio release**
+- El manifiesto de Scoop (`imaginteca.json`) **viaja con el proyecto y con cada
+  release**: el flujo lo regenera desde el `.zip` publicado (con su hash) y lo publica
+  como adjunto, así que **no hay que crear ni mantener ningún repositorio aparte**.
+- Instalación sin ventana azul, en **una sola orden**:
+  `scoop install https://github.com/rgomezs2000/extractorfanarts/releases/latest/download/imaginteca.json`
+
+**Firma automática en cada compilación**
+- `scripts\build_exe.py` firma el ejecutable **solo** cuando hay certificado
+  configurado (y avisa cuando no lo hay). En el flujo se firman el ejecutable, el
+  asistente de Pixiv y el instalador.
+
+---
+
 ## v0.1.5-beta.5 — 9 de octubre de 2026 · la beta definitiva (5.ª entrega)
 
 **Informe de dependencias, corregido del todo**

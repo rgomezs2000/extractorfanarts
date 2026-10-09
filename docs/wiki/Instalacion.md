@@ -73,9 +73,11 @@ autoridad, y **no hay ninguno gratuito**. La vía **gratuita** que funciona es
 **Scoop**, que descarga el paquete sin la marca de internet que dispara SmartScreen:
 
 ```powershell
-scoop bucket add rgomezs2000 https://github.com/rgomezs2000/scoop-bucket
-scoop install imaginteca      # sin aviso; se actualiza con «scoop update imaginteca»
+scoop install https://github.com/rgomezs2000/extractorfanarts/releases/latest/download/imaginteca.json
 ```
+
+El manifiesto **viaja dentro del release** (`imaginteca.json`), así que no hay que crear
+ni mantener ningún repositorio aparte. Se actualiza con `scoop update imaginteca`.
 
 También sirven **Chocolatey** y **winget** (gratis, con revisión), y con el tiempo la
 **reputación** hace que SmartScreen deje de avisar. Los detalles, en el repositorio

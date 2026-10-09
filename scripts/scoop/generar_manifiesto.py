@@ -15,7 +15,7 @@ manifiesto dentro. Los usuarios instalan con:
 Uso (lo puede ejecutar el flujo de publicación o tú a mano):
 
     python scripts\\scoop\\generar_manifiesto.py                    # última release
-    python scripts\\scoop\\generar_manifiesto.py --etiqueta v0.1.5-beta.5
+    python scripts\\scoop\\generar_manifiesto.py --etiqueta v0.1.5-beta.6
 """
 from __future__ import annotations
 
@@ -87,21 +87,45 @@ def release(etiqueta: str) -> tuple[dict, str]:
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Manifiesto de Scoop.")
     analizador.add_argument("--etiqueta", default="",
-                            help="etiqueta concreta (v0.1.5-beta.5); por defecto, la última oficial")
+                            help="etiqueta concreta (v0.1.5-beta.6); por defecto, la última oficial")
+    analizador.add_argument("--zip", default="",
+                            help="paquete .zip ya construido: calcula el hash en local "
+                                 "(lo usa el flujo de publicación, sin consultar GitHub)")
+    analizador.add_argument("--version", default="",
+                            help="versión a la que corresponde el .zip (con --zip)")
+    analizador.add_argument("--repo", default="",
+                            help="repositorio usuario/nombre para las URL (con --zip)")
+    analizador.add_argument("--salida", default=str(DESTINO))
     argumentos = analizador.parse_args()
 
-    datos, repo = release(argumentos.etiqueta)
-    version = str(datos.get("tag_name") or "").lstrip("vV")
-    activos = {a["name"]: a["browser_download_url"] for a in datos.get("assets") or []}
-    paquete = "Imaginteca-Windows.zip"
-    if paquete not in activos:
-        raise SystemExit(f"[error] la release {version} no trae {paquete}")
-    huella = activos.get(f"{paquete}.sha256")
-    if not huella:
-        raise SystemExit(f"[error] falta {paquete}.sha256: no puedo calcular el hash")
-    # El .sha256 publicado es «<hash>  <archivo>»
-    hash_sha = _leer(huella, 90).decode("utf-8", "replace").split()[0].strip().lower()
-    print(f"[info] versión {version} · repositorio {repo} · sha256 {hash_sha[:16]}…")
+    if argumentos.zip:
+        # Modo compilación: el paquete se acaba de construir y todavía no hay release.
+        import hashlib
+
+        zip_ruta = Path(argumentos.zip).resolve()
+        if not zip_ruta.is_file():
+            raise SystemExit(f"[error] no existe el paquete: {zip_ruta}")
+        version = argumentos.version or config.APP_VERSION
+        repo = argumentos.repo or REPOS[0]
+        resumen = hashlib.sha256(zip_ruta.read_bytes()).hexdigest()
+        url = (f"https://github.com/{repo}/releases/download/v{version}/"
+               f"{zip_ruta.name}")
+        print(f"[info] {zip_ruta.name} · versión {version} · {repo}")
+        print(f"[info] sha256 calculado en local: {resumen[:16]}…")
+    else:
+        datos, repo = release(argumentos.etiqueta)
+        version = str(datos.get("tag_name") or "").lstrip("vV")
+        activos = {a["name"]: a["browser_download_url"] for a in datos.get("assets") or []}
+        paquete = "Imaginteca-Windows.zip"
+        if paquete not in activos:
+            raise SystemExit(f"[error] la release {version} no trae {paquete}")
+        huella = activos.get(f"{paquete}.sha256")
+        if not huella:
+            raise SystemExit(f"[error] falta {paquete}.sha256: no puedo calcular el hash")
+        # El .sha256 publicado es «<hash>  <archivo>»
+        resumen = _leer(huella, 90).decode("utf-8", "replace").split()[0].strip().lower()
+        url = activos[paquete]
+        print(f"[info] versión {version} · repositorio {repo} · sha256 {resumen[:16]}…")
 
     manifiesto = {
         "version": version,
@@ -111,8 +135,8 @@ def main() -> int:
         "license": "Proprietary",
         "architecture": {
             "64bit": {
-                "url": activos[paquete],
-                "hash": f"sha256:{hash_sha}",
+                "url": url,
+                "hash": f"sha256:{resumen}",
             }
         },
         "extract_dir": config.APP_NAME,
@@ -123,23 +147,20 @@ def main() -> int:
             "architecture": {
                 "64bit": {
                     "url": f"https://github.com/{repo}/releases/download/"
-                           f"v$version/{paquete}"
+                           f"v$version/Imaginteca-Windows.zip"
                 }
             }
         },
     }
-    DESTINO.parent.mkdir(parents=True, exist_ok=True)
-    DESTINO.write_text(json.dumps(manifiesto, ensure_ascii=False, indent=4) + "\n",
+    destino = Path(argumentos.salida)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_text(json.dumps(manifiesto, ensure_ascii=False, indent=4) + "\n",
                        encoding="utf-8")
-    print(f"[ok] manifiesto escrito: {DESTINO}")
+    print(f"[ok] manifiesto escrito: {destino}")
     print()
-    print("Para publicarlo (una sola vez):")
-    print("  1. Crea un repositorio llamado «scoop-bucket» en tu cuenta.")
-    print(f"  2. Sube la carpeta {DESTINO.parent.name}/ con este archivo.")
-    print("  3. Los usuarios instalan sin ventana azul:")
-    print(f"     scoop bucket add {config.UPDATE_REPO.split('/')[0]} "
-          f"https://github.com/{config.UPDATE_REPO.split('/')[0]}/scoop-bucket")
-    print(f"     scoop install {DESTINO.stem}")
+    print("Va DENTRO del repositorio y del release: el usuario no instala nada aparte.")
+    print("Se instala con una sola orden, directo desde el release:")
+    print(f"  scoop install https://github.com/{repo}/releases/latest/download/imaginteca.json")
     return 0
 
 

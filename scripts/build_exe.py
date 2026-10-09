@@ -515,7 +515,17 @@ def main() -> int:
 
     if probar:
         return _probar(carpeta_dist)
-    if firmar:
+    # Firma: automática cuando hay certificado configurado (así **cada compilación sale
+    # firmada**), o a petición con --firmar. Sin certificado no se firma nada: el aviso
+    # azul de SmartScreen solo lo quita un certificado de una autoridad.
+    hay_certificado = any(os.environ.get(v) for v in (
+        "EF_CERT_PFX", "EF_CERT_THUMBPRINT", "WINDOWS_CERT_PFX_BASE64",
+        "WINDOWS_CERT_THUMBPRINT", "TRUSTED_SIGNING_DLIB"))
+    if firmar or (hay_certificado and "--sin-firmar" not in sys.argv):
+        if sys.platform.startswith("win") and not hay_certificado:
+            print("[aviso] no hay certificado configurado: la compilación sale SIN FIRMAR")
+            print("        (SmartScreen seguirá avisando; mira el README, sección de firma)")
+            return 0
         return _firmar(ejecutable)
     return 0
 

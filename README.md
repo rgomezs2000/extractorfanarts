@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.5-beta.5 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.5-beta.6 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -1052,7 +1052,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.5-beta.5 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.5-beta.6 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1160,12 +1160,14 @@ Sin certificado configurado el flujo **no firma nada** y lo dice en el registro:
 paquete se publica igual, con el aviso azul (y con el texto de «no está firmado» en la
 documentación, que es la verdad).
 
-**En tu equipo** también puedes firmar (para probar o para repartirlo tú):
+**La firma es automática en cada compilación**: si hay certificado configurado,
+`scripts\build_exe.py` firma el ejecutable sin pedir nada (y avisa cuando no lo hay):
 
 ```powershell
-# El ejecutable ya compilado (certificado en .pfx)
 $env:EF_CERT_PFX = "C:\ruta\certificado.pfx"; $env:EF_CERT_PASSWORD = "…"
-python scripts\build_exe.py --firmar
+python scripts\build_exe.py            # compila y firma
+python scripts\build_exe.py --firmar   # forzar la firma
+python scripts\build_exe.py --sin-firmar
 
 # O cualquier archivo suelto (ejecutable, asistente, instalador)
 pwsh -File scripts\firmar_windows.ps1 dist\Imaginteca\Imaginteca.exe
@@ -1182,19 +1184,20 @@ autofirmado no sirve (no es de confianza para otros equipos).
 
 La vía **gratuita** que sí funciona es **Scoop**: descarga el paquete **sin la marca de
 internet** que dispara SmartScreen, así que el programa se abre sin ningún aviso. El
-manifiesto ya está en el repositorio (`scoop/imaginteca.json`, generado con
-`scripts\scoop\generar_manifiesto.py`) y solo falta publicarlo en un repositorio
-`scoop-bucket` de tu cuenta:
+manifiesto **viaja con el proyecto y con el release** (`scoop/imaginteca.json`; el flujo
+lo regenera en cada versión con `scripts\scoop\generar_manifiesto.py` y lo publica como
+adjunto), así que **no hay que crear ni mantener ningún repositorio aparte**:
 
 ```powershell
-scoop bucket add rgomezs2000 https://github.com/rgomezs2000/scoop-bucket
-scoop install imaginteca      # sin ventana azul; se actualiza con «scoop update imaginteca»
+scoop install https://github.com/rgomezs2000/extractorfanarts/releases/latest/download/imaginteca.json
+# y se actualiza solo:  scoop update imaginteca
 ```
 
-También valen **Chocolatey** (gratis, con moderación) y **winget** (gratis, aunque
-pueden exigir el instalador firmado), y con el tiempo la **reputación** hace que
-SmartScreen deje de avisar por sí solo. Los detalles, en
-[`scoop/README.md`](scoop/README.md).
+Scoop se instala una vez en el equipo del usuario (es su gestor de paquetes); quien no lo
+quiera tiene el instalador y el portátil de siempre. También valen **Chocolatey** (gratis,
+con moderación) y **winget** (gratis, aunque pueden exigir el instalador firmado), y con
+el tiempo la **reputación** hace que SmartScreen deje de avisar por sí solo. Los detalles,
+en [`scoop/README.md`](scoop/README.md).
 
 ### macOS
 
@@ -1310,12 +1313,12 @@ notas del release.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Betas y releases.** Hasta `v0.1.5-beta.5` las etiquetas se publicaban como
-> **pre-release** de GitHub. Desde **`v0.1.5-beta.5` (la beta definitiva)** el flujo
+> **Betas y releases.** Hasta `v0.1.5-beta.6` las etiquetas se publicaban como
+> **pre-release** de GitHub. Desde **`v0.1.5-beta.6` (la beta definitiva)** el flujo
 > publica **releases OFICIALES** (`prerelease: false`): la versión sigue llamándose
 > «beta», pero aparece como la **última versión** del proyecto y se ofrece como
 > descarga recomendada. El programa marca una versión como beta por **su nombre**
-> (`0.1.5-beta.5`), no por la marca de GitHub.
+> (`0.1.5-beta.6`), no por la marca de GitHub.
 
 ### Opción A — automática (recomendada)
 
@@ -1324,9 +1327,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.5-beta.5"
+git commit -m "release v0.1.5-beta.6"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.5
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.6
 ```
 
 Resultado en unos minutos:
@@ -1335,16 +1338,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.5-windows.zip
-gh release create v0.1.5-beta.5 "dist\Imaginteca-v0.1.5-beta.5-windows.zip" `
-   --title "Imaginteca v0.1.5-beta.5" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.6-windows.zip
+gh release create v0.1.5-beta.6 "dist\Imaginteca-v0.1.5-beta.6-windows.zip" `
+   --title "Imaginteca v0.1.5-beta.6" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.5-beta.5` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.5-beta.6` (crear al publicar) →
 deja **sin marcar** «Set as a pre-release» (desde la beta definitiva los
 releases son oficiales) → adjuntar los paquetes.
 
