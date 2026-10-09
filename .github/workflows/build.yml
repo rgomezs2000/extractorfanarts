@@ -67,6 +67,13 @@ jobs:
         continue-on-error: true
         run: python main.py --selftest
 
+      # La marca hace que el paquete publicado se reconozca como PRODUCCIÓN (y active
+      # las actualizaciones). Se escribe ANTES de compilar para que viaje dentro del
+      # ejecutable; las copias hechas a mano en un equipo no la llevan y quedan como
+      # DESARROLLO (sin actualizaciones).
+      - name: Marcar el paquete como producción
+        run: python scripts/marcar_release.py --version "$(python -c "from app import config; print(config.APP_VERSION)")" --etiqueta "${{ github.ref_name }}"
+
       - name: Compilar
         run: python scripts/build_exe.py
 
@@ -108,6 +115,8 @@ jobs:
           cp LEEME-PRIMERO.txt dist/Imaginteca/ 2>/dev/null || true
           # La guía del usuario viaja como README.md; el README técnico se queda en el repo
           cp README-USUARIO.md dist/Imaginteca/README.md 2>/dev/null || true
+          # La marca de producción también junto al programa (y dentro del .app de macOS)
+          python scripts/marcar_release.py --version "$(python -c "from app import config; print(config.APP_VERSION)")" --etiqueta "${{ github.ref_name }}"
 
       # ── Versión portátil también en .tar.gz (además del .zip del release) ───────
       - name: Versión portátil en .tar.gz
@@ -214,10 +223,10 @@ jobs:
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Desde v0.1.5-beta (la beta DEFINITIVA) los releases se publican como
+          # Desde v0.1.5-beta.2 (la beta DEFINITIVA) los releases se publican como
           # OFICIALES, no como pre-release: la versión sigue llamándose «beta», pero
           # el release es el oficial y GitHub lo marca como «Latest». Las betas
-          # anteriores (v0.1.0-beta.1 … v0.1.5-beta) quedaron como pre-release.
+          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.2) quedaron como pre-release.
           prerelease: false
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true

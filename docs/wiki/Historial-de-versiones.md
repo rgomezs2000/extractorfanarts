@@ -1,5 +1,24 @@
 # Historial de versiones
 
+## v0.1.5-beta.2 — 9 de octubre de 2026 · la beta definitiva (2.ª entrega)
+
+**Canal: desarrollo y producción**
+- El programa distingue de dónde viene: **desarrollo** (código fuente o compilación
+  propia) y **producción** (instalador, portable o consola, con la marca de release
+  `release.json` que escribe el flujo).
+- En **desarrollo** las actualizaciones quedan **desactivadas**: el programa, sus
+  dependencias, la interfaz y el comando `--actualizar`. En **producción** se activan.
+- En **Ayuda → Acerca de** se ve el canal de la copia.
+
+**Comandos para los tres sistemas**
+- Actualización: `Imaginteca --comprobar-actualizacion` y `Imaginteca --actualizar`
+  (Windows y Unix), con la consola visible (Terminal en macOS y el emulador de
+  terminal del escritorio en Linux).
+- Instalación: instalador `.exe` en Windows (con modo silencioso), `.dmg` + copia a
+  Aplicaciones en macOS y `apt install ./…deb` en Linux.
+
+---
+
 ## v0.1.5-beta — 9 de octubre de 2026 · **la beta definitiva**
 
 **Release oficial.** Desde esta versión los releases se publican como **oficiales**

@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.5-beta - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta.2 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -219,7 +219,37 @@ CONTACTO PRIVADO (fallos de seguridad o asuntos que no deban ser publicos):
     Discord: rgomezs2010
 
 
-10) LICENCIA Y GARANTIA
+10) DESARROLLO O PRODUCCION
+
+   El programa sabe de donde viene:
+
+     a) DESARROLLO : el codigo fuente (python main.py) o un .exe compilado por ti.
+                     Las ACTUALIZACIONES estan DESACTIVADAS (el programa, sus
+                     dependencias y el comando). Es a proposito.
+
+     b) PRODUCCION : el paquete del release: instalador, portable o consola.
+                     Las ACTUALIZACIONES estan ACTIVADAS.
+
+   Se ve en: Ayuda -> Acerca de -> Canal.
+
+   COMANDOS DE ACTUALIZACION (los tres sistemas hacen lo mismo):
+
+     Windows        Imaginteca.exe --comprobar-actualizacion
+                    Imaginteca.exe --actualizar
+     macOS / Linux  ./Imaginteca --comprobar-actualizacion
+                    ./Imaginteca --actualizar
+
+   COMANDOS DE INSTALACION:
+
+     Windows        .\Imaginteca-<version>-windows-installer.exe
+                    (silencioso: anade /VERYSILENT /SUPPRESSMSGBOXES /NORESTART)
+     macOS          hdiutil attach Imaginteca-<version>-macos-installer.dmg
+                    cp -R "/Volumes/Imaginteca <version>/Imaginteca.app" /Applications/
+                    hdiutil detach "/Volumes/Imaginteca <version>"
+     Linux          sudo apt install ./Imaginteca-<version>-linux-installer.deb
+                    (o: sudo dpkg -i ./Imaginteca-<version>-linux-installer.deb)
+
+11) LICENCIA Y GARANTIA
 -----------------------
 Imaginteca es un programa PROPIETARIO: su autor conserva TODOS los derechos
 (c) 2026 InfoArte. No es software libre.

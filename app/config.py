@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.5-beta"
+APP_VERSION = "0.1.5-beta.2"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -34,6 +34,11 @@ def aviso_copyright(anio_inicial: int = ANIO_INICIAL, autor: str = AUTOR) -> str
 
 AUTOR_COPYRIGHT = aviso_copyright()
 CONTACTO_DISCORD = "rgomezs2010"
+
+# Canal de la copia: "" = automático (lo decide `app/canal.py` según la marca de la
+# release: los paquetes publicados son «produccion» y todo lo demás «desarrollo»).
+# En `config_local.py` se puede forzar: CANAL = "desarrollo" o CANAL = "produccion".
+CANAL = ""
 
 # ------------------------------------------------------------------ actualizaciones
 # Repositorio del que se leen las versiones nuevas (Releases de GitHub). Si renombras

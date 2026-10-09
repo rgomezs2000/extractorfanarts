@@ -226,6 +226,14 @@ def _argumentos(onefile: bool, consola: bool, limpiar: bool) -> list[str]:
     # El archivo de credenciales del usuario NO se empaqueta (se lee de fuera)
     args += ["--exclude-module", "app.config_local"]
 
+    # Marca de producción: si la escribió el flujo de publicación, viaja DENTRO del
+    # ejecutable. Así el paquete se reconoce como «producción» y activa las
+    # actualizaciones, mientras que una compilación propia queda como «desarrollo».
+    marca = ROOT / "build" / "release.json"
+    if marca.is_file():
+        args += ["--add-data", f"{marca}{separador}."]
+        print(f"[ok] marca de producción incluida en el ejecutable: {marca}")
+
     if sys.platform.startswith("win") and not consola:
         args.append("--windowed")
     elif sys.platform == "darwin" and not consola:

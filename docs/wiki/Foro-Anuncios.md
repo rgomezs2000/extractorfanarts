@@ -20,6 +20,14 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.2 — la beta definitiva (2.ª entrega)
+
+- **Desarrollo vs producción**: las copias de desarrollo (código fuente o
+  compilaciones propias) tienen las **actualizaciones desactivadas**; las de
+  producción (instalador, portable y consola) las tienen **activadas**.
+- **Comandos para Windows, macOS y Linux**: `--comprobar-actualizacion` y
+  `--actualizar`, más los comandos de instalación de cada sistema.
+
 ### 2026-10-09 · v0.1.5-beta — la beta definitiva
 
 - **`v0.1.5-beta` se publica como release OFICIAL** (ya no como pre-release): es la

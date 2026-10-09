@@ -28,7 +28,7 @@ registros. La actualización reemplaza **el programa**, no tus datos.
 
 Se comparan correctamente, incluidas las betas:
 
-- `0.1.5-beta` es **más nueva** que `0.1.0-beta.1`
+- `0.1.5-beta.2` es **más nueva** que `0.1.0-beta.1`
 - `0.1.0` (final) es **más nueva** que cualquier `0.1.0-beta.x`
 
 Las versiones **beta cuentan como versión nueva**, porque es lo que se publica por
@@ -68,10 +68,66 @@ informe sale **en pantalla y en la consola**.
   informe: la consola **no se cierra ni se reinicia**, solo se reinicia el
   programa.
 
+## Desarrollo y producción (canal de la copia)
+
+El programa sabe **de dónde viene** y cambia su comportamiento:
+
+| Copia | Cómo se reconoce | Actualizaciones |
+|---|---|---|
+| **Desarrollo** | el código fuente (`python main.py`) y **cualquier compilación propia** (un `.exe` hecho con `scripts\build_exe.py` en tu equipo) | **Desactivadas**: ni el programa, ni las dependencias, ni el comando |
+| **Producción** | los paquetes que reparte el proyecto: **instalador**, **portable** y la copia usada **desde la consola** | **Activadas**, en la interfaz y por comando |
+
+La diferencia es una **marca de release** (`release.json`) que el flujo de publicación
+escribe *dentro* del paquete (`scripts\marcar_release.py`); las copias hechas a mano no
+la llevan. Se puede forzar en `config_local.py` con `CANAL = "desarrollo"` o
+`CANAL = "produccion"`. En **Ayuda → Acerca de** se ve el canal de la copia que estás
+usando.
+
+### Comandos de instalación, por sistema
+
+```powershell
+# Windows (asistente; también admite instalación silenciosa)
+.\Imaginteca-<versión>-windows-installer.exe
+.\Imaginteca-<versión>-windows-installer.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+```
+```bash
+# macOS (montar el .dmg y copiar la aplicación)
+hdiutil attach Imaginteca-<versión>-macos-installer.dmg
+cp -R "/Volumes/Imaginteca <versión>/Imaginteca.app" /Applications/
+hdiutil detach "/Volumes/Imaginteca <versión>"
+```
+```bash
+# Linux (Debian, Ubuntu, Mint…)
+sudo apt install ./Imaginteca-<versión>-linux-installer.deb
+sudo dpkg -i      ./Imaginteca-<versión>-linux-installer.deb   # alternativa
+```
+
+### Comandos de actualización, por sistema
+
+Los tres hacen lo mismo: comprueban, descargan, **verifican la huella**, reemplazan la
+copia (conservando tus claves), borran los restos y **vuelven a abrir el programa**,
+dejando la consola abierta con el informe.
+
+```powershell
+# Windows
+Imaginteca.exe --comprobar-actualizacion
+Imaginteca.exe --actualizar
+```
+```bash
+# macOS / Linux
+./Imaginteca --comprobar-actualizacion
+./Imaginteca --actualizar
+```
+
+En las copias de **desarrollo** estos comandos están desactivados (`--actualizar`
+avisa y no hace nada).
+
+---
+
 ## Beta definitiva y releases oficiales
 
-Hasta la `0.1.5-beta` las versiones se publicaban como **pre-release**. Desde la
-**`0.1.5-beta` (beta definitiva)**, los releases se publican como **oficiales**: la
+Hasta la `0.1.5-beta.2` las versiones se publicaban como **pre-release**. Desde la
+**`0.1.5-beta.2` (beta definitiva)**, los releases se publican como **oficiales**: la
 versión sigue llamándose «beta», pero es la **última versión** del proyecto y la
 descarga recomendada. El programa sabe que una versión es beta por **su nombre**.
 
@@ -80,7 +136,7 @@ descarga recomendada. El programa sabe que una versión es beta por **su nombre*
 - **Ayuda → Acerca de** (o el botón **ℹ️**): versión instalada, entorno y rutas.
 - `Imaginteca.exe --version` en una consola.
 - El paquete se llama `Imaginteca-Windows.zip` / `-Linux` / `-macOS`, y el Release
-  indica la etiqueta (`v0.1.5-beta`).
+  indica la etiqueta (`v0.1.5-beta.2`).
 
 ---
 

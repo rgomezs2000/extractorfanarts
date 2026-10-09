@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.2 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -664,6 +664,29 @@ pantalla. Es lo más útil que puedes adjuntar si pides ayuda.
 
 ---
 
+### 16.1 Desarrollo o producción: cuándo hay actualizaciones
+
+- **Producción** (el paquete que instala el instalador, el **portable** o el que usas
+  **desde la consola**): las actualizaciones están **activadas**, en el programa y por
+  comando.
+- **Desarrollo** (el código fuente o un `.exe` compilado por ti en tu equipo): están
+  **desactivadas** a propósito, y el programa te lo dice si lo intentas.
+
+En **Ayuda → Acerca de** aparece el **canal** de tu copia.
+
+**Comandos de actualización** (iguales en los tres sistemas):
+
+```powershell
+Imaginteca.exe --comprobar-actualizacion   # Windows: ¿hay versión nueva?
+Imaginteca.exe --actualizar                # Windows: instala y reinicia
+./Imaginteca --comprobar-actualizacion     # macOS y Linux
+./Imaginteca --actualizar                  # macOS y Linux
+```
+
+**Comandos de instalación**: en Windows, el instalador `.exe` (admite
+`/VERYSILENT`); en macOS, montar el `.dmg` y copiar `Imaginteca.app` a
+`/Applications`; en Linux, `sudo apt install ./Imaginteca-...-linux-installer.deb`.
+
 ### 16.1 Dependencias del sistema (mantenimiento)
 
 **Ayuda → 🧩 Dependencias del sistema** muestra el estado del **intérprete de
@@ -781,5 +804,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.2 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

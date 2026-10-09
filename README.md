@@ -1,6 +1,6 @@
 # Imaginteca
 
-**Versión 0.1.5-beta · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
+**Versión 0.1.5-beta.2 · beta definitiva, publicada como release oficial** · Python 3.12 · PySide6 (Qt) · Windows · macOS · Linux · **Licencia propietaria (todos los derechos reservados)**
 
 **Imaginteca** es una aplicación de escritorio para **reunir, ordenar y preparar
 una colección personal de imágenes**: busca en redes sociales, boorus y wikis de
@@ -727,6 +727,62 @@ construcción de la ventana en segundo plano. Deja el informe en
 
 ---
 
+## Desarrollo y producción (canal de la copia)
+
+El programa sabe **de dónde viene** y cambia su comportamiento:
+
+| Copia | Cómo se reconoce | Actualizaciones |
+|---|---|---|
+| **Desarrollo** | el código fuente (`python main.py`) y **cualquier compilación propia** (un `.exe` hecho con `scripts\build_exe.py` en tu equipo) | **Desactivadas**: ni el programa, ni las dependencias, ni el comando |
+| **Producción** | los paquetes que reparte el proyecto: **instalador**, **portable** y la copia usada **desde la consola** | **Activadas**, en la interfaz y por comando |
+
+La diferencia es una **marca de release** (`release.json`) que el flujo de publicación
+escribe *dentro* del paquete (`scripts\marcar_release.py`); las copias hechas a mano no
+la llevan. Se puede forzar en `config_local.py` con `CANAL = "desarrollo"` o
+`CANAL = "produccion"`. En **Ayuda → Acerca de** se ve el canal de la copia que estás
+usando.
+
+### Comandos de instalación, por sistema
+
+```powershell
+# Windows (asistente; también admite instalación silenciosa)
+.\Imaginteca-<versión>-windows-installer.exe
+.\Imaginteca-<versión>-windows-installer.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+```
+```bash
+# macOS (montar el .dmg y copiar la aplicación)
+hdiutil attach Imaginteca-<versión>-macos-installer.dmg
+cp -R "/Volumes/Imaginteca <versión>/Imaginteca.app" /Applications/
+hdiutil detach "/Volumes/Imaginteca <versión>"
+```
+```bash
+# Linux (Debian, Ubuntu, Mint…)
+sudo apt install ./Imaginteca-<versión>-linux-installer.deb
+sudo dpkg -i      ./Imaginteca-<versión>-linux-installer.deb   # alternativa
+```
+
+### Comandos de actualización, por sistema
+
+Los tres hacen lo mismo: comprueban, descargan, **verifican la huella**, reemplazan la
+copia (conservando tus claves), borran los restos y **vuelven a abrir el programa**,
+dejando la consola abierta con el informe.
+
+```powershell
+# Windows
+Imaginteca.exe --comprobar-actualizacion
+Imaginteca.exe --actualizar
+```
+```bash
+# macOS / Linux
+./Imaginteca --comprobar-actualizacion
+./Imaginteca --actualizar
+```
+
+En las copias de **desarrollo** estos comandos están desactivados (`--actualizar`
+avisa y no hace nada).
+
+---
+
 ## 10. Configuración
 
 ### 10.1 Dónde van las claves
@@ -996,7 +1052,7 @@ y carpeta de salida); desde ahí mismo se puede **buscar actualizaciones**.
 El botón 🔄 **Actualizaciones** consulta los **Releases** del repositorio
 (`config.UPDATE_REPO`) y compara la publicada con la instalada
 (`app/updater.py::clave_version`), con el orden correcto: `0.1.0-beta.9 < 0.1.0` y
-`0.1.5-beta > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
+`0.1.5-beta.2 > 0.1.0-beta.1`. Si hay una más nueva muestra **cuál tienes y cuál hay**
 —etiqueta, fecha, tamaño del paquete y notas de la versión— y ofrece **descargar e
 instalar**.
 
@@ -1180,12 +1236,12 @@ notas del release.
 La versión se toma de `APP_VERSION` en [`app/config.py`](app/config.py) y puede
 forzarse con `python scripts\release.py --version 0.2.0`.
 
-> **Betas y releases.** Hasta `v0.1.5-beta` las etiquetas se publicaban como
-> **pre-release** de GitHub. Desde **`v0.1.5-beta` (la beta definitiva)** el flujo
+> **Betas y releases.** Hasta `v0.1.5-beta.2` las etiquetas se publicaban como
+> **pre-release** de GitHub. Desde **`v0.1.5-beta.2` (la beta definitiva)** el flujo
 > publica **releases OFICIALES** (`prerelease: false`): la versión sigue llamándose
 > «beta», pero aparece como la **última versión** del proyecto y se ofrece como
 > descarga recomendada. El programa marca una versión como beta por **su nombre**
-> (`0.1.5-beta`), no por la marca de GitHub.
+> (`0.1.5-beta.2`), no por la marca de GitHub.
 
 ### Opción A — automática (recomendada)
 
@@ -1194,9 +1250,9 @@ crea el Release con los tres `.zip` adjuntos:
 
 ```powershell
 git add -A
-git commit -m "release v0.1.5-beta"
+git commit -m "release v0.1.5-beta.2"
 git push
-python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta
+python scripts\release.py --tag        # crea y sube la etiqueta v0.1.5-beta.2
 ```
 
 Resultado en unos minutos:
@@ -1205,16 +1261,16 @@ Resultado en unos minutos:
 ### Opción B — local (sube el `.zip` ya compilado)
 
 ```powershell
-python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta-windows.zip
-gh release create v0.1.5-beta "dist\Imaginteca-v0.1.5-beta-windows.zip" `
-   --title "Imaginteca v0.1.5-beta" --prerelease --generate-notes
+python scripts\release.py              # crea dist\Imaginteca-v0.1.5-beta.2-windows.zip
+gh release create v0.1.5-beta.2 "dist\Imaginteca-v0.1.5-beta.2-windows.zip" `
+   --title "Imaginteca v0.1.5-beta.2" --prerelease --generate-notes
 ```
 
 *(si no tienes GitHub CLI: `winget install --id GitHub.cli` y luego `gh auth login`)*
 
 ### Opción C — a mano desde la web
 
-*Releases → Draft a new release* → etiqueta `v0.1.5-beta` (crear al publicar) →
+*Releases → Draft a new release* → etiqueta `v0.1.5-beta.2` (crear al publicar) →
 deja **sin marcar** «Set as a pre-release» (desde la beta definitiva los
 releases son oficiales) → adjuntar los paquetes.
 

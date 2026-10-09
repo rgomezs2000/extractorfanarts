@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
     QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QVBoxLayout, QWidget,
 )
 
-from .. import ayuda, config, dependencias, updater
+from .. import ayuda, canal, config, dependencias, updater
 from ..controllers.main_controller import MainController
 from ..services import filters as filtros
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
@@ -1257,6 +1257,12 @@ class MainWindow(QMainWindow):
             "Python, paquetes esenciales y motores de IA: estado y actualización")
         self.act_dependencias.triggered.connect(self._comprobar_dependencias)
         menu_ayuda.addAction(self.act_dependencias)
+        # Canal de la copia: en DESARROLLO (código fuente o compilación propia) las
+        # actualizaciones están desactivadas; en PRODUCCIÓN (paquete del release) se
+        # activan. El motivo se explica en el propio aviso emergente.
+        if canal.es_desarrollo():
+            self.act_actualizar.setEnabled(False)
+            self.act_actualizar.setToolTip(canal.motivo_desactivado().replace("**", ""))
         menu_ayuda.addSeparator()
         # Comunidad y asistencia técnica: el foro es donde se pregunta y se comenta,
         # y también donde se hace valer la garantía del autor.
@@ -1351,6 +1357,13 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------------------ actualizaciones
     def _buscar_actualizaciones(self) -> None:
+        # Puerta defensiva: en DESARROLLO no se actualiza nada, se llegue por donde se
+        # llegue (menú, barra, «Acerca de» o un atajo).
+        if not canal.actualizaciones_activas():
+            self.statusBar().showMessage("Copia de desarrollo: actualizaciones desactivadas")
+            QMessageBox.information(self, "Actualizaciones desactivadas",
+                                    canal.motivo_desactivado())
+            return
         """Consulta las versiones publicadas en segundo plano."""
         if getattr(self, "_consulta_actualizacion", False):
             return
@@ -1614,6 +1627,10 @@ class _DialogoAcerca(QDialog):
         self.btn_actualizar = botones.addButton("🔄 Buscar actualizaciones",
                                                 QDialogButtonBox.ActionRole)
         self.btn_actualizar.setToolTip("Comprueba la última versión publicada y la instala")
+        if canal.es_desarrollo():
+            self.btn_actualizar.setEnabled(False)
+            self.btn_actualizar.setToolTip(
+                canal.motivo_desactivado().replace("**", ""))
         self.btn_licencia = botones.addButton("📜 Ver licencia completa",
                                               QDialogButtonBox.ActionRole)
         self.btn_licencia.setToolTip("Abre la licencia entera en una ventana")
@@ -1650,6 +1667,9 @@ class _DialogoAcerca(QDialog):
         redes sociales, booros y wikis de fandom.</p>
         <p><b>Versión instalada:</b> {config.APP_VERSION}
         {'(beta)' if 'beta' in config.APP_VERSION else ''}<br>
+        <b>Canal:</b> {canal.descripcion()}
+        {'· actualizaciones activadas' if canal.actualizaciones_activas()
+         else '· actualizaciones desactivadas (copia de desarrollo)'}<br>
         <b>Autor:</b> {config.AUTOR} ·
         <b>Discord:</b> {config.CONTACTO_DISCORD}<br>
         <b>Licencia:</b> propietaria · {config.AUTOR_COPYRIGHT} · todos los derechos
@@ -1790,13 +1810,16 @@ class _DialogoDependencias(QDialog):
         self._senales.fallo.connect(self._on_fallo)
 
         diseño = QVBoxLayout(self)
-        explicacion = QLabel(
+        self.aviso = QLabel(
             "Comprueba el <b>intérprete de Python</b>, los <b>paquetes esenciales</b> "
             "(Qt/PySide6, Pillow, httpx, curl_cffi…) y los <b>motores de IA</b>.<br>"
             "El informe se muestra aquí y también en la <b>consola</b>.")
-        explicacion.setWordWrap(True)
-        explicacion.setTextFormat(Qt.RichText)
-        diseño.addWidget(explicacion)
+        self.aviso.setWordWrap(True)
+        self.aviso.setTextFormat(Qt.RichText)
+        if canal.es_desarrollo():
+            self.aviso.setText(self.aviso.text() + " <b>Copia de desarrollo:</b> aquí se "
+                               "puede consultar el estado, pero no actualizar.")
+        diseño.addWidget(self.aviso)
 
         self.visor = QTextBrowser()
         self.visor.setLineWrapMode(QTextBrowser.NoWrap)
@@ -1838,14 +1861,25 @@ class _DialogoDependencias(QDialog):
         lineas = dependencias.resumen(datos)
         self.visor.setPlainText("\n".join(lineas))
         dependencias.escribir_en_consola(lineas)     # el informe, también en consola
-        self.btn_actualizar.setEnabled(
-            bool(datos.get("actualizables")) and not datos.get("empaquetado"))
-        if datos.get("empaquetado"):
+        if canal.es_desarrollo():
+            # Desarrollo: se puede consultar, pero no actualizar (ni el programa, ni
+            # las dependencias, ni desde la consola).
+            self.btn_actualizar.setEnabled(False)
             self.btn_actualizar.setToolTip(
-                "Esta copia está empaquetada: sus dependencias se actualizan con "
-                "«🔄 Actualizaciones»")
-        elif not datos.get("actualizables"):
-            self.btn_actualizar.setToolTip("Todo está al día")
+                canal.motivo_desactivado().replace("**", ""))
+        elif datos.get("empaquetado"):
+            # Producción empaquetada: las dependencias viajan DENTRO del programa, así
+            # que la forma de actualizarlas es actualizar el propio programa.
+            self.btn_actualizar.setEnabled(True)
+            self.btn_actualizar.setText("⬆️ Actualizar con el programa")
+            self.btn_actualizar.setToolTip(
+                "En una copia de producción las dependencias van dentro del programa: "
+                "se actualizan con «🔄 Actualizaciones»")
+        else:
+            self.btn_actualizar.setEnabled(bool(datos.get("actualizables")))
+            self.btn_actualizar.setToolTip(
+                "Todo está al día" if not datos.get("actualizables")
+                else "Actualiza los paquetes en «vendor/»")
 
     def _on_fallo(self, motivo: str) -> None:
         self.btn_comprobar.setEnabled(True)
@@ -1860,11 +1894,15 @@ class _DialogoDependencias(QDialog):
 
     def _actualizar(self) -> None:
         datos = self._datos or {}
+        if canal.es_desarrollo():
+            QMessageBox.information(self, "Actualizaciones desactivadas",
+                                    canal.motivo_desactivado())
+            return
         if datos.get("empaquetado"):
-            QMessageBox.information(
-                self, "Dependencias",
-                "Esta copia está empaquetada: las dependencias viajan dentro del\n"
-                "programa, así que se actualizan con «🔄 Actualizaciones».")
+            # Producción: se actualiza el programa (y con él sus dependencias)
+            self.accept()
+            if self._padre is not None and hasattr(self._padre, "_buscar_actualizaciones"):
+                self._padre._buscar_actualizaciones()
             return
         pendientes = ", ".join(datos.get("actualizables") or [])
         respuesta = QMessageBox.question(

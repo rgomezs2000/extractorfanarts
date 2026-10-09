@@ -21,6 +21,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,7 +30,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-from . import config
+from . import canal, config
 
 logger = logging.getLogger("imaginteca")
 
@@ -45,7 +46,7 @@ _SISTEMAS = {"win32": "Windows", "darwin": "macOS", "linux": "Linux"}
 def clave_version(texto: str) -> tuple[int, int, int, int, int]:
     """Clave comparable: (mayor, menor, parche, es_final, número de beta).
 
-    Así `0.1.5-beta > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
+    Así `0.1.5-beta.2 > 0.1.0-beta.1` y cualquier beta queda ANTES de la versión
     final (`0.1.0-beta.9 < 0.1.0`), que es el orden correcto al publicar.
     """
     texto = (texto or "").strip().lstrip("vV")
@@ -147,7 +148,7 @@ def consultar_ultima(incluir_betas: bool | None = None,
         "notas": elegido.get("body") or "",
         "publicado": elegido.get("published_at") or "",
         "url": elegido.get("html_url") or "",
-        # «beta» se deduce del NOMBRE de la versión (0.1.5-beta), no de la marca
+        # «beta» se deduce del NOMBRE de la versión (0.1.5-beta.2), no de la marca
         # pre-release de GitHub: desde la beta definitiva los releases son oficiales
         # y, aun así, la versión sigue siendo una beta.
         "beta": bool(elegido.get("prerelease"))
@@ -354,24 +355,66 @@ def escribir_actualizador(paquete: Path, carpeta: Path | None = None) -> Path:
         'rm -rf "$VIEJA" "$BAJADA" "$NUEVA"\n'
         f'rm -f "{paquete}"\n'
         f'rm -rf "{temporal}"\n'
-        'echo "Listo: el programa se ha reiniciado y todo quedó limpio."\n',
+        'echo "Listo: el programa se ha reiniciado y todo quedó limpio."\n'
+        'echo.\n'
+        'echo "ESTA CONSOLA NO SE CIERRA NI SE REINICIA: el programa se ha"\n'
+        'echo "reiniciado por su cuenta. Dejala abierta para leer el informe."\n'
+        'printf "Pulsa Intro para cerrar esta consola... "\n'
+        'read -r _ || true\n',
         encoding="utf-8",
     )
-    guion.chmod(0o755)
+    if sys.platform == "darwin":
+        # En macOS el escritorio lanza los «.command» con doble clic y Terminal los
+        # abre; así la consola se ve y se queda abierta al terminar.
+        destino = guion.with_suffix(".command")
+        guion.rename(destino)
+        guion = destino
+        guion.chmod(0o755)
     return guion
 
 
 def lanzar_actualizador(guion: Path) -> None:
     """Arranca el script en una **consola visible** que no se cierra al terminar.
 
-    Así se ve todo el proceso (espera, copia, reapertura) y el informe queda en
-    pantalla: la consola no se cierra ni se reinicia, solo el programa.
+    Vale para los tres sistemas:
+
+      - **Windows**: una ventana de `cmd` (`cmd /k`) con el informe.
+      - **macOS**: el script se guarda como `.command` y se abre con Terminal.
+      - **Linux**: se busca un emulador de terminal (el del escritorio, y si no,
+        `xterm`); si no hay ninguno, se ejecuta en segundo plano sin ventana.
     """
     if sys.platform.startswith("win"):
         subprocess.Popen(["cmd", "/c", "start", f"{config.APP_NAME} - actualizacion",
                           "cmd", "/k", str(guion)], close_fds=True)
+        return
+    if sys.platform == "darwin":
+        for orden in (["open", "-a", "Terminal", str(guion)],
+                      ["open", str(guion)]):
+            try:
+                subprocess.Popen(orden, close_fds=True)
+                return
+            except OSError:
+                continue
     else:
-        subprocess.Popen(["/bin/sh", str(guion)], close_fds=True, start_new_session=True)
+        for terminal, argumentos in (
+            ("x-terminal-emulator", ["-e"]),
+            ("gnome-terminal", ["--"]),
+            ("konsole", ["-e"]),
+            ("xfce4-terminal", ["-e"]),
+            ("mate-terminal", ["-e"]),
+            ("lxterminal", ["-e"]),
+            ("xterm", ["-e"]),
+        ):
+            if shutil.which(terminal):
+                try:
+                    subprocess.Popen([terminal, *argumentos, "/bin/sh", str(guion)],
+                                     close_fds=True, start_new_session=True)
+                    return
+                except OSError:
+                    continue
+    # Sin terminal gráfico: se ejecuta igualmente (el informe queda en el registro)
+    logger.info("sin emulador de terminal: ejecutando el actualizador en segundo plano")
+    subprocess.Popen(["/bin/sh", str(guion)], close_fds=True, start_new_session=True)
 
 
 def actualizar_desde_consola(solo_comprobar: bool = False, decir=print) -> int:
@@ -386,8 +429,17 @@ def actualizar_desde_consola(solo_comprobar: bool = False, decir=print) -> int:
     decir("=" * 70)
     decir(f"  {config.APP_NAME} · actualización desde la consola")
     decir("=" * 70)
+    decir(f"  canal     : {canal.descripcion()}")
     decir(f"  instalada : {version_actual()}")
     decir(f"  sistema   : {sistema_actual()}")
+    if not solo_comprobar and not canal.actualizaciones_activas():
+        # Copia de DESARROLLO: el comando de actualización está desactivado a propósito.
+        decir("")
+        decir("  [desactivado] " + canal.motivo_desactivado().replace("**", ""))
+        decir("")
+        return 0
+    if canal.es_desarrollo():
+        decir("  [aviso] copia de desarrollo: solo se comprueba, no se instala nada")
     try:
         version = consultar_ultima()
     except OSError as exc:
