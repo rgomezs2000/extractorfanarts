@@ -20,6 +20,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,6 +61,11 @@ def main() -> int:
                             help="usuario/repositorio (por defecto, config.REPO_GITHUB)")
     analizador.add_argument("--comprobar", action="store_true",
                             help="no publica: solo dice qué haría")
+    analizador.add_argument("--esperar", action="store_true",
+                            help="espera a que exista la wiki (tras guardar la primera "
+                                 "página desde la web) y publica sola")
+    analizador.add_argument("--esperar-segundos", type=int, default=1800,
+                            help="cuánto esperar con --esperar (por defecto 1800 = 30 min)")
     argumentos = analizador.parse_args()
 
     if not argumentos.repo:
@@ -85,19 +91,31 @@ def main() -> int:
     url_wiki = f"https://github.com/{argumentos.repo}.wiki.git"
     temporal = Path(tempfile.mkdtemp(prefix="imaginteca-wiki-"))
     try:
-        print(f"[info] clonando la wiki en {temporal} …")
-        codigo, salida = _git(["clone", "--depth", "1", url_wiki, str(temporal)],
-                              permitir_fallo=True)
-        if codigo != 0:
-            print("  [aviso] no se pudo clonar la wiki.")
-            print("  Si es la primera vez, GitHub todavía no ha creado el repositorio")
-            print("  de la wiki. Se crea al guardar la PRIMERA página desde la web:")
-            print(f"    1) Abre https://github.com/{argumentos.repo}/wiki")
-            print("    2) Pulsa «Create the first page» y guarda cualquier título")
-            print("       (por ejemplo «Inicio»); el contenido se reemplazará.")
-            print("    3) Vuelve a ejecutar este script.")
-            print(f"  Detalle de git: {salida}")
-            return 1
+        limite = time.time() + max(0, argumentos.esperar_segundos)
+        avisado = False
+        while True:
+            print(f"[info] clonando la wiki en {temporal} …")
+            codigo, salida = _git(["clone", "--depth", "1", url_wiki, str(temporal)],
+                                  permitir_fallo=True)
+            if codigo == 0:
+                break
+            if not argumentos.esperar or time.time() >= limite:
+                print("  [aviso] no se pudo clonar la wiki.")
+                print("  GitHub NO crea el repositorio de la wiki hasta que se guarda la")
+                print("  PRIMERA página desde la web (no se puede hacer por git):")
+                print(f"    1) Abre https://github.com/{argumentos.repo}/wiki")
+                print("    2) Pulsa «Create the first page» y guarda cualquier título")
+                print("       (por ejemplo «Inicio»); el contenido se reemplazará.")
+                print("    3) Vuelve a ejecutar este script (o usa --esperar).")
+                print(f"  Detalle de git: {salida}")
+                return 1
+            if not avisado:
+                print("  [espera] la wiki todavía no existe. Ve a")
+                print(f"           https://github.com/{argumentos.repo}/wiki")
+                print("           pulsa «Create the first page» y guarda cualquier título:")
+                print(f"           publicaré solo (espero {argumentos.esperar_segundos // 60} min).")
+                avisado = True
+            time.sleep(10)
 
         copiadas = 0
         for pagina in paginas:
