@@ -124,15 +124,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Re-release limpio: si ya existe un Release para esta etiqueta (p. ej. al
-      # re-publicar la MISMA versión), se borra antes para no arrastrar adjuntos
-      # viejos ni chocar con ellos. `gh` ya viene en los runners y --yes evita
-      # la confirmación interactiva. Si no existe, el paso no hace nada.
-      - name: Eliminar un Release previo de esta etiqueta (si existe)
-        continue-on-error: true
+      # Re-release limpio: se borran los adjuntos que ya tuviera el Release de esta
+      # etiqueta (p. ej. de una publicación anterior de la MISMA versión, o con el
+      # nombre antiguo del proyecto). Se hace con `gh api` porque es explícito y deja
+      # su salida en el registro; `gh release delete` fallaba sin decir por qué.
+      - name: Limpiar los adjuntos previos de esta etiqueta
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release delete "${{ github.ref_name }}" --yes
+        run: |
+          echo "Repositorio: $GITHUB_REPOSITORY · etiqueta: $GITHUB_REF_NAME"
+          id="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" --jq .id 2>/dev/null || true)"
+          if [ -z "$id" ]; then
+            echo "No hay Release previo para esta etiqueta: nada que limpiar."
+            exit 0
+          fi
+          echo "Release previo id=$id · adjuntos actuales:"
+          gh api "repos/$GITHUB_REPOSITORY/releases/$id/assets" \
+             --jq '.[] | "  \(.id)  \(.name)"' | tee /tmp/adjuntos.txt
+          while read -r aid nombre; do
+            [ -z "$aid" ] && continue
+            echo "borrando adjunto obsoleto: $nombre"
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$aid"
+          done < /tmp/adjuntos.txt
+          echo "Adjuntos que quedan:"
+          gh api "repos/$GITHUB_REPOSITORY/releases/$id/assets" --jq '.[] | "  \(.name)"' || true
 
       - uses: actions/download-artifact@v4
         with:
@@ -170,3 +185,19 @@ jobs:
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true
           fail_on_unmatched_files: true
+
+      # Guardia: el Release debe quedar con EXACTAMENTE 6 adjuntos (3 .zip + 3 .sha256).
+      # Si aparece cualquier otro (resto de un nombre antiguo, de otra versión…), el
+      # trabajo falla y se ve en el registro en vez de dejar el Release sucio.
+      - name: Comprobar que el Release no arrastra adjuntos viejos
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" \
+             --jq '.assets[].name' | sort | tee /tmp/finales.txt
+          n="$(wc -l < /tmp/finales.txt)"
+          echo "adjuntos en el Release: $n (se esperan 6)"
+          if [ "$n" != "6" ]; then
+            echo "::error::El Release de $GITHUB_REF_NAME tiene $n adjuntos; revisa la limpieza previa."
+            exit 1
+          fi
