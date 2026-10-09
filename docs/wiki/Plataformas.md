@@ -62,5 +62,5 @@ sus condiciones. Están estudiadas y ordenadas por facilidad, en cada página:
 ---
 
 **[Redes sociales](Redes-sociales)** · **[Boorus](Boorus)** ·
-**[Fandoms](Fandoms)** · **[Claves y configuración](Claves-y-configuracion)** ·
-**[Guía rápida](Guia-rapida)**
+**[Fandoms](Fandoms)** · **[Qué se descarga](Contenido)** ·
+**[Claves y configuración](Claves-y-configuracion)** · **[Guía rápida](Guia-rapida)**
