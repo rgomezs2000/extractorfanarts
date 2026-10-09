@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.7 — 9 de octubre de 2026 · la beta definitiva (7.ª entrega)
+
+**Los tres gestores de paquetes, en el release**
+- **Chocolatey** (`chocolatey/`) y **winget** (`winget/`) se suman a **Scoop**: los tres
+  manifiestos se generan en cada versión (`scripts\empaquetadores\generar_manifiestos.py`)
+  y se publican como adjuntos (`imaginteca.json`, `chocolatey-<versión>.zip`,
+  `winget-<versión>.zip`), con sus guías de publicación.
+- **El instalador deja el programa sin el aviso azul**: en el paso final quita la *marca
+  de internet* (`Zone.Identifier`) de los ejecutables instalados.
+- Como los ejecutables se firman **al compilar**, toda instalación recibe copias ya
+  firmadas cuando hay certificado (la clave privada nunca sale del equipo de compilación:
+  el instalador no firma, firma el flujo).
+
+---
+
 ## v0.1.5-beta.6 — 9 de octubre de 2026 · la beta definitiva (6.ª entrega)
 
 **Scoop, dentro del propio release**

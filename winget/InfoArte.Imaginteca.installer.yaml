@@ -1,0 +1,20 @@
+# Manifiesto del instalador (winget)
+PackageIdentifier: InfoArte.Imaginteca
+PackageVersion: 0.1.5-beta.6
+InstallerType: inno
+Scope: user
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+UpgradeBehavior: install
+ReleaseDate: 2026-10-09
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/rgomezs2000/extractorfanarts/releases/download/v0.1.5-beta.6/Imaginteca-0.1.5-beta.6-windows-installer.exe
+    InstallerSha256: F160AE7106DC2B885092D18243C23867EBFCE491CD5BA94FD0921C9E985D91BD
+    InstallerSwitches:
+      Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+      SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART
+ManifestType: installer
+ManifestVersion: 1.6.0

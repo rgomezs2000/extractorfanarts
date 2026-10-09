@@ -79,6 +79,11 @@ scoop install https://github.com/rgomezs2000/extractorfanarts/releases/latest/do
 El manifiesto **viaja dentro del release** (`imaginteca.json`), así que no hay que crear
 ni mantener ningún repositorio aparte. Se actualiza con `scoop update imaginteca`.
 
+También hay paquetes para **Chocolatey** (`choco install imaginteca`) y manifiestos para
+**winget** (`winget install InfoArte.Imaginteca`), publicados en cada release. Y si lo
+instalas con el **asistente**, el programa queda **sin el aviso azul**: el instalador le
+quita a los ejecutables la marca de internet que lo dispara.
+
 También sirven **Chocolatey** y **winget** (gratis, con revisión), y con el tiempo la
 **reputación** hace que SmartScreen deje de avisar. Los detalles, en el repositorio
 ([`scoop/README.md`](https://github.com/rgomezs2000/extractorfanarts/blob/main/scoop/README.md)).

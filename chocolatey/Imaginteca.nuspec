@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>imaginteca</id>
+    <version>0.1.5-beta.6</version>
+    <title>Imaginteca</title>
+    <authors>InfoArte</authors>
+    <owners>InfoArte</owners>
+    <projectUrl>https://github.com/rgomezs2000/extractorfanarts</projectUrl>
+    <packageSourceUrl>https://github.com/rgomezs2000/extractorfanarts/tree/main/chocolatey</packageSourceUrl>
+    <license type="expression">LicenseRef-Proprietary</license>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/rgomezs2000/extractorfanarts</projectSourceUrl>
+    <docsUrl>https://github.com/rgomezs2000/extractorfanarts/wiki</docsUrl>
+    <summary>Imaginteca: reúne, ordena y prepara colecciones de imágenes listas como datasets (LoRA, LyCORIS, checkpoints) o como galería</summary>
+    <description>Imaginteca: reúne, ordena y prepara colecciones de imágenes listas como datasets (LoRA, LyCORIS, checkpoints) o como galería</description>
+    <tags>imagenes datasets fanart lora galeria imaginteca</tags>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

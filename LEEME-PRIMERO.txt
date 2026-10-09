@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.5-beta.6 - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta.7 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -55,6 +55,9 @@ que registrarse y no se recogen datos.
                   manifiesto va dentro del propio release, no hay que crear nada):
                   scoop install https://github.com/rgomezs2000/extractorfanarts/
                   releases/latest/download/imaginteca.json
+                  (tambien hay paquete para Chocolatey y manifiestos para winget,
+                   publicados con cada version; y al instalar con el asistente el
+                   programa queda sin el aviso: se le quita la marca de internet)
        macOS   : clic derecho en la aplicacion -> Abrir
                  (si se resiste: xattr -dr com.apple.quarantine Imaginteca.app)
        Linux   : chmod +x Imaginteca   y luego ejecutalo

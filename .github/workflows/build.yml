@@ -199,16 +199,24 @@ jobs:
           mv */instaladores/*.exe */instaladores/*.dmg */instaladores/*.deb . 2>/dev/null || true
           ls -lh
 
-      # El manifiesto de Scoop viaja CON el release (no hay bucket aparte): se genera
-      # desde el propio .zip ya construido, así que el hash es el de este paquete.
-      - name: Generar el manifiesto de Scoop (instalación sin aviso de Windows)
+      # Los manifiestos de los gestores de paquetes (Scoop, Chocolatey y winget) viajan
+      # CON el release: no hay que mantener repositorios aparte. Se generan desde los
+      # archivos recién construidos, así que el hash es el de este paquete.
+      - name: Generar los manifiestos (Scoop, Chocolatey y winget)
         run: |
           cd paquetes
-          python "$GITHUB_WORKSPACE/scripts/scoop/generar_manifiesto.py" \
-            --zip "Imaginteca-Windows.zip" \
+          instalador=$(ls Imaginteca-*-windows-installer.exe | head -1)
+          python "$GITHUB_WORKSPACE/scripts/empaquetadores/generar_manifiestos.py" \
             --version "${GITHUB_REF_NAME#v}" \
             --repo "$GITHUB_REPOSITORY" \
-            --salida imaginteca.json
+            --instalador "$instalador" \
+            --zip "Imaginteca-Windows.zip" \
+            --salida manifiestos
+          # El de Scoop, suelto en la raíz: se instala con una sola orden desde el release
+          cp manifiestos/scoop/imaginteca.json imaginteca.json
+          (cd manifiestos/chocolatey && zip -qr "../../chocolatey-${GITHUB_REF_NAME#v}.zip" .)
+          (cd manifiestos/winget && zip -qr "../../winget-${GITHUB_REF_NAME#v}.zip" .)
+          ls -lh imaginteca.json chocolatey-*.zip winget-*.zip
           cat imaginteca.json
 
       - name: Generar huellas SHA-256 (para verificar la descarga)
@@ -247,10 +255,10 @@ jobs:
             paquetes/*.sha256
           generate_release_notes: true
           draft: false
-          # Desde v0.1.5-beta.6 (la beta DEFINITIVA) los releases se publican como
+          # Desde v0.1.5-beta.7 (la beta DEFINITIVA) los releases se publican como
           # OFICIALES, no como pre-release: la versión sigue llamándose «beta», pero
           # el release es el oficial y GitHub lo marca como «Latest». Las betas
-          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.6) quedaron como pre-release.
+          # anteriores (v0.1.0-beta.1 … v0.1.5-beta.7) quedaron como pre-release.
           prerelease: false
           # Si quedara algún adjunto con el mismo nombre, se reemplaza.
           overwrite_files: true

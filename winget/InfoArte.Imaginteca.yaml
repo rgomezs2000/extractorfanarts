@@ -1,0 +1,6 @@
+# Manifiesto de versión (winget)
+PackageIdentifier: InfoArte.Imaginteca
+PackageVersion: 0.1.5-beta.6
+DefaultLocale: es-ES
+ManifestType: version
+ManifestVersion: 1.6.0

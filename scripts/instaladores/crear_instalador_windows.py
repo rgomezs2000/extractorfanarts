@@ -167,6 +167,25 @@ Filename: "{{app}}\\{config.APP_NAME}.exe"; Description: "Abrir {config.APP_NAME
 [UninstallDelete]
 Type: filesandordirs; Name: "{{app}}\\_internal"
 Type: files; Name: "{{app}}\\*.pyc"
+
+[Code]
+{{ Quita la marca de internet de los ejecutables instalados: Windows avisa al abrir
+   un programa descargado del navegador, y esa marca la heredan los archivos
+   extraídos. Al instalarlo con el asistente, el programa queda SIN ese aviso. }}
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  Ruta: String;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    Ruta := ExpandConstant('{{app}}\\{config.APP_NAME}.exe');
+    if FileExists(Ruta) then
+      DeleteFile(Ruta + ':Zone.Identifier');
+    Ruta := ExpandConstant('{{app}}\\pixiv-token.exe');
+    if FileExists(Ruta) then
+      DeleteFile(Ruta + ':Zone.Identifier');
+  end;
+end;
 """,
         encoding="utf-8",
     )

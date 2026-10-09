@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.7 — la beta definitiva (7.ª entrega)
+
+- **Chocolatey y winget** se suman a Scoop: los tres manifiestos viajan en el release.
+- **Instalando con el asistente no aparece el aviso azul**: el instalador quita la marca
+  de internet de los ejecutables que deja.
+
 ### 2026-10-09 · v0.1.5-beta.6 — la beta definitiva (6.ª entrega)
 
 - **Scoop va dentro del release**: `imaginteca.json` se publica como adjunto de cada

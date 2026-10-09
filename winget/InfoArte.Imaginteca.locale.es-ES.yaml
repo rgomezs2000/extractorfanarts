@@ -1,0 +1,22 @@
+# Textos en español (winget)
+PackageIdentifier: InfoArte.Imaginteca
+PackageVersion: 0.1.5-beta.6
+PackageLocale: es-ES
+Publisher: InfoArte
+PublisherUrl: https://github.com/rgomezs2000/extractorfanarts
+PublisherSupportUrl: https://github.com/rgomezs2000/extractorfanarts/wiki/Foro
+PackageName: Imaginteca
+PackageUrl: https://github.com/rgomezs2000/extractorfanarts
+License: Propietaria (todos los derechos reservados)
+LicenseUrl: https://github.com/rgomezs2000/extractorfanarts/blob/main/LICENSE
+Copyright: © 2026 InfoArte
+ShortDescription: Imaginteca: reúne, ordena y prepara colecciones de imágenes listas como datasets (LoRA, LyCORIS, checkpoints) o como galería
+Description: Imaginteca: reúne, ordena y prepara colecciones de imágenes listas como datasets (LoRA, LyCORIS, checkpoints) o como galería
+Tags:
+  - imagenes
+  - datasets
+  - fanart
+  - galeria
+ReleaseNotesUrl: https://github.com/rgomezs2000/extractorfanarts/releases/tag/v0.1.5-beta.6
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
