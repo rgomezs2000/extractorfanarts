@@ -182,8 +182,9 @@ def dependencias_por_consola() -> int:
 
     Sirve en los dos canales (desarrollo y producción) y en los tres sistemas: dice
     **qué versión está en uso** de cada paquete, **de dónde sale** (paquete, vendor o
-    entorno) y cuál es la última publicada. Si la consola la abre el propio programa
-    (el `.exe` sin consola), espera antes de cerrarla para que se pueda leer.
+    entorno) y cuál es la última publicada. Escribe además `dependencias.txt` junto al
+    programa (como `--selftest` hace con `selftest.txt`), para poder leerlo o
+    compartirlo. Si la consola la abre el propio programa, espera antes de cerrarla.
     """
     from app import dependencias
 
@@ -193,6 +194,23 @@ def dependencias_por_consola() -> int:
     lineas = dependencias.resumen(datos)
     for linea in lineas:
         print(linea)
+
+    texto = "\n".join(lineas) + "\n"
+    destinos = []
+    if getattr(sys, "frozen", False):
+        destinos.append(Path(sys.executable).resolve().parent / "dependencias.txt")
+    else:
+        destinos.append(Path(__file__).resolve().parent / "dependencias.txt")
+    import tempfile as _tempfile
+    destinos.append(Path(_tempfile.gettempdir()) / "Imaginteca-dependencias.txt")
+    for destino in destinos:
+        try:
+            destino.write_text(texto, encoding="utf-8")
+            print(f"\ninforme guardado en: {destino}")
+            break
+        except OSError:
+            continue
+
     if creada and consola_propia():
         pausa_final("Pulse Intro para cerrar…")
     return 0
