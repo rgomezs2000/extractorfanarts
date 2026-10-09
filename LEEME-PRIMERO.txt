@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.4-beta - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 

@@ -20,6 +20,14 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta — la beta definitiva
+
+- **`v0.1.5-beta` se publica como release OFICIAL** (ya no como pre-release): es la
+  última versión del proyecto y la descarga recomendada.
+- Reúne todo lo de las betas anteriores: tres modos de instalación, actualizaciones
+  limpias, requisitos, dependencias del sistema, plataformas documentadas y copyright
+  dinámico.
+
 ### 2026-10-09 · v0.1.4-beta
 
 - **Tres modos de instalación**: portátil (`.zip` y `.tar.gz`), **instalador con

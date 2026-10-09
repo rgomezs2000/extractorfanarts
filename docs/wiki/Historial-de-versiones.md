@@ -1,5 +1,24 @@
 # Historial de versiones
 
+## v0.1.5-beta — 9 de octubre de 2026 · **la beta definitiva**
+
+**Release oficial.** Desde esta versión los releases se publican como **oficiales**
+(`prerelease: false`): `v0.1.5-beta` es la **última versión** del proyecto y la descarga
+recomendada. Las anteriores (`v0.1.0-beta.1` … `v0.1.4-beta`) quedan como pre-release en
+el historial. La versión sigue llamándose «beta», y el programa la reconoce por su
+nombre.
+
+**Lo que incluye** (todo lo de las betas anteriores, ya estable):
+- **Tres modos de instalación**: portátil (`.zip` y `.tar.gz`), **instaladores con
+  asistente** para Windows (Inno Setup), macOS (`.dmg`) y Linux (`.deb`), y **consola**.
+- **Actualizaciones limpias**: conservan tus claves y borran la versión anterior, los
+  temporales y la descarga; comandos `--comprobar-actualizacion` y `--actualizar`.
+- **[Requisitos](Requisitos)**, **[Plataformas](Plataformas)** (redes, boorus y
+  fandoms), **[Dependencias del sistema](Actualizaciones)** y copyright dinámico
+  (`© 2026 InfoArte`).
+
+---
+
 ## v0.1.4-beta — 9 de octubre de 2026
 
 **Instaladores y modos de instalación**
