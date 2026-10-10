@@ -369,7 +369,7 @@ muchos comparten comportamiento.
 | **Konachan** | Moebooru | No | Fondos y arte en gran tamaño |
 | **Konachan (SFW)** | Moebooru | No | El mismo sitio, solo **SFW** |
 | **Derpibooru** | Philomena | No | **My Little Pony** y su comunidad |
-| **ATF Booru** | Danbooru | Sí (FBOORU_API_KEY / FBOORU_LOGIN) | **Adulto**. El sitio pide una **comprobación** y el programa **la resuelve solo** (unos segundos la primera vez) |
+| **ATF Booru** | Danbooru | Sí (FBOORU_API_KEY / FBOORU_LOGIN) | **Adulto**. El sitio pide una **comprobación** y el programa abre una **ventana con navegador** para que **la resuelvas tú** |
 | **Rule34 Paheal** | Shimmie | No | **Adulto** |
 
 - **Cómo buscar:** etiquetas separadas por espacios (`lola_loud 1girl solo`),
