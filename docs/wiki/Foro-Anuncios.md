@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.12 — la beta definitiva (12.ª entrega)
+
+- Los avisos de «HTML en lugar de JSON» ahora dicen **qué página devolvió el sitio** y
+  aclaran que no es culpa de las claves.
+- Las claves van siempre en config_local.py (fuera del repositorio).
+
 ### 2026-10-10 · v0.1.5-beta.11 — la beta definitiva (11.ª entrega)
 
 - **Arreglado**: las claves puestas en config_local.py ya llegan a los boorus (antes se

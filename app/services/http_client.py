@@ -442,8 +442,25 @@ class PoliteClient:
     def _json_of(self, resp, descripcion: str):
         ctype = (resp.headers.get("content-type") or "").lower()
         if "html" in ctype:
+            # Se mira el TÍTULO de la página: así el aviso dice qué pasa de verdad
+            # («Verification» o «Just a moment…» = el sitio pide comprobación anti-bot;
+            # «Domain for sale», «404»… = el sitio cambió o está caído).
+            titulo = ""
+            try:
+                import re as _re
+
+                coincidencia = _re.search(r"<title[^>]*>(.*?)</title>",
+                                          resp.text or "", _re.I | _re.S)
+                if coincidencia:
+                    titulo = " ".join(coincidencia.group(1).split())[:90]
+            except Exception:  # noqa: BLE001
+                titulo = ""
+            pista = ("el sitio está pidiendo una comprobación anti-bot y no entrega datos "
+                     "a programas" if titulo else "puede ser un bloqueo o un CAPTCHA")
             raise BlockedError(
-                f"{descripcion} devolvió HTML en lugar de JSON (posible CAPTCHA/bloqueo)"
+                f"{descripcion} devolvió HTML en lugar de JSON: {pista}."
+                + (f" Título de la página: «{titulo}»." if titulo else "")
+                + " No es un problema de tus claves: no hay clave que lo evite."
             )
         try:
             return resp.json()

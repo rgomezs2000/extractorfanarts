@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.12 — 10 de octubre de 2026 · la beta definitiva (12.ª entrega)
+
+**Avisos claros cuando un sitio bloquea**
+- Cuando un booru responde con HTML en vez de datos, el aviso ahora incluye **el título
+  de la página** («Verification», «Just a moment…», «Domain for sale»…) y dice que **no
+  es un problema de las claves**. Así se distingue un bloqueo del sitio de un error de
+  configuración.
+- Documentado que **ATF Booru** (ooru.allthefallen.moe) pide comprobación anti-bot y
+  no entrega datos a programas.
+
+**Seguridad**
+- Las claves de FBooru se han **sacado del archivo del repositorio** (pp/config.py,
+  que es público): van en config_local.py, junto al programa.
+
+---
+
 ## v0.1.5-beta.11 — 10 de octubre de 2026 · la beta definitiva (11.ª entrega)
 
 **Arreglado: las claves de config_local.py no llegaban a los boorus**

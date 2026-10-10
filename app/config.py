@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.5-beta.11"
+APP_VERSION = "0.1.5-beta.12"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -176,8 +176,8 @@ RULE34_USER_ID = ""             # <- (este archivo lo ve todo el mundo: no ponga
 # FBooru (fbooru.net): credenciales propias del sitio, tal como las da su perfil de API
 #   https://booru.fbooru.net/profile.json?api_key=…&login=…
 # Ese api_key y ese login se envían en cada consulta de /posts.json.
-FBOORU_API_KEY = "8UKW1QjmPnhdhd3ZLE1JRvuK"
-FBOORU_LOGIN = "rgomezs2000"
+FBOORU_API_KEY = ""             # <- tus claves van en config_local.py, NO aquí (este archivo es público)
+FBOORU_LOGIN = ""               # <- tu login, tampoco aquí
 
 # ------------------------------------------------------------------ siguientes credenciales
 # DeviantArt: https://www.deviantart.com/developers/ (OAuth2 client credentials)

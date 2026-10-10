@@ -43,7 +43,7 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 | **[Konachan](https://konachan.com)** | Moebooru | No | Fondos y arte en gran tamaño |
 | **[Konachan (SFW)](https://konachan.net)** | Moebooru | No | El mismo sitio, solo **SFW** |
 | **[Derpibooru](https://derpibooru.org)** | Philomena | No | **My Little Pony** y su comunidad; ratings propios |
-| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | No | **Adulto**; se le aplican siempre los filtros de contenido prohibido |
+| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | Sí, propias | **Adulto**. El sitio pide una **comprobación anti-bot** («Verification») y **no entrega datos a programas**: aunque pongas tus claves (FBOORU_API_KEY/FBOORU_LOGIN) responderá con HTML. No es un fallo de configuración |
 | **[Rule34 Paheal](https://rule34.paheal.net)** | Shimmie | No | **Adulto**; API sencilla |
 
 ### Claves: solo dos, y son gratis
