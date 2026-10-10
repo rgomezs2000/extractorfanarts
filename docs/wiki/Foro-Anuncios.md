@@ -20,6 +20,14 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.8 — la beta definitiva (8.ª entrega)
+
+- **📋 Propiedades de la imagen** (`Ctrl+I`, con el clic derecho): título, descripción,
+  etiquetas, favoritos, reposts, respuestas, vistas, guardados, comentarios, puntuación,
+  fuentes, quién la subió o aprobó, licencia… y el resto de datos del servicio.
+- **Licencia corregida** en el punto 7.1: ya hay **instalador y portable**, sin registro
+  y sin coste.
+
 ### 2026-10-09 · v0.1.5-beta.7 — la beta definitiva (7.ª entrega)
 
 - **Chocolatey y winget** se suman a Scoop: los tres manifiestos viajan en el release.

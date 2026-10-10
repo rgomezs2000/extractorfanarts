@@ -36,7 +36,7 @@ Sin autorización previa y por escrito del autor:
 
 ## Garantía: responde el autor
 
-El programa se entrega **«tal cual»** (sin instalador, sin registro y sin coste),
+El programa se entrega **«tal cual»** (como **instalador** con asistente y como **portable**, sin registro y sin coste: un aporte del autor a la comunidad),
 pero eso describe la **forma de entrega**, no una renuncia a responder: **la
 garantía corre por cuenta del autor**.
 

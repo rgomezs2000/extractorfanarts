@@ -38,6 +38,7 @@ from PySide6.QtWidgets import (
 from .. import ayuda, canal, config, dependencias, updater
 from ..controllers.main_controller import MainController
 from ..services import filters as filtros
+from ..services import propiedades as propiedades_imagen
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
 from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
 
@@ -372,11 +373,21 @@ class MainWindow(QMainWindow):
         )
         self.act_copiar_enlace.triggered.connect(lambda: self._accion_imagen("enlace"))
 
+        self.act_propiedades = QAction("📋 Propiedades de la imagen", self)
+        self.act_propiedades.setShortcut(QKeySequence("Ctrl+I"))
+        self.act_propiedades.setToolTip(
+            "Todo lo que la plataforma sabe de la imagen: título, descripción, "
+            "etiquetas, favoritos, reposts, vistas, guardados, comentarios, fuentes, "
+            "quién la subió… Ctrl+I"
+        )
+        self.act_propiedades.triggered.connect(lambda: self._accion_imagen("propiedades"))
+
         # Solo las tres primeras descargan y procesan (necesitan red y no deben
         # solaparse con una búsqueda/descarga en curso).
         self._acciones_con_red = (self.act_copiar_imagen, self.act_guardar_imagen,
                                   self.act_guardar_como)
-        self._acciones_sin_red = (self.act_abrir_original, self.act_copiar_enlace)
+        self._acciones_sin_red = (self.act_abrir_original, self.act_copiar_enlace,
+                                  self.act_propiedades)
         for accion in self._acciones_con_red + self._acciones_sin_red:
             self.addAction(accion)
         self._actualizar_acciones_imagen()
@@ -405,7 +416,17 @@ class MainWindow(QMainWindow):
         menu.addSeparator()
         menu.addAction(self.act_abrir_original)
         menu.addAction(self.act_copiar_enlace)
+        menu.addSeparator()
+        menu.addAction(self.act_propiedades)
         return menu
+
+    def _mostrar_propiedades(self, obra) -> None:
+        """Ventana con todo lo que la plataforma sabe de la imagen seleccionada."""
+        try:
+            _DialogoPropiedades(obra, self).exec()
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudieron mostrar las propiedades de la imagen")
+            QMessageBox.warning(self, "Propiedades", f"No se pudieron mostrar: {exc}")
 
     def _on_menu_contextual(self, indice: int, pos_global) -> None:
         """Clic derecho sobre una imagen de la galería (o en el visor ampliado)."""
@@ -437,6 +458,9 @@ class MainWindow(QMainWindow):
                 self.statusBar().showMessage(
                     "🔗 Enlace de la imagen original copiado al portapapeles")
                 logger.info("enlace original copiado: %s", obra.url)
+                return
+            if accion == "propiedades":
+                self._mostrar_propiedades(obra)
                 return
             if self.controller.is_busy():
                 self.statusBar().showMessage(
@@ -2065,3 +2089,60 @@ class _DialogoEdad(QDialog):
         self.mayor_de_edad = self.edad() >= 18
         self.menor_de_edad = not self.mayor_de_edad
         QDialog.accept(self)             # el aviso lo muestra la ventana principal
+
+
+class _DialogoPropiedades(QDialog):
+    """Propiedades de una imagen: lo que la plataforma de origen sabe de ella.
+
+    Se abre con el clic derecho (**📋 Propiedades de la imagen**, `Ctrl+I`) sobre la
+    imagen grande, una miniatura o dentro del visor ampliado. Muestra lo común (título,
+    autor, fecha, resolución, licencia, enlaces), la **interacción** (favoritos,
+    reposts, respuestas, vistas, guardados, comentarios, puntuación…), lo propio del
+    servicio (boorus: fuentes, etiquetas por categoría, quién subió y quién aprobó;
+    wikis: licencia, autor y descripción originales…) y el resto de datos que trae el
+    servicio, sin perder nada.
+    """
+
+    def __init__(self, obra, padre=None):
+        super().__init__(padre)
+        self.obra = obra
+        self.setWindowTitle("Propiedades de la imagen")
+        diseño = QVBoxLayout(self)
+
+        encabezado = QLabel(f"<b>{obra.summary()}</b>")
+        encabezado.setTextFormat(Qt.RichText)
+        encabezado.setWordWrap(True)
+        diseño.addWidget(encabezado)
+
+        pista = QLabel(
+            "Todo lo que la plataforma sabe de esta imagen. En el fediverso, los totales "
+            "son los del <b>servidor de origen</b> de la publicación (la copia canónica).")
+        pista.setWordWrap(True)
+        pista.setTextFormat(Qt.RichText)
+        diseño.addWidget(pista)
+
+        self.visor = QTextBrowser()
+        self.visor.setLineWrapMode(QTextBrowser.NoWrap)
+        self.visor.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+        self.visor.setPlainText(propiedades_imagen.como_texto(obra))
+        self.visor.setMinimumSize(620, 380)
+        diseño.addWidget(self.visor, 1)
+
+        botones = QDialogButtonBox()
+        self.btn_copiar = botones.addButton("📋 Copiar todo", QDialogButtonBox.ActionRole)
+        self.btn_copiar.setToolTip("Copia estas propiedades como texto para pegarlas donde quieras")
+        botones.addButton("Cerrar", QDialogButtonBox.RejectRole)
+        botones.rejected.connect(self.reject)
+        self.btn_copiar.clicked.connect(self._copiar)
+        diseño.addWidget(botones)
+
+        pantalla = self.screen()
+        if pantalla is not None:
+            util = pantalla.availableGeometry()
+            self.resize(max(680, min(940, util.width() - 80)),
+                        max(480, min(760, util.height() - 80)))
+
+    def _copiar(self) -> None:
+        QApplication.clipboard().setText(propiedades_imagen.como_texto(self.obra))
+        self.btn_copiar.setText("✅ Copiado")
+        QTimer.singleShot(1500, lambda: self.btn_copiar.setText("📋 Copiar todo"))

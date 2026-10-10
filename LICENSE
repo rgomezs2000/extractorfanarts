@@ -6,7 +6,7 @@
  Proyecto : Imaginteca
  Autor    : InfoArte
  Año      : 2026
- Versión  : 0.1.5-beta.7
+ Versión  : 0.1.5-beta.8
  Licencia : v2 (revisada el 9 de octubre de 2026)
 
  © 2026 InfoArte. TODOS LOS DERECHOS RESERVADOS.
@@ -111,10 +111,12 @@ permitan.
 --------------------------------------------------------------------------------
 
  7.1 CÓMO SE ENTREGA. El programa se entrega «tal cual» y «según
- disponibilidad»: no hay instalador, no hay que registrarse, no se paga nada y
- no se promete que los servicios de terceros sigan abiertos ni igual. Eso
- describe la FORMA DE ENTREGA, no una renuncia a responder: lo que sigue es la
- garantía que el autor ASUME sobre el programa.
+ disponibilidad»: se distribuye como INSTALADOR (con asistente) y como EJECUTABLE
+ PORTABLE, no hay que registrarse (por ahora), no se paga nada —es un aporte del
+ autor a la comunidad— y no se garantiza que los servicios de terceros sigan
+ abiertos, disponibles ni igual. Eso describe la FORMA DE ENTREGA, no una
+ renuncia a responder: lo que sigue es la garantía que el autor ASUME sobre el
+ programa.
 
  7.2 EL AUTOR RESPONDE DEL PROGRAMA. La garantía corre por cuenta del autor,
  que se compromete a:

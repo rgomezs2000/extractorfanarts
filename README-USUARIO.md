@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.7 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.8 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -453,6 +453,14 @@ Fandom también):
 - Las imágenes se preparan a partir del **original**, así que se ven nítidas al
   ampliarlas, y se cargan **de una en una con cortesía** hacia los sitios (por eso
   la tira se va llenando poco a poco).
+- **Clic derecho → 📋 Propiedades de la imagen** (o Ctrl+I): abre una ventana con
+  **todo lo que la plataforma sabe** de esa imagen —título, descripción, etiquetas,
+  favoritos, reposts, respuestas, vistas, guardados, comentarios, puntuación, fuentes,
+  quién la subió o la aprobó, licencia, fecha, resolución…— y un botón para
+  **copiarlo todo** como texto. En los booros incluye **fuentes y etiquetas por
+  categoría** (artista, personaje, franquicia…); en las wikis, la **descripción y la
+  licencia originales**; en el fediverso, los totales del **servidor de origen** de la
+  publicación.
 
 ---
 
@@ -875,7 +883,8 @@ wiki**, indicando qué necesitas.
 
 ### Garantía: responde el autor
 
-El programa se entrega **«tal cual»** (no hay instalador, ni registro, ni coste),
+El programa se entrega **«tal cual»** (como instalador con asistente y como portable,
+sin registro y sin coste: es un aporte del autor a la comunidad),
 pero eso es la **forma de entrega**, no una renuncia a responder: **la garantía
 corre por cuenta del autor**.
 
@@ -913,5 +922,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.7 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.8 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

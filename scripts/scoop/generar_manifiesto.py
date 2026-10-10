@@ -15,7 +15,7 @@ manifiesto dentro. Los usuarios instalan con:
 Uso (lo puede ejecutar el flujo de publicación o tú a mano):
 
     python scripts\\scoop\\generar_manifiesto.py                    # última release
-    python scripts\\scoop\\generar_manifiesto.py --etiqueta v0.1.5-beta.7
+    python scripts\\scoop\\generar_manifiesto.py --etiqueta v0.1.5-beta.8
 """
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def release(etiqueta: str) -> tuple[dict, str]:
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Manifiesto de Scoop.")
     analizador.add_argument("--etiqueta", default="",
-                            help="etiqueta concreta (v0.1.5-beta.7); por defecto, la última oficial")
+                            help="etiqueta concreta (v0.1.5-beta.8); por defecto, la última oficial")
     analizador.add_argument("--zip", default="",
                             help="paquete .zip ya construido: calcula el hash en local "
                                  "(lo usa el flujo de publicación, sin consultar GitHub)")

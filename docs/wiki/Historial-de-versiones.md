@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.8 — 9 de octubre de 2026 · la beta definitiva (8.ª entrega)
+
+**Propiedades de la imagen**
+- Nuevo **📋 Propiedades de la imagen** (`Ctrl+I`) en el clic derecho sobre cualquier
+  imagen, miniatura o en el visor: **todo lo que la plataforma sabe** de ella —
+  título, descripción, etiquetas, favoritos, reposts, respuestas, vistas, guardados,
+  comentarios, puntuación, fuentes, quién la subió y quién la aprobó, licencia, fecha,
+  resolución…— con botón para **copiarlo todo**.
+- Se adapta a cada familia: **boorus** (fuentes y etiquetas por categoría),
+  **wikis** (descripción y licencia originales), **fediverso** y redes (favoritos,
+  reposts, respuestas, vistas, guardados, citas) y un apartado con **el resto de datos
+  del servicio**. En el fediverso se indica que los totales son del **servidor de
+  origen**.
+
+**Licencia corregida**
+- El punto **7.1** ya describe la forma de entrega real: **instalador con asistente y
+  ejecutable portable**, sin registro (**por ahora**) y sin coste (un aporte del autor a
+  la comunidad); no se garantiza que los servicios de terceros sigan abiertos.
+
+---
+
 ## v0.1.5-beta.7 — 9 de octubre de 2026 · la beta definitiva (7.ª entrega)
 
 **Los tres gestores de paquetes, en el release**

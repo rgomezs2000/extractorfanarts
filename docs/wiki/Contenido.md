@@ -91,5 +91,22 @@ manera y suelen caer en `questionable` o `explicit`.
 
 ---
 
+## Ver las propiedades de una imagen
+
+Con el **clic derecho** sobre una imagen (o `Ctrl+I`) se abre **📋 Propiedades de la
+imagen**: todo lo que la plataforma sabe de ella, agrupado y listo para copiar.
+
+| Grupo | Qué trae |
+|---|---|
+| **Imagen** | Autor, plataforma, fecha, resolución, clasificación, licencia, formato, tamaño, hashes y enlaces |
+| **Interacción** | Favoritos, reposts/boosts, respuestas, vistas, guardados, citas y la puntuación de los boorus |
+| **Del servicio** | Boorus: fuentes y etiquetas por categoría, quién la subió y quién la aprobó. Wikis: descripción y licencia originales, autor, subida. Fediverso: cuenta, seguidores, visibilidad, idioma |
+| **Descripción** | El texto del post o de la ficha |
+| **Todo lo demás** | El resto de datos que trae el servicio, sin perder nada |
+
+> En el **fediverso**, los totales (favoritos, reposts, respuestas) son los del
+> **servidor de origen** de la publicación, que es la copia canónica; cada instancia
+> conoce los suyos.
+
 **[← Plataformas](Plataformas)** · **[Boorus](Boorus)** · **[Fandoms](Fandoms)** ·
 **[Calidad y mejora](Calidad-y-mejora)**
