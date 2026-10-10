@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.9 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.10 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -268,6 +268,17 @@ iniciar sesión en Pixiv, le pegarás la dirección final (la que lleva `code=..
 ---
 
 ## 6. Buscar y descargar, paso a paso
+
+- **En las wikis de fandom** la búsqueda mira **la página del personaje y todas sus
+  pestañas** (`Galería`, `Atuendos`, `Momentos…`, incluidas las de cada temporada), no
+  solo su ficha. De las páginas **ajenas** que devuelve la wiki solo se aceptan las
+  imágenes que **mencionan** lo que buscas, así no se cuelan otros personajes ni
+  banderas o iconos.
+- **Buscar por concepto**: escribe lo que quieres ver (`traje de gala`, `pijama`, `traje
+  de baño`, `ropa interior`, `poses`) y la wiki devuelve **los personajes que lo
+  tienen** (sus pestañas de atuendos y galerías) con sus imágenes. Con **comillas** la
+  búsqueda es **exacta** (`"traje de gala"`); sin comillas busca por palabras.
+- **Varios valores** en un campo: sepáralos con comas (se buscan todos).
 
 1. **Tipo:** elige *Red social*, *Booru* o *Wiki*.
 2. **Plataforma:** el sitio concreto (la lista cambia según el tipo).
@@ -926,5 +937,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.9 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.10 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.10 — la beta definitiva (10.ª entrega)
+
+- **Wikis de fandom**: la búsqueda entra en **la ficha y en todas las pestañas**
+  (Galería, Atuendos, Momentos…), filtra lo que no menciona lo buscado y admite
+  **conceptos** (`pijama`, `traje de baño`…) con búsqueda **exacta** entre comillas.
+- **Icono propio** para el asistente de Pixiv y **título sin emoji**.
+
 ### 2026-10-09 · v0.1.5-beta.9 — la beta definitiva (9.ª entrega)
 
 - **`F3`**: abre ampliada la **miniatura sobre la que esté el ratón** (o la que estés

@@ -195,5 +195,18 @@ funcionan; y **cualquier otra** de Fandom también.
 
 ---
 
+## Cómo se busca en una wiki de fandom
+
+La búsqueda entra en **la página del personaje y en todas sus pestañas** —Galería,
+Atuendos, Momentos…, incluidas las de cada temporada—, no solo en su ficha, y de las
+páginas ajenas solo acepta las imágenes que **mencionan** lo buscado (nada de banderas,
+iconos ni otros personajes).
+
+**Por concepto** (	raje de gala, pijama, 	raje de baño, 
+opa interior, poses):
+la wiki devuelve **los personajes que lo tienen** y sus imágenes. Con **comillas** la
+búsqueda es **exacta** ("traje de gala"); sin ellas, por palabras. Para varios valores,
+sepáralos con comas.
+
 **[← Soporte de plataformas](Plataformas)** · **[Redes sociales](Redes-sociales)** ·
 **[Boorus](Boorus)** · **[Guía rápida](Guia-rapida)**

@@ -1,5 +1,30 @@
 # Historial de versiones
 
+## v0.1.5-beta.10 — 9 de octubre de 2026 · la beta definitiva (10.ª entrega)
+
+**Búsqueda en las wikis de fandom, mucho más completa**
+- Entra en **la página del personaje y en todas sus pestañas** (`Galería`, `Atuendos`,
+  `Momentos…`, con las de cada temporada), no solo en su ficha.
+- **Filtro de relevancia**: de las páginas ajenas solo se aceptan las imágenes que
+  **mencionan** lo buscado (se acabaron las banderas, iconos y personajes que no van).
+- **Búsqueda por concepto** (`traje de gala`, `pijama`, `traje de baño`, `ropa
+  interior`, `poses`…): devuelve **los personajes que lo tienen** con sus imágenes.
+  Con **comillas** es **exacta**; sin ellas, por palabras. Varios valores con comas.
+- Arreglado un fallo silencioso: en las wikis en español las imágenes viven en el
+  espacio `Archivo:` (no `File:`) y se descartaban **todas**; ahora se usa el número de
+  espacio de nombres, así que funciona en cualquier idioma.
+
+**Icono propio del asistente de Pixiv**
+- `pixiv-token` deja de llevar el mismo icono que la aplicación: ahora tiene el suyo
+  (azul de Pixiv con la «p», `assets/icon_pixiv.ico`), para distinguirlo en el escritorio
+  y en la barra de tareas.
+
+**Título de la ventana**
+- Fuera el emoji del título (`Imaginteca — tu colección de imágenes`): el icono ya
+  identifica la aplicación y el emoji se veía recargado.
+
+---
+
 ## v0.1.5-beta.9 — 9 de octubre de 2026 · la beta definitiva (9.ª entrega)
 
 **Atajo `F3` en la galería**

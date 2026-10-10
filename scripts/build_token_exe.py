@@ -112,7 +112,19 @@ def main() -> int:
             comando += ["--paths", str(VENDOR)]
         for modulo in EXCLUIR:
             comando += ["--exclude-module", modulo]
-        icono = ROOT / "assets" / ("icon.ico" if sys.platform.startswith("win") else "icon.png")
+        # Icono PROPIO (azul de Pixiv con la «p»): antes llevaba el mismo que la
+        # aplicación y no se distinguía en el escritorio ni en la barra de tareas.
+        icono = None
+        for nombre in (("icon_pixiv.ico", "icon_pixiv.png")
+                       if sys.platform.startswith("win") else ("icon_pixiv.png",)):
+            candidato = ROOT / "assets" / nombre
+            if candidato.is_file():
+                icono = candidato
+                break
+        if icono is None:            # por si el icono propio no estuviera
+            icono = ROOT / "assets" / ("icon.ico" if sys.platform.startswith("win")
+                                       else "icon.png")
+            print("[aviso] falta assets/icon_pixiv.*: se usa el icono de la aplicación")
         if icono.is_file():
             comando += ["--icon", str(icono)]
         # Propiedades del ejecutable: producto, versión y copyright (Windows)

@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
     def __init__(self, controller: MainController):
         super().__init__()
         self.controller = controller
-        self.setWindowTitle(f"🖼️ {config.APP_NAME} — tu colección de imágenes")
+        self.setWindowTitle(f"{config.APP_NAME} — tu colección de imágenes")
         self._muestra_recibida = False
         self._error_mostrado = False      # se avisó de un error crítico en esta operación
         self._tarea = "descargar"

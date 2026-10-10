@@ -12,12 +12,15 @@ Detalles:
 """
 from __future__ import annotations
 
+import logging
 import re
 from urllib.parse import quote, urlparse
 
 from ...models.artwork import Artwork, SearchQuery
 from ..http_client import ConfigError, PoliteClient
 from .base import SearchAdapter
+
+logger = logging.getLogger("imaginteca")
 
 _HTML_RE = re.compile(r"<[^>]+>")
 
@@ -28,6 +31,60 @@ def _slug(name: str) -> str:
 
 def _norm_titulo(nombre: str) -> str:
     return nombre.replace("_", " ").strip()
+
+
+_PALABRAS_VACIAS = {
+    "the", "of", "and", "a", "an", "de", "del", "la", "el", "los", "las", "y", "o",
+    "en", "con", "para", "por", "un", "una", "unos", "unas", "al", "es", "su", "sus",
+    "gallery", "galeria", "galería", "costumes", "atuendos", "images", "imagenes",
+}
+
+
+def _terminos(texto: str | None) -> list[str]:
+    """Uno o varios términos separados por comas (o punto y coma).
+
+    Las **comillas** marcan búsqueda **exacta** en la wiki: `"traje de gala"` busca esa
+    frase tal cual; sin comillas, la wiki busca por palabras (inexacta).
+    """
+    if not texto:
+        return []
+    partes = re.split(r"[,;]+", str(texto))
+    return [p.strip() for p in partes if p.strip()]
+
+
+def _tokens(texto: str) -> list[str]:
+    """Palabras significativas (para comparar nombres de archivo y títulos)."""
+    palabras = re.findall(r"[0-9a-záéíóúüñ]+", str(texto).lower())
+    return [p for p in palabras if len(p) >= 4 and p not in _PALABRAS_VACIAS]
+
+
+def _relacionado(nombre_archivo: str, terminos: list[str]) -> bool:
+    """¿El nombre del archivo menciona algo del término buscado?
+
+    Es el filtro de relevancia: de las páginas **ajenas** al término (resultados de la
+    búsqueda que hablan de otros personajes) solo se aceptan los archivos que nombran
+    al personaje o concepto buscado; los de **sus propias páginas** (personaje y sus
+    pestañas: Galería, Atuendos…) se aceptan siempre, porque son suyos.
+    """
+    if not terminos:
+        return True
+    archivo = str(nombre_archivo).lower()
+    for termino in terminos:
+        limpio = termino.strip('"').strip()
+        palabras = _tokens(limpio)
+        if not palabras:
+            if limpio.lower() in archivo:
+                return True
+            continue
+        if any(palabra in archivo for palabra in palabras):
+            return True
+    return False
+
+
+def _es_pestaña_de_atuendos(titulo: str) -> bool:
+    """¿Es una pestaña de atuendos/galería? (Ahí están los conjuntos del personaje)."""
+    return bool(re.search(r"/(atuendos|costumes|outfits|vestuario|galer[íi]a|gallery)\b",
+                          str(titulo), re.IGNORECASE))
 
 
 def _texto_plano(valor: str | None) -> str | None:
@@ -66,14 +123,64 @@ class MediaWikiAdapter(SearchAdapter):
 
     # ------------------------------------------------------------------ búsqueda
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
+        """Busca en la wiki: la página del personaje, **sus pestañas** y conceptos.
+
+        - **Personaje**: se miran su página principal **y sus subpáginas** (Galería,
+          Atuendos, Momentos, Relaciones…) que son las pestañas de la wiki, más los
+          archivos cuyo nombre empieza por el personaje. De las páginas ajenas solo se
+          aceptan archivos que **mencionen** al personaje (filtro de relevancia).
+        - **Concepto** (`traje de gala`, `ropa interior`, `pijama`, `traje de baño`,
+          `poses`…): la búsqueda de la wiki devuelve las **páginas que lo tienen**
+          (normalmente los «Atuendos/Costumes» de los personajes) y de ahí salen sus
+          imágenes. Con **comillas** la búsqueda es **exacta**; sin ellas, por palabras.
+        """
         base = self._resolve_base(client, query)
-        needle = (query.character or query.fandom or "").strip()
-        files = self._collect_files(client, base, needle)
-        if not files:
+        terminos = _terminos(query.character) or _terminos(query.fandom)
+        if not terminos:
             return []
 
-        seleccion = files[: query.limit]
+        # 1) páginas de cada término (la suya, sus pestañas y lo que devuelva la wiki)
+        propias: list[str] = []          # la página del término (se filtra por nombre)
+        pestañas: list[str] = []         # sus pestañas (Galería, Atuendos…): son suyas
+        ajenas: list[str] = []           # páginas de la búsqueda que hablan del término
+        for termino in terminos:
+            tabs, de_busqueda = self._paginas(client, base, termino)
+            propias.append(termino)
+            pestañas.extend(tabs)
+            ajenas.extend(de_busqueda)
+
+        def _unico(lista: list[str]) -> list[str]:
+            vistos: set[str] = set()
+            return [t for t in lista if t and not (t in vistos or vistos.add(t))]
+
+        propias = _unico(propias)
+        pestañas = [p for p in _unico(pestañas) if p not in set(propias)]
+        ajenas = [p for p in _unico(ajenas)
+                  if p not in set(propias) and p not in set(pestañas)]
+
+        # 2) archivos: las pestañas enteras (su galería y sus atuendos son suyos), la
+        #    página principal y las ajenas solo con los que **mencionan** el término.
+        archivos: list[str] = []
+        archivos.extend(self._imagenes_de(client, base, pestañas))
+        for pagina, nombres in self._imagenes_por_pagina(
+                client, base, propias + ajenas).items():
+            relacionados = [n for n in nombres if _relacionado(n, terminos)]
+            if relacionados:
+                archivos.extend(relacionados)
+            elif _es_pestaña_de_atuendos(pagina):
+                # Las pestañas de atuendos/galería que ha devuelto la búsqueda del
+                # concepto son justo lo que se busca (aunque el archivo no se llame
+                # igual que el concepto): se aceptan enteras.
+                archivos.extend(nombres)
+        archivos.extend(self._archivos_por_prefijo(client, base, terminos))
+
+        archivos = _unico(archivos)
+        if not archivos:
+            return []
+
+        seleccion = archivos[: query.limit]
         infos = self._imageinfo(client, base, seleccion)
+        needle = terminos[0]
 
         out: list[Artwork] = []
         for nombre in seleccion:
@@ -82,52 +189,90 @@ class MediaWikiAdapter(SearchAdapter):
                 out.append(art)
         return out
 
-    def _collect_files(self, client: PoliteClient, base: str, needle: str) -> list[str]:
-        files: list[str] = []
+    def _paginas(self, client: PoliteClient, base: str,
+                 termino: str) -> tuple[list[str], list[str]]:
+        """(subpáginas o pestañas del término, páginas que devuelve la búsqueda).
 
-        # 1) búsqueda de páginas (franquicia/personaje/concepto)
-        titles: list[str] = []
-        if needle:
+        Las pestañas se piden con `list=allpages` y el prefijo `<término>/`: así salen
+        Galería, Galería/Temporada 1, Atuendos, Momentos… sin tener que adivinarlas.
+        """
+        pestañas: list[str] = []
+        try:
+            data = client.get_json(f"{base}/api.php", params={
+                "action": "query", "list": "allpages", "apprefix": f"{termino}/",
+                "aplimit": "100", "apnamespace": "0", "format": "json",
+            })
+            pestañas = [p.get("title", "") for p in
+                        data.get("query", {}).get("allpages", []) or []]
+        except Exception:  # noqa: BLE001
+            pestañas = []
+
+        encontradas: list[str] = []
+        try:
+            data = client.get_json(f"{base}/api.php", params={
+                "action": "query", "list": "search", "srsearch": termino,
+                "srlimit": "15", "format": "json",
+            })
+            encontradas = [h.get("title", "") for h in
+                           data.get("query", {}).get("search", []) or []]
+        except Exception:  # noqa: BLE001
+            encontradas = []
+        return [p for p in pestañas if p], [p for p in encontradas if p]
+
+    def _imagenes_de(self, client: PoliteClient, base: str,
+                     paginas: list[str]) -> list[str]:
+        """Archivos usados en esas páginas (en lotes de 10 títulos)."""
+        archivos: list[str] = []
+        for nombres in self._imagenes_por_pagina(client, base, paginas).values():
+            archivos.extend(nombres)
+        return archivos
+
+    def _imagenes_por_pagina(self, client: PoliteClient, base: str,
+                             paginas: list[str]) -> dict[str, list[str]]:
+        """{título de la página: [archivos]} (en lotes de 10 títulos)."""
+        resultado: dict[str, list[str]] = {}
+        for i in range(0, len(paginas), 10):
+            lote = paginas[i:i + 10]
             try:
                 data = client.get_json(f"{base}/api.php", params={
-                    "action": "query", "list": "search", "srsearch": needle,
-                    "srlimit": "10", "format": "json",
+                    "action": "query", "prop": "images", "imlimit": "500",
+                    "titles": "|".join(lote), "format": "json",
                 })
-                titles = [hit.get("title", "") for hit in data.get("query", {}).get("search", [])]
-                titles = [t for t in titles if t]
             except Exception:  # noqa: BLE001
-                titles = []
+                continue
+            for pagina in data.get("query", {}).get("pages", {}).values():
+                titulo = str(pagina.get("title", ""))
+                for img in pagina.get("images") or []:
+                    if not isinstance(img, dict):
+                        continue
+                    # El espacio de nombres 6 es «archivos», pero se llama distinto en
+                    # cada idioma: File: (inglés), Archivo: (español), Datei:, Fichier…
+                    # Por eso se comprueba el número y se quita lo que haya antes de «:».
+                    if img.get("ns") != 6 and not str(img.get("title", "")).startswith("File:"):
+                        continue
+                    nombre = str(img.get("title", "")).split(":", 1)[-1].strip()
+                    if nombre:
+                        resultado.setdefault(titulo, []).append(nombre)
+        return resultado
 
-        # 2) imágenes usadas en las páginas encontradas
-        if titles:
+    def _archivos_por_prefijo(self, client: PoliteClient, base: str,
+                              terminos: list[str]) -> list[str]:
+        """Archivos cuyo nombre empieza por el término (personaje o concepto)."""
+        archivos: list[str] = []
+        for termino in terminos:
+            limpio = termino.strip('"').strip()
+            if not limpio:
+                continue
             try:
                 data = client.get_json(f"{base}/api.php", params={
-                    "action": "query", "prop": "images", "imlimit": "100",
-                    "titles": "|".join(titles[:10]), "format": "json",
-                })
-                for page in data.get("query", {}).get("pages", {}).values():
-                    for img in page.get("images", []) or []:
-                        nombre = img.get("title", "")
-                        if nombre.startswith("File:"):
-                            files.append(nombre[5:])
-            except Exception:  # noqa: BLE001
-                pass
-
-        # 3) archivos cuyo nombre empieza por el concepto/personaje
-        if needle:
-            try:
-                data = client.get_json(f"{base}/api.php", params={
-                    "action": "query", "list": "allimages", "aiprefix": needle,
+                    "action": "query", "list": "allimages", "aiprefix": limpio,
                     "ailimit": "100", "aiprop": "url", "format": "json",
                 })
                 for img in data.get("query", {}).get("allimages", []) or []:
-                    files.append(img.get("name", ""))
+                    archivos.append(img.get("name", ""))
             except Exception:  # noqa: BLE001
-                pass
-
-        # dedupe conservando orden
-        seen: set[str] = set()
-        return [f for f in files if f and not (f in seen or seen.add(f))]
+                continue
+        return archivos
 
     # ------------------------------------------------------------------ imageinfo (por lotes)
     def _imageinfo(self, client: PoliteClient, base: str, nombres: list[str]) -> dict[str, dict]:

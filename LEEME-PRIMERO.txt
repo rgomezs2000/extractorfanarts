@@ -1,5 +1,5 @@
 ================================================================================
- IMAGINTECA 0.1.5-beta.9 - LEEME PRIMERO
+ IMAGINTECA 0.1.5-beta.10 - LEEME PRIMERO
  Tu coleccion personal de imagenes (y datasets para IA)
 ================================================================================
 
@@ -87,6 +87,12 @@ que registrarse y no se recogen datos.
   3. Pulsa BUSCAR (Ctrl+B o Enter). Los resultados salen en una galeria para que
      los revises ANTES de descargar nada.
   4. Ajusta cantidad, calidad, mejora, metadatos y carpeta de destino.
+   En las WIKIS: la busqueda entra en la pagina del personaje y en sus pestanas
+   (Galeria, Atuendos, Momentos...), no solo en su ficha; de las paginas ajenas
+   solo se aceptan imagenes que mencionen lo buscado. Por concepto (pijama, traje
+   de banio, ropa interior, poses) salen los personajes que lo tienen; con
+   comillas ("traje de gala") la busqueda es exacta.
+
   5. Pulsa DESCARGAR (Ctrl+D o Shift+Enter). Te dira cuantos archivos guardo y
      donde. Durante el trabajo el boton pasa a CANCELAR (Esc) y no deja archivos
      a medias. LIMPIAR (Ctrl+L) vacia el formulario.
