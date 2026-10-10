@@ -369,12 +369,16 @@ muchos comparten comportamiento.
 | **Konachan** | Moebooru | No | Fondos y arte en gran tamaño |
 | **Konachan (SFW)** | Moebooru | No | El mismo sitio, solo **SFW** |
 | **Derpibooru** | Philomena | No | **My Little Pony** y su comunidad |
-| **ATF Booru** | Danbooru | No | **Adulto** (se aplican los filtros de contenido prohibido) |
+| **ATF Booru** | Danbooru | Sí (FBOORU_API_KEY / FBOORU_LOGIN) | **Adulto**. El sitio pide una **comprobación** y el programa **la resuelve solo** (unos segundos la primera vez) |
 | **Rule34 Paheal** | Shimmie | No | **Adulto** |
 
 - **Cómo buscar:** etiquetas separadas por espacios (`lola_loud 1girl solo`),
   excluir con guion (`-comic -text`) y operadores del sitio (`rating:general`,
   `score:>10`, `order:score`).
+- **Sitios que piden comprobación:** ATF Booru no entrega datos a programas hasta que
+  se resuelve su **prueba de trabajo**: el programa **la resuelve sola** (unos segundos
+  la primera vez, y la cookie dura días). Si algún sitio cambiara el sistema, el aviso
+  dirá **qué página** devolvió.
 - **Aviso adulto:** en Rule34.xxx, Rule34 Paheal, Xbooru, Hypnohub y ATF Booru casi
   todo es adulto: sin marcar **«Permitir contenido adulto»** verás **0 resultados**.
 
