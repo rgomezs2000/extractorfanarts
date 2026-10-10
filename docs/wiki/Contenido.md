@@ -104,6 +104,9 @@ imagen**: todo lo que la plataforma sabe de ella, agrupado y listo para copiar.
 | **Descripción** | El texto del post o de la ficha |
 | **Todo lo demás** | El resto de datos que trae el servicio, sin perder nada |
 
+Con **`F3`** se abre **ampliada** la imagen de ejemplo sobre la que esté el ratón, sin
+tener que seleccionarla antes.
+
 > En el **fediverso**, los totales (favoritos, reposts, respuestas) son los del
 > **servidor de origen** de la publicación, que es la copia canónica; cada instancia
 > conoce los suyos.

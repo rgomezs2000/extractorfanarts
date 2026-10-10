@@ -1,5 +1,15 @@
 # Historial de versiones
 
+## v0.1.5-beta.9 — 9 de octubre de 2026 · la beta definitiva (9.ª entrega)
+
+**Atajo `F3` en la galería**
+- Con el ratón parado sobre una **miniatura**, `F3` la abre **ampliada** (sin tener que
+  seleccionarla ni hacer doble clic). Si no hay ninguna debajo del cursor, abre la que se
+  está viendo, y el carrusel se coloca en ella. Funciona desde cualquier punto de la
+  ventana.
+
+---
+
 ## v0.1.5-beta.8 — 9 de octubre de 2026 · la beta definitiva (8.ª entrega)
 
 **Propiedades de la imagen**

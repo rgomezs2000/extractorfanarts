@@ -32,7 +32,7 @@ from __future__ import annotations
 import logging
 
 from PySide6.QtCore import QPoint, QSize, Qt, Signal
-from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap
+from PySide6.QtGui import QColor, QIcon, QKeySequence, QPainter, QPen, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QGridLayout,
     QLabel,
@@ -361,14 +361,40 @@ class _TiraMiniaturas(QListWidget):
 
     Las flechas ya cambian de miniatura (y con ella la imagen grande del carrusel);
     al pulsar Enter sobre la que esté seleccionada se abre el visor ampliado, igual que
-    si se hiciera clic en la imagen de muestra.
+    si se hiciera clic en la imagen de muestra. **F3** abre la miniatura sobre la que
+    esté parado el ratón, sin tener que seleccionarla antes.
     """
 
     abrir_con_enter = Signal(int)   # fila (0..n-1) que se quiere ver ampliada
 
+    def __init__(self, *argumentos, **opciones):
+        super().__init__(*argumentos, **opciones)
+        self._fila_cursor = -1
+        # Seguimiento del ratón: así se sabe sobre qué miniatura está parado el cursor.
+        self.setMouseTracking(True)
+        self.viewport().setMouseTracking(True)
+
+    def fila_bajo_cursor(self) -> int:
+        """Fila de la miniatura sobre la que está el ratón (-1 si no hay ninguna)."""
+        return self._fila_cursor
+
+    def mouseMoveEvent(self, evento):  # noqa: N802
+        elemento = self.itemAt(evento.pos())
+        self._fila_cursor = self.row(elemento) if elemento is not None else -1
+        super().mouseMoveEvent(evento)
+
+    def leaveEvent(self, evento):  # noqa: N802
+        self._fila_cursor = -1
+        super().leaveEvent(evento)
+
     def keyPressEvent(self, evento):  # noqa: N802
         if evento.key() in (Qt.Key_Return, Qt.Key_Enter):
             fila = self.currentRow()
+            if fila >= 0:
+                self.abrir_con_enter.emit(fila)
+                return
+        if evento.key() == Qt.Key_F3:
+            fila = self._fila_cursor if self._fila_cursor >= 0 else self.currentRow()
             if fila >= 0:
                 self.abrir_con_enter.emit(fila)
                 return
@@ -421,9 +447,16 @@ class GaleriaWidget(QWidget):
         self.tira.setIconSize(QSize(LADO_MINIATURA, LADO_MINIATURA))
         self.tira.setFixedHeight(LADO_MINIATURA + 34)
         self.tira.setSpacing(4)
-        self.tira.setToolTip("Miniaturas: clic o Enter para verla ampliada (flechas para moverse)")
+        self.tira.setToolTip("Miniaturas: clic o Enter para verla ampliada; F3 abre la "
+                            "que está bajo el ratón (flechas para moverse)")
         # Clic derecho en la tira y en la imagen grande → menú contextual (lo arma la ventana)
         self.tira.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        # F3: abre ampliada la miniatura sobre la que está parado el ratón (o la que se
+        # está viendo). Vale desde cualquier punto de la ventana.
+        self.atajo_f3 = QShortcut(QKeySequence("F3"), self)
+        self.atajo_f3.setContext(Qt.WindowShortcut)
+        self.atajo_f3.activated.connect(self.abrir_bajo_cursor)
 
         cuadricula.addWidget(self.lbl_contador, 0, 0, 1, 3)
         cuadricula.addWidget(self.btn_anterior, 1, 0, Qt.AlignVCenter)
@@ -670,6 +703,24 @@ class GaleriaWidget(QWidget):
     def _abrir_ampliada(self) -> None:
         if self._pixmaps:
             self.pedir_lightbox.emit(self._indice)
+
+    def abrir_bajo_cursor(self) -> None:
+        """**F3**: abre ampliada la miniatura sobre la que está parado el ratón.
+
+        Si el ratón no está sobre ninguna miniatura (o se pulsa desde el teclado), se
+        abre la que se esté viendo en el carrusel. Es el atajo cómodo para mirar una
+        imagen de ejemplo sin tener que seleccionarla antes.
+        """
+        if not self._pixmaps:
+            return
+        fila = self.tira.fila_bajo_cursor()
+        if fila < 0 or fila >= len(self._pixmaps):
+            fila = self._indice
+        if fila < 0 or fila >= len(self._pixmaps):
+            return
+        self.mostrar(fila)
+        self.tira.setCurrentRow(fila)
+        self.pedir_lightbox.emit(fila)
 
     def _abrir_de_la_tira(self, fila: int) -> None:
         """Enter sobre una miniatura: se selecciona y se muestra ampliada."""

@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-09 · v0.1.5-beta.9 — la beta definitiva (9.ª entrega)
+
+- **`F3`**: abre ampliada la **miniatura sobre la que esté el ratón** (o la que estés
+  viendo). Cómodo para revisar imágenes de ejemplo una a una.
+
 ### 2026-10-09 · v0.1.5-beta.8 — la beta definitiva (8.ª entrega)
 
 - **📋 Propiedades de la imagen** (`Ctrl+I`, con el clic derecho): título, descripción,

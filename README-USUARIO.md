@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.8 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.9 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -453,6 +453,9 @@ Fandom también):
 - Las imágenes se preparan a partir del **original**, así que se ven nítidas al
   ampliarlas, y se cargan **de una en una con cortesía** hacia los sitios (por eso
   la tira se va llenando poco a poco).
+- **F3**: abre **ampliada** la imagen de ejemplo **sobre la que esté el ratón** (si no
+  hay ninguna debajo, la que estés viendo). Es el atajo cómodo para mirar una miniatura
+  concreta sin seleccionarla antes.
 - **Clic derecho → 📋 Propiedades de la imagen** (o Ctrl+I): abre una ventana con
   **todo lo que la plataforma sabe** de esa imagen —título, descripción, etiquetas,
   favoritos, reposts, respuestas, vistas, guardados, comentarios, puntuación, fuentes,
@@ -476,7 +479,8 @@ del visor):
 | 🗂️ Guardar como… | Igual, pero eligiendo carpeta y nombre | `Ctrl+Shift+S` |
 | 🌐 Abrir imagen original en el navegador | Abre la página original | — |
 | 🔗 Copiar enlace de la imagen original | Copia esa dirección web | `Ctrl+Shift+C` |
-
+| `F3` | Ver ampliada la imagen de ejemplo bajo el ratón |
+| 📋 **Propiedades de la imagen** | Título, descripción, etiquetas, favoritos, reposts, vistas, guardados, comentarios, fuentes, quién la subió… | `Ctrl+I` |
 La calidad es **la misma** que en la descarga completa, y funciona **aunque solo
 hayas pulsado Buscar**.
 
@@ -922,5 +926,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.8 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.9 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

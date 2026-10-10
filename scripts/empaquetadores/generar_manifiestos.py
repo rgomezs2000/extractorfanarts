@@ -7,8 +7,8 @@ mantener ningún repositorio aparte para Scoop.
 
     # desde el paquete ya construido (lo que hace el flujo de publicación)
     python scripts\\empaquetadores\\generar_manifiestos.py \\
-        --instalador dist\\instaladores\\Imaginteca-0.1.5-beta.8-windows-installer.exe \\
-        --zip dist\\Imaginteca-Windows.zip --version 0.1.5-beta.8
+        --instalador dist\\instaladores\\Imaginteca-0.1.5-beta.9-windows-installer.exe \\
+        --zip dist\\Imaginteca-Windows.zip --version 0.1.5-beta.9
 
     # desde la última release publicada
     python scripts\\empaquetadores\\generar_manifiestos.py

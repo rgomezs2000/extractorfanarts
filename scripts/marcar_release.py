@@ -10,7 +10,7 @@ Gracias a ella, los paquetes del release se reconocen como **producción** (con 
 actualizaciones activadas) y cualquier copia hecha en un equipo —el código fuente o
 un `.exe` compilado a mano— se reconoce como **desarrollo** (sin actualizaciones).
 
-    python scripts\\marcar_release.py --version 0.1.5-beta.8 --destino dist/Imaginteca
+    python scripts\\marcar_release.py --version 0.1.5-beta.9 --destino dist/Imaginteca
 """
 from __future__ import annotations
 
