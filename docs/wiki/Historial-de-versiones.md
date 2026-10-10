@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.14 — 10 de octubre de 2026 · la beta definitiva (14.ª entrega)
+
+**La comprobación de los sitios la resuelve la persona, no el programa**
+- Antes el programa resolvía la prueba de trabajo por su cuenta. **Se ha quitado**: eso
+  sería comportarse como un robot y no es lo correcto.
+- Ahora, cuando un sitio pide su comprobación, se abre una **ventana con un navegador
+  incrustado** (QtWebEngine) y **la resuelves tú**, como en tu navegador. En cuanto la
+  superas, **la ventana se cierra sola** y la búsqueda o la descarga **siguen donde
+  estaban** (se repiten con las cookies de esa sesión).
+- Si no la superas, el aviso lo dice y la operación no continúa («la comprobación no se
+  ha superado»); puedes volver a intentarlo.
+- El navegador de esa ventana usa un **perfil propio y persistente**
+  (~/.imaginteca/verificacion/), así que no se repite en cada búsqueda.
+- Nota: incluir el navegador incrustado hace que las descargas del programa **ocupen
+  más** (unos 130 MB), pero es lo que permite no comportarse como un robot.
+
+---
+
 ## v0.1.5-beta.13 — 10 de octubre de 2026 · la beta definitiva (13.ª entrega)
 
 **El programa resuelve las comprobaciones de los sitios que las piden**

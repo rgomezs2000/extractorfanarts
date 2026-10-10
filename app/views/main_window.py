@@ -39,6 +39,7 @@ from .. import ayuda, canal, config, dependencias, updater
 from ..controllers.main_controller import MainController
 from ..services import filters as filtros
 from ..services import propiedades as propiedades_imagen
+from ..services import verificacion
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
 from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
 
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
         self._muestra_recibida = False
         self._error_mostrado = False      # se avisó de un error crítico en esta operación
         self._tarea = "descargar"
+        self._reintento = None     # operación a repetir tras superar una comprobación
         self._lightbox: Lightbox | None = None
         self._individual_en_curso = 0     # acciones individuales en segundo plano
         self._build_ui()
@@ -474,6 +476,8 @@ class MainWindow(QMainWindow):
                 f"⏳ {verbo} la imagen {indice + 1} de {self.galeria.total()}…")
             # La MISMA configuración de la ventana: la calidad (.webp + mejora
             # Lanczos/IA) viaja en `settings`, igual que en la descarga masiva.
+            self._reintento = lambda: self.controller.procesar_individual(
+                indice + 1, self._settings(), accion)
             self.controller.procesar_individual(indice + 1, self._settings(), accion)
         except Exception as exc:  # noqa: BLE001
             logger.exception("excepcion en _accion_imagen")
@@ -522,6 +526,8 @@ class MainWindow(QMainWindow):
                 return
             self.statusBar().showMessage(f"⏳ Guardando la imagen {indice + 1} como {destino.name}…")
             # MISMA configuración de calidad que la descarga masiva
+            self._reintento = lambda: self.controller.procesar_individual(
+                indice + 1, self._settings(), "guardar_como", destino=destino)
             self.controller.procesar_individual(
                 indice + 1, self._settings(), "guardar_como", destino=destino)
         except Exception as exc:  # noqa: BLE001
@@ -771,6 +777,7 @@ class MainWindow(QMainWindow):
         self.galeria.pedir_muestra.connect(c.solicitar_muestra)
         c.progress_changed.connect(self._on_progress)
         c.error.connect(self._on_error)
+        c.verificacion_requerida.connect(self._on_verificacion)
         c.state_changed.connect(self._on_state)
         c.job_finished.connect(self._on_job_finished)
         c.http_event.connect(self._on_http_event)
@@ -824,6 +831,48 @@ class MainWindow(QMainWindow):
         if " " in recorte:
             recorte = recorte[:recorte.rfind(" ")]
         return recorte.rstrip(" ,.;:") + "…"
+
+    def _on_verificacion(self, dominio: str, url: str) -> None:
+        """El sitio pide una comprobación: **la resuelve la persona** en una ventana.
+
+        Se abre una ventana con un navegador incrustado; cuando la persona supera la
+        comprobación, la ventana **se cierra sola**, se guardan las cookies de ese
+        navegador y **se repite la operación** que estaba en marcha (búsqueda o
+        descarga). El programa no la resuelve por su cuenta.
+        """
+        from .verificacion_window import VentanaVerificacion   # perezoso: pesa mucho
+
+        logger.info("el sitio %s pide comprobación: se abre la ventana para la persona",
+                    dominio)
+        self._error_mostrado = True      # esto no es un error: no se enseña el aviso rojo
+        try:
+            ventana = VentanaVerificacion(dominio, url, self)
+            resultado = ventana.exec()
+            cookies, agente = ventana.cookies(), ventana.agente()
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("no se pudo abrir la ventana de comprobación")
+            QMessageBox.warning(
+                self, "Comprobación del sitio",
+                f"No se pudo abrir la ventana para resolver la comprobación de {dominio} "
+                f"({exc}).\n\nTambién puedes resolverla en tu navegador y pegar la cookie "
+                "en config_local.py (CF_CLEARANCE y CF_DOMAINS).")
+            return
+        if resultado == QDialog.Accepted and cookies:
+            verificacion.guardar_verificacion(dominio, cookies, agente)
+            self.statusBar().showMessage(f"✅ Comprobación de {dominio} superada")
+            reintento = self._reintento
+            self._reintento = None
+            if reintento is not None:
+                QTimer.singleShot(600, reintento)    # se repite ya con las cookies
+            else:
+                QMessageBox.information(self, "Comprobación superada",
+                                        "Ya puedes volver a pulsar Buscar o Descargar.")
+        else:
+            QMessageBox.warning(
+                self, "Comprobación no superada",
+                f"No se ha superado la comprobación de {dominio}: la búsqueda o la descarga "
+                "no pueden continuar.\n\nVuelve a intentarlo cuando quieras: la ventana se "
+                "abrirá otra vez.")
 
     def _on_error(self, mensaje: str) -> None:
         """Error crítico: UN aviso resumido al usuario y el detalle completo al registro."""
@@ -973,6 +1022,7 @@ class MainWindow(QMainWindow):
                 return
             self._preparar_busqueda_nueva()
             self._tarea = "buscar"          # la barra de progreso lo refleja
+            self._reintento = lambda: self.controller.buscar(s)
             self.controller.buscar(s)
         except Exception as exc:
             logger.exception("excepcion en _on_buscar")
@@ -1012,6 +1062,7 @@ class MainWindow(QMainWindow):
                 return
             self._preparar_busqueda_nueva()
             self._tarea = "descargar"       # la barra de progreso lo refleja
+            self._reintento = lambda: self.controller.descargar(s)
             self.controller.descargar(s)
         except Exception as exc:
             logger.exception("excepcion en _on_descargar")

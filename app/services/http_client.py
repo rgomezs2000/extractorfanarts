@@ -150,6 +150,16 @@ class PoliteClient:
         max_retries: int | None = None,
     ):
         self.cancel_event = cancel_event
+        # Cookies y User-Agent conseguidos al superar la comprobación de un sitio (la
+        # resuelve la persona en la ventana con navegador incrustado). El sitio asocia
+        # cookie y User-Agent, así que se envían juntos: {dominio: valor}
+        self._cookies: dict[str, str] = {}
+        self._agentes: dict[str, str] = {}
+        for dominio, datos in verificacion.verificaciones().items():
+            if datos.get("cookies"):
+                self._cookies[dominio] = datos["cookies"]
+            if datos.get("agente"):
+                self._agentes[dominio] = datos["agente"]
         self.on_pause = on_pause
         self.on_event = on_event
         self.min_interval = min_interval or config.MIN_REQUEST_INTERVAL
@@ -230,6 +240,15 @@ class PoliteClient:
         for sufijo, referer in self._referers.items():
             if dominio.endswith(sufijo):
                 headers.setdefault("Referer", referer)
+                break
+        # Cookies ganadas al resolver la comprobación del sitio (si las hay), con el
+        # mismo User-Agent del navegador que las consiguió.
+        for sufijo, cookies in self._cookies.items():
+            if dominio.lower().endswith(sufijo):
+                headers.setdefault("Cookie", cookies)
+                agente = self._agentes.get(sufijo)
+                if agente:
+                    headers.setdefault("User-Agent", agente)
                 break
         return headers or None
 
@@ -471,44 +490,41 @@ class PoliteClient:
                 f"{descripcion} no devolvió JSON válido ({exc}). Inicio: {fragmento}"
             ) from exc
 
-    def _resolver_verificacion(self, resp, url: str) -> bool:
-        """Si el sitio devolvió su página de comprobación, se resuelve y se reintenta.
+    def _revisar_verificacion(self, resp, url: str) -> None:
+        """Si el sitio pide su comprobación, se avisa para que la resuelva la persona.
 
-        Algunos boorus (p. ej. `booru.allthefallen.moe`) responden una página con una
-        **prueba de trabajo** en lugar de los datos. Se resuelve aquí (es el mismo
-        trabajo que haría el navegador: buscar un `nonce` cuya huella sha1 empiece por
-        el prefijo pedido) y se canjea por la cookie que ya permite pedir los datos.
+        NO se resuelve aquí: el programa no debe comportarse como un robot. Se lanza
+        `VerificacionRequerida` y la ventana pide a la persona que la resuelva (con el
+        navegador incrustado, igual que en su navegador); cuando la supera, se guardan
+        las cookies del sitio y se repite la petición.
         """
         try:
             cuerpo = resp.text or ""
         except Exception:  # noqa: BLE001
-            return False
-        datos = verificacion.datos_del_reto(cuerpo, url)
-        if not datos:
-            return False
-        logger.info("el sitio pide comprobación; resolviendo la prueba de trabajo (%s)",
-                    datos.get("url"))
-        solucion = verificacion.resolver(datos)
-        if not solucion:
-            logger.warning("la comprobación del sitio no se pudo resolver")
-            return False
-        try:
-            if datos.get("retardo"):
-                time.sleep(min(float(datos["retardo"]), 10.0))
-            self._request_with_backoff(
-                "POST", datos["url"],
-                json=verificacion.cuerpo_del_envio(datos, solucion),
-                headers=dict(verificacion.CABECERAS_ENVIO))
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("no se pudo canjear la comprobación del sitio: %s", exc)
-            return False
-        logger.info("comprobación superada: el sitio ya entrega datos")
-        return True
+            return
+        if "html" not in (resp.headers.get("content-type") or "").lower():
+            return
+        if not verificacion.parece_reto(cuerpo):
+            return
+        dominio = verificacion.dominio_de(url)
+        datos = verificacion.datos_del_reto(cuerpo, url) or {}
+        logger.info("el sitio %s pide una comprobación: la resolverá la persona", dominio)
+        raise verificacion.VerificacionRequerida(
+            dominio, datos.get("url") or url,
+            f"reto={datos.get('challenge_id') or '?'} dificultad={datos.get('prefijo') or '?'}")
+
+    def anadir_cookies(self, dominio: str, cookies: str) -> None:
+        """Guarda cookies de un dominio (las consigue la ventana de verificación)."""
+        if dominio and cookies:
+            self._cookies[dominio.lower()] = cookies.strip()
+            logger.info("cookies guardadas para %s (%d caracteres)", dominio, len(cookies))
+
+    def cookies_de(self, dominio: str) -> str:
+        return self._cookies.get((dominio or "").lower(), "")
 
     def get_json(self, url: str, params: dict | None = None, headers: dict | None = None):
         resp = self._request_with_backoff("GET", url, params=params, headers=headers)
-        if self._resolver_verificacion(resp, url):
-            resp = self._request_with_backoff("GET", url, params=params, headers=headers)
+        self._revisar_verificacion(resp, url)
         return self._json_of(resp, _safe_url(url, params))
 
     def post_json(self, url: str, payload: dict, headers: dict | None = None):
@@ -530,8 +546,7 @@ class PoliteClient:
                  headers: dict | None = None) -> str:
         """Texto plano (RSS/XML/HTML) con el mismo control de cortesía y bloqueos."""
         resp = self._request_with_backoff("GET", url, params=params, headers=headers)
-        if self._resolver_verificacion(resp, url):
-            resp = self._request_with_backoff("GET", url, params=params, headers=headers)
+        self._revisar_verificacion(resp, url)
         return resp.text
 
     def download_to(self, url: str, dest: Path) -> Path:

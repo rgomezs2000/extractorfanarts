@@ -43,7 +43,7 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 | **[Konachan](https://konachan.com)** | Moebooru | No | Fondos y arte en gran tamaño |
 | **[Konachan (SFW)](https://konachan.net)** | Moebooru | No | El mismo sitio, solo **SFW** |
 | **[Derpibooru](https://derpibooru.org)** | Philomena | No | **My Little Pony** y su comunidad; ratings propios |
-| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | Sí, propias | **Adulto**. El sitio pide una **comprobación** (prueba de trabajo) y el programa **la resuelve sola** en unos segundos; a partir de ahí funciona con normalidad |
+| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | Sí, propias | **Adulto**. El sitio pide una **comprobación**: el programa abre una ventana con navegador y **la resuelves tú**; luego la operación continúa sola |
 | **[Rule34 Paheal](https://rule34.paheal.net)** | Shimmie | No | **Adulto**; API sencilla |
 
 ### Claves: solo dos, y son gratis
@@ -59,16 +59,19 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 ### Sitios que piden una comprobación
 
 Algunos boorus (por ejemplo **ATF Booru**) no entregan datos a programas: responden una
-página de **«Verification»** con una **prueba de trabajo** (encontrar un número cuya
-huella sha1 empiece por cierto prefijo). Imaginteca **la resuelve sola** —el mismo
-trabajo que haría el navegador— y canjea el resultado por la cookie que ya permite pedir
-los datos.
+página de **«Verification»** (una comprobación anti-bot). Imaginteca **no la resuelve por
+su cuenta** —eso sería comportarse como un robot, y no es lo que corresponde—: al
+detectarla, **abre una ventana con un navegador incrustado** y **la resuelves tú**, igual
+que en tu navegador de siempre.
 
-- La **primera** consulta a ese sitio tarda unos segundos de más (mientras se resuelve).
-- La cookie dura lo que indique el sitio (en ATF Booru, unos **7 días**), así que no se
-  repite en cada búsqueda.
-- Si algún día cambian el sistema y no se puede resolver, el aviso lo dice **con el
-  título de la página** que devolvió el sitio, para que se entienda qué pasó.
+- En cuanto la superas, **la ventana se cierra sola** y la búsqueda o la descarga
+  **continúan automáticamente** donde estaban.
+- Si no la superas (o se resuelve mal), se avisa y la operación no sigue: puedes
+  intentarlo otra vez cuando quieras.
+- El navegador de esa ventana usa un **perfil propio y persistente**
+  (~/.imaginteca/verificacion/), así que no hay que repetirlo en cada búsqueda.
+- Las cookies de esa sesión se le pasan al programa (con el mismo User-Agent, porque el
+  sitio los asocia), y **no se usan para nada más**.
 
 ### Aviso sobre el contenido adulto
 

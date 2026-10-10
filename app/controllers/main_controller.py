@@ -32,6 +32,7 @@ from ..services.http_client import (
     PoliteClient,
     SinResultados,
 )
+from ..services.verificacion import VerificacionRequerida
 
 logger = logging.getLogger("imaginteca")
 
@@ -164,6 +165,7 @@ class _JobSignals(QObject):
     resumen = Signal(dict)      # resumen final de la operación
     done = Signal(bool, str)    # (cancelado, motivo)
     error = Signal(str)
+    verificacion = Signal(str, str)   # (dominio, url) el sitio pide comprobación
 
 
 class _Job(QRunnable):
@@ -178,6 +180,11 @@ class _Job(QRunnable):
             self._fn(self.signals)
         except CancelledError:
             self.signals.done.emit(True, "cancelada")
+        except VerificacionRequerida as exc:
+            # El sitio pide una comprobación que resuelve la persona: se avisa a la
+            # ventana para que la abra, y NO se cuenta como error.
+            self.signals.verificacion.emit(exc.dominio, exc.url)
+            self.signals.done.emit(False, "comprobación del sitio")
         except Exception as exc:  # red de seguridad
             self.signals.error.emit(str(exc))
             self.signals.done.emit(True, "error")
@@ -192,6 +199,7 @@ class MainController(QObject):
     galeria_muestra_ready = Signal(int, bytes)   # muestra grande (nítida) de una casilla
     finished = Signal(str)
     error = Signal(str)
+    verificacion_requerida = Signal(str, str)  # (dominio, url): la resuelve la persona
     state_changed = Signal(str)  # "idle" | "running"
     job_finished = Signal(dict)  # resumen final para diálogos de la UI
     http_event = Signal(str)     # estatus de conexión para la UI (y consola/log)
@@ -749,6 +757,7 @@ class MainController(QObject):
             job.signals.http.connect(self.http_event)
             job.signals.resumen.connect(self.job_finished)
             job.signals.error.connect(self.error)
+            job.signals.verificacion.connect(self.verificacion_requerida)
             job.signals.done.connect(self._on_done)
             self._pool.start(job)
             logger.info("operacion iniciada: %s en %s", "descarga" if download else "busqueda",

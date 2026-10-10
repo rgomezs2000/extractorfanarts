@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.14 — la beta definitiva (14.ª entrega)
+
+- **La comprobación de los sitios la resuelves tú**: se abre una ventana con navegador,
+  la superas y la operación continúa sola. El programa **ya no la resuelve por su
+  cuenta** (no debe comportarse como un robot).
+
 ### 2026-10-10 · v0.1.5-beta.13 — la beta definitiva (13.ª entrega)
 
 - **ATF Booru vuelve a funcionar**: el programa **resuelve sola** la comprobación (prueba

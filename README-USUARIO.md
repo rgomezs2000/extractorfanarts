@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.13 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.14 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -375,10 +375,10 @@ muchos comparten comportamiento.
 - **Cómo buscar:** etiquetas separadas por espacios (`lola_loud 1girl solo`),
   excluir con guion (`-comic -text`) y operadores del sitio (`rating:general`,
   `score:>10`, `order:score`).
-- **Sitios que piden comprobación:** ATF Booru no entrega datos a programas hasta que
-  se resuelve su **prueba de trabajo**: el programa **la resuelve sola** (unos segundos
-  la primera vez, y la cookie dura días). Si algún sitio cambiara el sistema, el aviso
-  dirá **qué página** devolvió.
+- **Sitios que piden comprobación:** algunos boorus (ATF Booru) piden una comprobación
+  anti-bot. El programa **no la resuelve solo**: abre una **ventana con navegador** y la
+  **resuelves tú**; en cuanto la superas, **la ventana se cierra sola** y la búsqueda o
+  la descarga **continúan automáticamente**. Si no la superas, se avisa y no se sigue.
 - **Aviso adulto:** en Rule34.xxx, Rule34 Paheal, Xbooru, Hypnohub y ATF Booru casi
   todo es adulto: sin marcar **«Permitir contenido adulto»** verás **0 resultados**.
 
@@ -941,5 +941,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.13 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.14 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

@@ -44,7 +44,10 @@ except Exception:  # noqa: BLE001
 
 # Módulos de Qt que la app no usa (slim del paquete)
 EXCLUIR = [
-    "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets", "PySide6.QtWebEngineQuick",
+    # QtWebEngine SÍ se incluye: lo usa la ventana que abre el navegador incrustado para
+    # que la persona resuelva a mano la comprobación de sitios como ATF Booru. Ocupa más
+    # (unos 130 MB), pero es lo que permite no comportarse como un robot.
+    "PySide6.QtWebEngineQuick",
     "PySide6.QtQuick3D", "PySide6.QtQuick", "PySide6.QtQml", "PySide6.QtMultimedia",
     "PySide6.QtMultimediaWidgets", "PySide6.QtCharts", "PySide6.QtDataVisualization",
     "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtDesigner", "PySide6.QtHelp",
