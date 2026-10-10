@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.13 — 10 de octubre de 2026 · la beta definitiva (13.ª entrega)
+
+**El programa resuelve las comprobaciones de los sitios que las piden**
+- Algunos boorus (ATF Booru, ooru.allthefallen.moe) no entregan datos a programas:
+  responden una página con una **prueba de trabajo**. Ahora Imaginteca **la resuelve
+  sola** (pp/services/verificacion.py): busca el número cuya huella sha1 empieza por
+  el prefijo pedido, espera el tiempo que indica la página, lo canjea por la cookie y
+  **repite la petición**. A partir de ahí el sitio funciona con normalidad.
+- Probado en vivo: la primera consulta tarda ~10 s y después llegan los datos (la cookie
+  dura unos 7 días).
+- Con esto, **ATF Booru vuelve a funcionar** (y cualquier otro sitio que use el mismo
+  sistema).
+
+---
+
 ## v0.1.5-beta.12 — 10 de octubre de 2026 · la beta definitiva (12.ª entrega)
 
 **Avisos claros cuando un sitio bloquea**

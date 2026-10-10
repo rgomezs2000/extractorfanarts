@@ -43,7 +43,7 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 | **[Konachan](https://konachan.com)** | Moebooru | No | Fondos y arte en gran tamaño |
 | **[Konachan (SFW)](https://konachan.net)** | Moebooru | No | El mismo sitio, solo **SFW** |
 | **[Derpibooru](https://derpibooru.org)** | Philomena | No | **My Little Pony** y su comunidad; ratings propios |
-| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | Sí, propias | **Adulto**. El sitio pide una **comprobación anti-bot** («Verification») y **no entrega datos a programas**: aunque pongas tus claves (FBOORU_API_KEY/FBOORU_LOGIN) responderá con HTML. No es un fallo de configuración |
+| **[ATF Booru](https://booru.allthefallen.moe)** | Danbooru | Sí, propias | **Adulto**. El sitio pide una **comprobación** (prueba de trabajo) y el programa **la resuelve sola** en unos segundos; a partir de ahí funciona con normalidad |
 | **[Rule34 Paheal](https://rule34.paheal.net)** | Shimmie | No | **Adulto**; API sencilla |
 
 ### Claves: solo dos, y son gratis
@@ -55,6 +55,20 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 - **Danbooru** no acepta clave en esta versión: se consulta con el **límite
   anónimo de 2 etiquetas**. Para búsquedas más complejas, usa otro booro de la
   misma familia (Safebooru Donmai) o combina etiquetas en el sitio.
+
+### Sitios que piden una comprobación
+
+Algunos boorus (por ejemplo **ATF Booru**) no entregan datos a programas: responden una
+página de **«Verification»** con una **prueba de trabajo** (encontrar un número cuya
+huella sha1 empiece por cierto prefijo). Imaginteca **la resuelve sola** —el mismo
+trabajo que haría el navegador— y canjea el resultado por la cookie que ya permite pedir
+los datos.
+
+- La **primera** consulta a ese sitio tarda unos segundos de más (mientras se resuelve).
+- La cookie dura lo que indique el sitio (en ATF Booru, unos **7 días**), así que no se
+  repite en cada búsqueda.
+- Si algún día cambian el sistema y no se puede resolver, el aviso lo dice **con el
+  título de la página** que devolvió el sitio, para que se entienda qué pasó.
 
 ### Aviso sobre el contenido adulto
 

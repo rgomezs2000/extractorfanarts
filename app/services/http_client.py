@@ -22,6 +22,7 @@ from urllib.parse import urlparse
 import httpx
 
 from .. import config
+from . import verificacion
 
 logger = logging.getLogger("imaginteca")
 
@@ -470,8 +471,44 @@ class PoliteClient:
                 f"{descripcion} no devolvió JSON válido ({exc}). Inicio: {fragmento}"
             ) from exc
 
+    def _resolver_verificacion(self, resp, url: str) -> bool:
+        """Si el sitio devolvió su página de comprobación, se resuelve y se reintenta.
+
+        Algunos boorus (p. ej. `booru.allthefallen.moe`) responden una página con una
+        **prueba de trabajo** en lugar de los datos. Se resuelve aquí (es el mismo
+        trabajo que haría el navegador: buscar un `nonce` cuya huella sha1 empiece por
+        el prefijo pedido) y se canjea por la cookie que ya permite pedir los datos.
+        """
+        try:
+            cuerpo = resp.text or ""
+        except Exception:  # noqa: BLE001
+            return False
+        datos = verificacion.datos_del_reto(cuerpo, url)
+        if not datos:
+            return False
+        logger.info("el sitio pide comprobación; resolviendo la prueba de trabajo (%s)",
+                    datos.get("url"))
+        solucion = verificacion.resolver(datos)
+        if not solucion:
+            logger.warning("la comprobación del sitio no se pudo resolver")
+            return False
+        try:
+            if datos.get("retardo"):
+                time.sleep(min(float(datos["retardo"]), 10.0))
+            self._request_with_backoff(
+                "POST", datos["url"],
+                json=verificacion.cuerpo_del_envio(datos, solucion),
+                headers=dict(verificacion.CABECERAS_ENVIO))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("no se pudo canjear la comprobación del sitio: %s", exc)
+            return False
+        logger.info("comprobación superada: el sitio ya entrega datos")
+        return True
+
     def get_json(self, url: str, params: dict | None = None, headers: dict | None = None):
         resp = self._request_with_backoff("GET", url, params=params, headers=headers)
+        if self._resolver_verificacion(resp, url):
+            resp = self._request_with_backoff("GET", url, params=params, headers=headers)
         return self._json_of(resp, _safe_url(url, params))
 
     def post_json(self, url: str, payload: dict, headers: dict | None = None):
@@ -493,6 +530,8 @@ class PoliteClient:
                  headers: dict | None = None) -> str:
         """Texto plano (RSS/XML/HTML) con el mismo control de cortesía y bloqueos."""
         resp = self._request_with_backoff("GET", url, params=params, headers=headers)
+        if self._resolver_verificacion(resp, url):
+            resp = self._request_with_backoff("GET", url, params=params, headers=headers)
         return resp.text
 
     def download_to(self, url: str, dest: Path) -> Path:

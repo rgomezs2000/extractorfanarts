@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.13 — la beta definitiva (13.ª entrega)
+
+- **ATF Booru vuelve a funcionar**: el programa **resuelve sola** la comprobación (prueba
+  de trabajo) que pide el sitio antes de entregar datos.
+
 ### 2026-10-10 · v0.1.5-beta.12 — la beta definitiva (12.ª entrega)
 
 - Los avisos de «HTML en lugar de JSON» ahora dicen **qué página devolvió el sitio** y
