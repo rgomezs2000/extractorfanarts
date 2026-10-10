@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.5-beta.10"
+APP_VERSION = "0.1.5-beta.11"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -170,8 +170,8 @@ GELBOORU_API_KEY = ""
 GELBOORU_USER_ID = ""
 
 # Rule34.xxx: https://rule34.xxx/index.php?page=account&s=options
-RULE34_API_KEY = ""
-RULE34_USER_ID = ""
+RULE34_API_KEY = ""             # <- tus claves van en config_local.py, NO aquí
+RULE34_USER_ID = ""             # <- (este archivo lo ve todo el mundo: no pongas claves)
 
 # FBooru (fbooru.net): credenciales propias del sitio, tal como las da su perfil de API
 #   https://booru.fbooru.net/profile.json?api_key=…&login=…
@@ -598,6 +598,35 @@ def _con_boorus_extra(sitios: list, extra) -> list:
     return list(sitios) + nuevos if nuevos else sitios
 
 
-BOORU_SITES = _con_boorus_extra(BOORU_SITES, globals().get("BOORU_SITES_EXTRA"))
+def _rellenar_credenciales(sitios: list[dict]) -> list[dict]:
+    """Completa las credenciales que quedaron vacías al armar la lista de sitios.
+
+    `BOORU_SITES` se define ANTES de leer `config_local.py`, así que las claves que el
+    usuario pone en ese archivo (lo normal) no llegaban a las entradas con `auth` y la
+    aplicación pedía unas credenciales que sí estaban escritas. Aquí se rellenan con el
+    valor final de las constantes, ya con `config_local.py` aplicado.
+    """
+    equivalencias = {
+        "gelbooru": {"api_key": "GELBOORU_API_KEY", "user_id": "GELBOORU_USER_ID"},
+        "rule34": {"api_key": "RULE34_API_KEY", "user_id": "RULE34_USER_ID"},
+        "danbooru": {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"},
+        "moebooru": {"login": "MOEBOORU_LOGIN", "password_hash": "MOEBOORU_PASSWORD_HASH"},
+        "philomena": {"api_key": "PHILOMENA_API_KEY"},
+    }
+    for sitio in sitios:
+        auth = sitio.get("auth")
+        if not isinstance(auth, dict):
+            continue
+        familia = str(sitio.get("family") or "").lower()
+        for campo, constante in equivalencias.get(familia, {}).items():
+            if campo in auth and not str(auth.get(campo) or "").strip():
+                valor = globals().get(constante) or ""
+                if str(valor).strip():
+                    auth[campo] = valor
+    return sitios
+
+
+BOORU_SITES = _rellenar_credenciales(
+    _con_boorus_extra(BOORU_SITES, globals().get("BOORU_SITES_EXTRA")))
 for _temporal in ("_extra", "_nombres", "_nuevos"):
     globals().pop(_temporal, None)

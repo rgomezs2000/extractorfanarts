@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.11 — 10 de octubre de 2026 · la beta definitiva (11.ª entrega)
+
+**Arreglado: las claves de config_local.py no llegaban a los boorus**
+- BOORU_SITES se arma **antes** de leer config_local.py, así que las entradas con
+  uth se quedaban con los valores vacíos y la aplicación pedía unas credenciales que
+  **sí** estaban escritas («Rule34.xxx necesita api_key, user_id»).
+- Además, Rule34.xxx usa la **misma familia** que Gelbooru, así que se buscaban las
+  constantes equivocadas: ahora se eligen **por sitio** (Rule34, Gelbooru, Danbooru…).
+- El aviso de credenciales ahora dice **la ruta exacta** del archivo que lee el programa
+  y recuerda que las claves de pp/config.py no cuentan en una copia compilada.
+- Comprobado en vivo: Rule34.xxx responde con las claves del usuario.
+
+---
+
 ## v0.1.5-beta.10 — 9 de octubre de 2026 · la beta definitiva (10.ª entrega)
 
 **Búsqueda en las wikis de fandom, mucho más completa**

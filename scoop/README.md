@@ -38,7 +38,7 @@ Para generarlo a mano (por ejemplo, tras publicar algo):
 
 ```powershell
 python scripts\scoop\generar_manifiesto.py                 # toma la última release oficial
-python scripts\scoop\generar_manifiesto.py --zip dist\Imaginteca-Windows.zip --version 0.1.5-beta.10
+python scripts\scoop\generar_manifiesto.py --zip dist\Imaginteca-Windows.zip --version 0.1.5-beta.11
 ```
 
 ## La firma: automática en cada compilación

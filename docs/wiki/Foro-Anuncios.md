@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.11 — la beta definitiva (11.ª entrega)
+
+- **Arreglado**: las claves puestas en config_local.py ya llegan a los boorus (antes se
+  pedían credenciales que sí estaban escritas). El aviso dice ahora **dónde** hay que
+  ponerlas.
+
 ### 2026-10-09 · v0.1.5-beta.10 — la beta definitiva (10.ª entrega)
 
 - **Wikis de fandom**: la búsqueda entra en **la ficha y en todas las pestañas**

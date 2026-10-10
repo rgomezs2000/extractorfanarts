@@ -49,6 +49,33 @@ _CREDENCIALES_POR_FAMILIA = {
     "philomena": (),          # la api_key es opcional (solo sube el límite de peticiones)
 }
 
+# De qué constante de `config` sale cada credencial cuando la entrada del sitio llegó
+# vacía (las claves de config_local.py se leen después de armar BOORU_SITES).
+# Se busca **por sitio** y no solo por familia: Rule34.xxx usa la misma familia que
+# Gelbooru pero sus claves son otras.
+_CONSTANTES_POR_MARCA = (
+    ("rule34", {"api_key": "RULE34_API_KEY", "user_id": "RULE34_USER_ID"}),
+    ("gelbooru", {"api_key": "GELBOORU_API_KEY", "user_id": "GELBOORU_USER_ID"}),
+    ("danbooru", {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"}),
+    ("fbooru", {"api_key": "FBOORU_API_KEY", "login": "FBOORU_LOGIN"}),
+)
+
+_CONSTANTES_POR_FAMILIA = {
+    "gelbooru": {"api_key": "GELBOORU_API_KEY", "user_id": "GELBOORU_USER_ID"},
+    "danbooru": {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"},
+    "moebooru": {"login": "MOEBOORU_LOGIN", "password_hash": "MOEBOORU_PASSWORD_HASH"},
+    "philomena": {"api_key": "PHILOMENA_API_KEY"},
+}
+
+
+def _constantes_del_sitio(site_cfg: dict) -> dict:
+    """{campo: nombre de la constante} que corresponde a este sitio concreto."""
+    texto = f"{site_cfg.get('name', '')} {site_cfg.get('base', '')}".lower()
+    for marca, constantes in _CONSTANTES_POR_MARCA:
+        if marca in texto:
+            return constantes
+    return _CONSTANTES_POR_FAMILIA.get(str(site_cfg.get("family") or "").lower(), {})
+
 _RATING_MAP = {
     "s": "general", "safe": "general", "g": "general",
     "sensitive": "sensitive", "q": "questionable", "questionable": "questionable",
@@ -159,13 +186,25 @@ def _auth_params(site_cfg: dict) -> dict:
         familia = str(site_cfg.get("family") or "").lower()
         necesarios = _CREDENCIALES_POR_FAMILIA.get(familia, tuple(tipo))
         tokens = {k: str(v or "").strip() for k, v in tipo.items()}
+        # Las claves de `config_local.py` se leen DESPUÉS de armar `BOORU_SITES`, así que
+        # una entrada con `"auth": {"api_key": RULE34_API_KEY, …}` se quedaba con el
+        # valor vacío y la app pedía unas credenciales que SÍ estaban escritas. Aquí se
+        # completan con el valor final de las constantes (ya leído el archivo del
+        # usuario), en el momento de usar el sitio.
+        for campo, constante in _constantes_del_sitio(site_cfg).items():
+            if campo in tokens and not tokens[campo]:
+                tokens[campo] = str(getattr(config, constante, "") or "").strip()
         usados = {k: v for k, v in tokens.items() if v}
         faltan = [k for k in necesarios if not tokens.get(k)]
         if faltan and (necesarios or not usados):
+            donde = getattr(config, "CONFIG_LOCAL_USADO", None)
             raise ConfigError(
-                f"{site_cfg.get('name', 'el sitio')} necesita "
-                f"{', '.join(faltan)}: rellénalo en su entrada de BOORU_SITES "
-                "(app/config.py) o en app/config_local.py"
+                f"{site_cfg.get('name', 'el sitio')} necesita {', '.join(faltan)}.\n\n"
+                "Escríbelos en tu archivo de configuración local:\n"
+                f"    {donde if donde else '(no se encontró config_local.py)'}\n\n"
+                "Ojo: las claves escritas en app/config.py NO cuentan si ejecutas el\n"
+                "programa ya compilado (.exe): cada copia lee su propio config_local.py,\n"
+                "el que está junto al ejecutable."
             )
         return usados
 
