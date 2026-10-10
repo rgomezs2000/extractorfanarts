@@ -447,6 +447,30 @@ def _probar(destino: Path) -> int:
         return 1
 
 
+def _aligerar_qtwebengine(carpeta_dist: Path) -> None:
+    """Quita de la compilación los recursos de DevTools del navegador incrustado.
+
+    QtWebEngine trae los recursos del inspector («DevTools») y ocupan unos 85 MB que esta
+    aplicación no usa nunca: el navegador incrustado solo sirve para que la persona
+    resuelva la comprobación de un sitio. Quitarlos no afecta a nada más.
+    """
+    patrones = (
+        "qtwebengine_devtools_resources.debug.pak",
+        "qtwebengine_devtools_resources.pak",
+        "qtwebengine_resources.debug.pak",
+    )
+    quitados = 0
+    for patron in patrones:
+        for ruta in carpeta_dist.rglob(patron):
+            try:
+                ruta.unlink()
+                quitados += 1
+            except OSError:
+                continue
+    if quitados:
+        print(f"[ok] recursos de DevTools del navegador eliminados ({quitados} archivos)")
+
+
 def main() -> int:
     onefile = "--onefile" in sys.argv
     consola = "--consola" in sys.argv
