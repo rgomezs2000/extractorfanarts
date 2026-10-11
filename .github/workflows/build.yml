@@ -112,6 +112,15 @@ jobs:
           # La marca de producción también junto al programa (y dentro del .app de macOS)
           python scripts/marcar_release.py --version "$(python -c "from app import config; print(config.APP_VERSION)")" --etiqueta "${{ github.ref_name }}"
 
+      # ── Aligerar los paquetes (los recursos del inspector no se usan) ───────────
+      - name: Quitar los recursos de DevTools del navegador incrustado (83 MB)
+        shell: bash
+        run: |
+          antes=$(du -sm dist 2>/dev/null | cut -f1 || echo 0)
+          find dist -type f -name 'qtwebengine_devtools_resources*.pak' -print -delete || true
+          despues=$(du -sm dist 2>/dev/null | cut -f1 || echo 0)
+          echo "Paquete: ${antes} MB -> ${despues} MB"
+
       # ── Versión portátil también en .tar.gz (además del .zip del release) ───────
       - name: Versión portátil en .tar.gz
         shell: bash
