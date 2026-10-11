@@ -1,5 +1,22 @@
 # Historial de versiones
 
+## v0.1.5-beta.20 — 11 de octubre de 2026 · la beta definitiva (20.ª entrega)
+
+**Arreglado: tras resolver la comprobación, la búsqueda continúa sola (sin bucle)**
+- El reintento automático se perdía después de la primera vuelta: el aviso decía «vuelve a
+  pulsar Buscar», se pulsaba, el sitio volvía a pedir la comprobación y así en bucle, sin
+  llegar a traer imágenes. Ahora el reintento **no se borra** y la operación continúa sola
+  hasta terminar.
+- Antes de repetirla se **comprueba en el acto** que el programa puede pedir datos con la
+  sesión que consiguió la ventana: si aún no sirviera, se avisa con claridad («la sesión no
+  sirve todavía, resuélvela y espera unos segundos») en lugar de dar vueltas.
+- Límite de seguridad: si el sitio pide la comprobación **más de 3 veces seguidas**, se
+  detiene y se explica, para no quedarse en un bucle.
+- Recordatorio: las imágenes aparecen **en Imaginteca** (en la tira de resultados y en la
+  galería), no dentro de la ventana del navegador.
+
+---
+
 ## v0.1.5-beta.19 — 11 de octubre de 2026 · la beta definitiva (19.ª entrega)
 
 **Arreglado: la ventana de comprobación fallaba en la versión compilada**

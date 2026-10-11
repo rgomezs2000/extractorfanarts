@@ -47,6 +47,10 @@ logger = logging.getLogger("imaginteca")
 
 TIPOS = ("Red social", "Booru", "Wiki fandom")
 
+# Cuántas veces seguidas se repite una operación tras superar una comprobación del sitio
+# antes de darse por vencido (evita quedarse en un bucle si el sitio la pide sin parar).
+MAX_REINTENTOS_VERIFICACION = 3
+
 
 class MainWindow(QMainWindow):
     def __init__(self, controller: MainController):
@@ -57,6 +61,7 @@ class MainWindow(QMainWindow):
         self._error_mostrado = False      # se avisó de un error crítico en esta operación
         self._tarea = "descargar"
         self._reintento = None     # operación a repetir tras superar una comprobación
+        self._reintentos_de_verificacion = 0   # vueltas seguidas de comprobación
         self._lightbox: Lightbox | None = None
         self._individual_en_curso = 0     # acciones individuales en segundo plano
         self._build_ui()
@@ -476,6 +481,7 @@ class MainWindow(QMainWindow):
                 f"⏳ {verbo} la imagen {indice + 1} de {self.galeria.total()}…")
             # La MISMA configuración de la ventana: la calidad (.webp + mejora
             # Lanczos/IA) viaja en `settings`, igual que en la descarga masiva.
+            self._reintentos_de_verificacion = 0
             self._reintento = lambda: self.controller.procesar_individual(
                 indice + 1, self._settings(), accion)
             self.controller.procesar_individual(indice + 1, self._settings(), accion)
@@ -526,6 +532,7 @@ class MainWindow(QMainWindow):
                 return
             self.statusBar().showMessage(f"⏳ Guardando la imagen {indice + 1} como {destino.name}…")
             # MISMA configuración de calidad que la descarga masiva
+            self._reintentos_de_verificacion = 0
             self._reintento = lambda: self.controller.procesar_individual(
                 indice + 1, self._settings(), "guardar_como", destino=destino)
             self.controller.procesar_individual(
@@ -832,6 +839,34 @@ class MainWindow(QMainWindow):
             recorte = recorte[:recorte.rfind(" ")]
         return recorte.rstrip(" ,.;:") + "…"
 
+    def _sesion_de_verificacion_valida(self, dominio: str, url: str) -> bool:
+        """¿El programa ya puede pedir datos con la sesión que consiguió la ventana?
+
+        Se hace una petición pequeña al mismo sitio: si no vuelve a pedir la comprobación,
+        la sesión sirve y la operación puede repetirse con garantías.
+        """
+        from ..services.http_client import PoliteClient
+
+        objetivo = url or f"https://{dominio}/"
+        cliente = None
+        try:
+            cliente = PoliteClient()
+            cliente.get_text(objetivo)
+            return True
+        except verificacion.VerificacionRequerida:
+            return False
+        except Exception as exc:  # noqa: BLE001
+            # Cualquier otro fallo (404, red…) no invalida la sesión: la comprobación no
+            # se volvió a pedir, que es lo único que importa aquí.
+            logger.info("comprobación de sesión en %s: %s", dominio, type(exc).__name__)
+            return True
+        finally:
+            if cliente is not None:
+                try:
+                    cliente.close()
+                except Exception:  # noqa: BLE001
+                    pass
+
     def _dominio_del_aviso(self, mensaje: str) -> str:
         """Si el aviso es una petición de comprobación del sitio, saca su dominio.
 
@@ -873,10 +908,37 @@ class MainWindow(QMainWindow):
             return
         if resultado == QDialog.Accepted and cookies:
             verificacion.guardar_verificacion(dominio, cookies, agente)
+            # Se comprueba EN EL ACTO que el programa puede pedir datos con esa sesión: si
+            # no, se avisa claro en vez de repetir la búsqueda en bucle.
+            if not self._sesion_de_verificacion_valida(dominio, url):
+                logger.warning("la sesión de %s no sirve para las peticiones del programa",
+                               dominio)
+                QMessageBox.warning(
+                    self, "La sesión no sirve todavía",
+                    f"El navegador dio por superada la comprobación de {dominio}, pero el "
+                    "programa **todavía no** puede pedir datos con esa sesión.\n\n"
+                    "Vuelve a intentarlo: si el sitio te la pide otra vez, resuélvela y "
+                    "espera unos segundos antes de cerrar la ventana.")
+                return
             self.statusBar().showMessage(f"✅ Comprobación de {dominio} superada")
+            # La operación se repite AUTOMÁTICAMENTE, con un límite de intentos para no
+            # quedarse en un bucle si el sitio vuelve a pedir la comprobación.
             reintento = self._reintento
-            self._reintento = None
             if reintento is not None:
+                self._reintentos_de_verificacion += 1
+                if self._reintentos_de_verificacion > MAX_REINTENTOS_VERIFICACION:
+                    logger.error("demasiadas comprobaciones seguidas en %s: se detiene",
+                                 dominio)
+                    QMessageBox.warning(
+                        self, "Comprobación no resuelta",
+                        f"Se ha pedido la comprobación de {dominio} más de "
+                        f"{MAX_REINTENTOS_VERIFICACION} veces seguidas y la operación no "
+                        "puede continuar. Inténtalo más tarde o usa otro sitio.")
+                    return
+                logger.info("comprobación superada en %s: se repite la operación (%d)",
+                            dominio, self._reintentos_de_verificacion)
+                self.statusBar().showMessage(
+                    f"✅ Comprobación de {dominio} superada — continuando la operación…")
                 QTimer.singleShot(600, reintento)    # se repite ya con las cookies
             else:
                 QMessageBox.information(self, "Comprobación superada",
@@ -1042,6 +1104,7 @@ class MainWindow(QMainWindow):
                 return
             self._preparar_busqueda_nueva()
             self._tarea = "buscar"          # la barra de progreso lo refleja
+            self._reintentos_de_verificacion = 0
             self._reintento = lambda: self.controller.buscar(s)
             self.controller.buscar(s)
         except Exception as exc:
@@ -1082,6 +1145,7 @@ class MainWindow(QMainWindow):
                 return
             self._preparar_busqueda_nueva()
             self._tarea = "descargar"       # la barra de progreso lo refleja
+            self._reintentos_de_verificacion = 0
             self._reintento = lambda: self.controller.descargar(s)
             self.controller.descargar(s)
         except Exception as exc:
