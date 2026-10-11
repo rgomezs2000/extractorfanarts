@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.18 — 10 de octubre de 2026 · la beta definitiva (18.ª entrega)
+
+**Arreglado: la ventana de comprobación no llegaba a abrirse**
+- El controlador convertía la petición de comprobación en un **«Error inesperado»** antes
+  de que la ventana se enterara (un xcept Exception general se la comía). Por eso el
+  aviso decía «pide una comprobación… resuélvela en la ventana» **pero la ventana no
+  aparecía**.
+- Ahora la búsqueda y la descarga avisan por su canal propio y **la ventana se abre**; las
+  acciones individuales (guardar una imagen del carrusel) también.
+- Red de seguridad añadida: si por cualquier camino el aviso llegara como texto, la
+  ventana se abre igualmente.
+- Comprobado de punta a punta: buscar en ATF Booru pide la ventana y **no** da error.
+
+---
+
 ## v0.1.5-beta.17 — 10 de octubre de 2026 · la beta definitiva (17.ª entrega)
 
 **La ventana de comprobación vale para cualquier sitio (Rule34.xxx incluido)**

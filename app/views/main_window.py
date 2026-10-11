@@ -832,6 +832,20 @@ class MainWindow(QMainWindow):
             recorte = recorte[:recorte.rfind(" ")]
         return recorte.rstrip(" ,.;:") + "…"
 
+    def _dominio_del_aviso(self, mensaje: str) -> str:
+        """Si el aviso es una petición de comprobación del sitio, saca su dominio.
+
+        Sirve de red de seguridad: el camino normal es que el controlador avise por su
+        señal, pero si algún día un texto llegara por aquí, la ventana se abre igual.
+        """
+        texto = str(mensaje or "")
+        if "pide una comprobación antes de entregar los datos" not in texto:
+            return ""
+        import re
+
+        hallado = re.search(r"([a-z0-9.-]+\.[a-z]{2,})", texto)
+        return hallado.group(1) if hallado else ""
+
     def _on_verificacion(self, dominio: str, url: str) -> None:
         """El sitio pide una comprobación: **la resuelve la persona** en una ventana.
 
@@ -877,6 +891,12 @@ class MainWindow(QMainWindow):
     def _on_error(self, mensaje: str) -> None:
         """Error crítico: UN aviso resumido al usuario y el detalle completo al registro."""
         logger.error("%s", mensaje)          # detalle íntegro (consola y archivo .log)
+        # Red de seguridad: si el aviso es en realidad la petición de una comprobación del
+        # sitio (algún camino lo reporta como texto), se abre la ventana igualmente.
+        dominio = self._dominio_del_aviso(mensaje)
+        if dominio:
+            self._on_verificacion(dominio, f"https://{dominio}/")
+            return
         if self._error_mostrado:
             return                           # ya se avisó en esta misma operación
         self._error_mostrado = True

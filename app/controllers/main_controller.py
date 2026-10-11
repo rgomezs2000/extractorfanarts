@@ -552,6 +552,9 @@ class MainController(QObject):
             trabajo = _Job(tarea)
             trabajo.signals.error.connect(
                 lambda msg: logger.warning("acción individual: %s", msg))
+            # Si el sitio pide comprobación, también aquí se abre la ventana para que la
+            # resuelva la persona (y luego se repite la acción).
+            trabajo.signals.verificacion.connect(self.verificacion_requerida)
             self._pool.start(trabajo)
         except Exception as exc:  # noqa: BLE001
             logger.exception("excepcion en procesar_individual()")
@@ -942,6 +945,16 @@ class MainController(QObject):
             logger.warning("sin resultados: %s", exc)
             sig.resumen.emit(resumen)
             sig.done.emit(False, "sin resultados")
+        except VerificacionRequerida as exc:
+            # El sitio pide una comprobación (Cloudflare, CAPTCHA, prueba de trabajo…):
+            # NO es un error. Se avisa a la ventana para que la resuelva la persona y,
+            # cuando la supere, la operación se repite con las cookies de esa sesión.
+            resumen["estado"] = "comprobación del sitio"
+            resumen["error"] = ""
+            logger.info("el sitio %s pide comprobación: se abre la ventana", exc.dominio)
+            sig.verificacion.emit(exc.dominio, exc.url)
+            sig.resumen.emit(resumen)
+            sig.done.emit(False, "comprobación del sitio")
         except (BlockedError, ConfigError) as exc:
             resumen["estado"] = "error"
             resumen["error"] = str(exc)

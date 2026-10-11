@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.18 — la beta definitiva (18.ª entrega)
+
+- **Arreglado**: la ventana para resolver la comprobación **ya se abre** (antes el aviso
+  salía como «Error inesperado» y no aparecía la ventana).
+
 ### 2026-10-10 · v0.1.5-beta.17 — la beta definitiva (17.ª entrega)
 
 - La **ventana para resolver la comprobación** ya sale en **cualquier sitio** que la pida
