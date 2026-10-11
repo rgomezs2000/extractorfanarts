@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.16 — 10 de octubre de 2026 · la beta definitiva (16.ª entrega)
+
+**Paquetes 83 MB más ligeros (ya en las descargas)**
+- La publicación quita los recursos del **inspector (DevTools)** del navegador
+  incrustado: 83 MB que esta aplicación no usa nunca. Los .zip, .tar.gz, instaladores y
+  manifiestos de esta versión salen más pequeños.
+
+**Arreglado: las claves de ATF Booru (las «FBOORU») no se encontraban**
+- El sitio se llama **ATF Booru** (ooru.allthefallen.moe) y sus claves son
+  FBOORU_API_KEY / FBOORU_LOGIN: ahora se reconocen por llthefallen, tf y
+  booru, así que se encuentran aunque los nombres no coincidan.
+- El aviso de credenciales recuerda que **una línea comentada (con #) no cuenta**, que
+  es el tropiezo más habitual al rellenar config_local.py.
+- Las claves de un sitio **no se usan nunca para otro**, aunque compartan familia de API
+  (Gelbooru y Rule34.xxx): si faltan las de un sitio, se piden las suyas.
+
+---
+
 ## v0.1.5-beta.15 — 10 de octubre de 2026 · la beta definitiva (15.ª entrega)
 
 **Arreglado: las claves de ATF Booru (las «FBOORU») no se encontraban**
