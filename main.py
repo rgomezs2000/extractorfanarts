@@ -94,6 +94,17 @@ def selftest() -> int:
     except Exception as exc:  # noqa: BLE001
         decir(f"  curl_cffi   : no disponible ({exc}) — opcional: Cloudflare")
 
+    # Navegador incrustado: lo usa la ventana que resuelve a mano la comprobación de los
+    # sitios (ATF Booru, Cloudflare…). Se comprueba aquí porque, si falta algún módulo en
+    # la compilación, el fallo aparecería justo al abrir esa ventana.
+    try:
+        from PySide6 import QtWebChannel, QtWebEngineCore, QtWebEngineWidgets  # noqa: F401
+        decir("  navegador   : OK (QtWebEngine y QtWebChannel)")
+    except Exception as exc:  # noqa: BLE001
+        decir(f"  navegador   : FALLO ({exc})")
+        decir("                la ventana de comprobación no podrá abrirse")
+        problemas += 1
+
     try:
         from app.services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
         decir(f"  adaptadores : {len(BOORU_ADAPTERS)} boorus, "

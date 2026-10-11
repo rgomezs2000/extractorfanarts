@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.19 — la beta definitiva (19.ª entrega)
+
+- **Arreglado**: la ventana de comprobación ya abre también en la **versión compilada**
+  (faltaba QtWebChannel en el paquete). El --selftest ahora lo comprueba.
+
 ### 2026-10-10 · v0.1.5-beta.18 — la beta definitiva (18.ª entrega)
 
 - **Arreglado**: la ventana para resolver la comprobación **ya se abre** (antes el aviso

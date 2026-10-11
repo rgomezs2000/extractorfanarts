@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.19 — 11 de octubre de 2026 · la beta definitiva (19.ª entrega)
+
+**Arreglado: la ventana de comprobación fallaba en la versión compilada**
+- El paquete excluía **QtWebChannel** (y QtWebSockets, QtQuick y QtQml), que son
+  dependencias del navegador incrustado: al abrir la ventana saltaba
+  could not import module 'PySide6.QtWebChannel'. Ahora se incluyen.
+- El **autoexamen** (--selftest) comprueba el navegador incrustado y lo dice en su
+  informe, para que un fallo así se vea antes de publicar.
+
+---
+
 ## v0.1.5-beta.18 — 10 de octubre de 2026 · la beta definitiva (18.ª entrega)
 
 **Arreglado: la ventana de comprobación no llegaba a abrirse**

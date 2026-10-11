@@ -45,15 +45,16 @@ except Exception:  # noqa: BLE001
 # Módulos de Qt que la app no usa (slim del paquete)
 EXCLUIR = [
     # QtWebEngine SÍ se incluye: lo usa la ventana que abre el navegador incrustado para
-    # que la persona resuelva a mano la comprobación de sitios como ATF Booru. Ocupa más
-    # (unos 130 MB), pero es lo que permite no comportarse como un robot.
+    # que la persona resuelva a mano la comprobación de sitios como ATF Booru. Con él van
+    # sus DEPENDENCIAS: QtWebChannel, QtWebSockets y QtQuick/QtQml. Sin ellas la ventana
+    # falla al importar («could not import module 'PySide6.QtWebChannel'»).
     "PySide6.QtWebEngineQuick",
-    "PySide6.QtQuick3D", "PySide6.QtQuick", "PySide6.QtQml", "PySide6.QtMultimedia",
+    "PySide6.QtQuick3D", "PySide6.QtMultimedia",
     "PySide6.QtMultimediaWidgets", "PySide6.QtCharts", "PySide6.QtDataVisualization",
     "PySide6.Qt3DCore", "PySide6.Qt3DRender", "PySide6.QtDesigner", "PySide6.QtHelp",
     "PySide6.QtUiTools", "PySide6.QtTest", "PySide6.QtSql", "PySide6.QtBluetooth",
     "PySide6.QtNfc", "PySide6.QtPositioning", "PySide6.QtSensors", "PySide6.QtSerialPort",
-    "PySide6.QtWebSockets", "PySide6.QtWebChannel", "PySide6.QtPdf", "PySide6.QtPdfWidgets",
+    "PySide6.QtPdf", "PySide6.QtPdfWidgets",
     "tkinter", "matplotlib", "numpy", "pandas", "scipy", "IPython", "pytest",
 ]
 
