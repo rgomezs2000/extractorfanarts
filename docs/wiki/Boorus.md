@@ -58,11 +58,13 @@ Eso hace que añadir uno nuevo de una familia soportada sea trivial.
 
 ### Sitios que piden una comprobación
 
-Algunos boorus (por ejemplo **ATF Booru**) no entregan datos a programas: responden una
-página de **«Verification»** (una comprobación anti-bot). Imaginteca **no la resuelve por
-su cuenta** —eso sería comportarse como un robot, y no es lo que corresponde—: al
-detectarla, **abre una ventana con un navegador incrustado** y **la resuelves tú**, igual
-que en tu navegador de siempre.
+Muchos boorus (y webs en general) no entregan datos a programas: responden una página de
+comprobación. Da igual cuál sea —la **«Verification»** de ATF Booru (prueba de trabajo),
+el **«Just a moment…»** de Cloudflare, un **CAPTCHA**, un muro de **DDoS-Guard**…—:
+Imaginteca **no la resuelve por su cuenta** (eso sería comportarse como un robot, y no es
+lo que corresponde). Al detectarla, **abre una ventana con un navegador incrustado** y
+**la resuelves tú**, igual que en tu navegador de siempre. Vale para **cualquier sitio**,
+no solo para ATF Booru.
 
 - En cuanto la superas, **la ventana se cierra sola** y la búsqueda o la descarga
   **continúan automáticamente** donde estaban.

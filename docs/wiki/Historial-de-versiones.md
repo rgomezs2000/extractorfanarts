@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.17 — 10 de octubre de 2026 · la beta definitiva (17.ª entrega)
+
+**La ventana de comprobación vale para cualquier sitio (Rule34.xxx incluido)**
+- Antes solo se abría cuando el sitio devolvía su página de **prueba de trabajo** (ATF
+  Booru). Ahora también cuando responde un **muro de Cloudflare** («Just a moment…»,
+  «Attention Required»), un **CAPTCHA**, **Turnstile**, **DDoS-Guard** o similares.
+- El procedimiento es el mismo en todos: se abre la ventana con el navegador, **la
+  resuelves tú**, y al superarla **se cierra sola** y la búsqueda o la descarga continúan
+  con las cookies de esa sesión. Si **no** se supera, se avisa y **no se continúa**.
+- Un error normal del sitio (un 404, una página de «no encontrado») **no** abre la
+  ventana: se informa como siempre.
+
+---
+
 ## v0.1.5-beta.16 — 10 de octubre de 2026 · la beta definitiva (16.ª entrega)
 
 **Paquetes 83 MB más ligeros (ya en las descargas)**

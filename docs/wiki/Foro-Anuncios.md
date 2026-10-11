@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.17 — la beta definitiva (17.ª entrega)
+
+- La **ventana para resolver la comprobación** ya sale en **cualquier sitio** que la pida
+  (Cloudflare, CAPTCHA, Turnstile, DDoS-Guard, prueba de trabajo), no solo en ATF Booru.
+
 ### 2026-10-10 · v0.1.5-beta.16 — la beta definitiva (16.ª entrega)
 
 - Paquetes **83 MB más ligeros** (fuera los recursos del inspector del navegador, ya en

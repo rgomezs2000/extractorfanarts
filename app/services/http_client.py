@@ -368,31 +368,27 @@ class PoliteClient:
 
             reto = _challenge_kind(resp)
             if reto is not None:
+                # El sitio pide una comprobación (Cloudflare, CAPTCHA, prueba de trabajo…):
+                # se avisa a la ventana para que **la resuelva la persona**, igual que en su
+                # navegador. El programa no la resuelve por su cuenta.
                 if not self._es_dominio_navegador(url):
-                    pista = (
-                        " Este dominio no está en BROWSER_DOMAINS: añádelo en "
-                        "app/config_local.py (p. ej. BROWSER_DOMAINS = [\"rule34.xxx\", "
-                        "\"fandom.com\", \"nocookie.net\"]) para que use el transporte con "
-                        "aspecto de navegador."
-                    )
+                    pista = (" Este dominio no está en BROWSER_DOMAINS: añádelo en "
+                             "app/config_local.py (p. ej. BROWSER_DOMAINS = [\"rule34.xxx\", "
+                             "\"fandom.com\", \"nocookie.net\"]) para que use el transporte "
+                             "con aspecto de navegador.")
                 elif self._curl is None:
-                    pista = (
-                        " Falta el transporte con huella de navegador: ejecuta "
-                        "python scripts\\setup_vendor.py --only=curl_cffi,cffi,pycparser"
-                    )
+                    pista = (" Falta el transporte con huella de navegador: ejecuta "
+                             "python scripts\\setup_vendor.py --only=curl_cffi,cffi,pycparser")
                 elif self._es_dominio_cf(url) and self._cf_headers:
-                    pista = (
-                        " La acreditación cf_clearance puede haber caducado: vuelve a resolver "
-                        "el CAPTCHA en el navegador y actualiza CF_CLEARANCE / CF_USER_AGENT."
-                    )
+                    pista = (" La acreditación cf_clearance puede haber caducado: vuelve a "
+                             "resolver el CAPTCHA y actualiza CF_CLEARANCE / CF_USER_AGENT.")
                 else:
-                    pista = (
-                        " El sitio sigue bloqueando la petición: actualiza DEFAULT_BROWSER_UA "
-                        "(o CF_USER_AGENT) en app/config_local.py con el UA real de tu navegador."
-                    )
-                raise BlockedError(
-                    f"{domain} devolvió {reto} en lugar de datos (HTTP {resp.status_code})."
-                    + pista
+                    pista = (" Si la ventana no bastara, actualiza DEFAULT_BROWSER_UA (o "
+                             "CF_USER_AGENT) en app/config_local.py con el UA de tu navegador.")
+                logger.info("%s devolvió %s: se pedirá a la persona que lo resuelva",
+                            domain, reto)
+                raise verificacion.VerificacionRequerida(
+                    domain, url, f"{reto} (HTTP {resp.status_code}).{pista}"
                 )
 
             if resp.status_code == 429 or resp.status_code >= 500:
@@ -509,9 +505,18 @@ class PoliteClient:
         dominio = verificacion.dominio_de(url)
         datos = verificacion.datos_del_reto(cuerpo, url) or {}
         logger.info("el sitio %s pide una comprobación: la resolverá la persona", dominio)
+        detalle = (f"reto={datos.get('challenge_id') or '?'} "
+                   f"dificultad={datos.get('prefijo') or '?'}")
+        if datos.get("challenge_id") in (None, ""):
+            # No es la prueba de trabajo: se describe la página por su título (Cloudflare
+            # «Just a moment…», «Verification», etc.), que es lo que verá la persona.
+            import re as _re
+
+            titular = _re.search(r"<title[^>]*>(.*?)</title>", cuerpo, _re.I | _re.S)
+            if titular:
+                detalle = f"página «{' '.join(titular.group(1).split())[:70]}»"
         raise verificacion.VerificacionRequerida(
-            dominio, datos.get("url") or url,
-            f"reto={datos.get('challenge_id') or '?'} dificultad={datos.get('prefijo') or '?'}")
+            dominio, datos.get("url") or url, detalle)
 
     def anadir_cookies(self, dominio: str, cookies: str) -> None:
         """Guarda cookies de un dominio (las consigue la ventana de verificación)."""

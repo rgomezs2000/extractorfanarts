@@ -19,11 +19,14 @@ from urllib.parse import urlparse
 
 logger = logging.getLogger("imaginteca")
 
-MARCAS = ("powSeed", "challenge_id", "pow_nonce", "challenge-checkbox")
+MARCAS = ("powSeed", "challenge_id", "pow_nonce", "challenge-checkbox",
+          # Señales de las páginas de comprobación de Cloudflare y similares
+          "cf-chl", "cf_chl_opt", "challenge-platform", "turnstile", "_cf_chl",
+          "ddos-guard", "qrator", "hcaptcha", "recaptcha")
 
 # Títulos que usan estas páginas («… | Verification», «Just a moment…», etc.)
 TITULOS = ("verification", "just a moment", "checking your browser", "attention required",
-           "one more step", "ddos protection")
+           "one more step", "ddos protection", "verificando", "comprobando")
 
 
 class VerificacionRequerida(Exception):
