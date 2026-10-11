@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-10 · v0.1.5-beta.15 — la beta definitiva (15.ª entrega)
+
+- **Arreglado**: las claves de **ATF Booru** (FBOORU_API_KEY / FBOORU_LOGIN) ya se
+  encuentran, aunque el sitio se llame distinto a las constantes.
+- Paquetes **83 MB más ligeros** (fuera los recursos del inspector del navegador).
+
 ### 2026-10-10 · v0.1.5-beta.14 — la beta definitiva (14.ª entrega)
 
 - **La comprobación de los sitios la resuelves tú**: se abre una ventana con navegador,

@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.15 — 10 de octubre de 2026 · la beta definitiva (15.ª entrega)
+
+**Arreglado: las claves de ATF Booru (las «FBOORU») no se encontraban**
+- El sitio se llama **ATF Booru** (ooru.allthefallen.moe) pero sus claves son
+  FBOORU_API_KEY / FBOORU_LOGIN (así se llamaba antes el sitio): la búsqueda de
+  credenciales no relacionaba ambos nombres y decía «necesita api_key, login» aunque
+  estuvieran escritas. Ahora se reconocen por llthefallen, tf y booru.
+- El aviso de credenciales recuerda que **una línea comentada (con #) no cuenta**, que
+  es el tropiezo más habitual al rellenar config_local.py.
+- Las claves de un sitio **no se usan nunca para otro**, aunque compartan familia de API
+  (Gelbooru y Rule34.xxx): si faltan las de un sitio, se piden las suyas.
+
+**Paquetes más ligeros**
+- La compilación quita los recursos de *DevTools* del navegador incrustado (83 MB que la
+  aplicación no usa): cada paquete publicado pesa eso menos.
+
+---
+
 ## v0.1.5-beta.14 — 10 de octubre de 2026 · la beta definitiva (14.ª entrega)
 
 **La comprobación de los sitios la resuelve la persona, no el programa**

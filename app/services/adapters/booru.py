@@ -57,6 +57,10 @@ _CONSTANTES_POR_MARCA = (
     ("rule34", {"api_key": "RULE34_API_KEY", "user_id": "RULE34_USER_ID"}),
     ("gelbooru", {"api_key": "GELBOORU_API_KEY", "user_id": "GELBOORU_USER_ID"}),
     ("danbooru", {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"}),
+    # ATF Booru (booru.allthefallen.moe) usa las constantes llamadas FBOORU_* (así se
+    # llamaba el sitio antes): sin esta pista, sus claves no se encontraban.
+    ("allthefallen", {"api_key": "FBOORU_API_KEY", "login": "FBOORU_LOGIN"}),
+    ("atf", {"api_key": "FBOORU_API_KEY", "login": "FBOORU_LOGIN"}),
     ("fbooru", {"api_key": "FBOORU_API_KEY", "login": "FBOORU_LOGIN"}),
 )
 
@@ -75,6 +79,8 @@ def _constantes_del_sitio(site_cfg: dict) -> dict:
         if marca in texto:
             return constantes
     return _CONSTANTES_POR_FAMILIA.get(str(site_cfg.get("family") or "").lower(), {})
+
+
 
 _RATING_MAP = {
     "s": "general", "safe": "general", "g": "general",
@@ -202,9 +208,10 @@ def _auth_params(site_cfg: dict) -> dict:
                 f"{site_cfg.get('name', 'el sitio')} necesita {', '.join(faltan)}.\n\n"
                 "Escríbelos en tu archivo de configuración local:\n"
                 f"    {donde if donde else '(no se encontró config_local.py)'}\n\n"
-                "Ojo: las claves escritas en app/config.py NO cuentan si ejecutas el\n"
-                "programa ya compilado (.exe): cada copia lee su propio config_local.py,\n"
-                "el que está junto al ejecutable."
+                "Ojo: si la línea está comentada (empieza por #) NO cuenta: quítale el #\n"
+                "y pon el valor entre comillas. Y las claves de app/config.py no cuentan\n"
+                "en una copia compilada (.exe): cada copia lee su config_local.py, el que\n"
+                "está junto al ejecutable."
             )
         return usados
 
