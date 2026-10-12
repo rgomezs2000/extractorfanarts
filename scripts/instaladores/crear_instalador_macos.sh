@@ -32,6 +32,12 @@ echo "[info] añadiendo el enlace a Aplicaciones…"
 ln -s /Applications "$MONTAJE/Aplicaciones"
 
 echo "[info] creando el .dmg…"
+# Icono del volumen: el típico disco de las imágenes de disco de macOS.
+if [ -f "$RAIZ/assets/instalador_macos.icns" ]; then
+  cp -a "$RAIZ/assets/instalador_macos.icns" "$MONTAJE/.VolumeIcon.icns"
+  command -v SetFile >/dev/null 2>&1 && SetFile -a C "$MONTAJE" || \
+    echo "[aviso] sin SetFile: el .dmg no mostrará el icono de disco (no es un fallo)"
+fi
 rm -f "$DMG"
 hdiutil create -volname "$NOMBRE $VERSION" -srcfolder "$MONTAJE" -ov -format UDZO "$DMG"
 

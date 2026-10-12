@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.21 — 11 de octubre de 2026 · la beta definitiva (21.ª entrega)
+
+**Los instaladores llevan el icono típico de instalación de cada sistema**
+- **Windows**: la clásica **caja con la flecha azul** hacia dentro (instalador_windows.ico,
+  con 7 tamaños), en lugar del icono de la aplicación.
+- **macOS**: el **disco plateado** de las imágenes de disco, como icono del volumen del
+  .dmg (.VolumeIcon.icns).
+- **Linux**: el icono de la aplicación se instala ahora también en **48 y 128 px**, y se
+  incluye el icono de **paquete de cartón** para material de difusión.
+- Se generan con python scripts\generar_iconos_instaladores.py.
+
+---
+
 ## v0.1.5-beta.20 — 11 de octubre de 2026 · la beta definitiva (20.ª entrega)
 
 **Arreglado: tras resolver la comprobación, la búsqueda continúa sola (sin bucle)**

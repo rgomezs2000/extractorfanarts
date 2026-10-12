@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.21 — la beta definitiva (21.ª entrega)
+
+- Los **instaladores** ya llevan el icono típico de instalación de cada sistema: la caja
+  con flecha azul (Windows), el disco plateado (macOS) y el paquete de cartón (Linux).
+
 ### 2026-10-11 · v0.1.5-beta.20 — la beta definitiva (20.ª entrega)
 
 - **Arreglado el bucle**: tras resolver la comprobación, la búsqueda **continúa sola** y las

@@ -38,6 +38,15 @@ cp -a "$RAIZ/LICENSE" "$RAIZ/LEEME-PRIMERO.txt" "$RAIZ/THIRD-PARTY-NOTICES.txt" 
       "$PAQUETE/usr/share/doc/imaginteca/" 2>/dev/null || true
 [ -f "$RAIZ/assets/icon_256.png" ] && \
   cp -a "$RAIZ/assets/icon_256.png" "$PAQUETE/usr/share/icons/hicolor/256x256/apps/imaginteca.png"
+# También en los tamaños pequeños: así el icono se ve nítido en el menú y en el centro de
+# software (que es donde se ve el «instalador» en Linux).
+for TAM in 48 128; do
+  if [ -f "$RAIZ/assets/icon_${TAM}.png" ]; then
+    mkdir -p "$PAQUETE/usr/share/icons/hicolor/${TAM}x${TAM}/apps"
+    cp -a "$RAIZ/assets/icon_${TAM}.png" \
+          "$PAQUETE/usr/share/icons/hicolor/${TAM}x${TAM}/apps/imaginteca.png"
+  fi
+done
 
 cat > "$PAQUETE/usr/bin/imaginteca" <<'LANZADOR'
 #!/bin/sh
