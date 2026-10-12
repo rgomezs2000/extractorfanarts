@@ -114,8 +114,10 @@ def main() -> int:
 
     win = icono_windows()
     ruta = ASSETS / "instalador_windows.ico"
-    win.save(ruta, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128),
-                          (256, 256)])
+    # OJO: hasta 128 px. El icono de 256 px lo guarda Pillow comprimido en PNG y **Inno
+    # Setup no lo acepta** («icon file ... contains an invalid image»), que es quien
+    # construye el instalador de Windows. Con 16..128 va en formato clásico y entra bien.
+    win.save(ruta, sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128)])
     hechos += [ruta, ASSETS / "instalador_windows.png"]
     win.resize((256, 256), Image.LANCZOS).save(ASSETS / "instalador_windows.png")
 

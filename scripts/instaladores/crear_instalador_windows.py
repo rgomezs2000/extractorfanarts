@@ -105,8 +105,8 @@ def escribir_iss(dist: Path, salida: Path, firmar: bool = False) -> Path:
 #define MiVersion "{version}"
 #define MiDist "{dist}"
 #define MiIcono "{ROOT / 'assets' / 'icon.ico'}"
-# Icono del INSTALADOR (el clásico «caja con flecha azul» de instalar en Windows);
-# si no estuviera, se usa el de la aplicación.
+; Icono del INSTALADOR: el clásico «caja con flecha azul» de instalar en Windows.
+; (En este archivo los comentarios van con «;»: la almohadilla es una directiva.)
 #define MiIconoInstalador "{ROOT / 'assets' / 'instalador_windows.ico'}"
 #define MiLicencia "{ROOT / 'LICENSE'}"
 #define MiLeeme "{ROOT / 'LEEME-PRIMERO.txt'}"

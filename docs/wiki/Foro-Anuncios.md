@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.22 — la beta definitiva (22.ª entrega)
+
+- **Instaladores con el icono típico de cada sistema** (caja con flecha azul en Windows,
+  disco plateado en macOS, paquete de cartón en Linux). La 21 falló al compilar el
+  instalador por un comentario con # en el guion de Inno Setup: corregido.
+
 ### 2026-10-11 · v0.1.5-beta.21 — la beta definitiva (21.ª entrega)
 
 - Los **instaladores** ya llevan el icono típico de instalación de cada sistema: la caja

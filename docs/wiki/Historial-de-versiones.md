@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.22 — 11 de octubre de 2026 · la beta definitiva (22.ª entrega)
+
+**Arreglado el instalador de Windows (la 21 no llegó a publicarse)**
+- El icono del instalador quedó anotado con # en el guion de Inno Setup, donde la
+  almohadilla es una **directiva** y no un comentario: la compilación fallaba. Ahora el
+  comentario va con ;, como corresponde.
+
+**Los instaladores llevan el icono típico de instalación de cada sistema** (lo de la 21)
+- **Windows**: la clásica **caja con la flecha azul** (instalador_windows.ico).
+- **macOS**: el **disco plateado** como icono del volumen del .dmg.
+- **Linux**: el icono de la aplicación en **48 y 128 px** (menú y centro de software) y el
+  icono de **paquete de cartón** para difusión.
+- Se generan con python scripts\generar_iconos_instaladores.py.
+
+---
+
 ## v0.1.5-beta.21 — 11 de octubre de 2026 · la beta definitiva (21.ª entrega)
 
 **Los instaladores llevan el icono típico de instalación de cada sistema**
