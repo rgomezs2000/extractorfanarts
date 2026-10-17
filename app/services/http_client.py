@@ -242,13 +242,15 @@ class PoliteClient:
                 headers.setdefault("Referer", referer)
                 break
         # Cookies ganadas al resolver la comprobación del sitio (si las hay), con el
-        # mismo User-Agent del navegador que las consiguió.
+        # MISMO User-Agent del navegador que las consiguió: el sitio firma la cookie junto
+        # con el agente, así que se **impone** (con «setdefault» el transporte con huella
+        # metería el suyo y la cookie no valdría).
         for sufijo, cookies in self._cookies.items():
             if dominio.lower().endswith(sufijo):
-                headers.setdefault("Cookie", cookies)
+                headers["Cookie"] = cookies
                 agente = self._agentes.get(sufijo)
                 if agente:
-                    headers.setdefault("User-Agent", agente)
+                    headers["User-Agent"] = agente
                 break
         return headers or None
 

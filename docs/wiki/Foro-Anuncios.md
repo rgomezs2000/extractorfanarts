@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.28 — la beta definitiva (28.ª entrega)
+
+- **Arreglado**: la ventana de comprobación ya no se cierra «en falso»; prueba la sesión
+  desde el navegador y solo continúa si el sitio responde. Además el programa usa el
+  **mismo User-Agent** con el que se resolvió, y hay botón **🔄 Recargar**.
+- El programa **nunca** resuelve la comprobación solo: la resuelve la persona.
+
 ### 2026-10-11 · v0.1.5-beta.27 — la beta definitiva (27.ª entrega)
 
 - **Arreglado**: con la comprobación superada, la búsqueda **sigue** (antes se cortaba con

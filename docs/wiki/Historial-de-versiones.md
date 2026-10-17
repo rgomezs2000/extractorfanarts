@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.28 — 11 de octubre de 2026 · la beta definitiva (28.ª entrega)
+
+**Arreglado: la comprobación se daba por superada sin estarlo (y por eso se repetía 3 veces)**
+- La ventana daba la sesión por buena en cuanto la página **parecía** la definitiva. Ahora
+  **prueba la sesión desde el propio navegador** (pide /posts.json?limit=1 con la sesión
+  de la persona): solo se cierra y continúa si el sitio **responde de verdad** (2xx/3xx).
+  Si responde 403 o falla, sigue esperando y lo dice («espera unos segundos o pulsa 🔄
+  Recargar»), y se añade el botón **🔄 Recargar**.
+- El programa envía ahora **el User-Agent exacto del navegador que resolvió** la
+  comprobación (antes el transporte con huella metía el suyo y el sitio, que firma la
+  cookie con el agente, seguía pidiéndola). Con esto la sesión sirve de verdad.
+- Recordatorio: **el programa nunca resuelve la comprobación por su cuenta**; la resuelve
+  la persona en esa ventana y solo se reutiliza **su** sesión.
+
+---
+
 ## v0.1.5-beta.27 — 11 de octubre de 2026 · la beta definitiva (27.ª entrega)
 
 **Arreglado: ATF Booru se quedaba en «la sesión no sirve todavía» con la comprobación ya

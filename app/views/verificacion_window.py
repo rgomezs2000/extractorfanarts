@@ -67,6 +67,9 @@ class VentanaVerificacion(QDialog):
             "(la cookie hay que resolverla igualmente aquí para que el programa la use)"
         )
         self.btn_abrir.clicked.connect(self._abrir_fuera)
+        self.btn_recargar = QPushButton("🔄 Recargar")
+        self.btn_recargar.setToolTip("Vuelve a cargar el sitio en esta ventana")
+        self.btn_recargar.clicked.connect(self._recargar)
         self.btn_comprobar = QPushButton("✅ Ya la resolví, comprobar")
         self.btn_comprobar.clicked.connect(self._comprobar_ahora)
         self.btn_cancelar = QPushButton("Cancelar")
@@ -74,6 +77,7 @@ class VentanaVerificacion(QDialog):
 
         botones = QHBoxLayout()
         botones.addWidget(self.btn_abrir)
+        botones.addWidget(self.btn_recargar)
         botones.addStretch(1)
         botones.addWidget(self.btn_comprobar)
         botones.addWidget(self.btn_cancelar)
@@ -141,10 +145,71 @@ class VentanaVerificacion(QDialog):
         QTimer.singleShot(ESPERA_ANTES_DE_COMPROBAR, self._mirar_si_ya_paso)
 
     def _revisar(self, html: str) -> None:
-        """Si la página ya no es la comprobación, la persona la ha superado."""
-        if html and not verificacion.parece_reto(html):
+        """Si la página ya no es la comprobación, se **comprueba de verdad** la sesión.
+
+        No basta con que la página parezca buena: se pide desde **este mismo navegador**
+        (con la sesión de la persona) un recurso pequeño del sitio. Solo si responde bien
+        se da por superada; si no, se sigue esperando. Así nunca se cierra la ventana
+        dando por buena una sesión que el programa no podrá usar.
+        """
+        if not html:
+            return
+        if verificacion.parece_reto(html):
+            return                      # sigue siendo la comprobación
+        self._probar_sesion()
+
+    def _probar_sesion(self) -> None:
+        """Pide un recurso pequeño desde el propio navegador: ¿ya deja pasar el sitio?"""
+        objetivo = self._url_de_prueba()
+        guion = (
+            "(async () => {"
+            "  try {"
+            f"    const r = await fetch({objetivo!r}, {{cache: 'no-store', credentials: 'include'}});"
+            "    return r.status + ' ' + (r.headers.get('content-type') || '');"
+            "  } catch (e) { return 'ERROR ' + e; }"
+            "})()"
+        )
+        try:
+            self.vista.page().runJavaScript(guion, self._respuesta_de_prueba)
+        except Exception:  # noqa: BLE001
+            self._avisar_no_superada()
+
+    def _url_de_prueba(self) -> str:
+        """Dirección pequeña del sitio que prueba la sesión (los datos, no la portada)."""
+        base = self.url or f"https://{self.dominio}/"
+        corte = base.find("/wiki")           # por si venía de una página concreta
+        if corte > 0:
+            base = base[:corte]
+        base = base.rstrip("/")
+        if base.endswith("api.php"):
+            base = base[: -len("/api.php")]
+        return f"{base}/posts.json?limit=1"
+
+    def _respuesta_de_prueba(self, resultado) -> None:
+        texto = str(resultado or "")
+        estado = texto.split(" ", 1)[0]
+        if estado.startswith("2") or estado.startswith("3"):
             self.lbl_estado.setText("¡Comprobación superada! Cerrando y continuando…")
             self._recoger_cookies()
+            return
+        if estado == "ERROR":
+            self.lbl_estado.setText(
+                "El sitio todavía no deja pasar al programa. Espera unos segundos o pulsa "
+                "«🔄 Recargar».")
+        else:
+            self.lbl_estado.setText(
+                f"El sitio responde «{texto[:40]}»: la comprobación no está superada. "
+                "Resuélvela y espera unos segundos.")
+        # Se sigue vigilando: si la persona termina de resolverla, se cerrará sola.
+        QTimer.singleShot(ESPERA_ANTES_DE_COMPROBAR, self._mirar_si_ya_paso)
+
+    def _recargar(self) -> None:
+        self.lbl_estado.setText("Recargando el sitio…")
+        self._vueltas = 0
+        try:
+            self.vista.load(QUrl(self.url))
+        except Exception:  # noqa: BLE001
+            pass
 
     def _comprobar_ahora(self) -> None:
         try:
