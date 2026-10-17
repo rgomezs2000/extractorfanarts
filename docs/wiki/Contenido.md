@@ -25,6 +25,21 @@ también **páginas de cómic y de fancomic** cuando el sitio las sirve.
 
 ## NSFW: contenido adulto (+18)
 
+### Advertencias de contenido
+
+Aparte del rating, muchas imágenes traen **avisos**: el aviso de contenido del autor
+(`spoiler_text` en el fediverso), «marcada como sensible», «oculta por la plataforma» o
+«marcada por moderación» (boorus). En **Propiedades** (`Ctrl+I`) se muestran en dos
+apartados propios, **solo cuando amerita**:
+
+- **Contenido adulto**: si la imagen es NSFW (rating `questionable`/`explicit`, o marcas de
+  la plataforma como Pixiv `x_restrict`/`sexual`). Las imágenes **SFW no se marcan**: ni
+  adulto ni advertencia.
+- **Advertencias**: los avisos de arriba, uno por línea.
+
+Las advertencias **no filtran nada**: la búsqueda y la descarga se guían por la lista negra,
+los enlaces de pago, los ratings y la licencia, igual que siempre. Aquí solo se **informa**.
+
 ### Qué significa
 
 **NSFW** viene de *«Not Safe For Work»*: contenido que **no es apto** para verse en un
