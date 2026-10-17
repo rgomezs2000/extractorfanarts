@@ -1,5 +1,17 @@
 # Historial de versiones
 
+## v0.1.5-beta.30 — 11 de octubre de 2026 · la beta definitiva (30.ª entrega)
+
+**Se retira el filtro de advertencias (se mantiene el apartado informativo)**
+- La casilla **«⚠️ Con advertencias»** desaparece, y con ella el descarte de imágenes por
+  traer avisos: **la búsqueda y la descarga vuelven a comportarse como siempre** (lista
+  negra, enlaces de pago, ratings y licencia). Ese filtro estaba dejando fuera contenido que
+  antes sí pasaba.
+- Se **mantiene** lo que sí se quería: en **Propiedades**, los apartados **Contenido
+  adulto** y **Advertencias**, solo cuando amerita (las imágenes SFW no llevan ninguno).
+
+---
+
 ## v0.1.5-beta.29 — 11 de octubre de 2026 · la beta definitiva (29.ª entrega)
 
 **Advertencias de contenido y aviso de adulto, en su apartado**

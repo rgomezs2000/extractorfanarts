@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.29 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.30 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -740,14 +740,9 @@ apartados nuevos **solo cuando amerita**:
 - **Advertencias**: el aviso de contenido del autor (spoiler_text del fediverso), «marcada
   como sensible», «oculta por la plataforma» o «marcada por moderación» (boorus).
 
-**Filtro en búsqueda y descarga:** la casilla **⚠️ Con advertencias** (debajo de «Contenido
-adulto») solo se puede usar con «🔞 Contenido adulto» marcado:
-
-| Contenido adulto | Con advertencias | Qué entra |
-|---|---|---|
-| no marcado | (deshabilitada) | como siempre: solo SFW, sin flags |
-| marcado | **no** marcada | adulto **sin** advertencias (se omiten las que traen avisos) |
-| marcado | **sí** marcada | adulto **con** advertencias incluidas |
+**No se filtra por advertencias:** la búsqueda y la descarga siguen igual que siempre (lista
+negra, enlaces de pago, ratings y licencia). Las advertencias solo se **muestran**, para que
+quien decida seas tú.
 
 ## 16. Actualizaciones
 
@@ -989,5 +984,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.29 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.30 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

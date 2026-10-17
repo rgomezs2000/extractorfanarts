@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.30 — la beta definitiva (30.ª entrega)
+
+- **Se retira el filtro** de advertencias (dejaba fuera contenido que antes pasaba). Se
+  mantienen los apartados de **Propiedades**: Contenido adulto y Advertencias, solo cuando
+  amerita.
+
 ### 2026-10-11 · v0.1.5-beta.29 — la beta definitiva (29.ª entrega)
 
 - **Propiedades** con apartados propios de **Contenido adulto** y **Advertencias** (solo

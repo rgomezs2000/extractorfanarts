@@ -217,17 +217,6 @@ class MainWindow(QMainWindow):
             "Confirmo que soy mayor de edad en mi jurisdicción. "
             "Por defecto se omiten los ratings questionable/explicit."
         )
-        # Solo tiene sentido con «Contenido adulto» marcado: entonces decide si se dejan
-        # pasar las imágenes que además traen **advertencias** (aviso del autor, sensible,
-        # moderación…). Sin el adulto marcado, esta casilla queda deshabilitada.
-        self.chk_advertencias = QCheckBox("⚠️ Con advertencias")
-        self.chk_advertencias.setEnabled(False)
-        self.chk_advertencias.setToolTip(
-            "Con «Contenido adulto» marcado: si NO se marca, se omiten las imágenes que "
-            "traen advertencias de contenido (aviso del autor, marcadas como sensibles, "
-            "ocultas o moderadas). Márcala para verlas también."
-        )
-        self.chk_adulto.toggled.connect(self._al_cambiar_adulto)
         self.chk_mejorar = QCheckBox("✨ Mejorar calidad")
         self.chk_mejorar.setChecked(config.ENHANCE_DEFAULT_ON)
         self.chk_mejorar.setToolTip(
@@ -246,7 +235,6 @@ class MainWindow(QMainWindow):
         cuadricula.addWidget(self.chk_adulto, 0, 1)
         cuadricula.addWidget(self.chk_mejorar, 1, 0)
         cuadricula.addWidget(self.chk_ia, 1, 1)
-        cuadricula.addWidget(self.chk_advertencias, 2, 0, 1, 2)
         ov.addLayout(cuadricula)
 
         # Ver la lista negra y los filtros que se aplican siempre (solo lectura)
@@ -1111,15 +1099,6 @@ class MainWindow(QMainWindow):
         except Exception:      # noqa: BLE001
             logger.exception("no se pudo preparar el menú de la bandeja")
 
-    def _al_cambiar_adulto(self, marcado: bool) -> None:
-        """La casilla de advertencias solo se puede usar con «Contenido adulto»."""
-        casilla = getattr(self, "chk_advertencias", None)
-        if casilla is None:
-            return
-        casilla.setEnabled(bool(marcado))
-        if not marcado:
-            casilla.setChecked(False)
-
     def _dominio_del_aviso(self, mensaje: str) -> str:
         """Si el aviso es una petición de comprobación del sitio, saca su dominio.
 
@@ -1327,7 +1306,6 @@ class MainWindow(QMainWindow):
             "carpeta": self.ed_carpeta.text().strip(),
             "solo_liberado": self.chk_liberado.isChecked(),
             "permitir_adulto": self.chk_adulto.isChecked(),
-            "adulto_advertencias": self.chk_advertencias.isChecked(),
             "mejorar": self.chk_mejorar.isChecked(),
             "modo_ia": self.chk_ia.isChecked(),
             "calidad_webp": self.sld_calidad.value(),
