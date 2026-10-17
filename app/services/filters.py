@@ -20,6 +20,7 @@ import re
 
 from .. import config
 from ..models.artwork import Artwork
+from . import advertencias
 
 _TOKEN_RE = re.compile(r"[a-z0-9_]+")
 
@@ -181,8 +182,14 @@ def apply_filters(
     require_free_license: bool | None = None,
     seen_hashes: set[str] | None = None,
     limit: int | None = None,
+    permitir_advertencias: bool = True,
 ) -> tuple[list[Artwork], dict[str, int]]:
-    """Devuelve (obras admitidas, contador de motivos de descarte)."""
+    """Devuelve (obras admitidas, contador de motivos de descarte).
+
+    `permitir_advertencias=False` descarta las imágenes que traen **advertencias de
+    contenido** (aviso del autor, «sensible», moderación…). Se usa cuando el usuario marcó
+    «Contenido adulto» pero **no** marcó «con advertencias».
+    """
     allow = allow_adult_ratings or config.ALLOW_ADULT_RATINGS
     require_license = config.REQUIRE_FREE_LICENSE if require_free_license is None else require_free_license
     seen = seen_hashes if seen_hashes is not None else set()
@@ -198,6 +205,9 @@ def apply_filters(
     for art in artworks:
         if has_prohibited_tags(art):
             _reject("contenido prohibido (lista negra)")
+            continue
+        if not permitir_advertencias and advertencias.tiene_advertencias(art):
+            _reject("con advertencias (omitidas)")
             continue
         motivo = motivo_exclusion_propia(art)
         if motivo:

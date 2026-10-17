@@ -816,12 +816,17 @@ class MainController(QObject):
                 allow = ["general", "sensitive", "questionable", "explicit"]
             else:
                 allow = config.ALLOW_ADULT_RATINGS
+            # Advertencias: solo se descartan cuando el usuario marcó «Contenido adulto»
+            # y NO marcó «con advertencias». Sin contenido adulto la regla no aplica.
+            adulto = bool(settings.get("permitir_adulto"))
+            permitir_avisos = (not adulto) or bool(settings.get("adulto_advertencias", False))
             kept, rejected = filters.apply_filters(
                 arts,
                 allow_adult_ratings=allow,
                 require_free_license=bool(settings.get("solo_liberado")),
                 seen_hashes=None,
                 limit=config.MAX_RESULTS_PER_SOURCE,
+                permitir_advertencias=permitir_avisos,
             )
             # Límite de cantidad configurado en la UI (si está activo)
             if settings.get("limitar"):

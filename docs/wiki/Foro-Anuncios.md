@@ -20,6 +20,13 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.29 — la beta definitiva (29.ª entrega)
+
+- **Propiedades** con apartados propios de **Contenido adulto** y **Advertencias** (solo
+  cuando amerita; SFW sin flags).
+- **Nuevo filtro** «⚠️ Con advertencias» (con «Contenido adulto» marcado): sin él se omiten
+  las imágenes con avisos.
+
 ### 2026-10-11 · v0.1.5-beta.28 — la beta definitiva (28.ª entrega)
 
 - **Arreglado**: la ventana de comprobación ya no se cierra «en falso»; prueba la sesión

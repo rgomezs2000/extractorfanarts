@@ -173,6 +173,24 @@ def propiedades(obra) -> list[tuple[str, list[tuple[str, str]]]]:
     familia_obra = familia(obra)
     grupos: list[tuple[str, list[tuple[str, str]]]] = []
 
+    # ------------------------------------------------- contenido y advertencias
+    # Solo aparecen cuando amerita: si la imagen es SFW no se marca nada (ni adulto ni
+    # advertencia). Así se distingue de un vistazo lo que es adulto y lo que trae avisos.
+    from . import advertencias as _avisos
+
+    if _avisos.es_adulto(obra):
+        contenido: list[tuple[str, str]] = [("Marcado como", "adulto (NSFW)")]
+        if str(getattr(obra, "rating", "") or "").strip():
+            contenido.append(("Clasificación", str(obra.rating)))
+        cuantas = len(_avisos.advertencias(obra))
+        contenido.append(("Advertencias",
+                          f"{cuantas} (en su apartado)" if cuantas else "ninguna"))
+        grupos.append(("Contenido adulto", contenido))
+
+    avisos = _avisos.advertencias(obra)
+    if avisos:
+        grupos.append(("Advertencias", list(avisos)))
+
     # ---------------------------------------------------------------- imagen
     imagen: list[tuple[str, str]] = []
     if obra.author:

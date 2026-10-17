@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.29 — 11 de octubre de 2026 · la beta definitiva (29.ª entrega)
+
+**Advertencias de contenido y aviso de adulto, en su apartado**
+- **Propiedades** muestra dos apartados nuevos, **solo cuando amerita**:
+  - **Contenido adulto** (NSFW): clasificación questionable/xplicit o marcas de la
+    plataforma (Pixiv x_restrict, sexual, sensitive…). Las SFW **no se marcan**.
+  - **Advertencias**: aviso de contenido del autor (spoiler_text del fediverso), «marcada
+    como sensible», «oculta por la plataforma» y «marcada por moderación» (boorus).
+- Nuevo detector (pp/services/advertencias.py) con las señales de cada plataforma.
+- **Filtro nuevo** en búsqueda y descarga: la casilla **⚠️ Con advertencias** se habilita
+  con «🔞 Contenido adulto» y decide si se dejan pasar las imágenes con advertencias
+  (sin ella se **omiten**, y quedan contadas en el resumen de descartes).
+
+---
+
 ## v0.1.5-beta.28 — 11 de octubre de 2026 · la beta definitiva (28.ª entrega)
 
 **Arreglado: la comprobación se daba por superada sin estarlo (y por eso se repetía 3 veces)**
