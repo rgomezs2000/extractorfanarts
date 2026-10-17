@@ -26,7 +26,7 @@ from .. import estado_servicios
 
 logger = logging.getLogger("imaginteca")
 
-Columnas = ("Plataforma", "Estado", "Latencia", "Detalle")
+Columnas = ("Tipo", "Plataforma", "Estado", "Latencia", "Detalle")
 
 
 class _Senales(QObject):
@@ -46,14 +46,23 @@ class _Trabajo(QRunnable):
         try:
             resultados = estado_servicios.comprobar(
                 self.segundos,
-                progreso=lambda hechas, total, estado: self.senales.progreso.emit(
-                    hechas, total, estado),
+                progreso=self._avisar_progreso,
             )
         except Exception as exc:  # noqa: BLE001
             logger.exception("fallo comprobando el estado de los servicios")
             resultados = []
             logger.error("estado de servicios: %s", exc)
-        self.senales.terminado.emit(resultados)
+        try:
+            self.senales.terminado.emit(resultados)
+        except Exception:      # noqa: BLE001
+            pass                 # la ventana se cerró mientras tanto: no pasa nada
+
+    def _avisar_progreso(self, hechas: int, total: int, estado) -> None:
+        """Emite el avance sin romper nada si la ventana ya se cerró."""
+        try:
+            self.senales.progreso.emit(hechas, total, estado)
+        except Exception:      # noqa: BLE001
+            pass
 
 
 class VentanaEstadoServicios(QDialog):
@@ -82,7 +91,8 @@ class VentanaEstadoServicios(QDialog):
         cabecera.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         cabecera.setSectionResizeMode(1, QHeaderView.ResizeToContents)
         cabecera.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        cabecera.setSectionResizeMode(3, QHeaderView.Stretch)
+        cabecera.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        cabecera.setSectionResizeMode(4, QHeaderView.Stretch)
         self.tabla.doubleClicked.connect(self._abrir_pagina)
 
         self.btn_comprobar = QPushButton("🔄 Comprobar ahora")
@@ -105,16 +115,17 @@ class VentanaEstadoServicios(QDialog):
 
     # ------------------------------------------------------------------ tabla
     def _preparar_tabla(self) -> None:
-        self.tabla.setRowCount(len(estado_servicios.PLATAFORMAS))
-        for fila, (nombre, _url, pagina) in enumerate(estado_servicios.PLATAFORMAS):
-            self._poner(fila, 0, nombre)
-            self._poner(fila, 1, "comprobando…")
-            self._poner(fila, 2, "—")
-            self._poner(fila, 3, "esperando…" if not pagina else f"estado: {pagina}")
-            for columna in range(len(Columnas)):
-                elemento = self.tabla.item(fila, columna)
-                if elemento is not None:
-                    elemento.setData(Qt.UserRole, pagina)
+        lista = estado_servicios.plataformas()
+        self.tabla.setRowCount(len(lista))
+        for fila, (nombre, tipo, _url, pagina) in enumerate(lista):
+            self._poner(fila, 0, tipo)
+            self._poner(fila, 1, nombre)
+            self._poner(fila, 2, "comprobando…")
+            self._poner(fila, 3, "—")
+            self._poner(fila, 4, f"estado: {pagina}" if pagina else "esperando…")
+            elemento = self.tabla.item(fila, 1)
+            if elemento is not None:
+                elemento.setData(Qt.UserRole, pagina)
 
     def _poner(self, fila: int, columna: int, texto: str, color: str = "") -> None:
         elemento = self.tabla.item(fila, columna)
@@ -127,7 +138,7 @@ class VentanaEstadoServicios(QDialog):
 
     def _fila_de(self, nombre: str) -> int:
         for fila in range(self.tabla.rowCount()):
-            elemento = self.tabla.item(fila, 0)
+            elemento = self.tabla.item(fila, 1)
             if elemento is not None and elemento.text() == nombre:
                 return fila
         return -1
@@ -137,16 +148,16 @@ class VentanaEstadoServicios(QDialog):
         if fila < 0:
             return
         color = estado_servicios.COLORES.get(estado.estado, "#6d6d6d")
-        self._poner(fila, 1, estado.estado, color)
+        self._poner(fila, 2, estado.estado, color)
         latencia = f"{estado.latencia * 1000:.0f} ms" if estado.latencia else "—"
-        self._poner(fila, 2, latencia)
+        self._poner(fila, 3, latencia)
         detalle = estado.detalle or "—"
         if estado.pagina:
             detalle += f"  ·  doble clic: {estado.pagina}"
-        self._poner(fila, 3, detalle)
+        self._poner(fila, 4, detalle)
         negrita = QFont(self.font())
         negrita.setBold(not estado.operativo)
-        self.tabla.item(fila, 1).setFont(negrita)
+        self.tabla.item(fila, 2).setFont(negrita)
 
     # ------------------------------------------------------------------ comprobación
     def comprobar(self) -> None:
@@ -191,7 +202,7 @@ class VentanaEstadoServicios(QDialog):
         fila = self.tabla.currentRow()
         if fila < 0:
             return
-        elemento = self.tabla.item(fila, 0)
+        elemento = self.tabla.item(fila, 1)
         if elemento is None:
             return
         rol = elemento.data(Qt.UserRole) if elemento is not None else None

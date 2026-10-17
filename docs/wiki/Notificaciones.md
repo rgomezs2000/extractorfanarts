@@ -22,9 +22,16 @@ El programa avisa de lo importante y lo cuenta:
 
 ## Estado de las redes sociales
 
-En **Ayuda › 📡 Estado de las redes sociales** se comprueba, una por una, si responden X,
-Pinterest, DeviantArt, Tumblr, Pixiv, Bluesky, Mastodon y Fandom: estado, latencia y
-enlace a su página de estado (doble clic en la fila). Los estados posibles:
+En **Ayuda › 📡 Estado de las redes sociales** se comprueba, una por una, **todas las
+plataformas del programa**:
+
+- **Redes sociales (7):** X, Pinterest, DeviantArt, Tumblr, Pixiv, Bluesky y Mastodon.
+- **Boorus (14):** los que tengas configurados, incluidos los que añadas en
+  config_local.py (salen de la lista real del programa, no de una copia).
+- **Wiki de fandom:** la plataforma con la que se leen los fandoms.
+
+Con su estado, latencia y enlace a su página de estado (doble clic en la fila). Los
+estados posibles:
 
 | Estado | Significa |
 |---|---|

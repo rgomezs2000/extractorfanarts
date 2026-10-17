@@ -1,5 +1,17 @@
 # Historial de versiones
 
+## v0.1.5-beta.24 — 11 de octubre de 2026 · la beta definitiva (24.ª entrega)
+
+**El estado de plataformas incluye también boorus y wikis de fandom**
+- La ventana de **Ayuda › 📡 Estado de las redes sociales** comprueba ahora **las 22
+  plataformas del programa**: 7 redes sociales, **14 boorus** y la **wiki de fandom**.
+- La lista de boorus **no se copia a mano**: sale de BOORU_SITES, así que también
+  aparecen los que añadas en config_local.py.
+- La tabla lleva columna **Tipo** (Red social / Booru / Wiki de fandom) y el resumen separa
+  cuántas responden de cada tipo.
+
+---
+
 ## v0.1.5-beta.23 — 11 de octubre de 2026 · la beta definitiva (23.ª entrega)
 
 **Sistema de notificaciones**

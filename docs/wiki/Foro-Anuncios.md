@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.24 — la beta definitiva (24.ª entrega)
+
+- El **estado de plataformas** incluye ya **boorus y wikis de fandom**: 22 plataformas en
+  total, con columna de tipo.
+
 ### 2026-10-11 · v0.1.5-beta.23 — la beta definitiva (23.ª entrega)
 
 - **Notificaciones**: búsquedas, descargas, errores, versiones nuevas y plataformas caídas,
