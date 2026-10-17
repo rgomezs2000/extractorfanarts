@@ -1140,19 +1140,18 @@ class MainWindow(QMainWindow):
             return
         if resultado == QDialog.Accepted and cookies:
             verificacion.guardar_verificacion(dominio, cookies, agente)
-            # Se comprueba EN EL ACTO que el programa puede pedir datos con esa sesión: si
-            # no, se avisa claro en vez de repetir la búsqueda en bucle.
+            # La comprobación de sesión es solo INFORMATIVA: **no** se corta la operación
+            # porque falle. Antes se cortaba, y en sitios como ATF Booru eso dejaba al
+            # usuario en un callejón sin salida aunque la búsqueda fuera a funcionar.
+            # Ahora se intenta de verdad; si el sitio vuelve a pedir la comprobación, se
+            # abre la ventana otra vez (hasta 3 veces) y entonces se avisa con claridad.
             if not self._sesion_de_verificacion_valida(dominio, url):
-                logger.warning("la sesión de %s no sirve para las peticiones del programa",
-                               dominio)
-                QMessageBox.warning(
-                    self, "La sesión no sirve todavía",
-                    f"El navegador dio por superada la comprobación de {dominio}, pero el "
-                    "programa **todavía no** puede pedir datos con esa sesión.\n\n"
-                    "Vuelve a intentarlo: si el sitio te la pide otra vez, resuélvela y "
-                    "espera unos segundos antes de cerrar la ventana.")
-                return
-            self.statusBar().showMessage(f"✅ Comprobación de {dominio} superada")
+                logger.info("la comprobación de sesión de %s no pasó: se intenta igual",
+                            dominio)
+                self.statusBar().showMessage(
+                    f"⚠ Comprobación de {dominio} superada — intentando la operación…")
+            else:
+                self.statusBar().showMessage(f"✅ Comprobación de {dominio} superada")
             # La operación se repite AUTOMÁTICAMENTE, con un límite de intentos para no
             # quedarse en un bucle si el sitio vuelve a pedir la comprobación.
             reintento = self._reintento

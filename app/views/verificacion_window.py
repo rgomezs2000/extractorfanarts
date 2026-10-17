@@ -184,8 +184,9 @@ class VentanaVerificacion(QDialog):
                 almacen.loadAllCookies()
             except Exception:  # noqa: BLE001
                 pass
-        # Se da un instante a que lleguen las cookies antes de cerrar.
-        QTimer.singleShot(600, self._cerrar_con_cookies)
+        # Se da un instante a que lleguen las cookies antes de cerrar: el sitio las pone
+        # al recargar la página, y con 1,5 s hay margen incluso en equipos lentos.
+        QTimer.singleShot(1500, self._cerrar_con_cookies)
 
     def _cerrar_con_cookies(self) -> None:
         self._cookies = "; ".join(dict.fromkeys(self._recogidas))

@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.27 — la beta definitiva (27.ª entrega)
+
+- **Arreglado**: con la comprobación superada, la búsqueda **sigue** (antes se cortaba con
+  «la sesión no sirve todavía» porque una comprobación previa era demasiado estricta).
+
 ### 2026-10-11 · v0.1.5-beta.26 — la beta definitiva (26.ª entrega)
 
 - El **icono de la bandeja alterna**: minimiza si la ventana se ve y la abre como estaba si

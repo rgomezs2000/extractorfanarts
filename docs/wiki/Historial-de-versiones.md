@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.27 — 11 de octubre de 2026 · la beta definitiva (27.ª entrega)
+
+**Arreglado: ATF Booru se quedaba en «la sesión no sirve todavía» con la comprobación ya
+superada**
+- La comprobación de sesión que se hacía después del navegador era demasiado estricta:
+  pedía la **portada** del sitio y, si esa página volvía a pedir el reto (aunque la
+  búsqueda fuera a funcionar), **cortaba la operación** con un aviso. Ahora es solo
+  **informativa**: se intenta la búsqueda o la descarga de verdad y manda el resultado real.
+- Se espera algo más (1,5 s) antes de cerrar la ventana, para que las cookies estén puestas
+  incluso en equipos lentos.
+- Se mantiene el límite de **3 comprobaciones seguidas** y, pasado ese punto, el aviso
+  claro, para que nunca se quede en un bucle.
+
+---
+
 ## v0.1.5-beta.26 — 11 de octubre de 2026 · la beta definitiva (26.ª entrega)
 
 **El icono de la bandeja alterna, como el botón de la barra de tareas**
