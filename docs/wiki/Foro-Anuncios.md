@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.25 — la beta definitiva (25.ª entrega)
+
+- **Menú del icono de las notificaciones**: abrir (restaura o maximiza), buscar, descargar,
+  cancelar, ayuda, acerca de, actualizaciones, dependencias y salir, con sus atajos.
+
 ### 2026-10-11 · v0.1.5-beta.24 — la beta definitiva (24.ª entrega)
 
 - El **estado de plataformas** incluye ya **boorus y wikis de fandom**: 22 plataformas en

@@ -20,6 +20,24 @@ El programa avisa de lo importante y lo cuenta:
   **insignia con el número** en el icono de la barra de tareas / Dock. El icono es el mismo
   de la aplicación.
 
+## Menú del icono (bandeja del sistema)
+
+Al **señalar** el icono de las notificaciones aparece el nombre del programa y los avisos
+sin leer. Al **pulsarlo** se abre la ventana (restaurada o maximizada, según como
+estuviera) y con **clic derecho** sale este menú:
+
+| Opción | Atajo |
+|---|---|
+| 🪟 Abrir Imaginteca | — |
+| 🔍 Buscar | Ctrl+B |
+| ⬇️ Descargar | Ctrl+D |
+| ⛔ Cancelar la operación | Ctrl+. |
+| 📖 Ayuda | F1 |
+| ℹ️ Acerca de | Ctrl+Shift+A |
+| 🔄 Actualizaciones | Ctrl+U |
+| 🧩 Dependencias del sistema | Ctrl+Shift+D |
+| Salir | Ctrl+Q |
+
 ## Estado de las redes sociales
 
 En **Ayuda › 📡 Estado de las redes sociales** se comprueba, una por una, **todas las

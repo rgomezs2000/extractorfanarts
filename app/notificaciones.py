@@ -105,7 +105,8 @@ class Notificador(QObject):
                 logger.info("este sistema no ofrece bandeja: solo se notificará en la ventana")
                 return
             self._tray = QSystemTrayIcon(self._icono, self)
-            self._tray.setToolTip(f"{config.APP_NAME} — sin avisos")
+            self._tray.setToolTip(
+                f"{config.APP_NAME} {getattr(config, 'APP_VERSION', '')}".strip())
             self._tray.activated.connect(self._al_pulsar_bandeja)
             self._tray.show()
             self._bandeja_lista = True
@@ -117,12 +118,20 @@ class Notificador(QObject):
                       QSystemTrayIcon.ActivationReason.DoubleClick):
             self.mostrar_ventana()
 
+    def bandeja(self):
+        """El icono de la bandeja (None si el sistema no la ofrece)."""
+        return self._tray
+
     def mostrar_ventana(self) -> None:
-        """Trae la ventana al frente (al pulsar la notificación o el icono)."""
+        """Trae la ventana al frente: la restaura o la maximiza según como estaba."""
         if self._ventana is None:
             return
         try:
-            self._ventana.showNormal()
+            estaba_maximizada = bool(getattr(self._ventana, "_estado_maximizado", False))
+            if estaba_maximizada:
+                self._ventana.showMaximized()
+            else:
+                self._ventana.showNormal()
             self._ventana.raise_()
             self._ventana.activateWindow()
         except Exception:  # noqa: BLE001
@@ -199,7 +208,8 @@ class Notificador(QObject):
             sin_leer = self.sin_leer()
             total = len(self._avisos)
             detalle = f"{sin_leer} sin leer" if sin_leer else "sin avisos nuevos"
-            self._tray.setToolTip(f"{config.APP_NAME} — {detalle} ({total} en total)")
+            nombre = f"{config.APP_NAME} {getattr(config, 'APP_VERSION', '')}".strip()
+            self._tray.setToolTip(f"{nombre} — {detalle} ({total} en total)")
         except Exception:  # noqa: BLE001
             pass
 

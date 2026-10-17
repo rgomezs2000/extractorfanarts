@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.25 — 11 de octubre de 2026 · la beta definitiva (25.ª entrega)
+
+**Menú del icono de la bandeja (el de las notificaciones)**
+- **Clic derecho**: abrir (restaura o maximiza, según como estuviera la ventana), buscar,
+  descargar, **cancelar** la operación en curso, ayuda, acerca de, actualizaciones,
+  dependencias del sistema y **salir** — cada uno con su atajo.
+- **Clic izquierdo**: abre la ventana (restaurar o maximizar).
+- **Al señalarlo**: el nombre del programa y la versión, con los avisos sin leer.
+- Atajos nuevos: **Cancelar Ctrl+.**, **Acerca de Ctrl+Shift+A**, **Actualizaciones
+  Ctrl+U**, **Dependencias Ctrl+Shift+D** y **Salir Ctrl+Q** (ahora sí, también en el
+  menú Archivo).
+
+---
+
 ## v0.1.5-beta.24 — 11 de octubre de 2026 · la beta definitiva (24.ª entrega)
 
 **El estado de plataformas incluye también boorus y wikis de fandom**

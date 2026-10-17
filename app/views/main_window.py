@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         self.notificador.cambio.connect(self._actualizar_campana)
         self.notificador.aviso_nuevo.connect(self._al_aviso_nuevo)
         self._campana_lista = False
+        self._estado_maximizado = False     # cómo estaba la ventana (abrir desde la bandeja)
         # La barra de herramientas y los menús se montan después de esto, así que la
         # campana y la comprobación de versión se dejan para cuando arranque el bucle.
         QTimer.singleShot(0, self._arrancar_notificaciones)
@@ -881,6 +882,17 @@ class MainWindow(QMainWindow):
                     pass
 
     # ------------------------------------------------------------------ notificaciones
+    def changeEvent(self, evento):  # noqa: N802
+        """Recuerda si la ventana estaba maximizada (para restaurarla igual desde la bandeja)."""
+        try:
+            from PySide6.QtCore import QEvent
+
+            if evento.type() == QEvent.WindowStateChange and not self.isMinimized():
+                self._estado_maximizado = self.isMaximized()
+        except Exception:      # noqa: BLE001
+            pass
+        super().changeEvent(evento)
+
     def _arrancar_notificaciones(self) -> None:
         """Primera puesta a punto: campana en la barra y versión nueva en segundo plano."""
         if getattr(self, "_campana_lista", False):
@@ -890,6 +902,10 @@ class MainWindow(QMainWindow):
             self._crear_campana()
         except Exception:      # noqa: BLE001
             logger.exception("no se pudo crear la campana de notificaciones")
+        try:
+            self._crear_menu_bandeja()
+        except Exception:      # noqa: BLE001
+            logger.exception("no se pudo crear el menú de la bandeja")
         try:
             QTimer.singleShot(6000, self._comprobar_actualizaciones_al_inicio)
         except Exception:      # noqa: BLE001
@@ -1015,6 +1031,58 @@ class MainWindow(QMainWindow):
                         f"{guardados} imágenes guardadas.", nivel="exito")
         except Exception:      # noqa: BLE001
             logger.exception("no se pudo notificar el resultado")
+
+    def _menu_de_bandeja(self) -> QMenu:
+        """Menú del icono de la bandeja: abrir, buscar, descargar, cancelar… y salir.
+
+        Reutiliza las **mismas acciones** de la ventana, así los atajos salen solos y cada
+        opción se ve habilitada o deshabilitada igual que en la barra.
+        """
+        menu = QMenu(self)
+        abrir = QAction(f"🪟 Abrir {config.APP_NAME}", self)
+        abrir.triggered.connect(self._abrir_desde_bandeja)
+        menu.addAction(abrir)
+        menu.addSeparator()
+        cancelar = QAction("⛔ Cancelar la operación", self)
+        cancelar.setShortcut(QKeySequence("Ctrl+."))
+        cancelar.triggered.connect(self._cancelar_desde_bandeja)
+        for accion in (self.act_buscar, self.act_descargar, cancelar):
+            menu.addAction(accion)
+        menu.addSeparator()
+        menu.addAction(self.act_ayuda)
+        menu.addAction(self.act_acerca)
+        menu.addAction(self.act_actualizar)
+        menu.addAction(self.act_dependencias)
+        menu.addSeparator()
+        menu.addAction(self.act_salir)
+        return menu
+
+    def _abrir_desde_bandeja(self) -> None:
+        """Abrir desde la bandeja: restaura o maximiza, según como estuviera."""
+        self.notificador.mostrar_ventana()
+
+    def _cancelar_desde_bandeja(self) -> None:
+        """Cancelar la búsqueda o la descarga en curso."""
+        try:
+            if self.controller.is_busy():
+                self.controller.cancelar()
+                self.statusBar().showMessage("⛔ Operación cancelada")
+            else:
+                self.statusBar().showMessage("No hay ninguna operación en curso")
+        except Exception:      # noqa: BLE001
+            logger.exception("no se pudo cancelar desde la bandeja")
+
+    def _crear_menu_bandeja(self) -> None:
+        """Pone el menú en el icono de la bandeja del sistema."""
+        bandeja = self.notificador.bandeja()
+        if bandeja is None:
+            return
+        try:
+            menu = self._menu_de_bandeja()
+            bandeja.setContextMenu(menu)
+            self._menu_bandeja = menu      # debe vivir tanto como el icono
+        except Exception:      # noqa: BLE001
+            logger.exception("no se pudo preparar el menú de la bandeja")
 
     def _dominio_del_aviso(self, mensaje: str) -> str:
         """Si el aviso es una petición de comprobación del sitio, saca su dominio.
@@ -1580,10 +1648,10 @@ class MainWindow(QMainWindow):
         self.act_ayuda = self._accion_barra(
             "📖 Ayuda", "F1", self._abrir_ayuda, "Manual de uso, punto por punto")
         self.act_actualizar = self._accion_barra(
-            "🔄 Actualizaciones", "", self._buscar_actualizaciones,
+            "🔄 Actualizaciones", "Ctrl+U", self._buscar_actualizaciones,
             "Comprueba si hay una versión nueva y la instala")
         self.act_acerca = self._accion_barra(
-            "ℹ️ Acerca de", "", self._mostrar_acerca, "Versión, licencia y créditos")
+            "ℹ️ Acerca de", "Ctrl+Shift+A", self._mostrar_acerca, "Versión, licencia y créditos")
         self._sincronizar_barra()
 
     def _accion_barra(self, texto: str, atajo: str, manejador, descripcion: str) -> QAction:
@@ -1601,14 +1669,17 @@ class MainWindow(QMainWindow):
         archivo.addSeparator()
         salir = QAction("Salir", self)
         salir.setToolTip("También Alt+F4 o Ctrl+Q")
+        salir.setShortcut(QKeySequence("Ctrl+Q"))
         salir.triggered.connect(self.close)
         archivo.addAction(salir)
+        self.act_salir = salir
 
         menu_ayuda = self.menuBar().addMenu("A&yuda")
         menu_ayuda.addAction(self.act_ayuda)
         menu_ayuda.addAction(self.act_actualizar)
         # Mantenimiento: estado y actualización de Python y los paquetes esenciales
         self.act_dependencias = QAction("🧩 Dependencias del sistema", self)
+        self.act_dependencias.setShortcut(QKeySequence("Ctrl+Shift+D"))
         self.act_dependencias.setToolTip(
             "Python, paquetes esenciales y motores de IA: estado y actualización")
         self.act_dependencias.triggered.connect(self._comprobar_dependencias)
