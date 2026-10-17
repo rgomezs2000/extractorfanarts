@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.26 — 11 de octubre de 2026 · la beta definitiva (26.ª entrega)
+
+**El icono de la bandeja alterna, como el botón de la barra de tareas**
+- Con la ventana **restaurada o maximizada**, pulsar el icono la **minimiza**.
+- Con la ventana **minimizada**, pulsar el icono la **abre como estaba**: maximizada si lo
+  estaba y restaurada si no.
+- El menú del icono lo dice: cambia entre **«🪟 Minimizar Imaginteca»** y **«🪟 Abrir
+  Imaginteca»** según el estado, y hace lo mismo.
+
+---
+
 ## v0.1.5-beta.25 — 11 de octubre de 2026 · la beta definitiva (25.ª entrega)
 
 **Menú del icono de la bandeja (el de las notificaciones)**

@@ -22,9 +22,7 @@ El programa avisa de lo importante y lo cuenta:
 
 ## Menú del icono (bandeja del sistema)
 
-Al **señalar** el icono de las notificaciones aparece el nombre del programa y los avisos
-sin leer. Al **pulsarlo** se abre la ventana (restaurada o maximizada, según como
-estuviera) y con **clic derecho** sale este menú:
+Al **señalarlo** aparece el nombre del programa y los avisos sin leer; al **pulsarlo** actúa como el botón de la barra de tareas: si la ventana se está viendo, la **minimiza**; si está minimizada, la **abre como estaba** (maximizada o restaurada). El menú cambia solo entre **«🪟 Minimizar Imaginteca»** y **«🪟 Abrir Imaginteca»**. Con **clic derecho** sale este menú:
 
 | Opción | Atajo |
 |---|---|

@@ -1039,9 +1039,12 @@ class MainWindow(QMainWindow):
         opción se ve habilitada o deshabilitada igual que en la barra.
         """
         menu = QMenu(self)
-        abrir = QAction(f"🪟 Abrir {config.APP_NAME}", self)
-        abrir.triggered.connect(self._abrir_desde_bandeja)
-        menu.addAction(abrir)
+        # El botón alterna como el de la barra de tareas: «Minimizar» cuando se ve y
+        # «Abrir» cuando está minimizada (el texto se ajusta al desplegar el menú).
+        self.act_bandeja_abrir = QAction(f"🪟 Minimizar {config.APP_NAME}", self)
+        self.act_bandeja_abrir.triggered.connect(self.notificador.alternar_ventana)
+        menu.aboutToShow.connect(self._ajustar_accion_bandeja)
+        menu.addAction(self.act_bandeja_abrir)
         menu.addSeparator()
         cancelar = QAction("⛔ Cancelar la operación", self)
         cancelar.setShortcut(QKeySequence("Ctrl+."))
@@ -1056,6 +1059,18 @@ class MainWindow(QMainWindow):
         menu.addSeparator()
         menu.addAction(self.act_salir)
         return menu
+
+    def _ajustar_accion_bandeja(self) -> None:
+        """El texto del menú según el estado: «Minimizar» o «Abrir Imaginteca»."""
+        accion = getattr(self, "act_bandeja_abrir", None)
+        if accion is None:
+            return
+        if self.notificador.ventana_visible():
+            accion.setText(f"🪟 Minimizar {config.APP_NAME}")
+            accion.setToolTip("Minimiza la ventana (quedará en la barra de tareas)")
+        else:
+            accion.setText(f"🪟 Abrir {config.APP_NAME}")
+            accion.setToolTip("Restaura o maximiza la ventana, como estaba")
 
     def _abrir_desde_bandeja(self) -> None:
         """Abrir desde la bandeja: restaura o maximiza, según como estuviera."""

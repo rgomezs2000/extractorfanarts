@@ -116,11 +116,34 @@ class Notificador(QObject):
     def _al_pulsar_bandeja(self, motivo) -> None:
         if motivo in (QSystemTrayIcon.ActivationReason.Trigger,
                       QSystemTrayIcon.ActivationReason.DoubleClick):
-            self.mostrar_ventana()
+            self.alternar_ventana()
 
     def bandeja(self):
         """El icono de la bandeja (None si el sistema no la ofrece)."""
         return self._tray
+
+    def ventana_visible(self) -> bool:
+        """¿La ventana se está viendo ahora mismo (ni minimizada ni escondida)?"""
+        if self._ventana is None:
+            return False
+        try:
+            return bool(self._ventana.isVisible()) and not self._ventana.isMinimized()
+        except Exception:  # noqa: BLE001
+            return False
+
+    def alternar_ventana(self) -> None:
+        """Alterna como un botón de la barra de tareas: si se ve, minimiza; si no, abre.
+
+        «Abrir» devuelve la ventana **como estaba**: maximizada si lo estaba y normal si
+        estaba restaurada.
+        """
+        if self.ventana_visible():
+            try:
+                self._ventana.showMinimized()
+            except Exception:  # noqa: BLE001
+                pass
+        else:
+            self.mostrar_ventana()
 
     def mostrar_ventana(self) -> None:
         """Trae la ventana al frente: la restaura o la maximiza según como estaba."""

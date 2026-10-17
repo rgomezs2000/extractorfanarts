@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.26 — la beta definitiva (26.ª entrega)
+
+- El **icono de la bandeja alterna**: minimiza si la ventana se ve y la abre como estaba si
+  está minimizada. El menú muestra «Minimizar Imaginteca» o «Abrir Imaginteca» según toque.
+
 ### 2026-10-11 · v0.1.5-beta.25 — la beta definitiva (25.ª entrega)
 
 - **Menú del icono de las notificaciones**: abrir (restaura o maximiza), buscar, descargar,
