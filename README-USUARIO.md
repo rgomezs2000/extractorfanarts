@@ -1,6 +1,6 @@
 # Imaginteca — Guía del usuario
 
-**Versión 0.1.5-beta.22 · beta definitiva (release oficial)** · Windows · macOS · Linux
+**Versión 0.1.5-beta.23 · beta definitiva (release oficial)** · Windows · macOS · Linux
 
 **Imaginteca** es un programa de escritorio para **reunir, ordenar y preparar tu
 colección personal de imágenes**: busca en redes sociales, booros y wikis de
@@ -868,6 +868,34 @@ Si vas a contar un fallo, incluye la **versión** (Ayuda → Acerca de), tu
 
 ---
 
+## 20. Notificaciones
+
+El programa te avisa de lo importante sin tener que mirar la consola:
+
+| Cuándo | Qué dice |
+|---|---|
+| Termina una **búsqueda** | «Búsqueda completada — N imágenes encontradas» |
+| Una búsqueda **no trae nada** | «La búsqueda no trajo resultados» (y el motivo) |
+| Termina una **descarga** | «Descarga completada — N imágenes guardadas» (o con fallos) |
+| Hay un **error** | «Se produjo un error» con el resumen |
+| Sale una **versión nueva** | «Versión nueva disponible: …» al arrancar |
+| **Plataformas caídas** | «Servicios con problemas: …» (comprobación del menú Ayuda) |
+
+**Dónde se ven:**
+
+- En la **campana 🔔** de la barra (con el número sin leer; al pulsarla, la lista y las
+  opciones de marcarlas como leídas o borrarlas).
+- En la **barra de estado**, el último aviso.
+- **Si la ventana está minimizada**: como **notificación del sistema** (Windows, macOS o
+  Linux) y en la **insignia del icono** de la barra de tareas / Dock, con el número de
+  avisos sin leer. El icono es el **mismo de la aplicación**.
+
+**Estado de las redes sociales:** en **Ayuda › 📡 Estado de las redes sociales** hay una
+ventana que comprueba, una por una, si X, Pinterest, DeviantArt, Tumblr, Pixiv, Bluesky,
+Mastodon y Fandom responden, con su estado, su latencia y el enlace a su página de estado
+(doble clic en la fila). Se puede silenciar todo con `NOTIFICACIONES = False` en
+`config_local.py`.
+
 ## 19. Licencia y uso responsable
 
 > **Sobre el código fuente.** Los archivos «Source code (zip)» y «Source code
@@ -941,5 +969,5 @@ detalladas en **`THIRD-PARTY-NOTICES.txt`**.
 
 ---
 
-*Imaginteca 0.1.5-beta.22 · beta definitiva: si encuentras un fallo, el registro del día
+*Imaginteca 0.1.5-beta.23 · beta definitiva: si encuentras un fallo, el registro del día
 (`.imaginteca\logs`) y el `selftest.txt` son lo más útil para reportarlo.*

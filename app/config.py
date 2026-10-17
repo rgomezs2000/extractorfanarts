@@ -10,7 +10,12 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Imaginteca"
-APP_VERSION = "0.1.5-beta.22"
+
+# Notificaciones: avisos de búsquedas y descargas terminadas, errores, versiones
+# nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
+# notificación del sistema y con el número en la insignia del icono.
+NOTIFICACIONES = True
+APP_VERSION = "0.1.5-beta.23"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:

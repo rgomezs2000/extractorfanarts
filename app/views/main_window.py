@@ -18,6 +18,7 @@ Reglas de UI:
 from __future__ import annotations
 
 import logging
+import threading
 import os
 from pathlib import Path
 
@@ -32,7 +33,8 @@ from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QDateEdit, QDialog, QDialogButtonBox,
     QFileDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy,
-    QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QVBoxLayout, QWidget,
+    QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QToolButton, QVBoxLayout,
+    QWidget,
 )
 
 from .. import ayuda, canal, config, dependencias, updater
@@ -42,6 +44,7 @@ from ..services import propiedades as propiedades_imagen
 from ..services import verificacion
 from ..services.adapters import BOORU_ADAPTERS, SOCIAL_ADAPTERS, WIKI_ADAPTERS
 from .galeria import MENSAJE_BUSCANDO, MENSAJE_VACIO, GaleriaWidget, Lightbox
+from ..notificaciones import Notificador
 
 logger = logging.getLogger("imaginteca")
 
@@ -62,6 +65,16 @@ class MainWindow(QMainWindow):
         self._tarea = "descargar"
         self._reintento = None     # operación a repetir tras superar una comprobación
         self._reintentos_de_verificacion = 0   # vueltas seguidas de comprobación
+        # Notificaciones: campana con contador, bandeja del sistema y —cuando la ventana
+        # está minimizada— notificación del sistema + insignia con el número.
+        self.notificador = Notificador(self)
+        self.notificador.enlazar_ventana(self)
+        self.notificador.cambio.connect(self._actualizar_campana)
+        self.notificador.aviso_nuevo.connect(self._al_aviso_nuevo)
+        self._campana_lista = False
+        # La barra de herramientas y los menús se montan después de esto, así que la
+        # campana y la comprobación de versión se dejan para cuando arranque el bucle.
+        QTimer.singleShot(0, self._arrancar_notificaciones)
         self._lightbox: Lightbox | None = None
         self._individual_en_curso = 0     # acciones individuales en segundo plano
         self._build_ui()
@@ -867,6 +880,142 @@ class MainWindow(QMainWindow):
                 except Exception:  # noqa: BLE001
                     pass
 
+    # ------------------------------------------------------------------ notificaciones
+    def _arrancar_notificaciones(self) -> None:
+        """Primera puesta a punto: campana en la barra y versión nueva en segundo plano."""
+        if getattr(self, "_campana_lista", False):
+            return
+        self._campana_lista = True
+        try:
+            self._crear_campana()
+        except Exception:      # noqa: BLE001
+            logger.exception("no se pudo crear la campana de notificaciones")
+        try:
+            QTimer.singleShot(6000, self._comprobar_actualizaciones_al_inicio)
+        except Exception:      # noqa: BLE001
+            pass
+
+    def _crear_campana(self) -> None:
+        """Botón-🔔 en la barra de herramientas, con su menú de avisos."""
+        barra = getattr(self, "barra_funciones", None)
+        if barra is None:
+            return
+        self.boton_campana = QToolButton(self)
+        self.boton_campana.setPopupMode(QToolButton.InstantPopup)
+        self.boton_campana.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.menu_avisos = QMenu(self.boton_campana)
+        self.menu_avisos.aboutToShow.connect(self._rellenar_menu_avisos)
+        self.boton_campana.setMenu(self.menu_avisos)
+        barra.addSeparator()
+        barra.addWidget(self.boton_campana)
+        self._actualizar_campana()
+
+    def _actualizar_campana(self) -> None:
+        """Refleja en la campana cuántos avisos hay sin leer."""
+        boton = getattr(self, "boton_campana", None)
+        if boton is None:
+            return
+        try:
+            sin_leer = self.notificador.sin_leer()
+            total = len(self.notificador.avisos())
+        except Exception:      # noqa: BLE001
+            return
+        boton.setText(f"🔔 {sin_leer}" if sin_leer else "🔔")
+        boton.setToolTip(f"Notificaciones: {sin_leer} sin leer de {total}" if total
+                         else "Notificaciones del programa (aún no hay ninguna)")
+
+    def _al_aviso_nuevo(self, aviso) -> None:
+        """El último aviso también se ve en la barra de estado."""
+        try:
+            self.statusBar().showMessage(f"🔔 {aviso.como_linea()}", 8000)
+        except Exception:      # noqa: BLE001
+            pass
+
+    def _rellenar_menu_avisos(self) -> None:
+        """Contenido del menú de la campana: últimos avisos y acciones."""
+        menu = self.menu_avisos
+        menu.clear()
+        lista = self.notificador.avisos()
+        if not lista:
+            vacio = QAction("Todavía no hay avisos", self)
+            vacio.setEnabled(False)
+            menu.addAction(vacio)
+        else:
+            for aviso in reversed(lista[-20:]):
+                marca = "" if aviso.leido else "● "
+                accion = QAction(f"{marca}{aviso.como_linea()}", self)
+                accion.setEnabled(False)
+                menu.addAction(accion)
+        menu.addSeparator()
+        if lista:
+            marcar = QAction("✅ Marcar todo como leído", self)
+            marcar.triggered.connect(self.notificador.marcar_leidos)
+            menu.addAction(marcar)
+            borrar = QAction("🗑️ Borrar los avisos", self)
+            borrar.triggered.connect(self.notificador.limpiar)
+            menu.addAction(borrar)
+        estado = QAction("📡 Estado de las redes sociales…", self)
+        estado.triggered.connect(self._abrir_estado_servicios)
+        menu.addAction(estado)
+
+    def _abrir_estado_servicios(self) -> None:
+        """Ventana de estado de las redes sociales y plataformas."""
+        from .estado_servicios_dialog import VentanaEstadoServicios
+
+        ventana = VentanaEstadoServicios(self.notificador, self)
+        ventana.exec()
+
+    def _comprobar_actualizaciones_al_inicio(self) -> None:
+        """Consulta si hay versión nueva y **avisa** (sin molestar si no la hay)."""
+        if not canal.actualizaciones_activas() or getattr(self, "_consulta_inicio", False):
+            return
+        self._consulta_inicio = True
+
+        def trabajo() -> None:
+            try:
+                datos = updater.consultar_ultima()
+                nueva = str((datos or {}).get("version") or "")
+                if nueva and updater.hay_novedad(updater.version_actual(), nueva):
+                    self.notificador.avisar(
+                        "actualización", f"Versión nueva disponible: {nueva}",
+                        "Ábrela desde Ayuda › Actualizaciones.", nivel="info")
+            except Exception:      # noqa: BLE001
+                logger.debug("sin datos de actualización al arrancar")
+
+        threading.Thread(target=trabajo, daemon=True).start()
+
+    def _avisar_resultado(self, resumen: dict) -> None:
+        """Notifica el final de una búsqueda o descarga (también si no trajo nada)."""
+        try:
+            tipo = resumen.get("tipo")
+            estado = resumen.get("estado", "")
+            encontrados = resumen.get("encontrados", 0)
+            guardados = resumen.get("guardados", 0)
+            fallas = resumen.get("fallas", 0)
+            if estado == "error":
+                return               # ya avisa _on_error, con su detalle
+            if tipo == "busqueda":
+                if encontrados:
+                    self.notificador.avisar(
+                        "búsqueda", "Búsqueda completada",
+                        f"{encontrados} imágenes encontradas.", nivel="exito")
+                else:
+                    self.notificador.avisar(
+                        "búsqueda", "La búsqueda no trajo resultados",
+                        resumen.get("motivo") or "Prueba con otros tags o revisa los filtros.",
+                        nivel="aviso")
+            else:
+                if fallas:
+                    self.notificador.avisar(
+                        "descarga", "Descarga terminada con fallos",
+                        f"{guardados} guardadas · {fallas} con problemas.", nivel="aviso")
+                else:
+                    self.notificador.avisar(
+                        "descarga", "Descarga completada",
+                        f"{guardados} imágenes guardadas.", nivel="exito")
+        except Exception:      # noqa: BLE001
+            logger.exception("no se pudo notificar el resultado")
+
     def _dominio_del_aviso(self, mensaje: str) -> str:
         """Si el aviso es una petición de comprobación del sitio, saca su dominio.
 
@@ -953,6 +1102,12 @@ class MainWindow(QMainWindow):
     def _on_error(self, mensaje: str) -> None:
         """Error crítico: UN aviso resumido al usuario y el detalle completo al registro."""
         logger.error("%s", mensaje)          # detalle íntegro (consola y archivo .log)
+        try:
+            if not self._error_mostrado:
+                self.notificador.avisar("error", "Se produjo un error",
+                                        self._resumir_error(mensaje), nivel="error")
+        except Exception:      # noqa: BLE001
+            pass
         # Red de seguridad: si el aviso es en realidad la petición de una comprobación del
         # sitio (algún camino lo reporta como texto), se abre la ventana igualmente.
         dominio = self._dominio_del_aviso(mensaje)
@@ -995,6 +1150,7 @@ class MainWindow(QMainWindow):
             estado = resumen.get("estado", "")
             descartados = resumen.get("descartados") or {}
             encontrados = resumen.get("encontrados", 0)
+            self._avisar_resultado(resumen)
 
             # Nada pasó los filtros: explicar el porqué (evita el "no hace nada").
             # Si ya se avisó de un error crítico, NO se añade un segundo aviso.
@@ -1457,6 +1613,12 @@ class MainWindow(QMainWindow):
             "Python, paquetes esenciales y motores de IA: estado y actualización")
         self.act_dependencias.triggered.connect(self._comprobar_dependencias)
         menu_ayuda.addAction(self.act_dependencias)
+        # Estado de las redes sociales y plataformas (con sus avisos).
+        self.act_estado_servicios = QAction("📡 Estado de las redes sociales", self)
+        self.act_estado_servicios.setToolTip(
+            "Comprueba si las redes sociales y plataformas están operativas ahora mismo")
+        self.act_estado_servicios.triggered.connect(self._abrir_estado_servicios)
+        menu_ayuda.addAction(self.act_estado_servicios)
         # Canal de la copia: en DESARROLLO (código fuente o compilación propia) las
         # actualizaciones están desactivadas; en PRODUCCIÓN (paquete del release) se
         # activan. El motivo se explica en el propio aviso emergente.

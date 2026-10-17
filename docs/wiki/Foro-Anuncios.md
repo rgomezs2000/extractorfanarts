@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.23 — la beta definitiva (23.ª entrega)
+
+- **Notificaciones**: búsquedas, descargas, errores, versiones nuevas y plataformas caídas,
+  con contador en la campana 🔔 y —minimizada— en el sistema y en la insignia del icono.
+- **Ayuda › 📡 Estado de las redes sociales**: comprueba si cada red está operativa.
+
 ### 2026-10-11 · v0.1.5-beta.22 — la beta definitiva (22.ª entrega)
 
 - **Instaladores con el icono típico de cada sistema** (caja con flecha azul en Windows,

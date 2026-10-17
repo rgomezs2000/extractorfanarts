@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.23 — 11 de octubre de 2026 · la beta definitiva (23.ª entrega)
+
+**Sistema de notificaciones**
+- Avisa de lo importante: **búsquedas y descargas** terminadas (o sin resultados),
+  **errores**, **versiones nuevas** al arrancar y **plataformas caídas**.
+- Se cuentan y se ven en la **campana 🔔** de la barra (número sin leer), en la barra de
+  estado y —con la ventana **minimizada**— como **notificación del sistema operativo** y
+  en la **insignia del icono** de la barra de tareas / Dock, con el mismo icono de la
+  aplicación.
+- Nuevo en **Ayuda › 📡 Estado de las redes sociales**: comprueba si X, Pinterest,
+  DeviantArt, Tumblr, Pixiv, Bluesky, Mastodon y Fandom responden, con estado, latencia y
+  enlace a su página de estado; avisa de las que fallan.
+- Se puede silenciar con `NOTIFICACIONES = False` en `config_local.py`.
+
+---
+
 ## v0.1.5-beta.22 — 11 de octubre de 2026 · la beta definitiva (22.ª entrega)
 
 **Arreglado el instalador de Windows (la 21 no llegó a publicarse)**

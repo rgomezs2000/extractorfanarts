@@ -11,6 +11,7 @@
 - [🖼️ Calidad y mejora](Calidad-y-mejora)
 - [🧠 Datasets para IA](Datasets-IA)
 - [🔄 Actualizaciones](Actualizaciones)
+- [🔔 Notificaciones](Notificaciones)
 
 **💬 Foro** *(aquí se comenta y se pide ayuda)*
 - [📋 Entrar al foro](Foro)
