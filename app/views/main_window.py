@@ -957,10 +957,13 @@ class MainWindow(QMainWindow):
             vacio.setEnabled(False)
             menu.addAction(vacio)
         else:
-            for aviso in reversed(lista[-20:]):
+            for indice in range(len(lista) - 1, max(-1, len(lista) - 21), -1):
+                aviso = lista[indice]
                 marca = "" if aviso.leido else "● "
                 accion = QAction(f"{marca}{aviso.como_linea()}", self)
-                accion.setEnabled(False)
+                accion.setToolTip("Ábrelo para leerlo entero (se marca como leído)")
+                accion.triggered.connect(
+                    lambda _=False, i=indice: self._abrir_aviso(i))
                 menu.addAction(accion)
         menu.addSeparator()
         if lista:
@@ -970,9 +973,36 @@ class MainWindow(QMainWindow):
             borrar = QAction("🗑️ Borrar los avisos", self)
             borrar.triggered.connect(self.notificador.limpiar)
             menu.addAction(borrar)
-        estado = QAction("📡 Estado de las redes sociales…", self)
-        estado.triggered.connect(self._abrir_estado_servicios)
-        menu.addAction(estado)
+
+    def _abrir_aviso(self, indice: int) -> None:
+        """Abre un aviso en una ventanita y lo deja marcado como leído."""
+        try:
+            aviso = self.notificador.avisos()[indice]
+        except (IndexError, TypeError):
+            return
+        if not aviso.leido:
+            aviso.leido = True
+            self.notificador._actualizar_insignia()
+            self.notificador.cambio.emit()
+        caja = QDialog(self)
+        caja.setWindowTitle(f"Aviso · {aviso.categoria}")
+        caja.resize(520, 320)
+        etiqueta = QLabel(
+            f"<b>{aviso.titulo}</b><br><small>{aviso.momento:%d/%m/%Y %H:%M}"
+            f" · {aviso.categoria}</small>"
+            + (f"<br><br>{aviso.mensaje}" if aviso.mensaje else ""))
+        etiqueta.setWordWrap(True)
+        etiqueta.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        etiqueta.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        cerrar = QPushButton("Cerrar")
+        cerrar.clicked.connect(caja.accept)
+        botones = QHBoxLayout()
+        botones.addStretch(1)
+        botones.addWidget(cerrar)
+        disposicion = QVBoxLayout(caja)
+        disposicion.addWidget(etiqueta, 1)
+        disposicion.addLayout(botones)
+        caja.exec()
 
     def _abrir_estado_servicios(self) -> None:
         """Ventana de estado de las redes sociales y plataformas."""
@@ -1056,6 +1086,7 @@ class MainWindow(QMainWindow):
         menu.addAction(self.act_acerca)
         menu.addAction(self.act_actualizar)
         menu.addAction(self.act_dependencias)
+        menu.addAction(self.act_estado_servicios)
         menu.addSeparator()
         menu.addAction(self.act_salir)
         return menu

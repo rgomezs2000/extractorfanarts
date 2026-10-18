@@ -20,6 +20,14 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.31 — la beta definitiva (31.ª entrega)
+
+- **Avisos clicables**: al pulsar uno se abre en una ventanita y queda leído.
+- **«Estado de las redes sociales»** pasa a **Ayuda** (tras Dependencias) y al clic derecho
+  del icono; fuera del menú de la campana.
+- **Arreglado** el error de JSON vacío en **Safebooru, Rule34.xxx** y otros: un tag sin
+  resultados ahora dice «la búsqueda no trajo resultados».
+
 ### 2026-10-11 · v0.1.5-beta.30 — la beta definitiva (30.ª entrega)
 
 - **Se retira el filtro** de advertencias (dejaba fuera contenido que antes pasaba). Se

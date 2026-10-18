@@ -1,5 +1,24 @@
 # Historial de versiones
 
+## v0.1.5-beta.31 — 11 de octubre de 2026 · la beta definitiva (31.ª entrega)
+
+**Avisos: se abren al pulsarlos**
+- En el menú de la **campana**, cada aviso se puede **pulsar**: se abre en una **ventanita**
+  con el texto entero y **queda marcado como leído** (baja el contador y la insignia).
+- Se mantienen «Marcar todo como leído» y «Borrar los avisos».
+
+**«Estado de las redes sociales» donde toca**
+- Sale del menú de la campana (ahí no pintaba nada) y queda en **Ayuda**, justo **después de
+  «Dependencias del sistema»**, y también en el **clic derecho del icono** de la bandeja, en
+  el mismo orden.
+
+**Arreglado: el error «no devolvió JSON válido» en Safebooru, Rule34.xxx y otros boorus**
+- Cuando el tag no tiene resultados, esos sitios contestan **200 con el cuerpo vacío**. El
+  programa lo trataba como error («Expecting value: line 1 column 1»). Ahora se entiende
+  como lo que es: **«la búsqueda no trajo resultados»**, sin aviso rojo.
+
+---
+
 ## v0.1.5-beta.30 — 11 de octubre de 2026 · la beta definitiva (30.ª entrega)
 
 **Se retira el filtro de advertencias (se mantiene el apartado informativo)**

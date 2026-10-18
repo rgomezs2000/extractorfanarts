@@ -459,6 +459,15 @@ class PoliteClient:
 
     def _json_of(self, resp, descripcion: str):
         ctype = (resp.headers.get("content-type") or "").lower()
+        # Cuerpo vacío con respuesta correcta = «no hay resultados». Varios boorus
+        # (Safebooru, Rule34.xxx y otros) contestan así cuando el tag no tiene nada;
+        # se trata como «sin resultados» y no como error rojo.
+        try:
+            vacio = not (resp.text or "").strip()
+        except Exception:  # noqa: BLE001
+            vacio = False
+        if vacio and 200 <= int(getattr(resp, "status_code", 200) or 0) < 300:
+            raise SinResultados(f"{descripcion}: el sitio no devolvió resultados")
         if "html" in ctype:
             # Se mira el TÍTULO de la página: así el aviso dice qué pasa de verdad
             # («Verification» o «Just a moment…» = el sitio pide comprobación anti-bot;

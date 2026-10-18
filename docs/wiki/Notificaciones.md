@@ -14,7 +14,8 @@ El programa avisa de lo importante y lo cuenta:
 ## Dónde se ven
 
 - **Campana 🔔** de la barra de herramientas: número sin leer; al pulsarla, la lista y las
-  opciones de marcar como leídas o borrar.
+  opciones de marcar como leídas o borrar. **Cada aviso se puede pulsar**: se abre en una
+  ventanita con el texto entero y queda marcado como leído.
 - **Barra de estado**: el último aviso.
 - **Ventana minimizada**: notificación del **sistema operativo** (Windows, macOS, Linux) y
   **insignia con el número** en el icono de la barra de tareas / Dock. El icono es el mismo
