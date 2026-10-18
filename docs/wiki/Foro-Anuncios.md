@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.35 — la beta definitiva (35.ª entrega)
+
+- **X (Twitter) sin claves**: galería de un usuario y posts sueltos vía **FxTwitter**, con
+  retardos entre peticiones para no comportarse como un bot. La búsqueda por palabra sigue
+  sin ser posible (limitación de X).
+
 ### 2026-10-11 · v0.1.5-beta.34 — la beta definitiva (34.ª entrega)
 
 - **Pinterest**: la plantilla de config_local.py trae las claves listas y el aviso explica

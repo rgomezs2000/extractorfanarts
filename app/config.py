@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.34"
+APP_VERSION = "0.1.5-beta.35"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -216,6 +216,16 @@ REFERER_DOMAINS = {
 # con facturación activa). https://developer.x.com/
 # Opción A: Bearer token ya emitido (app-only).
 X_BEARER_TOKEN = ""
+
+# ------------------------------------------------------------------ FxTwitter (X sin claves)
+# El adaptador de X usa la API pública de FxTwitter (https://github.com/FxEmbed/FxEmbed,
+# MIT): **sin cuenta y sin claves**. Trae la galería de un usuario y un post concreto
+# (pegando su enlace), no la búsqueda por palabra (X no la sirve sin sesión).
+# FxTwitter pide no atropellar: 1000 peticiones/min por IP. Aquí se va con un retardo
+# explícito entre consultas, configurable.
+FXTWITTER_PAUSA = 1.2          # segundos entre peticiones (cortesía)
+FXTWITTER_MAX_PAGINAS = 4      # páginas de 40 medios por usuario como máximo
+
 # Opción B: consumer key/secret (OAuth2 client credentials → se obtiene el Bearer solo).
 X_API_KEY = ""
 X_API_SECRET = ""

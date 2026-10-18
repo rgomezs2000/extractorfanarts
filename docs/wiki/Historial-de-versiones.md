@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.35 — 11 de octubre de 2026 · la beta definitiva (35.ª entrega)
+
+**X (Twitter) sin claves, con FxTwitter**
+- El adaptador de X usa ahora la **API pública de FxTwitter** (FxEmbed, MIT): **sin cuenta
+  y sin claves**. Trae la **galería de un usuario** (@usuario, paginada) y un **post
+  concreto** (pegando su enlace o su id).
+- **Búsqueda por palabra/hashtag: no** — X no la sirve sin sesión y FxTwitter responde 404;
+  el programa lo explica y sugiere las plataformas que sí buscan.
+- **Cortesía**: retardo explícito entre peticiones (FXTWITTER_PAUSA, 1,2 s) y un tope de
+  páginas (FXTWITTER_MAX_PAGINAS), muy por debajo del límite de FxTwitter, para no
+  comportarse como un bot. Los vídeos y GIF se ignoran (esto es de fotos).
+
+---
+
 ## v0.1.5-beta.34 — 11 de octubre de 2026 · la beta definitiva (34.ª entrega)
 
 **Pinterest: configurar la API, más claro**

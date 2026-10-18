@@ -78,7 +78,26 @@ La mayor plataforma de ilustración japonesa. **No permite el acceso anónimo.**
 - **Nota:** respeta las condiciones de la plataforma: hay obras de pago que el
   programa **descarta** por sus filtros.
 
-### X / Twitter
+#### X (Twitter): sin claves, con FxTwitter
+
+El adaptador de X usa la API pública de **[FxTwitter](https://github.com/FxEmbed/FxEmbed)**
+(proyecto FxEmbed, licencia MIT): **no hace falta cuenta ni claves** y no hay nada que
+configurar. Trae:
+
+- La **galería de un usuario**: escribe su @usuario en el campo «@usuario».
+- **Un post concreto**: pega su enlace (https://x.com/usuario/status/…) o su id en ese
+  mismo campo.
+
+**Lo que no puede** (limitación de X, no del programa): buscar por **palabra clave o
+hashtag**, porque X no sirve esa búsqueda sin sesión de usuario y FxTwitter responde 404.
+Para buscar por tema, usa boorus, fediverso, DeviantArt, Pixiv, Tumblr o Bluesky.
+
+**Cortesía con el servicio**: se espacian las peticiones a propósito (FXTWITTER_PAUSA,
+1,2 s por defecto entre consultas, y como mucho FXTWITTER_MAX_PAGINAS de 40 medios), muy
+por debajo del límite de FxTwitter (1000/min por IP), para no comportarse como un bot ni
+saturar un servicio comunitario.
+
+## X / Twitter
 
 - **Se puede buscar:** palabras y `#hashtags` por la **API v2**.
 - **Claves:** `X_BEARER_TOKEN` de una app de desarrollador **de pago**: desde 2026
