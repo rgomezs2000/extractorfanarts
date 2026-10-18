@@ -36,6 +36,9 @@ _ID_RE = re.compile(r"^\d{5,}$")
 # Cortesía entre peticiones (segundos). Ajustable en config_local.py.
 PAUSA = float(getattr(config, "FXTWITTER_PAUSA", 1.2) or 1.2)
 MAX_PAGINAS = int(getattr(config, "FXTWITTER_MAX_PAGINAS", 4) or 4)
+# FxTwitter falla de vez en cuando (404/5xx sin motivo, en la misma URL buena): se
+# reintenta con calma, sin martillear.
+INTENTOS = int(getattr(config, "FXTWITTER_INTENTOS", 3) or 3)
 
 
 class XAdapter(SearchAdapter):
@@ -56,9 +59,22 @@ class XAdapter(SearchAdapter):
         self._ultima = time.monotonic()
 
     def _pedir(self, client: PoliteClient, ruta: str, params: dict | None = None) -> dict:
-        self._esperar()
-        logger.info("FxTwitter: GET %s %s", ruta, params or "")
-        return client.get_json(f"{BASE}{ruta}", params=params or {})
+        """Pide a FxTwitter con cortesía y reintentos (su servicio falla a ratos)."""
+        ultimo: Exception | None = None
+        for intento in range(1, INTENTOS + 1):
+            self._esperar()
+            try:
+                logger.info("FxTwitter: GET %s %s (intento %d/%d)", ruta, params or "",
+                            intento, INTENTOS)
+                return client.get_json(f"{BASE}{ruta}", params=params or {})
+            except Exception as exc:  # noqa: BLE001
+                ultimo = exc
+                if intento >= INTENTOS:
+                    break
+                logger.info("FxTwitter: fallo transitorio en %s (%s); reintento en %.1f s",
+                            ruta, type(exc).__name__, PAUSA * 2)
+                time.sleep(PAUSA * 2)
+        raise ultimo if ultimo is not None else RuntimeError("FxTwitter no respondió")
 
     # ------------------------------------------------------------------ búsqueda
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
@@ -68,22 +84,24 @@ class XAdapter(SearchAdapter):
 
         usuario = (criterios.usuario or "").strip()
         if usuario:
-            return self._de_un_usuario(client, query, usuario)
+            return self._de_un_usuario(client, query, usuario, criterios)
 
         raise ConfigError(
             "X (Twitter) por FxTwitter trae imágenes **por usuario** y **posts sueltos**\n"
             "(no hay búsqueda por palabra clave: X no la sirve sin sesión y FxTwitter\n"
             "responde 404).\n\n"
             "· Para la galería de alguien: escribe su @usuario (p. ej. @NASA).\n"
+            "· Para FILTRAR esa galería: añade además «palabra clave» o «#hashtag»\n"
+            "  (p. ej. @usuario + kuromi) y solo se quedan los posts que lo mencionan.\n"
             "· Para un post concreto: pega su enlace (https://x.com/usuario/status/…)\n"
             "  o su número de id en el campo «@usuario».\n"
-            "· Para buscar por tema o hashtag, usa otra plataforma (boorus, fediverso,\n"
-            "  DeviantArt, Pixiv, Tumblr, Bluesky…).\n"
+            "· Para buscar por tema sin saber el usuario, usa otra plataforma (boorus,\n"
+            "  fediverso, DeviantArt, Pixiv, Tumblr, Bluesky…).\n"
             "Sin claves y sin cuenta: no hay nada que configurar."
         )
 
     def _de_un_usuario(self, client: PoliteClient, query: SearchQuery,
-                       usuario: str) -> list[Artwork]:
+                       usuario: str, criterios) -> list[Artwork]:
         """Un post concreto (si lo que hay es un enlace/id) o la galería del usuario."""
         enlace = _POST_RE.search(usuario)
         if enlace or _ID_RE.match(usuario):
@@ -103,6 +121,8 @@ class XAdapter(SearchAdapter):
                 params["cursor"] = cursor
             datos = self._pedir(client, f"/2/profile/{handle}/media", params)
             for post in datos.get("results") or []:
+                if not self._cumple(post, criterios):
+                    continue
                 salida.extend(self._arte_de_post(post))
                 if len(salida) >= query.limit:
                     return salida[: query.limit]
@@ -112,6 +132,24 @@ class XAdapter(SearchAdapter):
             logger.info("FxTwitter: página %d de %s (llevamos %d imágenes)",
                         pagina + 1, handle, len(salida))
         return salida[: query.limit]
+
+    # ------------------------------------------------------------------ filtro local
+    @staticmethod
+    def _etiquetas_de(post: dict) -> list[str]:
+        """Hashtags que aparecen en el texto del post (X no los da aparte)."""
+        texto = str(post.get("text") or post.get("raw_text") or "")
+        return [f"#{etiqueta}" for etiqueta in re.findall(r"#(\w+)", texto)]
+
+    def _cumple(self, post: dict, criterios) -> bool:
+        """¿Este post pasa el filtro de palabras/hashtags/usuario que puso la persona?"""
+        if criterios is None or criterios.vacio:
+            return True
+        texto = str(post.get("text") or post.get("raw_text") or "")
+        autor = str((post.get("author") or {}).get("screen_name") or "")
+        if criterios.cumple(texto=texto, etiquetas=self._etiquetas_de(post), autor=autor):
+            return True
+        logger.info("FxTwitter: descartado un post (no cumple «%s»)", criterios.descripcion)
+        return False
 
     # ------------------------------------------------------------------ normalizar
     def _arte_de_post(self, post: dict) -> list[Artwork]:

@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.36 — la beta definitiva (36.ª entrega)
+
+- **X con FxTwitter**: filtra la galería de un usuario con palabra clave o #hashtag, y
+  reintenta solo si el servicio falla a ratos.
+
 ### 2026-10-11 · v0.1.5-beta.35 — la beta definitiva (35.ª entrega)
 
 - **X (Twitter) sin claves**: galería de un usuario y posts sueltos vía **FxTwitter**, con

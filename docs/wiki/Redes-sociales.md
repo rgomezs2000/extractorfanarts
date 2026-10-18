@@ -92,6 +92,20 @@ configurar. Trae:
 hashtag**, porque X no sirve esa búsqueda sin sesión de usuario y FxTwitter responde 404.
 Para buscar por tema, usa boorus, fediverso, DeviantArt, Pixiv, Tumblr o Bluesky.
 
+**¿Y cómo filtro?** Combinando el usuario con los criterios: escribe @usuario y además
+la **palabra clave** o el **#hashtag** que quieras. El programa se trae la galería del
+usuario y se queda **solo con los posts que lo mencionan** (se compara con el texto del
+tuit, porque X no da las etiquetas aparte). Ejemplo real:
+
+`
+@NASAPersevere                     -> 30 imágenes
+@NASAPersevere + palabra «rover»   ->  1 imagen  (el tuit que menciona rovers)
+@NASAPersevere + «cinnamoroll»     ->  0 imágenes
+`
+
+Los demás filtros del programa se aplican igual: contenido adulto (possibly_sensitive
+entra como sensitive), lista negra, enlaces de pago, licencia y cantidad.
+
 **Cortesía con el servicio**: se espacian las peticiones a propósito (FXTWITTER_PAUSA,
 1,2 s por defecto entre consultas, y como mucho FXTWITTER_MAX_PAGINAS de 40 medios), muy
 por debajo del límite de FxTwitter (1000/min por IP), para no comportarse como un bot ni

@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.36 — 11 de octubre de 2026 · la beta definitiva (36.ª entrega)
+
+**X (Twitter): cómo filtrar con FxTwitter**
+- Se puede **filtrar la galería de un usuario**: @usuario + **palabra clave** o
+  **#hashtag** → solo se quedan los posts que lo mencionan (se compara con el texto del
+  tuit; X no entrega las etiquetas aparte).
+- **Reintentos con paciencia**: FxTwitter devuelve fallos transitorios (un 404 en una URL
+  buena y al segundo intento 200). Ahora se reintenta hasta 3 veces con espera
+  (FXTWITTER_INTENTOS, FXTWITTER_PAUSA), sin martillear el servicio.
+- Comprobado: sin filtro 30 imágenes · con «rover» 1 · con una palabra ausente 0.
+
+---
+
 ## v0.1.5-beta.35 — 11 de octubre de 2026 · la beta definitiva (35.ª entrega)
 
 **X (Twitter) sin claves, con FxTwitter**
