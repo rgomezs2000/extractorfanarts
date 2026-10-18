@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.32 — la beta definitiva (32.ª entrega)
+
+- **DeviantArt**: el aviso dice ahora dónde poner las claves (tu config_local.py) y la
+  plantilla trae las líneas listas para pegar el client_id y el client_secret.
+
 ### 2026-10-11 · v0.1.5-beta.31 — la beta definitiva (31.ª entrega)
 
 - **Avisos clicables**: al pulsar uno se abre en una ventanita y queda leído.

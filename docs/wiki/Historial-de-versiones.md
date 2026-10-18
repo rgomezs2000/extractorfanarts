@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.32 — 11 de octubre de 2026 · la beta definitiva (32.ª entrega)
+
+**DeviantArt: configurar la API es más fácil**
+- El aviso de credenciales decía «en app/config.py»; ahora indica **tu config_local.py**
+  (el que está junto al ejecutable), recuerda que **una línea comentada no cuenta** y da el
+  enlace donde se crean las claves.
+- La plantilla local trae ya las líneas **activas y vacías**:
+  DEVIANTART_CLIENT_ID y DEVIANTART_CLIENT_SECRET (antes estaban comentadas).
+
+---
+
 ## v0.1.5-beta.31 — 11 de octubre de 2026 · la beta definitiva (31.ª entrega)
 
 **Avisos: se abren al pulsarlos**

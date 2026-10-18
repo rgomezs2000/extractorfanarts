@@ -30,8 +30,11 @@ class DeviantArtAdapter(SearchAdapter):
             return self._token
         if not config.DEVIANTART_CLIENT_ID or not config.DEVIANTART_CLIENT_SECRET:
             raise ConfigError(
-                "DeviantArt requiere client credentials: completa "
-                "DEVIANTART_CLIENT_ID y DEVIANTART_CLIENT_SECRET en app/config.py"
+                "DeviantArt necesita client credentials: pon DEVIANTART_CLIENT_ID y "
+                "DEVIANTART_CLIENT_SECRET en TU config_local.py (el de junto al "
+                "ejecutable, o app/config_local.py si ejecutas el código).\n"
+                "Aviso: si la línea empieza por # no cuenta. Las claves se sacan en "
+                "https://www.deviantart.com/developers/apps"
             )
         data = client.post_form(TOKEN_URL, {
             "grant_type": "client_credentials",
