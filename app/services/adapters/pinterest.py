@@ -28,10 +28,13 @@ class PinterestAdapter(SearchAdapter):
         token = config.PINTEREST_ACCESS_TOKEN
         if not token:
             raise ConfigError(
-                "Pinterest requiere PINTEREST_ACCESS_TOKEN en app/config.py "
-                "(API v5: app aprobada + token OAuth del usuario). La búsqueda "
-                "global usa /v5/search/partner/pins (beta) y además requiere "
-                "PINTEREST_COUNTRY_CODE."
+                "Pinterest necesita PINTEREST_ACCESS_TOKEN: ponlo en TU config_local.py "
+                "(el de junto al ejecutable, o app/config_local.py si ejecutas el "
+                "código).\n"
+                "Aviso: si la línea empieza por # no cuenta. El token se saca en "
+                "https://developers.pinterest.com/apps/ (API v5, app + token OAuth).\n"
+                "La búsqueda GLOBAL (/v5/search/partner/pins, beta) necesita además "
+                "PINTEREST_COUNTRY_CODE (ES, US, MX…); sin él se buscan los pins de tu cuenta."
             )
         headers = {"Authorization": f"Bearer {token}"}
         criterios = Criterios.desde_query(query)

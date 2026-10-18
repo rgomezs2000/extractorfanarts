@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.34 — la beta definitiva (34.ª entrega)
+
+- **Pinterest**: la plantilla de config_local.py trae las claves listas y el aviso explica
+  cómo sacar el token OAuth y para qué sirve el código de país.
+
 ### 2026-10-11 · v0.1.5-beta.33 — la beta definitiva (33.ª entrega)
 
 - **DeviantArt**: el token se renueva solo (antes caducaba a la hora y daba «401

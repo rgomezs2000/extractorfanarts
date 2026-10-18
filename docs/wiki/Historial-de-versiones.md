@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.34 — 11 de octubre de 2026 · la beta definitiva (34.ª entrega)
+
+**Pinterest: configurar la API, más claro**
+- El aviso de credenciales decía «en app/config.py»; ahora indica **tu config_local.py**,
+  recuerda que **una línea comentada no cuenta** y explica el paso a paso (app + token
+  OAuth + código de país para la búsqueda global).
+- La plantilla local trae ya las líneas **activas y vacías**:
+  PINTEREST_ACCESS_TOKEN y PINTEREST_COUNTRY_CODE, con las instrucciones al lado.
+
+---
+
 ## v0.1.5-beta.33 — 11 de octubre de 2026 · la beta definitiva (33.ª entrega)
 
 **Arreglado el «401 autenticación rechazada» de DeviantArt**
