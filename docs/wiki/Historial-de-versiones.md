@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.33 — 11 de octubre de 2026 · la beta definitiva (33.ª entrega)
+
+**Arreglado el «401 autenticación rechazada» de DeviantArt**
+- El token de DeviantArt **caduca a la hora** y el adaptador lo seguía usando: tras un rato,
+  todas las consultas daban 401. Ahora se **renueva antes** de caducar y, si el sitio lo
+  rechaza igualmente, se **renueva y se reintenta** una vez.
+- Comprobado con la API real: búsquedas por **palabra clave** («kuromi», «cinnamoroll») con
+  resultados, y renovación correcta tanto con token caducado como inválido.
+
+---
+
 ## v0.1.5-beta.32 — 11 de octubre de 2026 · la beta definitiva (32.ª entrega)
 
 **DeviantArt: configurar la API es más fácil**

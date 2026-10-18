@@ -5,10 +5,11 @@ Requiere DEVIANTART_CLIENT_ID/CLIENT_SECRET en app/config.py.
 from __future__ import annotations
 
 import logging
+import time
 
 from ... import config
 from ...models.artwork import Artwork, SearchQuery
-from ..http_client import ConfigError, PoliteClient
+from ..http_client import BlockedError, ConfigError, PoliteClient
 from .base import SearchAdapter
 from .social_filtros import Criterios
 
@@ -23,6 +24,7 @@ class DeviantArtAdapter(SearchAdapter):
 
     def __init__(self):
         self._token: str | None = None
+        self._token_expira: float = 0.0
 
     # ------------------------------------------------------------------ token
     def _ensure_token(self, client: PoliteClient) -> str:
@@ -44,7 +46,37 @@ class DeviantArtAdapter(SearchAdapter):
         self._token = data.get("access_token")
         if not self._token:
             raise ConfigError("no se pudo obtener el token de DeviantArt")
+        # El token caduca (una hora): se apunta cuándo para renovarlo a tiempo en vez de
+        # seguir usando uno viejo y recibir «401 autenticación rechazada».
+        try:
+            segundos = float(data.get("expires_in") or 3600)
+        except (TypeError, ValueError):
+            segundos = 3600.0
+        self._token_expira = time.monotonic() + max(60.0, segundos - 120)
+        logger.info("DeviantArt: token obtenido (válido %.0f minutos)", segundos / 60)
         return self._token
+
+    def _olvidar_token(self) -> None:
+        self._token = None
+        self._token_expira = 0.0
+
+    def _get_api(self, client: PoliteClient, ruta: str, params: dict) -> dict:
+        """Pide a la API con el token; si el sitio lo rechaza, lo renueva y reintenta."""
+        if self._token and time.monotonic() >= self._token_expira:
+            logger.info("DeviantArt: el token caducó, se renueva antes de pedir")
+            self._olvidar_token()
+        token = self._ensure_token(client)
+        try:
+            return client.get_json(f"{API_BASE}{ruta}", params=params,
+                                   headers={"Authorization": f"Bearer {token}"})
+        except BlockedError as exc:
+            if "401" not in str(exc):
+                raise
+            logger.info("DeviantArt: token rechazado (401), se renueva y se reintenta")
+            self._olvidar_token()
+            token = self._ensure_token(client)
+            return client.get_json(f"{API_BASE}{ruta}", params=params,
+                                   headers={"Authorization": f"Bearer {token}"})
 
     # ------------------------------------------------------------------ búsqueda
     def search(self, client: PoliteClient, query: SearchQuery) -> list[Artwork]:
@@ -58,10 +90,8 @@ class DeviantArtAdapter(SearchAdapter):
         vistos: set[str] = set()
         if criterios.usuario:
             username = criterios.usuario.strip().lstrip("@")
-            data = client.get_json(
-                f"{API_BASE}/browse/user/{username}",
-                params={"limit": "24", "mature_content": "true"},
-            )
+            data = self._get_api(client, f"/browse/user/{username}",
+                                 {"limit": "24", "mature_content": "true"})
             results = data.get("results", [])
         else:
             # N valores sin límite: se consulta cada etiqueta o palabra clave y se unen
@@ -70,10 +100,9 @@ class DeviantArtAdapter(SearchAdapter):
                 return []
             for tag in terminos:
                 try:
-                    data = client.get_json(
-                        f"{API_BASE}/browse/tags",
-                        params={"tag": tag, "limit": "24", "mature_content": "true"},
-                    )
+                    data = self._get_api(client, "/browse/tags",
+                                         {"tag": tag, "limit": "24",
+                                          "mature_content": "true"})
                 except Exception as exc:  # noqa: BLE001
                     logger.info("DeviantArt: «%s» no se pudo consultar (%s)", tag, exc)
                     continue

@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.33 — la beta definitiva (33.ª entrega)
+
+- **DeviantArt**: el token se renueva solo (antes caducaba a la hora y daba «401
+  autenticación rechazada» hasta reiniciar el programa).
+
 ### 2026-10-11 · v0.1.5-beta.32 — la beta definitiva (32.ª entrega)
 
 - **DeviantArt**: el aviso dice ahora dónde poner las claves (tu config_local.py) y la
