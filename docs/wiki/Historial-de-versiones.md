@@ -1,5 +1,17 @@
 # Historial de versiones
 
+## v0.1.5-beta.50 — 11 de octubre de 2026 · la beta definitiva (50.ª entrega)
+
+**El aviso de «zonas quemadas» era un falso positivo**
+- Un sticker de Kuromi sobre fondo blanco tiene el 60-80 % de píxeles a 255 y el programa
+  lo marcaba como «aceptable: zonas quemadas», cuando es su diseño.
+- Las zonas quemadas ya **no cuentan como defecto** ni generan avisos: se siguen **midiendo**
+  y aparecen como dato en la ficha, pero la imagen se considera limpia y se entrega igual.
+- Comprobado con `Kuromi_KPJ_24.jpg` (153 px): «calidad tras reescalar: **limpia**»,
+  «realfinado final (120 %)» y salida de **2448×2448** en WebP.
+
+---
+
 ## v0.1.5-beta.49 — 11 de octubre de 2026 · la beta definitiva (49.ª entrega)
 
 **El orden correcto: primero se reescala, después se corrige**

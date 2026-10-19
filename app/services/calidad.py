@@ -238,6 +238,9 @@ def _juzgar(analisis: Analisis) -> None:
     """
     graves: list[str] = []
     leves: list[str] = []
+    # Los «recortes» (píxeles a 255) solo cuentan si NO son un fondo liso: el blanco de un
+    # sticker o de un dibujo es su diseño, no información pérdida.
+    fondo_liso = analisis.colores <= 4000
     if not analisis.plana:
         if analisis.nitidez < UMBRAL_NITIDEZ:
             graves.append("poca nitidez (borrosa o desenfocada)")
@@ -250,8 +253,9 @@ def _juzgar(analisis: Analisis) -> None:
             graves.append(comprimida)
         elif analisis.bloques > UMBRAL_BLOQUES:
             graves.append(comprimida)
-        if analisis.recortes > UMBRAL_RECORTES:
-            leves.append("zonas quemadas o empastadas")
+        # Las zonas quemadas NO se tratan como defecto: en dibujos, stickers y capturas el
+        # «blanco» es el fondo, y en una foto no se puede recuperar. Se miden y se muestran
+        # en la ficha, pero no convierten la imagen en «defectuosa» ni generan avisos.
     analisis.problemas = graves + leves
     if graves:
         analisis.veredicto = "con defectos"
@@ -341,8 +345,6 @@ def reparar(imagen, analisis: Analisis) -> tuple[object, list[str]]:
     if analisis.nitidez < UMBRAL_NITIDEZ or comprimida:
         imagen = imagen.filter(ImageFilter.UnsharpMask(radius=2, percent=160, threshold=2))
         hechos.append("recuperada la nitidez")
-    if analisis.recortes > UMBRAL_RECORTES:
-        hechos.append("aviso: había zonas quemadas (no se pueden recuperar)")
     return imagen, hechos
 
 

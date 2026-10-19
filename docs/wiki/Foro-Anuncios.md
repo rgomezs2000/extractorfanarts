@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.50 — la beta definitiva (50.ª entrega)
+
+- **Adiós al aviso «zonas quemadas»** en stickers y dibujos con fondo blanco: se mide, pero
+  no es un defecto ni bloquea nada.
+
 ### 2026-10-11 · v0.1.5-beta.49 — la beta definitiva (49.ª entrega)
 
 - **Primero reescalar y después corregir** (antes era al revés y el reescalado difuminaba
