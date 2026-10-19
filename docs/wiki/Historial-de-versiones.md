@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.47 — 11 de octubre de 2026 · la beta definitiva (47.ª entrega)
+
+**Arreglado: con «Modo IA» la imagen quedaba sin ampliar**
+- Síntoma: con IA activa, el registro decía «mejora fallida; se aplica conversión directa a
+  WebP» y la imagen se guardaba **como estaba** (sin ampliar). Sin IA, en cambio, salía bien.
+- Causa: la IA tarda segundos; en ese hueco la galería abre la imagen y Windows bloquea el
+  archivo, así que el guardado final fallaba con `OSError [Errno 22] Invalid argument` y el
+  programa caía al «WebP directo».
+- Arreglo: el guardado **reintenta hasta 3 veces** con una pausa breve. Comprobado con el
+  archivo bloqueado a propósito: ahora se guarda la imagen mejorada de verdad.
+- Si un archivo del wiki no existe (404 al bajarlo), se informa en el resumen en vez de
+  darlo por bueno.
+
+---
+
 ## v0.1.5-beta.46 — 11 de octubre de 2026 · la beta definitiva (46.ª entrega)
 
 **Sin límite de cantidad: te trae TODOS los resultados**

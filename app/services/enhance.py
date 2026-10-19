@@ -399,11 +399,32 @@ def _guardar_webp(origen: Path, destino: Path, calidad: int, tenia_alfa: bool,
             opciones["quality"] = calidad
         if _tiene_alfa(im):
             final = im.convert("RGBA")
-            final.save(destino, "WEBP", exact=True, **opciones)
+            _guardar_con_reintento(final, destino, exact=True, **opciones)
         else:
             final = im.convert("RGB")
-            final.save(destino, "WEBP", **opciones)
+            _guardar_con_reintento(final, destino, **opciones)
         return final.width, final.height
+
+
+def _guardar_con_reintento(imagen, destino: Path, **opciones) -> None:
+    """Guarda el .webp reintentando si el archivo está ocupado un instante.
+
+    La galería abre la imagen en cuanto aparece y, con «Modo IA», el proceso tarda
+    segundos: es fácil que Windows rechace la escritura justo entonces con
+    «OSError [Errno 22] Invalid argument». Se reintenta con una pausa breve: al segundo
+    intento el archivo ya está libre y se guarda la imagen mejorada de verdad.
+    """
+    ultimo: Exception | None = None
+    for intento in range(1, 4):
+        try:
+            imagen.save(destino, "WEBP", **opciones)
+            return
+        except OSError as exc:
+            ultimo = exc
+            logger.info("no se pudo guardar %s (intento %d/3): %s",
+                        Path(destino).name, intento, exc)
+            time.sleep(0.35)
+    raise ultimo if ultimo is not None else OSError("no se pudo guardar el WebP")
 
 
 def _webp_valido(destino: Path, esperado: tuple[int, int]) -> bool:

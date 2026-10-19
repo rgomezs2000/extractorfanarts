@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.47 — la beta definitiva (47.ª entrega)
+
+- **Con IA ya amplía**: el guardado del WebP reintenta si el archivo está ocupado un
+  instante (era lo que dejaba la imagen «como estaba» al usar Modo IA).
+
 ### 2026-10-11 · v0.1.5-beta.46 — la beta definitiva (46.ª entrega)
 
 - **Todos los resultados**: sin «Limitar cantidad» se piden hasta 10000 (antes 100);
