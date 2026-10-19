@@ -40,6 +40,48 @@ _SAFE_RE = re.compile(r"[^\w.\- ]+")
 _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".bmp"}
 
 
+def _bajar_original(client, art, dest) -> None:
+    """Baja la imagen probando las URLs: el ORIGINAL primero y la miniatura al final."""
+    urls = _urls_descarga(art)
+    if not urls:
+        raise ValueError("la publicación no trae ninguna URL de imagen")
+    ultimo = None
+    for indice, url in enumerate(urls):
+        try:
+            client.download_to(url, dest)
+            if indice:
+                logger.info("descargada una alternativa (el original no estaba disponible): %s", url)
+            return
+        except Exception as exc:  # noqa: BLE001
+            ultimo = exc
+            logger.debug("no se pudo bajar %s: %s", url, exc)
+    raise ultimo if ultimo is not None else RuntimeError("no se pudo descargar la imagen")
+
+
+def _urls_descarga(art) -> list[str]:
+    """URLs para bajar la imagen, SIEMPRE el original primero.
+
+    En Danbooru el archivo original (ile_url) puede venir vacío si el sitio exige
+    verificación o cuenta; antes de conformarse con la versión reducida se prueban las
+    demás que trae la respuesta de la API. La miniatura queda como último recurso.
+    """
+    crudo = getattr(art, "raw", None) or {}
+    candidatas = [
+        getattr(art, "url", ""),
+        crudo.get("file_url"),
+        crudo.get("large_file_url"),
+        crudo.get("sample_url"),
+        crudo.get("jpeg_url"),
+        getattr(art, "preview_url", ""),
+    ]
+    vistas: list[str] = []
+    for url in candidatas:
+        texto = str(url or "").strip()
+        if texto and texto not in vistas:
+            vistas.append(texto)
+    return vistas
+
+
 def _safe_name(text: str, max_len: int = 40) -> str:
     out = _SAFE_RE.sub("_", str(text)).strip("_ .")[:max_len]
     return out or "archivo"
@@ -121,7 +163,7 @@ def _procesar_obra(
         dest, mejora_meta = ugoira.procesar(client, art, dest, settings)
     else:
         dest = sub / archivo
-        client.download_to(art.url, dest)   # si ya existe, se sobreescribe (requisito)
+        _bajar_original(client, art, dest)   # original primero; si ya existe, se sobreescribe
         # Conversión/mejora: con un reintento si llegó corrupta. Los fallos de
         # mejora NO desechan el archivo (solo los corruptos).
         for intento in (1, 2):
@@ -133,7 +175,7 @@ def _procesar_obra(
                 _borrar_si_existe(dest)
                 if intento == 1:
                     logger.warning("imagen corrupta (%s); reintentando la descarga", exc)
-                    client.download_to(art.url, dest)
+                    _bajar_original(client, art, dest)
                     continue
                 raise
             except ConfigError as exc:

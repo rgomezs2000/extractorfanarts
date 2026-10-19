@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.40 — 11 de octubre de 2026 · la beta definitiva (40.ª entrega)
+
+**Siempre la imagen ORIGINAL (nunca la muestra ni la reducida)**
+- Al descargar, se prueba primero el **archivo original** (ile_url) y, si el sitio no lo
+  entrega, se va bajando por las alternativas (large_file_url, sample_url) hasta la
+  miniatura, dejando rastro en el registro de qué se usó.
+- La muestra grande de la galería ya salía del original (MUESTRAS_ORIGINALES); se mantiene.
+- En **Danbooru**, si el sitio exige comprobación (Cloudflare) o cuenta, el original puede
+  venir vacío: se resuelve la comprobación en la ventana y se reintenta. Si aun así no
+  estuviera, se usa la mayor disponible y queda anotado.
+- La **miniatura** solo se usa para la tira de resultados (es una miniatura, a propósito).
+
+---
+
 ## v0.1.5-beta.39 — 11 de octubre de 2026 · la beta definitiva (39.ª entrega)
 
 **Arreglado el falso «captcha» de tbib.org (The Big Imageboard)**
