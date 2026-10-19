@@ -68,6 +68,11 @@ Cualquier constante en MAYÚSCULAS sobreescribe app/config.py.
 Ejemplos:
     RULE34_API_KEY = "..."
     RULE34_USER_ID = "..."
+    DANBOORU_API_KEY = "..."
+    DANBOORU_LOGIN = "..."
+    DEVIANTART_CLIENT_ID = "..."
+    DEVIANTART_CLIENT_SECRET = "..."
+    PINTEREST_ACCESS_TOKEN = "..."
     CF_CLEARANCE = "..."
     CF_USER_AGENT = "..."
     X_BEARER_TOKEN = "..."
