@@ -292,14 +292,25 @@ class MediaWikiAdapter(SearchAdapter):
             for page in data.get("query", {}).get("pages", {}).values():
                 info = (page.get("imageinfo") or [{}])[0]
                 titulo = str(page.get("title", "")).replace("File:", "", 1)
-                if titulo:
-                    infos[_norm_titulo(titulo)] = info
+                if not titulo:
+                    continue
+                # La página puede enlazar un archivo BORRADO o que nunca se subió («red
+                # link»): MediaWiki lo devuelve con «missing». Se marca para no ofrecerlo
+                # y no acabar con descargas que dan 404.
+                if not info or "missing" in page or page.get("missing") is not None:
+                    if not info:
+                        info = {"missing": True}
+                infos[_norm_titulo(titulo)] = info
         return infos
 
     # ------------------------------------------------------------------ normalización
     def _normalize(self, base: str, nombre: str, needle: str,
                    info: dict | None) -> Artwork | None:
         info = info or {}
+        if info.get("missing"):
+            # Archivo que la página enlaza pero que no existe en el wiki: no se ofrece.
+            logger.info("wiki: se omite «%s» porque el archivo no existe en el wiki", nombre)
+            return None
         mime = str(info.get("mime") or "")
         if mime and not mime.startswith("image/"):
             return None  # la app es un extractor de imágenes: se ignora video/audio/pdf

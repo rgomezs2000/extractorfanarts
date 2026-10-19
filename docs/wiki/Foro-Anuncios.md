@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.48 — la beta definitiva (48.ª entrega)
+
+- **Enlaces rojos del wiki**: si el archivo no existe, no se ofrece (antes aparecía y daba
+  404 al descargar).
+
 ### 2026-10-11 · v0.1.5-beta.47 — la beta definitiva (47.ª entrega)
 
 - **Con IA ya amplía**: el guardado del WebP reintenta si el archivo está ocupado un

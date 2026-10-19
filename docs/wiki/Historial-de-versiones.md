@@ -1,5 +1,17 @@
 # Historial de versiones
 
+## v0.1.5-beta.48 — 11 de octubre de 2026 · la beta definitiva (48.ª entrega)
+
+**Los archivos que no existen en el wiki ya no se ofrecen**
+- Una página de Fandom puede enlazar un archivo **borrado** o que nunca se subió (un
+  «enlace rojo»). El programa lo listaba y luego fallaba al descargarlo con **404**
+  (`Special:FilePath/…`), contándolo como «con problemas».
+- Ahora se consulta `imageinfo` y, si el archivo está marcado como `missing`, se **omite**:
+  la búsqueda de «kuromi» en sanrio.fandom devuelve **4 resultados, todos descargables**
+  (antes 5, uno roto).
+
+---
+
 ## v0.1.5-beta.47 — 11 de octubre de 2026 · la beta definitiva (47.ª entrega)
 
 **Arreglado: con «Modo IA» la imagen quedaba sin ampliar**
