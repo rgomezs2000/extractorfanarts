@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.45 — la beta definitiva (45.ª entrega)
+
+- El **autoexamen** (`--selftest`) muestra y verifica los tramos de ampliación, para saber
+  si el ejecutable que abres es el recién compilado.
+
 ### 2026-10-11 · v0.1.5-beta.44 — la beta definitiva (44.ª entrega)
 
 - **El ancho manda**: el mínimo de 1600 px se calcula sobre el ancho (y se aplica a los dos

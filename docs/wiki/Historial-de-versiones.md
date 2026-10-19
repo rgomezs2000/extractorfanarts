@@ -1,5 +1,15 @@
 # Historial de versiones
 
+## v0.1.5-beta.45 — 11 de octubre de 2026 · la beta definitiva (45.ª entrega)
+
+**El autoexamen muestra los tramos de ampliación**
+- `Imaginteca.exe --selftest` imprime ahora las reglas vigentes y comprueba que el
+  ejecutable lleva la lógica buena: `228 px → 8x (1824)`, `120 px → 16x (1920)`,
+  `520 px → 4x (2080)`, `600 px → 3x`, `800 px → 2x`, tope 8K.
+- Sirve para confirmar de un vistazo que la copia que se abre es la recompilada.
+
+---
+
 ## v0.1.5-beta.44 — 11 de octubre de 2026 · la beta definitiva (44.ª entrega)
 
 **El mínimo de 1600 px se mide sobre el ANCHO**

@@ -164,6 +164,24 @@ def selftest() -> int:
         decir(f"  interfaz    : FALLO ({exc})")
         problemas += 1
 
+    # Reglas de ampliación vigentes: así se comprueba de un vistazo que el ejecutable
+    # lleva la lógica buena (se decide por el ANCHO y se aplica a los dos lados).
+    try:
+        from app.services import enhance
+
+        muestras = [(228, 8, 1824), (120, 16, 1920), (520, 4, 2080),
+                    (600, 3, 1800), (800, 2, 1600)]
+        decir("")
+        decir("  ampliación  : factor por ANCHO · hasta 599 px se sube para llegar a 1600 px")
+        for ancho, esperado, resultado in muestras:
+            real = enhance.factor_for(ancho)
+            marca = "OK" if real == esperado else f"¡{real}x!"
+            decir(f"     {ancho:>4} px -> {real}x (hasta {ancho * real} px) {marca}")
+        decir(f"     tope de 8K : {getattr(config, 'MAX_OUTPUT_SIDE', 7680)} px")
+    except Exception as exc:  # noqa: BLE001
+        decir(f"  ampliación  : FALLO ({exc})")
+        problemas += 1
+
     decir("")
     decir(f"RESULTADO: {'OK' if problemas == 0 else str(problemas) + ' problema(s)'}")
     logger.info("selftest: %d problema(s)", problemas)
