@@ -20,6 +20,15 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.43 — la beta definitiva (43.ª entrega)
+
+- **Pequeñas, más grandes**: hasta 599 px el factor crece para llegar al menos a 1600 px
+  (228 px → 1824 px con 8x; 120 px → 1920 px con 16x). 600–799 sigue 3x y 800+ sigue 2x.
+
+### 2026-10-11 · v0.1.5-beta.42 — la beta definitiva (42.ª entrega)
+
+- La plantilla de configuración documenta las claves de Danbooru, DeviantArt y Pinterest.
+
 ### 2026-10-11 · v0.1.5-beta.41 — la beta definitiva (41.ª entrega)
 
 - **Danbooru con cuenta**: ya manda login + pi_key y descarga el **original**, no la

@@ -1,5 +1,27 @@
 # Historial de versiones
 
+## v0.1.5-beta.43 — 11 de octubre de 2026 · la beta definitiva (43.ª entrega)
+
+**Imágenes pequeñas: el múltiplo crece hasta llegar a 1600 px**
+- Hasta 599 px ya no se aplica un 4x fijo: se sube el factor para que el resultado llegue
+  **al menos a 1600 px** (con tope de 8K):
+  `0–49 px → 32x · 50–99 → 32x · 100–199 → 16x · 200–399 → 8x · 400–599 → 4x`.
+- Ejemplos reales: **228 px → 1824 px** (antes 912 px, borrosa), 120 px → 1920 px,
+  520 px → 2080 px. 600–799 sigue en **3x** y 800 px o más en **2x** (tope 8K).
+- Se mantiene: reparación de defectos antes de ampliar, recuperación de archivos dañados,
+  **siempre WebP** con la mejor calidad (mínimo 90, sin pérdida si es plana) y **con IA o
+  sin IA**.
+
+---
+
+## v0.1.5-beta.42 — 11 de octubre de 2026 · la beta definitiva (42.ª entrega)
+
+**Plantilla de configuración al día**
+- La plantilla que se crea junto al ejecutable documenta ya las claves de **Danbooru**
+  (`DANBOORU_API_KEY` / `DANBOORU_LOGIN`), **DeviantArt** y **Pinterest**.
+
+---
+
 ## v0.1.5-beta.41 — 11 de octubre de 2026 · la beta definitiva (41.ª entrega)
 
 **Danbooru: la cuenta se usa de verdad (y entrega el ORIGINAL)**
