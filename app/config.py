@@ -434,9 +434,15 @@ WEBP_ALWAYS = True             # conversión a WebP obligatoria (nunca se guarda
 ENHANCE_DEFAULT_ON = True
 NO_UPSCALE_ABOVE = 1600        # (histórico) umbral antiguo; ahora lo gobiernan UPSCALE_BUCKETS
 UPSCALE_BUCKETS = [
-    (0, 699, 4),       # hasta 699 px           -> 4x
-    (700, 799, 3),     # de 700 a 799 px        -> 3x
-    (800, 7679, 2),    # de 800 px en adelante  -> 2x, con tope de 8K
+    # Hasta 599 px el factor CRECE para que el resultado llegue al menos a 1600 px:
+    #   0-49 px -> 32x · 50-99 -> 32x · 100-199 -> 16x · 200-399 -> 8x · 400-599 -> 4x
+    # (sin esto, una imagen de 228 px se quedaba en 912 px y se veía borrosa).
+    (0, 99, 32),       # 49 px x32 = 1568 · 99 px x32 = 3168
+    (100, 199, 16),    # 100 px x16 = 1600 · 199 px x16 = 3184
+    (200, 399, 8),     # 200 px x8  = 1600 · 399 px x8  = 3192
+    (400, 599, 4),     # 400 px x4  = 1600 · 599 px x4  = 2396
+    (600, 799, 3),     # de 600 a 799 px -> 3x
+    (800, 7679, 2),    # de 800 px en adelante -> 2x, con tope de 8K
 ]
 # Ojo: los tramos deben ser CONTIGUOS y no bajar de factor al subir de tamaño. El
 # tramo antiguo (1501-1599 -> 1x) rompía eso: una imagen de 1550 px se quedaba sin
