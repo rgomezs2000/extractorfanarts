@@ -41,12 +41,15 @@ política se aplica a las **vistas previas**.
 
 Referencia de los tramos, que no cambian:
 
-| Lado mayor | Factor |
-|---|---|
-| hasta 699 px | 4x |
-| 700–799 px | 3x |
-| 800–1599 px | 2x |
-| 1600 px o más | sin ampliar (solo WebP) |
+| Lado mayor | Factor | Ejemplo |
+|---|---|---|
+| hasta 699 px | **4x** | 699 px → 2796 px |
+| 700–799 px | **3x** | 799 px → 2397 px |
+| 800 px o más | **2x** (con tope de 8K) | 1200 px → 2400 px · 5000 px → 7680 px |
+
+Todo se amplía **siempre** (también lo que se ha reparado antes), salvo que se desmarque
+«Mejorar calidad», que entonces solo convierte a WebP. Por encima de **7680 px (8K)** no se
+amplía más: el tope manda.
 
 ## Todo se guarda en WebP
 
