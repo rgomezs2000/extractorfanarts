@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.48"
+APP_VERSION = "0.1.5-beta.49"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -477,7 +477,10 @@ WEBP_QUALITY_DEFAULT = 90     # calidad WebP configurable en la UI (1-100)
 # se decide si conviene ampliarla y con qué parámetros guardarla en WebP.
 CALIDAD_ANALISIS = True         # analizar antes de ampliar (recomendado)
 WEBP_CALIDAD_MINIMA = 90        # nunca guardar WebP con menos calidad que esto
-CALIDAD_NO_AMPLIAR = True       # no ampliar imágenes con defectos serios (borrosa/ruidosa)
+CALIDAD_NO_AMPLIAR = True
+# Tras reescalar (sobre todo 8x-16x) la imagen queda blanda: se le da un reenfoque suave
+# proporcional al aumento, y más flojo si la IA ya aportó detalle (para no crear halos).
+AFILAR_TRAS_ESCALAR = True       # no ampliar imágenes con defectos serios (borrosa/ruidosa)
 AI_EXE_OVERRIDE = ""          # ruta manual al exe IA si no está en vendor/PATH
 AI_MODEL = "realesrgan-x4plus-anime"   # modelo x4 (fanart); "realesrgan-x4plus" para realista
 # Modelo multiescala (variantes x2/x3/x4 incluidas). Se usa para 2x y 3x porque

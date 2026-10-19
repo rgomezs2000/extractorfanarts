@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.49 — la beta definitiva (49.ª entrega)
+
+- **Primero reescalar y después corregir** (antes era al revés y el reescalado difuminaba
+  la reparación), con **realfinado final** proporcional al aumento. 153 px → 2448 px.
+
 ### 2026-10-11 · v0.1.5-beta.48 — la beta definitiva (48.ª entrega)
 
 - **Enlaces rojos del wiki**: si el archivo no existe, no se ofrece (antes aparecía y daba

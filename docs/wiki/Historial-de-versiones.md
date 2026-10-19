@@ -1,5 +1,22 @@
 # Historial de versiones
 
+## v0.1.5-beta.49 — 11 de octubre de 2026 · la beta definitiva (49.ª entrega)
+
+**El orden correcto: primero se reescala, después se corrige**
+- Antes se reparaba la imagen pequeña y luego se ampliaba: el reescalado volvía a
+  difuminar lo arreglado. Ahora el orden es:
+  **reescalar (IA o Lanczos) → medir el resultado → reparar → realfinar → guardar WebP**.
+- **Realfinado final**: un reescalado grande (8x-16x) deja la imagen blanda, así que se
+  afila en proporción al aumento: 120 % con Lanczos 16x y 60 % cuando la IA ya aportó
+  detalle (para no crear halos). Configurable con `AFILAR_TRAS_ESCALAR`.
+- Comprobado con la imagen de 153 px de Fandom: **153 → 2448 px** (16x) sin IA y con IA,
+  con `realfinado final` anotado en el registro y en la ficha.
+- Las **vistas previas** siguen el mismo criterio (se redimensionan y después se reparan).
+- Aviso honesto: con fuentes muy pequeñas la IA puede inventar detalle y deformar; si se
+  nota, basta con desmarcar «Modo IA» (Lanczos + realfinado dan un resultado más fiel).
+
+---
+
 ## v0.1.5-beta.48 — 11 de octubre de 2026 · la beta definitiva (48.ª entrega)
 
 **Los archivos que no existen en el wiki ya no se ofrecen**

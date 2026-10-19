@@ -486,19 +486,11 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     # El factor se decide por el ANCHO (no por el alto): así una imagen vertical
     # también llega al ancho mínimo, que es lo que se nota en la calidad final.
     factor = factor_for(w) if mejorar else 1
-    # Análisis de calidad: mide los defectos y decide los parámetros de WebP; si hay
-    # defectos, se REPARA antes de ampliar y guardar.
-    analisis = None
-    if getattr(config, "CALIDAD_ANALISIS", True):
-        try:
-            analisis = control_calidad.analizar(path)
-            logger.info("calidad de %s: %s", path.name, analisis.como_texto())
-        except Exception:      # noqa: BLE001
-            logger.debug("no se pudo analizar la calidad de %s", path.name, exc_info=True)
-            analisis = None
     ancho_obj, alto_obj, escala_real = _tamano_objetivo(w, h, factor)
     tamano = (ancho_obj, alto_obj)
-    parametros = control_calidad.parametros_webp(analisis, calidad)
+    # El análisis fino y la reparación se hacen DESPUÉS de reescalar (ver más abajo):
+    # primero se amplía según la resolución y luego se mide y se arregla el resultado.
+    parametros = control_calidad.parametros_webp(None, calidad)
     meta: dict = {
         "original_px": f"{w}x{h}",
         "factor": factor,
@@ -506,8 +498,8 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         "modo": "",
         "calidad_webp": parametros["quality"],
         "transparencia": tiene_alfa,
-        "calidad": analisis.veredicto if analisis is not None else "",
-        "calidad_detalle": analisis.como_texto() if analisis is not None else "",
+        "calidad": "",
+        "calidad_detalle": "",
         "sin_perdida": parametros["lossless"],
         "reparacion": "",
     }
@@ -519,26 +511,7 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     temporales: list[Path] = []
     esperado = (w, h)
     mejorada: Path | None = None
-    # Origen del que se parte: el archivo (o la versión reparada, si hizo falta)
     origen = path
-
-    # 2) REPARACIÓN: si el análisis vio defectos (ruido, bloques, falta de nitidez) se
-    #    arreglan ANTES de ampliar y guardar. No se entrega una imagen en mal estado.
-    if analisis is not None and analisis.valida and analisis.problemas:
-        try:
-            Image2, _ = _pillow()
-            with Image2.open(path) as abierta:
-                abierta.load()
-                arreglada, hechos = control_calidad.reparar(abierta, analisis)
-            dir_tmp.mkdir(exist_ok=True)
-            reparada = dir_tmp / f"{path.stem}.reparada.png"
-            arreglada.save(reparada, "PNG")
-            temporales.append(reparada)
-            origen = reparada
-            meta["reparacion"] = "; ".join(hechos) or meta["reparacion"]
-            logger.info("reparada %s: %s", path.name, meta["reparacion"])
-        except Exception:  # noqa: BLE001
-            logger.debug("no se pudo reparar %s", path.name, exc_info=True)
 
     try:
         if factor > 1:
@@ -584,10 +557,70 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         else:
             meta["modo"] = "WebP directo (mejora desactivada)"
 
+        # 3) ANÁLISIS Y REPARACIÓN, ya DESPUÉS del reescalado.
+        #    Primero se amplía según la resolución (IA o Lanczos) y luego se mide el
+        #    resultado y se arregla: ruido, bloques de compresión y falta de nitidez.
+        #    Así el reenfoque actúa sobre la imagen final (antes, al revés, el reescalado
+        #    volvía a difuminar lo poco que se había arreglado).
+        analisis = None
         if mejorada is not None:
-            esperado = _guardar_webp(mejorada, out, parametros["quality"], tiene_alfa, parametros["lossless"])
-        else:
-            esperado = _guardar_webp(origen, out, parametros["quality"], tiene_alfa, parametros["lossless"])
+            origen = mejorada
+        # Reenfoque final: un reescalado grande (sobre todo Lanczos 8x-16x) deja la imagen
+        # blanda. Se aplica un afilado suave proporcional al aumento, y más flojo si la IA
+        # ya ha aportado detalle (para no crear halos).
+        if mejorar and factor > 1 and getattr(config, "AFILAR_TRAS_ESCALAR", True):
+            try:
+                ImageA, _ = _pillow()
+                with ImageA.open(origen) as abierta:
+                    abierta.load()
+                    imagen_afilada = abierta.convert(
+                        "RGBA" if _tiene_alfa(abierta) else "RGB")
+                intensidad = (max(20, min(60, 20 + 8 * factor)) if (modo_ia and mejorada)
+                              else max(30, min(120, 20 + 8 * factor)))
+                imagen_afilada = _afilar(imagen_afilada, intensidad, radio=1.4, umbral=2)
+                dir_tmp.mkdir(exist_ok=True)
+                afilada = dir_tmp / f"{path.stem}.afilada.png"
+                imagen_afilada.save(afilada, "PNG")
+                temporales.append(afilada)
+                origen = afilada
+                meta["reparacion"] = (meta["reparacion"] + "; " if meta["reparacion"]
+                                      else "") + f"realfinado final ({intensidad}%)"
+                logger.info("realfinado %s tras el reescalado (%d%%)", path.name, intensidad)
+            except Exception:  # noqa: BLE001
+                logger.debug("no se pudo afilar %s", path.name, exc_info=True)
+        if getattr(config, "CALIDAD_ANALISIS", True):
+            try:
+                analisis = control_calidad.analizar(origen)
+                logger.info("calidad tras el reescalado de %s: %s", path.name,
+                            analisis.como_texto())
+            except Exception:      # noqa: BLE001
+                logger.debug("no se pudo analizar la calidad de %s", path.name, exc_info=True)
+                analisis = None
+        if analisis is not None and analisis.valida:
+            parametros = control_calidad.parametros_webp(analisis, calidad)
+            meta["calidad"] = analisis.veredicto
+            meta["calidad_detalle"] = analisis.como_texto()
+            meta["sin_perdida"] = parametros["lossless"]
+            meta["calidad_webp"] = parametros["quality"]
+            if analisis.problemas:
+                try:
+                    Image3, _ = _pillow()
+                    with Image3.open(origen) as abierta:
+                        abierta.load()
+                        arreglada, hechos = control_calidad.reparar(abierta, analisis)
+                    dir_tmp.mkdir(exist_ok=True)
+                    reparada = dir_tmp / f"{path.stem}.reparada.png"
+                    arreglada.save(reparada, "PNG")
+                    temporales.append(reparada)
+                    origen = reparada
+                    meta["reparacion"] = ((meta["reparacion"] + "; ") if meta["reparacion"] else "") + "; ".join(hechos)
+                    logger.info("reparada %s tras el reescalado: %s", path.name,
+                                meta["reparacion"])
+                except Exception:  # noqa: BLE001
+                    logger.debug("no se pudo reparar %s", path.name, exc_info=True)
+
+        esperado = _guardar_webp(origen, out, parametros["quality"], tiene_alfa,
+                                 parametros["lossless"])
     except Exception:  # noqa: BLE001
         # Cualquier fallo en la mejora → conversión directa (segura, sin artefactos)
         logger.exception("mejora fallida; se aplica conversión directa a WebP")
