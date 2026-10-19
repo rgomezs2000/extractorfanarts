@@ -1,5 +1,35 @@
 # Calidad y mejora
 
+## El análisis de calidad (defectos medidos, no adivinados)
+
+Antes de ampliar, el programa **mira** la imagen como un inspector forense
+(idea tomada del excelente [Photo Forensics de 29a.ch](https://29a.ch/photo-forensics/)):
+mide el **ruido**, la **nitidez**, los **bloques de compresión** (tabla de cuantización del
+JPEG y bits por píxel), las **zonas quemadas** y los **colores** (para saber si es un dibujo
+de línea o una captura).
+
+Con esas medidas:
+
+- Si la imagen está **limpia**, se amplía según los tramos de siempre.
+- Si trae **defectos graves** (borrosa, ruidosa o re-comprimida), **no se amplía**: ampliarla
+  solo agrandaría los bloques y el ruido. Se guarda igualmente en WebP con la mejor calidad
+  y el motivo queda anotado en el registro.
+- Si es **plana** (captura, dibujo de línea, fondo liso), se guarda **sin pérdida**: la
+  compresión con pérdida es justo donde se notan las manchas y los bordes sucios.
+
+Parámetros de guardado: calidad WebP **mínimo 90** (WEBP_CALIDAD_MINIMA), esfuerzo máximo
+(method=6) y sin pérdida cuando toca. Tope de **8K** (7680 px) como siempre. La misma
+política se aplica a las **vistas previas**.
+
+Referencia de los tramos, que no cambian:
+
+| Lado mayor | Factor |
+|---|---|
+| hasta 699 px | 4x |
+| 700–799 px | 3x |
+| 800–1599 px | 2x |
+| 1600 px o más | sin ampliar (solo WebP) |
+
 ## Todo se guarda en WebP
 
 - **El formato es siempre `.webp`**, con la calidad que elijas en el deslizador

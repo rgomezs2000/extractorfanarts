@@ -90,10 +90,26 @@ def preparar_muestra(
                     imagen = enhance._afilar(imagen, max(20, config.SHARPEN_LANCZOS // 2))
 
             salida = io.BytesIO()
-            if tiene_alfa:
-                imagen.save(salida, "WEBP", quality=calidad, method=6, exact=True)
+            # Mismos criterios de calidad que en la descarga: si la imagen es plana
+            # (captura, dibujo de línea), se guarda SIN PÉRDIDA para que no salgan
+            # manchas ni bordes sucios en la vista previa.
+            try:
+                from . import calidad as _calidad
+
+                analisis = _calidad.analizar(datos)
+                parametros = _calidad.parametros_webp(analisis, calidad)
+            except Exception:  # noqa: BLE001
+                parametros = {"quality": calidad, "method": 6, "lossless": False}
+            opciones = {"method": 6}
+            if parametros.get("lossless"):
+                opciones["lossless"] = True
+                opciones["quality"] = 100
             else:
-                imagen.save(salida, "WEBP", quality=calidad, method=6)
+                opciones["quality"] = parametros.get("quality", calidad)
+            if tiene_alfa:
+                imagen.save(salida, "WEBP", exact=True, **opciones)
+            else:
+                imagen.save(salida, "WEBP", **opciones)
             return salida.getvalue()
     except Exception:  # noqa: BLE001
         logger.debug("no se pudo preparar la muestra (%d bytes)", len(datos), exc_info=True)

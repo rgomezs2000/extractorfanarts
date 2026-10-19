@@ -32,6 +32,7 @@ import tempfile
 from pathlib import Path
 
 from .. import config
+from . import calidad as control_calidad
 from .http_client import ConfigError
 
 logger = logging.getLogger("imaginteca")
@@ -376,16 +377,28 @@ def _ai_upscale(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None
 
 
 # ------------------------------------------------------------------ guardado y verificación
-def _guardar_webp(origen: Path, destino: Path, calidad: int, tenia_alfa: bool) -> tuple[int, int]:
-    """Convierte a WebP respetando la transparencia. Devuelve el tamaño guardado."""
+def _guardar_webp(origen: Path, destino: Path, calidad: int, tenia_alfa: bool,
+                  sin_perdida: bool = False) -> tuple[int, int]:
+    """Convierte a WebP respetando la transparencia. Devuelve el tamaño guardado.
+
+    `sin_perdida` se usa cuando la imagen es plana (capturas, dibujos de línea, fondos
+    lisos): ahí la compresión con pérdida deja manchas y bordes sucios, así que se guarda
+    sin pérdida, que además suele ocupar menos en ese tipo de imágenes.
+    """
     Image, _ = _pillow()
     with Image.open(origen) as im:
+        opciones: dict = {"method": 6}
+        if sin_perdida:
+            opciones["lossless"] = True
+            opciones["quality"] = 100
+        else:
+            opciones["quality"] = calidad
         if _tiene_alfa(im):
             final = im.convert("RGBA")
-            final.save(destino, "WEBP", quality=calidad, method=6, exact=True)
+            final.save(destino, "WEBP", exact=True, **opciones)
         else:
             final = im.convert("RGB")
-            final.save(destino, "WEBP", quality=calidad, method=6)
+            final.save(destino, "WEBP", **opciones)
         return final.width, final.height
 
 
@@ -428,15 +441,33 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
 
     longest = max(w, h)
     factor = factor_for(longest) if mejorar else 1
+    # Análisis de calidad (mismo criterio que el inspector forense): sirve para no ampliar
+    # una imagen que solo va a empeorar, y para elegir los parámetros de WebP.
+    analisis = None
+    if mejorar and getattr(config, "CALIDAD_ANALISIS", True):
+        try:
+            analisis = control_calidad.analizar(path)
+            logger.info("calidad de %s: %s", path.name, analisis.como_texto())
+            if analisis.valida:
+                factor, motivo = control_calidad.factor_recomendado(longest, factor, analisis)
+                if motivo:
+                    logger.info("calidad de %s: %s", path.name, motivo)
+        except Exception:      # noqa: BLE001
+            logger.debug("no se pudo analizar la calidad de %s", path.name, exc_info=True)
+            analisis = None
     ancho_obj, alto_obj, escala_real = _tamano_objetivo(w, h, factor)
     tamano = (ancho_obj, alto_obj)
+    parametros = control_calidad.parametros_webp(analisis, calidad)
     meta: dict = {
         "original_px": f"{w}x{h}",
         "factor": factor,
         "escala_real": round(escala_real, 3),
         "modo": "",
-        "calidad_webp": calidad,
+        "calidad_webp": parametros["quality"],
         "transparencia": tiene_alfa,
+        "calidad": analisis.veredicto if analisis is not None else "",
+        "calidad_detalle": analisis.como_texto() if analisis is not None else "",
+        "sin_perdida": parametros["lossless"],
     }
 
     out = path.with_suffix(".webp")
@@ -490,9 +521,9 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
             meta["modo"] = "WebP directo (mejora desactivada)"
 
         if mejorada is not None:
-            esperado = _guardar_webp(mejorada, out, calidad, tiene_alfa)
+            esperado = _guardar_webp(mejorada, out, parametros["quality"], tiene_alfa, parametros["lossless"])
         else:
-            esperado = _guardar_webp(path, out, calidad, tiene_alfa)
+            esperado = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
     except Exception:  # noqa: BLE001
         # Cualquier fallo en la mejora → conversión directa (segura, sin artefactos)
         logger.exception("mejora fallida; se aplica conversión directa a WebP")
@@ -500,7 +531,7 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         meta["escala_real"] = 1.0
         meta["modo"] = "WebP directo (mejora fallida; se conserva la calidad original)"
         try:
-            esperado = _guardar_webp(path, out, calidad, tiene_alfa)
+            esperado = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
         except Exception:  # noqa: BLE001
             logger.exception("tampoco se pudo convertir a WebP; se conserva el original")
             meta["modo"] += " | ERROR: no se pudo generar el WebP"
@@ -522,7 +553,7 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     if getattr(config, "VERIFY_OUTPUT", True) and not _webp_valido(out, esperado):
         logger.warning("el WebP resultante no pasó la verificación: %s", out)
         try:
-            esperado2 = _guardar_webp(path, out, calidad, tiene_alfa)
+            esperado2 = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
             if not _webp_valido(out, esperado2):
                 raise ValueError("WebP inválido tras el reintento")
         except Exception:  # noqa: BLE001

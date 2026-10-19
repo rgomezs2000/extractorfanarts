@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.37 — 11 de octubre de 2026 · la beta definitiva (37.ª entrega)
+
+**Análisis de calidad antes de ampliar (ideas del inspector forense de 29a.ch)**
+- Se **mide** la imagen antes de tocarla: nitidez, ruido, bloques de compresión (tabla de
+  cuantización del JPEG y bits por píxel), zonas quemadas y número de colores.
+- **No se amplía** una imagen con defectos graves (borrosa, ruidosa, re-comprimida):
+  ampliarla solo agrandaría los defectos; se guarda igual en WebP con la mejor calidad y
+  el motivo va al registro.
+- Las imágenes **planas** (capturas, dibujos de línea) se guardan **sin pérdida**, que es
+  donde la compresión con pérdida deja manchas y bordes sucios.
+- Parámetros: WebP **calidad mínima 90** (WEBP_CALIDAD_MINIMA), method=6, tope 8K. La
+  misma política se aplica a las **vistas previas**.
+- Los tramos de mejora no cambian: 4x hasta 699 px · 3x de 700 a 799 · 2x de 800 a 1599.
+
+---
+
 ## v0.1.5-beta.36 — 11 de octubre de 2026 · la beta definitiva (36.ª entrega)
 
 **X (Twitter): cómo filtrar con FxTwitter**
