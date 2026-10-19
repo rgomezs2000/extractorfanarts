@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.41 — la beta definitiva (41.ª entrega)
+
+- **Danbooru con cuenta**: ya manda login + pi_key y descarga el **original**, no la
+  versión reducida.
+
 ### 2026-10-11 · v0.1.5-beta.40 — la beta definitiva (40.ª entrega)
 
 - **Descarga siempre del original**: se prueba ile_url (el original) y, si no está, las

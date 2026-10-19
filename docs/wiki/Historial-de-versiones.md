@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.41 — 11 de octubre de 2026 · la beta definitiva (41.ª entrega)
+
+**Danbooru: la cuenta se usa de verdad (y entrega el ORIGINAL)**
+- La ficha de Danbooru no pedía credenciales, así que el adaptador iba como anónimo y el
+  sitio devolvía la versión reducida. Ahora envía login + pi_key de tu
+  config_local.py y devuelve **ile_url (el original)**: comprobado con una cuenta real,
+  todas las URL salen de cdn.donmai.us/original/….
+- La plantilla local trae las líneas DANBOORU_API_KEY y DANBOORU_LOGIN listas.
+- Si Danbooru pone su comprobación de Cloudflare, se resuelve una vez en la ventana y se
+  reutiliza la sesión.
+
+---
+
 ## v0.1.5-beta.40 — 11 de octubre de 2026 · la beta definitiva (40.ª entrega)
 
 **Siempre la imagen ORIGINAL (nunca la muestra ni la reducida)**

@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.40"
+APP_VERSION = "0.1.5-beta.41"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -324,7 +324,10 @@ BOORU_SITES = [
      "auth": None,
      "view_tpl": "https://hypnohub.net/index.php?page=post&s=view&id={id}"},
     {"name": "Danbooru",   "family": "danbooru", "base": "https://danbooru.donmai.us",
-     "auth": None,
+     # Con cuenta, Danbooru entrega el archivo ORIGINAL (file_url) en vez de la versión
+     # reducida, y la API deja de tratarnos como anónimos. Las claves van en
+     # config_local.py (DANBOORU_API_KEY / DANBOORU_LOGIN).
+     "auth": {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"},
      "view_tpl": "https://danbooru.donmai.us/posts/{id}"},
     {"name": "Safebooru (Donmai)", "family": "danbooru", "base": "https://safebooru.donmai.us",
      "auth": None,
