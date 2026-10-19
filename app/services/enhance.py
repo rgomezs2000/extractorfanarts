@@ -429,29 +429,44 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     mejorar = bool(settings.get("mejorar"))
     modo_ia = bool(settings.get("modo_ia"))
 
+    # El .webp conserva el nombre original aunque haya que recuperar el archivo
+    ruta_original = path
     # 1) Validación del archivo descargado (detecta truncados/corruptos)
+    meta_recuperada = False
     try:
         with _abrir_verificada(path) as im:
             w, h = im.size
             tiene_alfa = _tiene_alfa(im)
-    except ImagenCorruptaError:
-        raise
+    except ImagenCorruptaError as exc:
+        # Antes de descartarla, se intenta RECUPERAR lo que llegó (muchos «corruptos» son
+        # archivos cortados a los que les falta el final). Si se recupera, se repara y se
+        # guarda en WebP como cualquier otra: no se entrega nada en mal estado.
+        recuperada = control_calidad.recuperar_danada(path.read_bytes())
+        if recuperada is None:
+            raise
+        logger.warning("imagen dañada recuperada parcialmente: %s (%s)", path.name, exc)
+        base_recuperada = path.parent / ".tmp_upscale" / f"{path.stem}.recuperada.png"
+        base_recuperada.parent.mkdir(exist_ok=True)
+        try:
+            recuperada.save(base_recuperada, "PNG")
+        except Exception:  # noqa: BLE001
+            raise exc
+        path = base_recuperada
+        w, h = recuperada.size
+        tiene_alfa = _tiene_alfa(recuperada)
+        meta_recuperada = True
     except Exception as exc:  # noqa: BLE001
         raise ImagenCorruptaError(f"no se pudo leer la imagen descargada: {exc}") from exc
 
     longest = max(w, h)
     factor = factor_for(longest) if mejorar else 1
-    # Análisis de calidad (mismo criterio que el inspector forense): sirve para no ampliar
-    # una imagen que solo va a empeorar, y para elegir los parámetros de WebP.
+    # Análisis de calidad: mide los defectos y decide los parámetros de WebP; si hay
+    # defectos, se REPARA antes de ampliar y guardar.
     analisis = None
-    if mejorar and getattr(config, "CALIDAD_ANALISIS", True):
+    if getattr(config, "CALIDAD_ANALISIS", True):
         try:
             analisis = control_calidad.analizar(path)
             logger.info("calidad de %s: %s", path.name, analisis.como_texto())
-            if analisis.valida:
-                factor, motivo = control_calidad.factor_recomendado(longest, factor, analisis)
-                if motivo:
-                    logger.info("calidad de %s: %s", path.name, motivo)
         except Exception:      # noqa: BLE001
             logger.debug("no se pudo analizar la calidad de %s", path.name, exc_info=True)
             analisis = None
@@ -468,18 +483,41 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         "calidad": analisis.veredicto if analisis is not None else "",
         "calidad_detalle": analisis.como_texto() if analisis is not None else "",
         "sin_perdida": parametros["lossless"],
+        "reparacion": "",
     }
+    if meta_recuperada:
+        meta["reparacion"] = "archivo dañado recuperado"
 
-    out = path.with_suffix(".webp")
+    out = ruta_original.with_suffix(".webp")
     dir_tmp = path.parent / ".tmp_upscale"
     temporales: list[Path] = []
     esperado = (w, h)
     mejorada: Path | None = None
+    # Origen del que se parte: el archivo (o la versión reparada, si hizo falta)
+    origen = path
+
+    # 2) REPARACIÓN: si el análisis vio defectos (ruido, bloques, falta de nitidez) se
+    #    arreglan ANTES de ampliar y guardar. No se entrega una imagen en mal estado.
+    if analisis is not None and analisis.valida and analisis.problemas:
+        try:
+            Image2, _ = _pillow()
+            with Image2.open(path) as abierta:
+                abierta.load()
+                arreglada, hechos = control_calidad.reparar(abierta, analisis)
+            dir_tmp.mkdir(exist_ok=True)
+            reparada = dir_tmp / f"{path.stem}.reparada.png"
+            arreglada.save(reparada, "PNG")
+            temporales.append(reparada)
+            origen = reparada
+            meta["reparacion"] = "; ".join(hechos) or meta["reparacion"]
+            logger.info("reparada %s: %s", path.name, meta["reparacion"])
+        except Exception:  # noqa: BLE001
+            logger.debug("no se pudo reparar %s", path.name, exc_info=True)
 
     try:
         if factor > 1:
             dir_tmp.mkdir(exist_ok=True)
-            base_upscale, alfa_path = _preparar_para_upscale(path, dir_tmp)
+            base_upscale, alfa_path = _preparar_para_upscale(origen, dir_tmp)
             if base_upscale != path:
                 temporales.append(base_upscale)
             if alfa_path is not None:
@@ -523,7 +561,7 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         if mejorada is not None:
             esperado = _guardar_webp(mejorada, out, parametros["quality"], tiene_alfa, parametros["lossless"])
         else:
-            esperado = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
+            esperado = _guardar_webp(origen, out, parametros["quality"], tiene_alfa, parametros["lossless"])
     except Exception:  # noqa: BLE001
         # Cualquier fallo en la mejora → conversión directa (segura, sin artefactos)
         logger.exception("mejora fallida; se aplica conversión directa a WebP")
@@ -531,11 +569,10 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
         meta["escala_real"] = 1.0
         meta["modo"] = "WebP directo (mejora fallida; se conserva la calidad original)"
         try:
-            esperado = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
+            esperado = _guardar_webp(origen, out, parametros["quality"], tiene_alfa, parametros["lossless"])
         except Exception:  # noqa: BLE001
-            logger.exception("tampoco se pudo convertir a WebP; se conserva el original")
-            meta["modo"] += " | ERROR: no se pudo generar el WebP"
-            return path, meta
+            logger.exception("tampoco se pudo convertir a WebP: se descarta la imagen")
+            raise ImagenCorruptaError("no se pudo convertir la imagen a WebP")
     finally:
         for tmp in temporales:
             try:
@@ -553,17 +590,16 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     if getattr(config, "VERIFY_OUTPUT", True) and not _webp_valido(out, esperado):
         logger.warning("el WebP resultante no pasó la verificación: %s", out)
         try:
-            esperado2 = _guardar_webp(path, out, parametros["quality"], tiene_alfa, parametros["lossless"])
+            esperado2 = _guardar_webp(origen, out, parametros["quality"], tiene_alfa, parametros["lossless"])
             if not _webp_valido(out, esperado2):
                 raise ValueError("WebP inválido tras el reintento")
         except Exception:  # noqa: BLE001
-            logger.error("no se pudo generar un WebP válido; se conserva el original")
+            logger.error("no se pudo generar un WebP válido: se descarta la imagen")
             try:
                 out.unlink()
             except OSError:
                 pass
-            meta["modo"] += " | ERROR: WebP no válido (se conserva el original)"
-            return path, meta
+            raise ImagenCorruptaError("el WebP resultante no es válido")
 
     meta["resultado_px"] = f"{esperado[0]}x{esperado[1]}"
 

@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.38 — 11 de octubre de 2026 · la beta definitiva (38.ª entrega)
+
+**Se repara y se mejora antes de entregar: nunca una imagen en mal estado**
+- Si el análisis detecta defectos, la imagen **se arregla antes** de ampliarla y guardarla:
+  se reduce el ruido, se alisan los bloques de compresión y se recupera la nitidez; después
+  se amplía según los tramos de siempre.
+- **Archivos dañados o truncados**: se intenta recuperar lo que llegó; si se recupera, se
+  repara y se guarda igual. Si no, se descarta.
+- **Siempre WebP**, con la mejor calidad y sin pérdida si la imagen es plana. **Nunca jpg ni
+  png**: si no se puede generar un WebP válido, la imagen se descarta (no se entrega el
+  original).
+- La misma reparación se aplica a las **vistas previas**.
+
+---
+
 ## v0.1.5-beta.37 — 11 de octubre de 2026 · la beta definitiva (37.ª entrega)
 
 **Análisis de calidad antes de ampliar (ideas del inspector forense de 29a.ch)**

@@ -89,6 +89,15 @@ def preparar_muestra(
                     # afilado suave: compensa el suavizado del reescalado
                     imagen = enhance._afilar(imagen, max(20, config.SHARPEN_LANCZOS // 2))
 
+            # REPARACIÓN: una vista previa tampoco se muestra en mal estado.
+            try:
+                from . import calidad as _calidad
+
+                analisis = _calidad.analizar(datos)
+                if analisis.valida and analisis.problemas:
+                    imagen, _hechos = _calidad.reparar(imagen, analisis)
+            except Exception:  # noqa: BLE001
+                pass
             salida = io.BytesIO()
             # Mismos criterios de calidad que en la descarga: si la imagen es plana
             # (captura, dibujo de línea), se guarda SIN PÉRDIDA para que no salgan

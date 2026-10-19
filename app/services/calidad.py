@@ -307,3 +307,63 @@ def parametros_webp(analisis: Analisis | None, calidad: int) -> dict:
 def analizar_ruta(ruta: Path) -> Analisis:
     """Atajo para analizar un archivo."""
     return analizar(Path(ruta))
+
+
+# ---------------------------------------------------------------------- reparación
+def reparar(imagen, analisis: Analisis) -> tuple[object, list[str]]:
+    """Arregla lo que se pueda: ruido, bloques de compresión y falta de nitidez.
+
+    Se aplica **siempre antes** de ampliar y guardar: no se entrega una imagen en mal
+    estado. Devuelve la imagen arreglada y la lista de lo que se hizo (para el registro).
+    """
+    from PIL import ImageFilter
+
+    hechos: list[str] = []
+    if analisis is None or not analisis.valida:
+        return imagen, hechos
+
+    pixeles = max(1, imagen.size[0] * imagen.size[1])
+    # 1) Ruido / grano: un filtro de mediana quita el grano sin destrozar los bordes.
+    if analisis.ruido > UMBRAL_RUIDO and pixeles <= 25_000_000:
+        imagen = imagen.filter(ImageFilter.MedianFilter(3))
+        hechos.append("reducido el ruido")
+    # 2) Bloques de compresión: un desenfoque mínimo rompe la rejilla del JPEG y luego
+    #    se recupera la definición; así los cuadritos dejan de verse.
+    comprimida = (
+        analisis.bloques > UMBRAL_BLOQUES
+        or analisis.cuantizacion > UMBRAL_CUANTIZACION
+        or (analisis.formato == "JPEG" and analisis.bpp and analisis.bpp < UMBRAL_BPP)
+    )
+    if comprimida:
+        imagen = imagen.filter(ImageFilter.GaussianBlur(0.6))
+        hechos.append("alisados los bloques de compresión")
+    # 3) Nitidez: reenfoque suave (sin halos) si estaba borrosa o si se acaba de alisar.
+    if analisis.nitidez < UMBRAL_NITIDEZ or comprimida:
+        imagen = imagen.filter(ImageFilter.UnsharpMask(radius=2, percent=160, threshold=2))
+        hechos.append("recuperada la nitidez")
+    if analisis.recortes > UMBRAL_RECORTES:
+        hechos.append("aviso: había zonas quemadas (no se pueden recuperar)")
+    return imagen, hechos
+
+
+def recuperar_danada(datos) -> object | None:
+    """Intenta abrir una imagen dañada o truncada (recupera lo que haya), o None.
+
+    Muchos archivos «corruptos» solo están **cortados**: Pillow puede leer lo que llegó
+    y reconstruir la imagen. Así no se descarga otra vez lo que ya tenemos.
+    """
+    try:
+        from PIL import Image, ImageFile
+    except ImportError:  # pragma: no cover
+        return None
+    anterior = ImageFile.LOAD_TRUNCATED_IMAGES
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    try:
+        origen = io.BytesIO(datos) if isinstance(datos, (bytes, bytearray)) else str(datos)
+        imagen = Image.open(origen)
+        imagen.load()
+        return imagen
+    except Exception:  # noqa: BLE001
+        return None
+    finally:
+        ImageFile.LOAD_TRUNCATED_IMAGES = anterior

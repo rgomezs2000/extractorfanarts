@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.38 — la beta definitiva (38.ª entrega)
+
+- **Nada se entrega en mal estado**: se repara (ruido, bloques, nitidez) y se amplía; los
+  archivos truncados se recuperan; si no hay arreglo, se descartan. Siempre en **WebP**,
+  nunca jpg ni png.
+
 ### 2026-10-11 · v0.1.5-beta.37 — la beta definitiva (37.ª entrega)
 
 - **Calidad medida, no adivinada**: antes de ampliar se comprueba nitidez, ruido, bloques

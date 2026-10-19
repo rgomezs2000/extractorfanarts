@@ -1,5 +1,23 @@
 # Calidad y mejora
 
+## Regla firme: nunca se entrega una imagen en mal estado
+
+Si el análisis detecta defectos, la imagen **se repara antes** de mostrarla o guardarla:
+
+1. **Ruido/grano** → se reduce con un filtro de mediana (sin destrozar los bordes).
+2. **Bloques de compresión** → se alisan y después se recupera la definición.
+3. **Falta de nitidez** → reenfoque suave, sin halos.
+4. Después, **se amplía** según los tramos de siempre (4x / 3x / 2x, tope 8K).
+
+Además:
+
+- **Archivos dañados o truncados**: se intenta **recuperar** lo que llegó. Si sale algo, se
+  repara y se guarda igual. Si no hay nada que recuperar, **se descarta**.
+- **Siempre WebP**: el resultado final es .webp, comprimido con la mejor calidad (mínimo
+  90 y method=6) y sin pérdida cuando la imagen es plana. **Nunca jpg ni png.**
+- La **misma regla** se aplica a las **vistas previas**: se repara la muestra antes de
+  mostrarla.
+
 ## El análisis de calidad (defectos medidos, no adivinados)
 
 Antes de ampliar, el programa **mira** la imagen como un inspector forense
