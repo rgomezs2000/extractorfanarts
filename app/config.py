@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.45"
+APP_VERSION = "0.1.5-beta.46"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -371,7 +371,10 @@ ALLOW_ADULT_RATINGS = ["general", "sensitive", "questionable", "explicit"]
 # descargan obras con licencia permisiva explícita.
 REQUIRE_FREE_LICENSE = False
 
-MAX_RESULTS_PER_SOURCE = 100
+# Tope de resultados por fuente cuando NO se marca «Limitar cantidad».
+# Es solo una red de seguridad (el adaptador para cuando el sitio se acaba): si buscas algo
+# con 500 o 1000 imágenes, te las trae todas. Ajustable en config_local.py.
+MAX_RESULTS_PER_SOURCE = 10000
 MAX_PREVIEW_BYTES = 8 * 1024 * 1024  # tope para cada imagen de ejemplo
 
 # Búsqueda social con filtros combinados (usuario + palabras clave + hashtags).
@@ -379,8 +382,8 @@ MAX_PREVIEW_BYTES = 8 * 1024 * 1024  # tope para cada imagen de ejemplo
 # los filtros en local: más páginas = más probabilidad de encontrar coincidencias
 # (p. ej. un hashtag concreto entre las publicaciones de un artista).
 SOCIAL_PAGINA = 40             # publicaciones por petición
-SOCIAL_PAGINAS = 6             # páginas máximas por búsqueda
-SOCIAL_MAX_CANDIDATOS = 240    # publicaciones que se revisan como máximo
+SOCIAL_PAGINAS = 30            # páginas máximas por búsqueda
+SOCIAL_MAX_CANDIDATOS = 2000   # publicaciones que se revisan como máximo
 # Con VARIOS valores dentro de un mismo campo (varios hashtags o varias palabras clave):
 #   "alguno"  → vale cualquiera de ellos (unión: más resultados)   ← por defecto
 #               p. ej. «#lola_loud #the_loud_house» = arte con una u otra etiqueta

@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.46 — la beta definitiva (46.ª entrega)
+
+- **Todos los resultados**: sin «Limitar cantidad» se piden hasta 10000 (antes 100);
+  Safebooru «kuromi» da ahora 1112. Con el límite marcado, hasta 100000.
+
 ### 2026-10-11 · v0.1.5-beta.45 — la beta definitiva (45.ª entrega)
 
 - El **autoexamen** (`--selftest`) muestra y verifica los tramos de ampliación, para saber

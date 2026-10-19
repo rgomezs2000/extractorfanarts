@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.46 — 11 de octubre de 2026 · la beta definitiva (46.ª entrega)
+
+**Sin límite de cantidad: te trae TODOS los resultados**
+- El tope interno de 100 resultados por fuente recortaba las búsquedas. Ahora, si **no**
+  marcas «Limitar cantidad», se piden hasta **10000** (solo como red de seguridad: el
+  adaptador para cuando el sitio se acaba).
+- Comprobado: Safebooru «kuromi» → **1112** resultados (antes 100) y «1girl» → 10000.
+- Si marcas **Limitar cantidad**, se pide exactamente esa cantidad: el control admite hasta
+  **100000** (antes 1000).
+- También se amplían las páginas de redes sociales (`SOCIAL_PAGINAS` 6 → 30 y
+  `SOCIAL_MAX_CANDIDATOS` 240 → 2000). Todo ajustable en `config_local.py`.
+
+---
+
 ## v0.1.5-beta.45 — 11 de octubre de 2026 · la beta definitiva (45.ª entrega)
 
 **El autoexamen muestra los tramos de ampliación**

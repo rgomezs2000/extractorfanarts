@@ -277,7 +277,7 @@ class MainWindow(QMainWindow):
             "descarga todo lo encontrado (hasta el tope de seguridad de config.py)."
         )
         self.spin_cantidad = QSpinBox()
-        self.spin_cantidad.setRange(1, 1000)
+        self.spin_cantidad.setRange(1, 100000)
         self.spin_cantidad.setValue(50)
         self.spin_cantidad.setEnabled(False)
         self.chk_limite.toggled.connect(self.spin_cantidad.setEnabled)
