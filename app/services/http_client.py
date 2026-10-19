@@ -13,6 +13,7 @@ claves enmascaradas) y avisa a la UI mediante `on_event`.
 """
 from __future__ import annotations
 
+import json
 import logging
 import threading
 import time
@@ -46,10 +47,20 @@ _ESTADOS_CON_RETO = (200, 401, 403, 429, 503)
 # Señales que aparecen en una página de verificación anti-bot (Cloudflare y similares).
 # Un HTML sin ninguna de ellas es un error HTTP normal (404, CDN, permisos…) y no debe
 # confundirse con un CAPTCHA ni sugerir tocar BROWSER_DOMAINS.
+# Señales de una página de verificación. NO incluye «captcha» ni «cloudflare» a secas:
+# esas palabras salen en pies de página y hasta en etiquetas de un post, y daban falsos
+# positivos (tbib.org abría la ventana de comprobación sin necesitarla).
 _SEÑALES_DE_VERIFICACION = (
-    "captcha", "cloudflare", "just a moment", "attention required", "checking your browser",
+    "just a moment", "attention required", "checking your browser",
     "cf-chl", "challenge-platform", "ddos protection", "enable javascript and cookies",
     "verify you are human", "unusual traffic",
+)
+# Señales inequívocas de un reto servido en la página (widgets y scripts reales). La
+# palabra «captcha» suelta NO basta: aparece en páginas normales y hasta en etiquetas.
+_MARCAS_FUERTES_RETO = (
+    "cf-chl", "challenge-platform", "challenges.cloudflare.com", "turnstile",
+    "hcaptcha", "g-recaptcha", "cf-challenge", "captcha-container", "captcha_box",
+    "verify you are human", "checking your browser",
 )
 
 
@@ -124,15 +135,22 @@ def _challenge_kind(resp) -> str | None:
     if "html" not in ctype:
         return None
     try:
-        cuerpo = resp.text[:8000].lower()
+        cuerpo = resp.text[:8000]
     except Exception:  # noqa: BLE001
         return None
-    servidor = (resp.headers.get("server") or "").lower()
-    if "captcha" in cuerpo:
+    # Muchos sitios (Gelbooru 0.2 y sus clones, tbib.org…) sirven JSON como «text/html».
+    # Si el cuerpo es JSON no es una página de verificación: es la respuesta buena.
+    if cuerpo.lstrip()[:1] in ("[", "{"):
+        return None
+    bajo = cuerpo.lower()
+    # Solo cuentan las señales FUERTES (widgets y scripts de verificación reales), no la
+    # simple aparición de la palabra «captcha» o «cloudflare» en cualquier texto.
+    cabecera = bajo[:6000]
+    if any(marca in cabecera for marca in _MARCAS_FUERTES_RETO):
         return "CAPTCHA de Cloudflare"
-    if "cloudflare" in cuerpo or "cloudflare" in servidor:
+    if "cloudflare" in (resp.headers.get("server") or "").lower():
         return "bloqueo de Cloudflare"
-    if any(señal in cuerpo for señal in _SEÑALES_DE_VERIFICACION):
+    if any(señal in cabecera for señal in _SEÑALES_DE_VERIFICACION):
         return "página de verificación"
     return None
 
@@ -468,6 +486,17 @@ class PoliteClient:
             vacio = False
         if vacio and 200 <= int(getattr(resp, "status_code", 200) or 0) < 300:
             raise SinResultados(f"{descripcion}: el sitio no devolvió resultados")
+        # Un cuerpo que EMPIEZA como JSON se acepta aunque el sitio lo sirva como
+        # «text/html» (Gelbooru 0.2 y clones como tbib.org lo hacen): es la respuesta buena.
+        try:
+            _texto = (resp.text or "").lstrip()
+        except Exception:  # noqa: BLE001
+            _texto = ""
+        if _texto[:1] in ("[", "{"):
+            try:
+                return json.loads(_texto)
+            except Exception:  # noqa: BLE001
+                pass
         if "html" in ctype:
             # Se mira el TÍTULO de la página: así el aviso dice qué pasa de verdad
             # («Verification» o «Just a moment…» = el sitio pide comprobación anti-bot;

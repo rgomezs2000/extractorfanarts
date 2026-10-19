@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.39 — 11 de octubre de 2026 · la beta definitiva (39.ª entrega)
+
+**Arreglado el falso «captcha» de tbib.org (The Big Imageboard)**
+- tbib no pide ninguna comprobación. Pasaba dos cosas: sirve su **JSON como 	ext/html**
+  (como otros Gelbooru 0.2) y el detector se disparaba con que apareciera la palabra
+  captcha en cualquier texto (¡hasta en una etiqueta de un post!).
+- Ahora: un cuerpo que **empieza como JSON** se acepta aunque el Content-Type diga HTML, y
+  solo se considera verificación cuando hay **señales reales** (widgets y scripts de
+  Cloudflare/Turnstile/hCaptcha, «Just a moment…», etc.).
+- Comprobado: tbib.org devuelve sus publicaciones, una Cloudflare real se sigue detectando y
+  una página normal que menciona «captcha» ya no abre la ventana.
+
+---
+
 ## v0.1.5-beta.38 — 11 de octubre de 2026 · la beta definitiva (38.ª entrega)
 
 **Se repara y se mejora antes de entregar: nunca una imagen en mal estado**

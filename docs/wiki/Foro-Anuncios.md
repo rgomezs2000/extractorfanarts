@@ -20,6 +20,12 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.39 — la beta definitiva (39.ª entrega)
+
+- **tbib.org ya no pide captcha**: era un falso positivo (servía JSON como 	ext/html y la
+  palabra «captcha» aparecía en el contenido). Se acepta el JSON y solo se avisa cuando hay
+  señales reales de verificación.
+
 ### 2026-10-11 · v0.1.5-beta.38 — la beta definitiva (38.ª entrega)
 
 - **Nada se entrega en mal estado**: se repara (ruido, bloques, nitidez) y se amplía; los
