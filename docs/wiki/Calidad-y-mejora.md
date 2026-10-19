@@ -18,6 +18,16 @@ Además:
 - La **misma regla** se aplica a las **vistas previas**: se repara la muestra antes de
   mostrarla.
 
+### Con IA o sin IA: mismo resultado, mismas reglas
+
+- **Sin IA** (por defecto, o si el motor no está instalado): Lanczos + reenfoque suave.
+  Siempre funciona y siempre amplía.
+- **Con IA** (casilla «Modo IA» y motor disponible): Real-ESRGAN, con **validación de
+  tamaño y de contenido** de la salida; si el motor falla, tarda demasiado o no está, se
+  sigue igualmente con Lanczos y se avisa en el registro.
+- En **ambos** casos: la reparación va **antes**, se aplican los **mismos tramos**
+  (4x/3x/2x, tope 8K) y el resultado es **siempre .webp** con la mejor calidad.
+
 ## El análisis de calidad (defectos medidos, no adivinados)
 
 Antes de ampliar, el programa **mira** la imagen como un inspector forense
