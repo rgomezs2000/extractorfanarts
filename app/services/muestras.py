@@ -63,7 +63,7 @@ def preparar_muestra(
         with Image.open(io.BytesIO(datos)) as abierta:
             ancho, alto = abierta.size
             tiene_alfa = enhance._tiene_alfa(abierta)
-            factor = enhance.factor_for(max(ancho, alto)) if mejorar else 1
+            factor = enhance.factor_for(ancho) if mejorar else 1
 
             # Tamaño objetivo: el factor de mejora, pero SIEMPRE acotado al tope de la
             # muestra (una vista previa no necesita 4000 px, y guardarla en memoria sí

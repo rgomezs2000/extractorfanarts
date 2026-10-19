@@ -52,10 +52,14 @@ def _pillow():
         )
 
 
-def factor_for(longest: int) -> int:
-    """Factor de upscaling según el lado mayor (reglas de UPSCALE_BUCKETS)."""
+def factor_for(ancho: int) -> int:
+    """Factor de ampliación según el ANCHO de la imagen (reglas de UPSCALE_BUCKETS).
+
+    El mínimo de 1600 px se mide sobre el ancho: el factor se aplica luego a los dos
+    lados, así una imagen vertical también gana ancho de verdad.
+    """
     for low, high, factor in config.UPSCALE_BUCKETS:
-        if low <= longest <= high:
+        if low <= ancho <= high:
             return factor
     return 1
 
@@ -458,8 +462,9 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
     except Exception as exc:  # noqa: BLE001
         raise ImagenCorruptaError(f"no se pudo leer la imagen descargada: {exc}") from exc
 
-    longest = max(w, h)
-    factor = factor_for(longest) if mejorar else 1
+    # El factor se decide por el ANCHO (no por el alto): así una imagen vertical
+    # también llega al ancho mínimo, que es lo que se nota en la calidad final.
+    factor = factor_for(w) if mejorar else 1
     # Análisis de calidad: mide los defectos y decide los parámetros de WebP; si hay
     # defectos, se REPARA antes de ampliar y guardar.
     analisis = None

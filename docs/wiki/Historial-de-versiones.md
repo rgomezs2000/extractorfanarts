@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.44 — 11 de octubre de 2026 · la beta definitiva (44.ª entrega)
+
+**El mínimo de 1600 px se mide sobre el ANCHO**
+- El factor de ampliación se decide por el **ancho** de la imagen (no por el lado mayor) y
+  se aplica a los dos lados: así una imagen vertical gana ancho de verdad, que es lo que
+  se nota en la calidad final.
+- Ejemplo: **228×600 → 1824×4800** (8x). Antes mandaba el alto (600 px) y quedaba en
+  684×1800 (3x), más estrecha de lo deseado.
+- Los tramos siguen igual, ahora sobre el ancho: hasta 599 px se sube el factor para
+  llegar a 1600 px de ancho; 600–799 → 3x; 800 px o más → 2x; tope 8K.
+
+---
+
 ## v0.1.5-beta.43 — 11 de octubre de 2026 · la beta definitiva (43.ª entrega)
 
 **Imágenes pequeñas: el múltiplo crece hasta llegar a 1600 px**

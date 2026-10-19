@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.44 — la beta definitiva (44.ª entrega)
+
+- **El ancho manda**: el mínimo de 1600 px se calcula sobre el ancho (y se aplica a los dos
+  lados), así las imágenes verticales también ganan ancho. 228×600 → 1824×4800.
+
 ### 2026-10-11 · v0.1.5-beta.43 — la beta definitiva (43.ª entrega)
 
 - **Pequeñas, más grandes**: hasta 599 px el factor crece para llegar al menos a 1600 px
