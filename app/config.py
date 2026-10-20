@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.51"
+APP_VERSION = "0.1.5-beta.52"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -490,10 +490,18 @@ CALIDAD_NO_AMPLIAR = True
 # proporcional al aumento, y más flojo si la IA ya aportó detalle (para no crear halos).
 AFILAR_TRAS_ESCALAR = True       # no ampliar imágenes con defectos serios (borrosa/ruidosa)
 AI_EXE_OVERRIDE = ""          # ruta manual al exe IA si no está en vendor/PATH
-AI_MODEL = "realesrgan-x4plus-anime"   # modelo x4 (fanart); "realesrgan-x4plus" para realista
+# Modelo de IA: se usa el de ANIME/CARTOON (RealESRGAN_x4plus_anime_6B, el fichero
+# realesrgan-x4plus-anime del motor ncnn). Es el que da buen resultado con dibujo 2D y
+# con 3D no realista, y es más rápido (6 bloques). realesrgan-x4plus es el de fotos
+# reales: solo tiene sentido si algún día quieres ampliar fotografías.
+AI_MODEL = "realesrgan-x4plus-anime"
 # Modelo multiescala (variantes x2/x3/x4 incluidas). Se usa para 2x y 3x porque
 # los modelos x4 con -s 2/3 producen imágenes corruptas en realesrgan-ncnn-vulkan.
 AI_MODEL_ESCALA = "realesr-animevideov3"
+# Tarjeta gráfica a usar por el motor (Vulkan). Vacío = la que elija el sistema (lo normal).
+# El motor realesrgan-ncnn-vulkan funciona con NVIDIA, AMD/ATI e Intel; si se indica un
+# número (0, 1, 2…) se pasa con -g para forzar esa GPU.
+AI_GPU = ""
 
 # Definición (afilado): porcentaje de UnsharpMask aplicado tras el upscaling.
 SHARPEN_LANCZOS = 20   # Lanczos: afilado SUAVE. Medido sobre líneas duras: con 65 el

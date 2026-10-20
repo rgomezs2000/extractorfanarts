@@ -260,6 +260,9 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
                  modelo: str | None, w: int, h: int) -> Path | None:
     """Ejecuta el motor IA y valida tamaño y contenido de la salida."""
     cmd = [str(exe), "-i", str(entrada), "-o", str(salida), "-s", str(escala), "-f", "png"]
+    gpu = str(getattr(config, "AI_GPU", "") or "").strip()
+    if gpu:
+        cmd += ["-g", gpu]   # forzar tarjeta gráfica concreta (Vulkan)
     if modelo and "realesrgan" in exe.name.lower():
         cmd += ["-n", modelo]
 

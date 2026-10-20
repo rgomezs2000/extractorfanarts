@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.52 — la beta definitiva (52.ª entrega)
+
+- **IA para anime/cartoon**: modelo **RealESRGAN_x4plus_anime_6B** y motor **Vulkan**, que
+  vale para NVIDIA, AMD/ATI e Intel. `AI_GPU` permite elegir tarjeta.
+
 ### 2026-10-11 · v0.1.5-beta.51 — la beta definitiva (51.ª entrega)
 
 - **Inkbunny** entra como red social: búsqueda por texto o `@usuario` con su API oficial.

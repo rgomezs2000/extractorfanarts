@@ -137,3 +137,16 @@ modelo con ella.
 
 **Siguiente:** [Datasets para IA](Datasets-IA) ·
 **¿Ves artefactos o halos?** [Problemas frecuentes](Problemas-frecuentes)
+
+## Motor de IA
+
+- **Modelo**: `RealESRGAN_x4plus_anime_6B` (fichero `realesrgan-x4plus-anime` del motor
+  ncnn). Pensado para **dibujo 2D y 3D no realista**; `realesrgan-x4plus` es el de fotos
+  reales y solo se usaría para esas.
+- **Motor**: `realesrgan-ncnn-vulkan`, que usa **Vulkan**. Funciona con **NVIDIA, AMD/ATI
+  e Intel**: no hace falta CUDA ni una marca concreta. Para forzar una tarjeta, pon su
+  índice en `AI_GPU` (`"0"`, `"1"`…); vacío = la que elija el sistema.
+- **Si la IA falla** (sin Vulkan, sin modelo o error del motor), se sigue con
+  **Lanczos + realfinado**: el resultado es algo menos detallado pero nunca falla.
+- El orden es siempre: reescalar → medir → reparar → realfinar → guardar en WebP.
+

@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.52 — 11 de octubre de 2026 · la beta definitiva (52.ª entrega)
+
+**Motor de IA: modelo de anime/cartoon y compatible con todas las tarjetas**
+- El modelo queda fijado y documentado en **RealESRGAN_x4plus_anime_6B** (el fichero
+  `realesrgan-x4plus-anime` del motor ncnn): es el que mejor va con dibujo 2D y 3D no
+  realista, y es más rápido (6 bloques). `realesrgan-x4plus` (fotos reales) sigue
+  disponible en `config_local.py` por si algún día hace falta.
+- El motor es **`realesrgan-ncnn-vulkan`**, que usa **Vulkan**: funciona con tarjetas
+  **NVIDIA, AMD (y ATI) e Intel**, sin necesidad de CUDA ni de drivers de un fabricante
+  concreto. Con `AI_GPU` se puede forzar una tarjeta concreta (`-g 0`, `-g 1`…).
+- Si la IA no puede ejecutarse en ese equipo (sin Vulkan, sin modelo o con un fallo), el
+  programa sigue con **Lanczos + realfinado**: nunca se queda sin imagen.
+- Comprobado: `228 px → 1824 px` con `IA 8x` y el modelo anime, más `realfinado final`.
+
+---
+
 ## v0.1.5-beta.51 — 11 de octubre de 2026 · la beta definitiva (51.ª entrega)
 
 **Nueva plataforma: Inkbunny (inkbunny.net)**
