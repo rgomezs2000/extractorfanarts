@@ -1,5 +1,22 @@
 # Historial de versiones
 
+## v0.1.5-beta.58 — 11 de octubre de 2026 · la beta definitiva (58.ª entrega)
+
+**Asistente de Pixiv: distingue el `code_challenge` del `code`**
+- Síntoma: al pegar una URL como
+  `accounts.pixiv.net/post-redirect?return_to=…code_challenge=…`, el asistente tomaba el
+  **`code_challenge`** como si fuera el código y Pixiv respondía
+  `HTTP 400 · error 918 (不正なリクエスト)`.
+- Ahora, si el valor pegado es el `code_challenge` de **esta** ejecución, se **detecta** y
+  se explica: es parte del enlace de INICIO, no vale; hay que llegar a la URL final con
+  `code=`.
+- Las instrucciones del PASO 2 avisan de las dos pistas que delatan que aún no se ha
+  terminado: `accounts.pixiv.net/post-redirect` o `code_challenge=`.
+- Comprobado: con la URL intermedia el asistente guía al enlace de continuación; con un
+  callback real extrae el código; con el challenge, lo rechaza y lo explica.
+
+---
+
 ## v0.1.5-beta.57 — 11 de octubre de 2026 · la beta definitiva (57.ª entrega)
 
 **El estado de las redes muestra TODAS las instancias del fediverso**

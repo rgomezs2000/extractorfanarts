@@ -240,9 +240,13 @@ def main() -> int:
         print()
         print("   " + url)
         print()
-        print("PASO 2 — Al final el navegador muestra una página de error de Pixiv (normal).")
-        print("         Copia la URL COMPLETA de la barra de direcciones: debe contener")
-        print("         'code=...'.")
+        print("PASO 2 — Inicia sesión con tu cuenta. Al final el navegador muestra una")
+        print("         página de error de Pixiv (es normal). Copia la URL COMPLETA de la")
+        print("         barra de direcciones: debe contener 'code='.")
+        print()
+        print("         Si la URL dice 'accounts.pixiv.net/post-redirect' o lleva")
+        print("         'code_challenge=', AÚN NO has terminado: abre el enlace, inicia")
+        print("         sesión y espera a llegar a la URL con 'code='.")
         print()
         print("⚠️  NO CIERRES ESTA VENTANA hasta pegar el código: el enlace de arriba")
         print("    solo es válido con ESTA ejecución (si la reinicias, cambia).")
@@ -256,6 +260,17 @@ def main() -> int:
                 return 1
             code, continuacion = _clasificar(entrada)
             if code:
+                # Error típico: pegar el code_challenge del enlace de inicio, que también
+                # parece un código. Se compara con el de ESTA ejecución (es único) y se
+                # explica, en vez de mandarlo a Pixiv para recibir un 400.
+                if code.strip() == challenge:
+                    print()
+                    print("[aviso] Ese valor es el 'code_challenge': forma parte del enlace de")
+                    print("        INICIO, no es el código. Pixiv lo rechaza (error 918).")
+                    print("        Completa el login y copia la URL FINAL, la que trae")
+                    print("        'code=' (no 'code_challenge=').")
+                    code = ""
+                    continue
                 break
             if continuacion:
                 print()

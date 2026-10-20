@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.58 — la beta definitiva (58.ª entrega)
+
+- **Asistente de Pixiv**: ya no confunde el `code_challenge` con el código (era el 400
+  con error 918) y guía paso a paso hasta la URL con `code=`.
+
 ### 2026-10-11 · v0.1.5-beta.57 — la beta definitiva (57.ª entrega)
 
 - **Estado del fediverso completo**: se comprueban las instancias una a una (baraag.net,
