@@ -178,6 +178,10 @@ def selftest() -> int:
             marca = "OK" if real == esperado else f"¡{real}x!"
             decir(f"     {ancho:>4} px -> {real}x (hasta {ancho * real} px) {marca}")
         decir(f"     tope de 8K : {getattr(config, 'MAX_OUTPUT_SIDE', 7680)} px")
+        from app.services import enhance as _enhance
+        _gpus = _enhance.gpus_detectadas()
+        decir(f"     modelo IA  : {getattr(config, 'AI_MODEL', '?')} (anime 6B)")
+        decir(f"     GPU        : {', '.join(_gpus) if _gpus else '(no detectada)'}")
     except Exception as exc:  # noqa: BLE001
         decir(f"  ampliación  : FALLO ({exc})")
         problemas += 1

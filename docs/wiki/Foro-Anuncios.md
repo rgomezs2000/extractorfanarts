@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.53 — la beta definitiva (53.ª entrega)
+
+- **Transparencia del motor**: el registro y el autoexamen dicen qué modelo de IA y qué
+  tarjeta gráfica se están usando.
+
 ### 2026-10-11 · v0.1.5-beta.52 — la beta definitiva (52.ª entrega)
 
 - **IA para anime/cartoon**: modelo **RealESRGAN_x4plus_anime_6B** y motor **Vulkan**, que

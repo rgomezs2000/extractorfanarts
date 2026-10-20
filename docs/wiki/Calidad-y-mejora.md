@@ -149,4 +149,5 @@ modelo con ella.
 - **Si la IA falla** (sin Vulkan, sin modelo o error del motor), se sigue con
   **Lanczos + realfinado**: el resultado es algo menos detallado pero nunca falla.
 - El orden es siempre: reescalar → medir → reparar → realfinar → guardar en WebP.
+- **Qué se está usando**: el registro anota en cada ampliación con IA `IA: modelo … · GPU detectada: …`, y `--selftest` muestra el modelo y la tarjeta al arrancar.
 

@@ -1,5 +1,16 @@
 # Historial de versiones
 
+## v0.1.5-beta.53 — 11 de octubre de 2026 · la beta definitiva (53.ª entrega)
+
+**Se puede ver qué modelo y qué tarjeta usa la IA**
+- Al ampliar con IA, el registro deja una línea clara:
+  `IA: modelo realesrgan-x4plus-anime · GPU detectada: Intel(R) UHD Graphics`.
+- El **autoexamen** (`Imaginteca.exe --selftest`) muestra ahora también:
+  `modelo IA: realesrgan-x4plus-anime (anime 6B)` y `GPU: …`, además de los tramos.
+- Comprobado: 200 px con IA → 1600 px (`IA 8x`) y la GPU anotada en el resultado.
+
+---
+
 ## v0.1.5-beta.52 — 11 de octubre de 2026 · la beta definitiva (52.ª entrega)
 
 **Motor de IA: modelo de anime/cartoon y compatible con todas las tarjetas**

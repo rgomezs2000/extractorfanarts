@@ -36,6 +36,7 @@ from . import calidad as control_calidad
 from .http_client import ConfigError
 
 logger = logging.getLogger("imaginteca")
+_GPUS_CACHE: list[str] | None = None
 
 
 class ImagenCorruptaError(Exception):
@@ -50,6 +51,36 @@ def _pillow():
         raise ConfigError(
             "Falta la librería Pillow en ./vendor: ejecuta python scripts\\setup_vendor.py"
         )
+
+
+def gpus_detectadas() -> list[str]:
+    """Nombres de las tarjetas gráficas del equipo (informativo).
+
+    El motor usa Vulkan y elige la tarjeta él solo; esto sirve para dejar en el registro
+    y en el autoexamen QUÉ tarjeta hay (NVIDIA, AMD/ATI, Intel…) y que se pueda comprobar.
+    """
+    global _GPUS_CACHE
+    if _GPUS_CACHE is not None:
+        return _GPUS_CACHE
+    nombres: list[str] = []
+    try:
+        if os.name == "nt":
+            banderas = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            salida = subprocess.run(
+                ["powershell", "-NoProfile", "-Command",
+                 "Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name"],
+                capture_output=True, text=True, timeout=10, creationflags=banderas,
+            )
+            nombres = [l.strip() for l in (salida.stdout or "").splitlines() if l.strip()]
+        elif sys.platform == "darwin":
+            salida = subprocess.run(["system_profiler", "SPDisplaysDataType"],
+                                    capture_output=True, text=True, timeout=10)
+            nombres = [l.split(":", 1)[1].strip() for l in (salida.stdout or "").splitlines()
+                       if "Chipset Model" in l]
+    except Exception:  # noqa: BLE001
+        nombres = []
+    _GPUS_CACHE = nombres
+    return nombres
 
 
 def factor_for(ancho: int) -> int:
@@ -531,6 +562,10 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
                     temporales.append(ai_out)
                     mejorada = ai_out
                     meta["modo"] = f"IA {factor}x"
+                    gpus = gpus_detectadas()
+                    logger.info("IA: modelo %s · GPU detectada: %s", config.AI_MODEL,
+                                ", ".join(gpus) if gpus else "(no detectada)")
+                    meta["ia_gpu"] = ", ".join(gpus) if gpus else ""
                 else:
                     demasiado_grande = (
                         (w * factor) * (h * factor)
