@@ -73,6 +73,8 @@ Ejemplos:
     DEVIANTART_CLIENT_ID = "..."
     DEVIANTART_CLIENT_SECRET = "..."
     PINTEREST_ACCESS_TOKEN = "..."
+    INKBUNNY_USERNAME = "..."
+    INKBUNNY_PASSWORD = "..."
     CF_CLEARANCE = "..."
     CF_USER_AGENT = "..."
     X_BEARER_TOKEN = "..."

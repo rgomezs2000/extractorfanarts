@@ -1,5 +1,27 @@
 # Historial de versiones
 
+## v0.1.5-beta.51 — 11 de octubre de 2026 · la beta definitiva (51.ª entrega)
+
+**Nueva plataforma: Inkbunny (inkbunny.net)**
+- Se añade a las redes sociales, con su **API oficial**: se busca por texto o por `@usuario`
+  y devuelve las imágenes (una por archivo del envío).
+- **Necesita cuenta**: usuario y contraseña en `config_local.py` y, en la web de Inkbunny,
+  activar **«API Access»** en *Account Settings → API* (sin eso su API no responde).
+  Sin credenciales el programa lo explica y no falla con un mensaje raro.
+- La sesión se reutiliza entre búsquedas y, si caduca, se renueva sola. Con cortesía:
+  `INKBUNNY_PAUSA` (1 s entre peticiones) y `INKBUNNY_MAX_PAGINAS` (6).
+- Aparece también en **Estado de las redes sociales** (Ayuda y clic derecho del icono).
+
+### Cómo configurarlo
+
+```python
+# config_local.py (junto al ejecutable, o app/config_local.py)
+INKBUNNY_USERNAME = "tu_usuario"
+INKBUNNY_PASSWORD = "tu_contraseña"
+```
+
+---
+
 ## v0.1.5-beta.50 — 11 de octubre de 2026 · la beta definitiva (50.ª entrega)
 
 **El aviso de «zonas quemadas» era un falso positivo**

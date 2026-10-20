@@ -10,6 +10,7 @@ from .misskey import MisskeyAdapter
 from .bluesky import BlueskyAdapter
 from .deviantart import DeviantArtAdapter
 from .tumblr import TumblrAdapter
+from .inkbunny import InkbunnyAdapter
 from .twitter import XAdapter
 from .pinterest import PinterestAdapter
 from .pixiv import PixivAdapter
@@ -31,6 +32,7 @@ SOCIAL_ADAPTERS: dict[str, SearchAdapter] = {
     "DeviantArt": DeviantArtAdapter(),
     "Tumblr": TumblrAdapter(),
     "X (Twitter)": XAdapter(),
+    "Inkbunny": InkbunnyAdapter(),
     "Pinterest": PinterestAdapter(),
     "Pixiv": PixivAdapter(),
     "Newgrounds": NewgroundsAdapter(),

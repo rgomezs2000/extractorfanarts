@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.50"
+APP_VERSION = "0.1.5-beta.51"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -237,6 +237,14 @@ PINTEREST_ACCESS_TOKEN = ""
 # asociadas); código ISO 3166-1 alpha-2 (ej. "US"). Sin esto se busca sobre
 # los pins de la cuenta conectada (/v5/search/pins).
 PINTEREST_COUNTRY_CODE = ""
+
+# Inkbunny: API oficial con cuenta (usuario + contraseña, y «API Access» activado en los
+# ajustes de la cuenta). Sin eso no hay búsqueda: su API no permite consultas anónimas.
+# https://inkbunny.net  ->  Account Settings  ->  API
+INKBUNNY_USERNAME = ""
+INKBUNNY_PASSWORD = ""
+INKBUNNY_PAUSA = 1.0          # segundos entre peticiones (cortesía con su API)
+INKBUNNY_MAX_PAGINAS = 6      # páginas de 50 envíos como máximo
 
 # Newgrounds: newgrounds.io no expone arte (solo juegos/medallas) y el sitio
 # protege sus páginas de arte. El adaptador informa el motivo al usarse;

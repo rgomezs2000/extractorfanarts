@@ -48,6 +48,7 @@ SOCIALES: tuple[tuple[str, str, str], ...] = (
     ("Pixiv", "https://www.pixiv.net/robots.txt", ""),
     ("Bluesky", "https://public.api.bsky.app/xrpc/_health", "https://status.bsky.app/"),
     ("Mastodon", "https://mastodon.social/health", "https://status.joinmastodon.org/"),
+    ("Inkbunny", "https://inkbunny.net/robots.txt", ""),
 )
 
 # Wikis de fandom (la plataforma con la que se leen los fandoms)

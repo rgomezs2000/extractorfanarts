@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.51 — la beta definitiva (51.ª entrega)
+
+- **Inkbunny** entra como red social: búsqueda por texto o `@usuario` con su API oficial.
+  Requiere cuenta + «API Access» activado y las claves en `config_local.py`.
+
 ### 2026-10-11 · v0.1.5-beta.50 — la beta definitiva (50.ª entrega)
 
 - **Adiós al aviso «zonas quemadas»** en stickers y dibujos con fondo blanco: se mide, pero
