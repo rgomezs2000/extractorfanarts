@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.54"
+APP_VERSION = "0.1.5-beta.55"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -500,7 +500,8 @@ AI_MODEL = "realesrgan-x4plus-anime"
 AI_MODEL_ESCALA = "realesr-animevideov3"
 # Tarjeta gráfica a usar por el motor (Vulkan). Vacío = la que elija el sistema (lo normal).
 # El motor realesrgan-ncnn-vulkan funciona con NVIDIA, AMD/ATI e Intel; si se indica un
-# número (0, 1, 2…) se pasa con -g para forzar esa GPU.
+# número (0, 1, 2…) se pasa con -g para forzar esa GPU. Sin GPU disponible
+# (o sin Vulkan) la IA se salta y se usa Lanczos: nunca se queda sin imagen.
 AI_GPU = ""
 # Motor de IA a usar:
 #   "auto"       -> Real-ESRGAN y, si falla, waifu2x (y si tampoco, Lanczos)

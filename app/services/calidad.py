@@ -33,7 +33,7 @@ logger = logging.getLogger("imaginteca")
 LADO_ANALISIS = 320          # se analiza una miniatura: rápido y representativo
 UMBRAL_NITIDEZ = 200.0       # por debajo, se considera borrosa
 UMBRAL_RUIDO = 6.0           # por encima, se considera ruidosa
-UMBRAL_BLOQUES = 8.0         # por encima, se ven los bloques del JPEG
+UMBRAL_BLOQUES = 12.0         # por encima, se ven los bloques del JPEG
 UMBRAL_RECORTES = 0.06       # más del 6 % de píxeles quemados/empastados
 UMBRAL_CUANTIZACION = 22.0   # media de la tabla de cuantización del JPEG: más = comprimida
 UMBRAL_BPP = 0.55            # bits por píxel: por debajo, el JPEG está muy machacado

@@ -1,5 +1,22 @@
 # Historial de versiones
 
+## v0.1.5-beta.55 — 11 de octubre de 2026 · la beta definitiva (55.ª entrega)
+
+**Ajustes del análisis y aclaración sobre DirectX/DirectML**
+- El reescalado (Lanczos) deja un ringing muy suave que el analizador contaba como
+  «artefactos de compresión»: se sube el umbral de bloques de 8 a 12 y las imágenes
+  ampliadas ya no se marcan como defectuosas por ese motivo.
+- Se probó el modo **CPU** de waifu2x (`-g -1`): el binario actual **crashea** (violación
+  de acceso), así que se retira en vez de ofrecer algo que no funciona. Sin GPU o sin
+  Vulkan, la IA se salta y se sigue con Lanczos: nunca se queda sin imagen.
+- **Sobre DirectX**: DirectX por sí no hace IA. Lo que sirve es **DirectML** (la capa de
+  *machine learning* sobre DirectX 12), compatible con **cualquier tarjeta DX12**
+  (NVIDIA, AMD e Intel, integradas incluidas). No se incluye porque exige **ONNX Runtime**
+  (~50 MB) y un modelo ONNX aparte (~60 MB); Vulkan ya cubre a los tres fabricantes con
+  6 MB de motor. Si algún día se quiere, la vía limpia es un motor extra descargable.
+
+---
+
 ## v0.1.5-beta.54 — 11 de octubre de 2026 · la beta definitiva (54.ª entrega)
 
 **Dos motores de IA a elegir, y se ve cuál se usó**

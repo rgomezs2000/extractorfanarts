@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.55 — la beta definitiva (55.ª entrega)
+
+- Ajustado el umbral de artefactos para que el propio reescalado no marque la imagen como
+  defectuosa. Aclarado el estado de DirectX/DirectML (compatible, pero no incluido).
+
 ### 2026-10-11 · v0.1.5-beta.54 — la beta definitiva (54.ª entrega)
 
 - **Elige motor de IA**: Real-ESRGAN o waifu2x (ambos Vulkan: NVIDIA, AMD/ATI, Intel) con

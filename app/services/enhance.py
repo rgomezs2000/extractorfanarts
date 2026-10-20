@@ -394,6 +394,8 @@ def _ai_waifu2x(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None
     cmd = [str(exe), "-i", str(path), "-o", str(salida), "-s", str(objetivo),
            "-m", "models-upconv_7_anime_style_art_rgb", "-n", "1", "-f", "png"]
     gpu = str(getattr(config, "AI_GPU", "") or "").strip()
+    # Sin GPU no se fuerza nada: este binario de waifu2x no admite -g -1 (crashea) y
+    # Real-ESRGAN necesita Vulkan; si la IA no puede, se sigue con Lanczos.
     if gpu:
         cmd += ["-g", gpu]
     try:
