@@ -1,5 +1,15 @@
 # Historial de versiones
 
+## v0.1.5-beta.59 — 11 de octubre de 2026 · la beta definitiva (59.ª entrega)
+
+**Asistente de Pixiv: qué hacer si la página sale en blanco**
+- El salto intermedio de Pixiv (ccounts.pixiv.net/post-redirect) a veces se queda en
+  blanco porque un bloqueador corta la redirección. El asistente explica ahora tres salidas:
+  ventana privada sin extensiones, desactivar el bloqueador para pixiv.net, o pegar el
+  enlace de continuación (pp-api.pixiv.net/.../start) que el propio asistente imprime.
+
+---
+
 ## v0.1.5-beta.58 — 11 de octubre de 2026 · la beta definitiva (58.ª entrega)
 
 **Asistente de Pixiv: distingue el `code_challenge` del `code`**

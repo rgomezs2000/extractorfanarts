@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.59 — la beta definitiva (59.ª entrega)
+
+- **Pixiv en blanco**: el asistente indica cómo salir (ventana privada, bloqueador o el
+  enlace de continuación).
+
 ### 2026-10-11 · v0.1.5-beta.58 — la beta definitiva (58.ª entrega)
 
 - **Asistente de Pixiv**: ya no confunde el `code_challenge` con el código (era el 400
