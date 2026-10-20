@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.60 — 11 de octubre de 2026 · la beta definitiva (60.ª entrega)
+
+**Asistente de Pixiv: el enlace de continuación ya no sirve (404 de Pixiv)**
+- Comprobado: el salto ccounts.pixiv.net/post-redirect lleva a
+  pp-api.pixiv.net/web/v1/users/auth/pixiv/start, que **devuelve 404**. Ese flujo de
+  login de Pixiv está roto **en su lado**, así que la página se queda en blanco aunque no
+  haya bloqueadores (también en ventana privada).
+- El asistente ya no sugiere abrir ese enlace (era un callejón sin salida): explica el 404,
+  que no es culpa del navegador, y deja las opciones reales (reintentar más tarde o usar la
+  web de Pixiv mientras tanto).
+- El flujo con usuario/contraseña sigue **deshabilitado** por Pixiv (responde «invalid OAuth
+  client»), así que el 
+efresh_token solo puede salir del flujo PKCE cuando lo reparen.
+
+---
+
 ## v0.1.5-beta.59 — 11 de octubre de 2026 · la beta definitiva (59.ª entrega)
 
 **Asistente de Pixiv: qué hacer si la página sale en blanco**
