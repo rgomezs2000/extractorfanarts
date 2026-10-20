@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.56 — la beta definitiva (56.ª entrega)
+
+- **Motor PyTorch opcional** (`AI_ENGINE = "torch"`): usa tu torch y elige solo CUDA,
+  DirectML, TensorRT, MPS o CPU. Los pesos se descargan la primera vez.
+
 ### 2026-10-11 · v0.1.5-beta.55 — la beta definitiva (55.ª entrega)
 
 - Ajustado el umbral de artefactos para que el propio reescalado no marque la imagen como

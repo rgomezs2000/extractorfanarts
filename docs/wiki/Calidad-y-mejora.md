@@ -148,6 +148,11 @@ modelo con ella.
   - `"waifu2x"` → **waifu2x** con su modelo de dibujo (escala nativa 2/4/8/16/32 y
     eliminación de ruido: va muy bien con línea y colores planos).
   - `"auto"` → Real-ESRGAN y, si falla, waifu2x (y si tampoco, Lanczos).
+  - `"torch"` → **tu instalación de PyTorch** (opcional): elige sola **CUDA**,
+    **DirectML** (`torch-directml`), **TensorRT** (`torch-tensorrt`), **MPS** o **CPU**.
+    Requiere `pip install torch realesrgan`; los pesos (~18 MB) se descargan la primera vez.
+    Con `AI_PYTHON`, `AI_TORCH_DEVICE` y `AI_TORCH_MODEL` se ajusta el intérprete, el
+    dispositivo y la ruta de los pesos.
   Los dos usan **Vulkan**: valen para NVIDIA, AMD/ATI e Intel. Los motores CUDA/DirectML
   no se incluyen (exigen PyTorch u ONNX Runtime, cientos de MB).
  Funciona con **NVIDIA, AMD/ATI

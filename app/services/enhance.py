@@ -348,6 +348,232 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
     return salida
 
 
+_SCRIPT_TORCH = """\"\"\"Motor de IA opcional por PyTorch: usa TU Python y hereda CUDA/DirectML/TensorRT/CPU.
+
+El programa no puede traer PyTorch (cientos de MB), pero sí puede **usar el tuyo**:
+lanza este script con el intérprete que tenga torch y le pasa la imagen. Según lo que
+tengas instalado, el dispositivo será:
+
+  · CUDA          -> tarjetas NVIDIA (torch con CUDA)
+  · DirectML      -> cualquier GPU DX12 en Windows (paquete torch-directml)
+  · TensorRT      -> NVIDIA con torch-tensorrt instalado
+  · MPS           -> Apple Silicon
+  · CPU           -> siempre, como último recurso
+
+Uso:
+    python upscale_torch.py -i entrada.png -o salida.png -s 4 [--device auto|cuda|dml|trt|mps|cpu]
+\"\"\"
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+
+def dispositivo(torch, pedido: str):
+    \"\"\"Devuelve (dispositivo, nombre legible) según lo pedido y lo disponible.\"\"\"
+    pedido = (pedido or "auto").lower()
+    try:
+        import torch_directml  # noqa: F401
+        hay_dml = True
+    except ImportError:
+        hay_dml = False
+
+    if pedido in ("cpu",):
+        return torch.device("cpu"), "CPU"
+    if pedido in ("cuda", "auto", "trt"):
+        if torch.cuda.is_available():
+            nombre = torch.cuda.get_device_name(0)
+            return torch.device("cuda"), f"CUDA · {nombre}"
+        if pedido == "cuda":
+            raise SystemExit("pediste CUDA y no está disponible")
+    if pedido in ("dml", "auto") and hay_dml:
+        import torch_directml
+
+        return torch_directml.device(), "DirectML"
+    if pedido in ("mps", "auto") and getattr(torch.backends, "mps", None) \
+            and torch.backends.mps.is_available():
+        return torch.device("mps"), "MPS (Apple)"
+    if pedido == "dml":
+        raise SystemExit("pediste DirectML y torch-directml no está instalado")
+    return torch.device("cpu"), "CPU"
+
+
+def cargar_modelo(ruta_pesos: Path, escala_nativa: int = 4):
+    \"\"\"RRDBNet de Real-ESRGAN (paquete `realesrgan`).\"\"\"
+    from realesrgan import RRDBNet
+
+    modelo = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6,
+                     num_grow_ch=32, scale=escala_nativa)
+    if not ruta_pesos.is_file():
+        raise SystemExit(f"no encuentro los pesos: {ruta_pesos}")
+    estado = __import__("torch").load(str(ruta_pesos), map_location="cpu")
+    if isinstance(estado, dict) and "params_ema" in estado:
+        estado = estado["params_ema"]
+    modelo.load_state_dict(estado, strict=True)
+    modelo.eval()
+    return modelo
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-i", "--input", required=True)
+    ap.add_argument("-o", "--output", required=True)
+    ap.add_argument("-s", "--scale", type=int, default=4)
+    ap.add_argument("--device", default="auto")
+    ap.add_argument("--weights", default="")
+    args = ap.parse_args()
+
+    try:
+        import torch
+    except ImportError:
+        print("PyTorch no está instalado en este Python", file=sys.stderr)
+        return 3
+
+    from PIL import Image
+
+    entrada = Path(args.input)
+    salida = Path(args.output)
+    pesos = Path(args.weights) if args.weights else (
+        Path.home() / ".imaginteca" / "ia" / "RealESRGAN_x4plus_anime_6B.pth")
+    try:
+        modelo = cargar_modelo(pesos)
+    except SystemExit as exc:
+        print(str(exc), file=sys.stderr)
+        return 4
+
+    equipo, nombre = dispositivo(torch, args.device)
+    print(f"dispositivo: {nombre}")
+    modelo = modelo.to(equipo)
+
+    with Image.open(entrada) as im:
+        original = im.convert("RGB")
+    datos = torch.from_numpy(__import__("numpy").array(original)).permute(2, 0, 1)
+    datos = datos.float().div(255).unsqueeze(0).to(equipo)
+    with torch.no_grad():
+        resultado = modelo(datos)
+    resultado = resultado.squeeze(0).clamp(0, 1).mul(255).round().byte()
+    resultado = resultado.permute(1, 2, 0).cpu().numpy()
+    imagen = Image.fromarray(resultado, "RGB")
+    if imagen.width != original.width * args.scale:
+        objetivo = (original.width * args.scale, original.height * args.scale)
+        imagen = imagen.resize(objetivo, Image.LANCZOS)
+    salida.parent.mkdir(parents=True, exist_ok=True)
+    imagen.save(salida, "PNG")
+    print(f"guardado: {salida} ({imagen.width}x{imagen.height})")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+"""
+_PYTHON_TORCH: str | None = ""
+
+
+def _python_con_torch() -> str | None:
+    """Busca un intérprete de Python que tenga torch instalado (el del usuario)."""
+    global _PYTHON_TORCH
+    if _PYTHON_TORCH is not None:
+        return _PYTHON_TORCH or None
+    candidatos: list[list[str]] = []
+    manual = str(getattr(config, "AI_PYTHON", "") or "").strip()
+    if manual:
+        candidatos.append([manual])
+    if os.name == "nt":
+        candidatos += [["py", "-3"], ["python"], ["python3"]]
+    else:
+        candidatos += [["python3"], ["python"]]
+    for orden in candidatos:
+        try:
+            prueba = subprocess.run(
+                orden + ["-c", "import torch; print(torch.__version__)"],
+                capture_output=True, text=True, timeout=25,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            if prueba.returncode == 0 and prueba.stdout.strip():
+                _PYTHON_TORCH = " ".join(orden)
+                logger.info("IA torch: intérprete %s (torch %s)", _PYTHON_TORCH,
+                            prueba.stdout.strip().splitlines()[0])
+                return _PYTHON_TORCH
+        except Exception:  # noqa: BLE001
+            continue
+    _PYTHON_TORCH = ""
+    return None
+
+
+def _pesos_torch() -> Path:
+    """Ruta de los pesos de Real-ESRGAN anime 6B; los descarga si faltan (~18 MB)."""
+    indicada = str(getattr(config, "AI_TORCH_MODEL", "") or "").strip()
+    if indicada:
+        return Path(indicada)
+    destino = Path.home() / ".imaginteca" / "ia" / "RealESRGAN_x4plus_anime_6B.pth"
+    if destino.is_file() and destino.stat().st_size > 1_000_000:
+        return destino
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    url = ("https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/"
+           "RealESRGAN_x4plus_anime_6B.pth")
+    logger.info("IA torch: descargando los pesos del modelo anime (~18 MB)…")
+    try:
+        cliente = PoliteClient()
+        try:
+            datos = cliente.get_bytes(url, max_bytes=60 * 1024 * 1024)
+        finally:
+            cliente.close()
+        if datos and len(datos) > 1_000_000:
+            destino.write_bytes(datos)
+            logger.info("IA torch: pesos guardados en %s", destino)
+            return destino
+    except Exception as exc:  # noqa: BLE001
+        logger.info("IA torch: no se pudieron descargar los pesos (%s)", exc)
+    return destino
+
+def _ai_torch(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None:
+    """Amplía con la instalación de PyTorch del usuario (CUDA/DirectML/TensorRT/CPU)."""
+    interprete = _python_con_torch()
+    if not interprete:
+        logger.info("IA torch: no se encontró un Python con torch; se usa otro motor")
+        return None
+    Image, _ = _pillow()
+    with Image.open(path) as im:
+        w, h = im.size
+    if (w * factor) * (h * factor) > getattr(config, "AI_MAX_PIXELS", 50_000_000):
+        return None
+    with Image.open(path) as im:
+        w, h = im.size
+    out_dir = path.parent / ".ai_tmp"
+    out_dir.mkdir(exist_ok=True)
+    script = out_dir / "upscale_torch.py"
+    script.write_text(_SCRIPT_TORCH, encoding="utf-8")
+    salida = out_dir / f"{path.stem}_torch_{factor}.png"
+    orden = interprete.split() + [str(script), "-i", str(path), "-o", str(salida),
+                                 "-s", str(min(factor, 4)),
+                                 "--device", str(getattr(config, "AI_TORCH_DEVICE", "auto") or "auto")]
+    pesos = str(_pesos_torch())
+    if pesos:
+        orden += ["--weights", pesos]
+    try:
+        proceso = subprocess.run(orden, capture_output=True, text=True, timeout=1800,
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except Exception as exc:  # noqa: BLE001
+        logger.info("IA torch: no se pudo ejecutar (%s)", exc)
+        return None
+    if proceso.returncode != 0 or not salida.exists():
+        detalle = (proceso.stderr or proceso.stdout or "").strip().splitlines()
+        logger.info("IA torch falló: %s", detalle[-1] if detalle else proceso.returncode)
+        return None
+    try:
+        with Image.open(salida) as im:
+            im.load()
+            if im.width < w:
+                return None
+        if salida.exists():
+            global _ULTIMO_MOTOR
+            detalle = (proceso.stdout or "").strip().splitlines()
+            _ULTIMO_MOTOR = "torch" + (f" [{detalle[0]}]" if detalle else "")
+        return salida
+    except Exception:  # noqa: BLE001
+        return None
+
 def _find_waifu2x_exe() -> Path | None:
     """Localiza waifu2x-ncnn-vulkan (segundo motor, también Vulkan)."""
     manual = str(getattr(config, "AI_WAIFU2X_EXE", "") or "").strip()
@@ -441,6 +667,8 @@ def _ai_upscale(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None
     respaldo "x4 → reducir". Cada intento se valida antes de aceptarse.
     """
     motor = str(getattr(config, "AI_ENGINE", "auto") or "auto").lower()
+    if motor in ("torch", "cuda", "dml", "tensorrt", "trt"):
+        return _ai_torch(path, factor, tamano)
     # Cadena de motores: auto -> Real-ESRGAN y, si falla, waifu2x. Los dos son Vulkan.
     if motor in ("waifu2x", "auto"):
         if motor == "waifu2x":

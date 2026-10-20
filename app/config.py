@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.55"
+APP_VERSION = "0.1.5-beta.56"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -511,6 +511,14 @@ AI_GPU = ""
 # dedicadas). Los motores CUDA/otros no se incluyen porque exigen PyTorch (cientos de MB);
 # si algún día hacen falta, se pueden añadir como descarga aparte.
 AI_ENGINE = "auto"
+# Motor opcional por PyTorch: usa TU instalación de Python/torch y, con ella, lo que
+# tengas: CUDA (NVIDIA), DirectML (cualquier GPU DX12 en Windows, paquete torch-directml),
+# TensorRT (torch-tensorrt) o CPU. Pon "torch" en AI_ENGINE para usarlo.
+#   pip install torch realesrgan          (y torch-directml si quieres DirectML)
+# La ruta del intérprete es opcional: si se deja vacía, se busca uno que tenga torch.
+AI_PYTHON = ""
+AI_TORCH_DEVICE = "auto"      # auto | cuda | dml | trt | mps | cpu
+AI_TORCH_MODEL = ""           # ruta a RealESRGAN_x4plus_anime_6B.pth (vacío = ~/.imaginteca/ia/)
 
 # Definición (afilado): porcentaje de UnsharpMask aplicado tras el upscaling.
 SHARPEN_LANCZOS = 20   # Lanczos: afilado SUAVE. Medido sobre líneas duras: con 65 el

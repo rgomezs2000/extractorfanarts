@@ -1,5 +1,31 @@
 # Historial de versiones
 
+## v0.1.5-beta.56 — 11 de octubre de 2026 · la beta definitiva (56.ª entrega)
+
+**Motor opcional por PyTorch: CUDA, DirectML, TensorRT o CPU, con TU instalación**
+- El programa no trae PyTorch (cientos de MB), pero puede **usar el tuyo**: el motor
+  `"torch"` lanza un script con el intérprete de Python que **tenga torch** y amplía con
+  `RealESRGAN_x4plus_anime_6B`.
+- Según lo que tengas instalado, el dispositivo se elige solo:
+  **CUDA** (NVIDIA) · **DirectML** (`torch-directml`, cualquier GPU DX12 de Windows) ·
+  **TensorRT** (`torch-tensorrt`) · **MPS** (Apple) · **CPU**.
+- Se configura en `config_local.py`:
+
+```python
+AI_ENGINE = "torch"          # usa tu PyTorch
+AI_PYTHON = ""               # opcional: ruta a tu python (si no se detecta)
+AI_TORCH_DEVICE = "auto"     # auto | cuda | dml | trt | mps | cpu
+AI_TORCH_MODEL = ""          # opcional: ruta a los .pth
+```
+
+- Los pesos (~18 MB) se **descargan solos** la primera vez a `~/.imaginteca/ia/`.
+- Si no hay ningún Python con torch, se avisa en el registro y se sigue con el motor
+  Vulkan o con Lanczos: nunca se queda sin imagen.
+- Instalación necesaria (una vez): `pip install torch realesrgan` (y `torch-directml`
+  si quieres DirectML).
+
+---
+
 ## v0.1.5-beta.55 — 11 de octubre de 2026 · la beta definitiva (55.ª entrega)
 
 **Ajustes del análisis y aclaración sobre DirectX/DirectML**
