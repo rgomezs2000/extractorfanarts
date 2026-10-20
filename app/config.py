@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.53"
+APP_VERSION = "0.1.5-beta.54"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -502,6 +502,14 @@ AI_MODEL_ESCALA = "realesr-animevideov3"
 # El motor realesrgan-ncnn-vulkan funciona con NVIDIA, AMD/ATI e Intel; si se indica un
 # número (0, 1, 2…) se pasa con -g para forzar esa GPU.
 AI_GPU = ""
+# Motor de IA a usar:
+#   "auto"       -> Real-ESRGAN y, si falla, waifu2x (y si tampoco, Lanczos)
+#   "realesrgan" -> Real-ESRGAN (modelo anime 6B)
+#   "waifu2x"    -> waifu2x (modelo de anime; escala nativa 2/4/8/16/32 y denoise)
+# Los dos motores usan **Vulkan**, que vale para NVIDIA, AMD/ATI e Intel (integradas y
+# dedicadas). Los motores CUDA/otros no se incluyen porque exigen PyTorch (cientos de MB);
+# si algún día hacen falta, se pueden añadir como descarga aparte.
+AI_ENGINE = "auto"
 
 # Definición (afilado): porcentaje de UnsharpMask aplicado tras el upscaling.
 SHARPEN_LANCZOS = 20   # Lanczos: afilado SUAVE. Medido sobre líneas duras: con 65 el

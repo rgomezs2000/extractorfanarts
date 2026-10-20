@@ -143,7 +143,14 @@ modelo con ella.
 - **Modelo**: `RealESRGAN_x4plus_anime_6B` (fichero `realesrgan-x4plus-anime` del motor
   ncnn). Pensado para **dibujo 2D y 3D no realista**; `realesrgan-x4plus` es el de fotos
   reales y solo se usaría para esas.
-- **Motor**: `realesrgan-ncnn-vulkan`, que usa **Vulkan**. Funciona con **NVIDIA, AMD/ATI
+- **Motores disponibles** (se eligen con `AI_ENGINE`):
+  - `"realesrgan"` → **Real-ESRGAN** con el modelo anime 6B (por defecto).
+  - `"waifu2x"` → **waifu2x** con su modelo de dibujo (escala nativa 2/4/8/16/32 y
+    eliminación de ruido: va muy bien con línea y colores planos).
+  - `"auto"` → Real-ESRGAN y, si falla, waifu2x (y si tampoco, Lanczos).
+  Los dos usan **Vulkan**: valen para NVIDIA, AMD/ATI e Intel. Los motores CUDA/DirectML
+  no se incluyen (exigen PyTorch u ONNX Runtime, cientos de MB).
+ Funciona con **NVIDIA, AMD/ATI
   e Intel**: no hace falta CUDA ni una marca concreta. Para forzar una tarjeta, pon su
   índice en `AI_GPU` (`"0"`, `"1"`…); vacío = la que elija el sistema.
 - **Si la IA falla** (sin Vulkan, sin modelo o error del motor), se sigue con

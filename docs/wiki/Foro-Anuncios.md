@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.54 — la beta definitiva (54.ª entrega)
+
+- **Elige motor de IA**: Real-ESRGAN o waifu2x (ambos Vulkan: NVIDIA, AMD/ATI, Intel) con
+  `AI_ENGINE`, y el resultado indica cuál se usó.
+
 ### 2026-10-11 · v0.1.5-beta.53 — la beta definitiva (53.ª entrega)
 
 - **Transparencia del motor**: el registro y el autoexamen dicen qué modelo de IA y qué

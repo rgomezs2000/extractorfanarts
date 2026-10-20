@@ -37,6 +37,7 @@ from .http_client import ConfigError
 
 logger = logging.getLogger("imaginteca")
 _GPUS_CACHE: list[str] | None = None
+_ULTIMO_MOTOR = ""
 
 
 class ImagenCorruptaError(Exception):
@@ -342,8 +343,93 @@ def _ejecutar_ia(exe: Path, entrada: Path, salida: Path, escala: int,
     # Validación de contenido: descarta mosaicos/desplazamientos
     if not _validar_ia(entrada, salida, w, h):
         return None
+    global _ULTIMO_MOTOR
+    _ULTIMO_MOTOR = "Real-ESRGAN"
     return salida
 
+
+def _find_waifu2x_exe() -> Path | None:
+    """Localiza waifu2x-ncnn-vulkan (segundo motor, también Vulkan)."""
+    manual = str(getattr(config, "AI_WAIFU2X_EXE", "") or "").strip()
+    if manual:
+        ruta = Path(manual)
+        if ruta.is_file():
+            return ruta
+    base = Path(__file__).resolve().parent.parent.parent
+    for carpeta in (base / "vendor", Path(getattr(sys, "_MEIPASS", base)) / "vendor",
+                    Path(sys.executable).resolve().parent / "vendor"):
+        if not carpeta.is_dir():
+            continue
+        directo = carpeta / "waifu2x-ncnn-vulkan.exe"
+        if directo.is_file():
+            return directo
+        for sub in sorted(carpeta.glob("waifu2x-ncnn-vulkan*")):
+            if sub.is_dir():
+                exe = sub / "waifu2x-ncnn-vulkan.exe"
+                if exe.is_file():
+                    return exe
+    return None
+
+
+def _ai_waifu2x(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None:
+    """Amplía con waifu2x (modelo anime). Devuelve el PNG o None si no se puede.
+
+    waifu2x escala de forma nativa 2, 4, 8, 16 y 32: encaja con los tramos grandes
+    (8x, 16x, 32x) sin encadenar reescalados. Su modelo de anime está pensado para
+    dibujo de línea, que es la mitad de lo que se descarga aquí.
+    """
+    exe = _find_waifu2x_exe()
+    if exe is None:
+        return None
+    Image, _ = _pillow()
+    with Image.open(path) as im:
+        w, h = im.size
+    objetivo = min([2, 4, 8, 16, 32], key=lambda e: (abs(e - factor), e))
+    if (w * objetivo) * (h * objetivo) > getattr(config, "AI_MAX_PIXELS", 50_000_000):
+        objetivo = max(2, objetivo // 2)
+    out_dir = path.parent / ".ai_tmp"
+    out_dir.mkdir(exist_ok=True)
+    salida = out_dir / f"{path.stem}_w2x_{objetivo}.png"
+    registro = Path(tempfile.gettempdir()) / f"imaginteca-w2x-{os.getpid()}.log"
+    cmd = [str(exe), "-i", str(path), "-o", str(salida), "-s", str(objetivo),
+           "-m", "models-upconv_7_anime_style_art_rgb", "-n", "1", "-f", "png"]
+    gpu = str(getattr(config, "AI_GPU", "") or "").strip()
+    if gpu:
+        cmd += ["-g", gpu]
+    try:
+        with open(registro, "wb") as manejador:
+            subprocess.run(cmd, stdout=manejador, stderr=subprocess.STDOUT, timeout=1800,
+                           check=True, cwd=str(exe.parent))
+    except Exception as exc:  # noqa: BLE001
+        logger.info("waifu2x no pudo ampliar la imagen: %s", exc)
+        return None
+    finally:
+        try:
+            registro.unlink()
+        except OSError:
+            pass
+    try:
+        with Image.open(salida) as im:
+            im.load()
+            if im.width < w or im.height < h:
+                return None
+        global _ULTIMO_MOTOR
+        _ULTIMO_MOTOR = "waifu2x"
+        return salida
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def fabricante_gpu() -> str:
+    """Fabricante de la tarjeta principal (NVIDIA, AMD/ATI, Intel…) o vacío."""
+    nombres = " ".join(gpus_detectadas()).lower()
+    if "nvidia" in nombres:
+        return "NVIDIA"
+    if "amd" in nombres or "ati" in nombres or "radeon" in nombres:
+        return "AMD/ATI"
+    if "intel" in nombres:
+        return "Intel"
+    return ""
 
 def _ai_upscale(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None:
     """Upscaling IA con motor Vulkan. Devuelve la ruta del PNG o None si falla.
@@ -352,9 +438,15 @@ def _ai_upscale(path: Path, factor: int, tamano: tuple[int, int]) -> Path | None
     que para 2x/3x se usa el modelo multiescala `realesr-animevideov3`, con
     respaldo "x4 → reducir". Cada intento se valida antes de aceptarse.
     """
+    motor = str(getattr(config, "AI_ENGINE", "auto") or "auto").lower()
+    # Cadena de motores: auto -> Real-ESRGAN y, si falla, waifu2x. Los dos son Vulkan.
+    if motor in ("waifu2x", "auto"):
+        if motor == "waifu2x":
+            return _ai_waifu2x(path, factor, tamano)
     exe = _find_ai_exe()
     if exe is None:
-        return None
+        logger.info("IA: no se encontró Real-ESRGAN; se prueba waifu2x")
+        return _ai_waifu2x(path, factor, tamano)
     Image, _ = _pillow()
     with Image.open(path) as im:
         w, h = im.size
@@ -562,6 +654,8 @@ def postprocess(path: Path, settings: dict) -> tuple[Path, dict]:
                     temporales.append(ai_out)
                     mejorada = ai_out
                     meta["modo"] = f"IA {factor}x"
+                    if _ULTIMO_MOTOR:
+                        meta["modo"] += f" ({_ULTIMO_MOTOR})"
                     gpus = gpus_detectadas()
                     logger.info("IA: modelo %s · GPU detectada: %s", config.AI_MODEL,
                                 ", ".join(gpus) if gpus else "(no detectada)")

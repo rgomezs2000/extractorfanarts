@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.54 — 11 de octubre de 2026 · la beta definitiva (54.ª entrega)
+
+**Dos motores de IA a elegir, y se ve cuál se usó**
+- **Real-ESRGAN** (modelo anime 6B) y **waifu2x** (modelo de anime, escala nativa 2/4/8/16/32
+  y eliminación de ruido). Los dos usan **Vulkan**, que vale para NVIDIA, AMD/ATI e Intel.
+- Se elige en `config_local.py`:
+  `AI_ENGINE = "auto"` (Real-ESRGAN y, si falla, waifu2x) · `"realesrgan"` · `"waifu2x"`.
+- El resultado dice con qué se amplió: `IA 8x (Real-ESRGAN)` o `IA 8x (waifu2x)`, y el
+  registro añade modelo, motor y GPU.
+- Comprobado con la misma imagen: los tres modos dan 228 → 1824 px y cada uno informa de
+  su motor.
+- **Sobre CUDA y otros fabricantes**: los motores CUDA/DirectML no se incluyen porque
+  exigen PyTorch u ONNX Runtime (cientos de MB) y este proyecto va sin dependencias
+  pesadas; Vulkan cubre a los tres fabricantes y también las gráficas integradas. Si algún
+  día se quieren, la forma limpia es un motor extra descargable aparte.
+
+---
+
 ## v0.1.5-beta.53 — 11 de octubre de 2026 · la beta definitiva (53.ª entrega)
 
 **Se puede ver qué modelo y qué tarjeta usa la IA**
