@@ -1,5 +1,24 @@
 # Historial de versiones
 
+## v0.1.5-beta.57 — 11 de octubre de 2026 · la beta definitiva (57.ª entrega)
+
+**El estado de las redes muestra TODAS las instancias del fediverso**
+- Antes solo salía «Mastodon». El fediverso no es una plataforma: es cada **instancia**
+  (Mastodon, Misskey, CherryPick…), y ahora se comprueban una por una:
+  `Fediverso · baraag.net`, `Fediverso · misskey.io`, `Fediverso · pawoo.net`,
+  `Fediverso · pisskey.io`, `Fediverso · dill.burggit.moe`, `Fediverso · shota.house`…
+- La lista vive en **`FEDIVERSE_INSTANCIAS`** (config.py) y se puede ampliar en tu
+  `config_local.py` con las que uses:
+
+```python
+FEDIVERSE_INSTANCIAS = ["baraag.net", "misskey.io", "mi.servidor"]
+```
+
+- Comprobado en vivo: baraag.net, misskey.io, pawoo.net y shota.house responden
+  **operativo** (HTTP 200). La ventana muestra ahora **29 plataformas** (antes 23).
+
+---
+
 ## v0.1.5-beta.56 — 11 de octubre de 2026 · la beta definitiva (56.ª entrega)
 
 **Motor opcional por PyTorch: CUDA, DirectML, TensorRT o CPU, con TU instalación**

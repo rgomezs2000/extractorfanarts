@@ -20,6 +20,11 @@ plataformas que se caen y arreglos.
 
 ## Anuncios
 
+### 2026-10-11 · v0.1.5-beta.57 — la beta definitiva (57.ª entrega)
+
+- **Estado del fediverso completo**: se comprueban las instancias una a una (baraag.net,
+  misskey.io, pawoo.net…), no solo «Mastodon». Lista configurable con `FEDIVERSE_INSTANCIAS`.
+
 ### 2026-10-11 · v0.1.5-beta.56 — la beta definitiva (56.ª entrega)
 
 - **Motor PyTorch opcional** (`AI_ENGINE = "torch"`): usa tu torch y elige solo CUDA,

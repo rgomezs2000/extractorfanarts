@@ -108,10 +108,31 @@ def boorus() -> list[tuple[str, str, str]]:
     return salida
 
 
+def instancias_fediverso() -> list[tuple[str, str, str]]:
+    """Instancias del fediverso a comprobar, como (nombre, url de prueba, página).
+
+    El fediverso no es «Mastodon»: cada instancia es un mundo (Mastodon, Misskey,
+    CherryPick…). La lista sale de `FEDIVERSE_INSTANCIAS` en config.py, que se puede
+    ampliar en config_local.py con las que uses tú.
+    """
+    salida: list[tuple[str, str, str]] = []
+    vistas: set[str] = set()
+    for dominio in getattr(config, "FEDIVERSE_INSTANCIAS", ()) or ():
+        limpio = str(dominio or "").strip().strip("/").lower()
+        if not limpio or limpio in vistas:
+            continue
+        vistas.add(limpio)
+        base = limpio if "://" in limpio else f"https://{limpio}"
+        nombre = limpio.split("://")[-1]
+        salida.append((f"Fediverso · {nombre}", f"{base}/robots.txt", ""))
+    return salida
+
+
 def plataformas() -> list[tuple[str, str, str, str]]:
     """Todas las plataformas: (nombre, tipo, dirección de prueba, página de estado)."""
     lista: list[tuple[str, str, str, str]] = []
     lista.extend((nombre, SOCIAL, url, pagina) for nombre, url, pagina in SOCIALES)
+    lista.extend((nombre, SOCIAL, url, pagina) for nombre, url, pagina in instancias_fediverso())
     lista.extend((nombre, BOORU, url, "") for nombre, url, _ in boorus())
     lista.extend((nombre, WIKI, url, pagina) for nombre, url, pagina in WIKIS)
     return lista

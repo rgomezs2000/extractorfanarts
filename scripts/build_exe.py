@@ -75,6 +75,7 @@ Ejemplos:
     PINTEREST_ACCESS_TOKEN = "..."
     INKBUNNY_USERNAME = "..."
     INKBUNNY_PASSWORD = "..."
+    FEDIVERSE_INSTANCIAS = ["baraag.net", "misskey.io"]
     CF_CLEARANCE = "..."
     CF_USER_AGENT = "..."
     X_BEARER_TOKEN = "..."

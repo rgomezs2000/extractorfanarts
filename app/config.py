@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.56"
+APP_VERSION = "0.1.5-beta.57"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -392,6 +392,15 @@ MAX_PREVIEW_BYTES = 8 * 1024 * 1024  # tope para cada imagen de ejemplo
 SOCIAL_PAGINA = 40             # publicaciones por petición
 SOCIAL_PAGINAS = 30            # páginas máximas por búsqueda
 SOCIAL_MAX_CANDIDATOS = 2000   # publicaciones que se revisan como máximo
+
+# Instancias del fediverso que se comprueban en «Estado de las redes sociales».
+# El fediverso NO es solo Mastodon: cada instancia es un servidor distinto (Mastodon,
+# Misskey, CherryPick…). Esta lista se puede ampliar en config_local.py con las tuyas:
+#     FEDIVERSE_INSTANCIAS = ["baraag.net", "misskey.io", "mi.servidor"]
+FEDIVERSE_INSTANCIAS = [
+    "baraag.net", "misskey.io", "pawoo.net", "pisskey.io", "dill.burggit.moe",
+    "shota.house", "mastodon.social", "mstdn.jp", "misskey.design", "pleroma.site",
+]
 # Con VARIOS valores dentro de un mismo campo (varios hashtags o varias palabras clave):
 #   "alguno"  → vale cualquiera de ellos (unión: más resultados)   ← por defecto
 #               p. ej. «#lola_loud #the_loud_house» = arte con una u otra etiqueta
