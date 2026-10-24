@@ -33,7 +33,8 @@ from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QDateEdit, QDialog, QDialogButtonBox,
     QFileDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QSizePolicy,
-    QSlider, QSpinBox, QStackedWidget, QTextBrowser, QToolBar, QToolButton, QVBoxLayout,
+    QFrame, QScrollArea, QSlider, QSpinBox, QSplitter, QStackedWidget, QTextBrowser, QToolBar,
+    QToolButton, QVBoxLayout,
     QWidget,
 )
 
@@ -104,6 +105,25 @@ class MainWindow(QMainWindow):
         root.setSpacing(6)
         self.setCentralWidget(central)
 
+        # El formulario de búsqueda va en un panel con DESPLAZAMIENTO propio: en pantallas
+        # bajas (1366x768, portátiles, tablets) se desplaza en lugar de cortarse o montarse
+        # sobre los resultados. Los resultados quedan siempre anclados abajo.
+        self._panel_config = QWidget()
+        cfg = QVBoxLayout(self._panel_config)
+        cfg.setContentsMargins(0, 0, 0, 0)
+        cfg.setSpacing(6)
+        self._scroll_config = QScrollArea()
+        self._scroll_config.setWidgetResizable(True)
+        self._scroll_config.setFrameShape(QFrame.NoFrame)
+        self._scroll_config.setWidget(self._panel_config)
+        self._scroll_config.setMinimumHeight(140)
+        self._split = QSplitter(Qt.Vertical)
+        self._split.setChildrenCollapsible(False)
+        self._split.addWidget(self._scroll_config)
+        root.addWidget(self._split, 1)
+        # Tamaño mínimo real de la ventana: cabe en 1366x768 (y en 640x480 con desplazamiento)
+        self.setMinimumSize(640, 480)
+
         # Fuente: fila normal (los campos se estiran con la ventana)
         fuente_box = QGroupBox("🔎 Fuente de búsqueda")
         fl = QHBoxLayout(fuente_box)
@@ -122,7 +142,7 @@ class MainWindow(QMainWindow):
         fl.addWidget(self.cmb_tipo)
         fl.addWidget(QLabel("🌐 Plataforma:"))
         fl.addWidget(self.cmb_plataforma, 1)
-        root.addWidget(fuente_box)
+        cfg.addWidget(fuente_box)
 
         # Filtros por tipo (stacked)
         self.stack = QStackedWidget()
@@ -194,7 +214,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.page_social)
         self.stack.addWidget(self.page_booru)
         self.stack.addWidget(self.page_wiki)
-        root.addWidget(self.stack)
+        cfg.addWidget(self.stack)
 
         # Opciones: rejilla estable de 2 columnas (el alto no cambia al redimensionar,
         # así TODO cabe siempre en la ventana sin barras de desplazamiento)
@@ -293,7 +313,7 @@ class MainWindow(QMainWindow):
         fl4.addWidget(self.chk_sidecar)
         fl4.addStretch(1)
         ov.addLayout(fl4)
-        root.addWidget(self.filtros_box)
+        cfg.addWidget(self.filtros_box)
 
         # Carpeta de salida
         carpeta_box = QGroupBox("📁 Carpeta de salida")
@@ -305,7 +325,7 @@ class MainWindow(QMainWindow):
         cl.addWidget(QLabel("Salida:"))
         cl.addWidget(self.ed_carpeta, 1)
         cl.addWidget(self.btn_carpeta)
-        root.addWidget(carpeta_box)
+        cfg.addWidget(carpeta_box)
 
         # Botones
         botones = QHBoxLayout()
@@ -316,7 +336,7 @@ class MainWindow(QMainWindow):
         botones.addWidget(self.btn_descargar)
         botones.addWidget(self.btn_limpiar)
         botones.addStretch(1)
-        root.addLayout(botones)
+        cfg.addLayout(botones)
 
         # Resultados
         self.galeria = GaleriaWidget()
@@ -329,7 +349,10 @@ class MainWindow(QMainWindow):
         rv.addWidget(self.galeria, 1)
         rv.addWidget(QLabel("📋 Resultados encontrados:"))
         rv.addWidget(self.lst_resultados)
-        root.addWidget(res_box, 1)
+        self._split.addWidget(res_box)
+        self._split.setStretchFactor(0, 0)
+        self._split.setStretchFactor(1, 1)
+        self._split.setSizes([380, 320])
 
         # Progreso: siempre visible (en reposo marca 0 %; al buscar/descargar avanza)
         self.progress = QProgressBar()

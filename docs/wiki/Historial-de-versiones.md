@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.64 — 11 de octubre de 2026 · la beta definitiva (64.ª entrega)
+
+**La ventana se adapta a cualquier pantalla (sin cortes ni solapamientos)**
+- Síntoma reportado en producción: en **1366×768** el formulario se cortaba o se montaba
+  sobre los resultados, incluso maximizando. La causa: el formulario **no tenía
+  desplazamiento** y su altura mínima (~800 px) superaba la de esas pantallas.
+- Ahora el panel de búsqueda va en una **zona con desplazamiento** y los resultados van en
+  un **divisor** que se puede arrastrar; la ventana admite desde **640×480** y se reajusta
+  al restaurar, maximizar o cambiar de pantalla.
+- Comprobado (medidas reales de la ventana y del divisor):
+  `1360×768 → 1360×768 · 1280×720 → 1280×720 · 1024×600 → 1024×600 ·
+   800×600 → 800×600 · 640×480 → 640×480 · 1920×1080 → 1920×1080 · 3840×2160 → 3840×2160`.
+  Tamaño mínimo: **640×480**.
+
+---
+
 ## v0.1.5-beta.63 — 11 de octubre de 2026 · la beta definitiva (63.ª entrega)
 
 **Contenido adulto: la casilla manda de verdad (redes, boorus y wikis)**
