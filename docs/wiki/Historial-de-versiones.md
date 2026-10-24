@@ -1,5 +1,28 @@
 # Historial de versiones
 
+## v0.1.5-beta.67 — 11 de octubre de 2026 · la beta definitiva (67.ª entrega)
+
+**Formulario compacto en dos columnas: ya no se corta la carpeta ni los botones**
+- En la entrega anterior (sin barras) la última fila quedaba fuera cuando la ventana era
+  baja: el panel declaraba 376 px pero necesitaba más.
+- Los campos de redes sociales pasan a **dos columnas** (usuario/palabra clave arriba,
+  hashtag/instancia abajo): la página baja de 100 a 48 px.
+- El divisor usa el **tamaño natural** del formulario (más un margen), no su mínimo
+  declarado, y el mínimo de ventana es **640×720**, el que garantiza que se vea entero.
+- Medido con la ventana real (formulario completo, **sin barras**):
+
+`
+720x858   -> formulario 415 px · entero: sí · barras no/no
+1360x768  -> formulario 415 px · entero: sí · barras no/no
+1280x720  -> formulario 393 px · entero: sí · barras no/no
+748x852   -> formulario 415 px · entero: sí · barras no/no
+1034x914  -> formulario 415 px · entero: sí · barras no/no
+1920x1080 -> formulario 415 px · entero: sí · barras no/no
+640x720   -> formulario 393 px · entero: sí · barras no/no
+`
+
+---
+
 ## v0.1.5-beta.66 — 11 de octubre de 2026 · la beta definitiva (66.ª entrega)
 
 **Ninguna barra de desplazamiento: el contenido siempre entero**

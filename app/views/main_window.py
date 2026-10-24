@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
         # 700 px de alto = formulario completo (376) + resultados útiles + barra de estado.
         # Es el mínimo con el que TODO se ve sin barras y sin recortes; por debajo habría
         # que elegir entre barra o corte, y se ha decidido no permitir ninguno de los dos.
-        self.setMinimumSize(640, 700)
+        self.setMinimumSize(640, 720)
         self._minimo_alto = max(560, self.minimumSizeHint().height())
 
         # Fuente: fila normal (los campos se estiran con la ventana)
@@ -159,9 +159,10 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
 
         self.page_social = QWidget()
-        v = QVBoxLayout(self.page_social)
+        v = QGridLayout(self.page_social)
         v.setContentsMargins(0, 0, 0, 0)
-        v.setSpacing(4)
+        v.setHorizontalSpacing(6)
+        v.setVerticalSpacing(4)
         # La explicación va como tooltip de los campos: así el formulario no gasta una
         # fila de texto y cabe sin barra de desplazamiento en pantallas de 768 px.
         _ayuda_campos = (
@@ -171,21 +172,27 @@ class MainWindow(QMainWindow):
         )
         self.ed_usuario = QLineEdit()
         self.ed_usuario.setPlaceholderText("👤 @usuario  (o @usuario@instancia)")
+        self.ed_usuario.setToolTip(_ayuda_campos)
         self.ed_keyword = QLineEdit()
         self.ed_keyword.setPlaceholderText(
             "🔤 palabra clave — varias: «Lola Loud, The Loud House» (con comas)")
+        self.ed_keyword.setToolTip(_ayuda_campos)
         self.ed_hashtag = QLineEdit()
         self.ed_hashtag.setPlaceholderText(
             "#️⃣ #hashtag — varios: «#lola_loud #the_loud_house»")
-        v.addWidget(self.ed_usuario)
-        v.addWidget(self.ed_keyword)
-        v.addWidget(self.ed_hashtag)
+        self.ed_hashtag.setToolTip(_ayuda_campos)
+        # DOS COLUMNAS: el formulario de redes ocupa la mitad de alto y así no corta la
+        # última fila (carpeta y botones) en pantallas de 720-768 px.
+        v.addWidget(self.ed_usuario, 0, 0)
+        v.addWidget(self.ed_keyword, 0, 1)
+        v.addWidget(self.ed_hashtag, 1, 0)
         self.ed_instancia = QLineEdit()
         self.ed_instancia.setPlaceholderText(
             "🌐 Instancia (opcional): ej. baraag.net · Misskey: ej. misskey.io — "
             "si escribes @usuario@instancia se usa esa automáticamente"
         )
-        v.addWidget(self.ed_instancia)
+        self.ed_instancia.setToolTip(_ayuda_campos)
+        v.addWidget(self.ed_instancia, 1, 1)
 
         self.page_booru = QWidget()
         v = QVBoxLayout(self.page_booru)
@@ -1528,7 +1535,10 @@ class MainWindow(QMainWindow):
         # En resizeEvent el divisor aún no tiene su altura nueva: se calcula desde la
         # ventana (descontando barra de herramientas, estado y márgenes).
         alto_total = max(300, self.height() - 120)
-        necesario = max(170, panel.minimumSizeHint().height())
+        # La altura que de verdad necesita el formulario: su tamaño natural más un
+        # margen. Usar solo el mínimo declarado dejaba la última fila (carpeta y
+        # botones) fuera en pantallas de 720-768 px.
+        necesario = max(170, panel.sizeHint().height() + 24)
         # Hueco mínimo para los resultados (galería + lista + barra de progreso)
         # Los resultados necesitan poco para ser útiles (galería + lista): así el
         # formulario recibe lo que le falta incluso en ventanas de 660 px.
