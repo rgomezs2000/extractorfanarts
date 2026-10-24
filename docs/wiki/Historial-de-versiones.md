@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.65 — 11 de octubre de 2026 · la beta definitiva (65.ª entrega)
+
+**Formulario compacto: sin barra de desplazamiento en pantallas normales**
+- Tras la entrega anterior, el formulario aún mostraba barra porque pedía **415 px** de
+  alto y el divisor le daba 380.
+- Ahora ocupa **376 px**: la carpeta de salida pasa a una fila (sin caja), el párrafo de
+  ayuda se convierte en tooltip de los campos, hay menos separación, y el divisor reparte el
+  espacio fijando lo que necesita el formulario (con un ajuste diferido para que Qt no lo
+  vuelva a repartir por proporción).
+- Medido con la ventana real:
+
+`
+1360x768  -> formulario 415 · resultados 227 · BARRA: no
+1280x720  -> formulario 393 · resultados 201 · BARRA: no
+1034x914  -> formulario 415 · resultados 373 · BARRA: no
+1920x1080 -> formulario 415 · resultados 539 · BARRA: no
+1024x600 / 800x600 / 640x480 -> BARRA: sí (no hay sitio; se desplaza, nunca se solapa)
+`
+
+---
+
 ## v0.1.5-beta.64 — 11 de octubre de 2026 · la beta definitiva (64.ª entrega)
 
 **La ventana se adapta a cualquier pantalla (sin cortes ni solapamientos)**

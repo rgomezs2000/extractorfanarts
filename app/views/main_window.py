@@ -111,12 +111,12 @@ class MainWindow(QMainWindow):
         self._panel_config = QWidget()
         cfg = QVBoxLayout(self._panel_config)
         cfg.setContentsMargins(0, 0, 0, 0)
-        cfg.setSpacing(6)
+        cfg.setSpacing(4)   # compacto: que el formulario quepa sin barra en 768 px
         self._scroll_config = QScrollArea()
         self._scroll_config.setWidgetResizable(True)
         self._scroll_config.setFrameShape(QFrame.NoFrame)
         self._scroll_config.setWidget(self._panel_config)
-        self._scroll_config.setMinimumHeight(140)
+        self._scroll_config.setMinimumHeight(170)
         self._split = QSplitter(Qt.Vertical)
         self._split.setChildrenCollapsible(False)
         self._split.addWidget(self._scroll_config)
@@ -151,14 +151,13 @@ class MainWindow(QMainWindow):
         v = QVBoxLayout(self.page_social)
         v.setContentsMargins(0, 0, 0, 0)
         v.setSpacing(4)
-        aviso_social = QLabel(
-            "Combina los campos que quieras (se exigen todos los que rellenes) y admite "
-            "varios valores: varios hashtags separados por espacios («#lola_loud "
-            "#the_loud_house») y varias palabras clave separadas por comas («Lola Loud, "
-            "The Loud House»). De cada campo vale cualquiera de sus valores."
+        # La explicación va como tooltip de los campos: así el formulario no gasta una
+        # fila de texto y cabe sin barra de desplazamiento en pantallas de 768 px.
+        _ayuda_campos = (
+            "Se exigen todos los campos que rellenes. Varios hashtags separados por espacios "
+            "(«#lola_loud #the_loud_house») y varias palabras clave separadas por comas "
+            "(«Lola Loud, The Loud House»). De cada campo vale cualquiera de sus valores."
         )
-        aviso_social.setWordWrap(True)   # se ajusta al ancho de la ventana
-        v.addWidget(aviso_social)
         self.ed_usuario = QLineEdit()
         self.ed_usuario.setPlaceholderText("👤 @usuario  (o @usuario@instancia)")
         self.ed_keyword = QLineEdit()
@@ -315,17 +314,18 @@ class MainWindow(QMainWindow):
         ov.addLayout(fl4)
         cfg.addWidget(self.filtros_box)
 
-        # Carpeta de salida
-        carpeta_box = QGroupBox("📁 Carpeta de salida")
-        cl = QHBoxLayout(carpeta_box)
+        # Carpeta de salida: una sola fila sin caja, para no gastar altura (con la caja y
+        # su título ocupaba ~80 px y empujaba el formulario a necesitar barra).
+        carpeta_fila = QHBoxLayout()
+        carpeta_fila.setContentsMargins(0, 0, 0, 0)
         self.ed_carpeta = QLineEdit(str(config.DEFAULT_OUTPUT_DIR))
         self.btn_carpeta = QPushButton("📂")
         self.btn_carpeta.setFixedWidth(44)
         self.btn_carpeta.setToolTip("Elegir carpeta de salida")
-        cl.addWidget(QLabel("Salida:"))
-        cl.addWidget(self.ed_carpeta, 1)
-        cl.addWidget(self.btn_carpeta)
-        cfg.addWidget(carpeta_box)
+        carpeta_fila.addWidget(QLabel("📁 Salida:"))
+        carpeta_fila.addWidget(self.ed_carpeta, 1)
+        carpeta_fila.addWidget(self.btn_carpeta)
+        cfg.addLayout(carpeta_fila)
 
         # Botones
         botones = QHBoxLayout()
@@ -340,9 +340,9 @@ class MainWindow(QMainWindow):
 
         # Resultados
         self.galeria = GaleriaWidget()
-        self.galeria.setMinimumHeight(130)
+        self.galeria.setMinimumHeight(100)
         self.lst_resultados = QListWidget()
-        self.lst_resultados.setMinimumHeight(45)
+        self.lst_resultados.setMinimumHeight(38)
 
         res_box = QGroupBox("🖼️ Resultados")
         rv = QVBoxLayout(res_box)
@@ -352,7 +352,10 @@ class MainWindow(QMainWindow):
         self._split.addWidget(res_box)
         self._split.setStretchFactor(0, 0)
         self._split.setStretchFactor(1, 1)
-        self._split.setSizes([380, 320])
+        # El formulario necesita ~415 px: si se le da menos, aparece la barra. Se le
+        # asignan de entrada los que necesita y el resto para los resultados.
+        alto_form = max(415, self._panel_config.minimumSizeHint().height())
+        self._split.setSizes([alto_form, 320])
 
         # Progreso: siempre visible (en reposo marca 0 %; al buscar/descargar avanza)
         self.progress = QProgressBar()
@@ -1499,6 +1502,32 @@ class MainWindow(QMainWindow):
         self._lightbox.abrir(indice)
 
     # ------------------------------------------------------------------ tamaño en pantalla
+    def resizeEvent(self, evento) -> None:  # noqa: N802 (API de Qt)
+        """Reparte el divisor al cambiar de tamaño: el formulario recibe lo que necesita.
+
+        Si hay sitio, el panel de búsqueda ocupa su altura natural (así no aparece la barra
+        de desplazamiento) y los resultados se quedan con el resto. Si la ventana es muy
+        baja, el formulario se encoge y aparece la barra: antes eso que cortar controles.
+        """
+        super().resizeEvent(evento)
+        divisor = getattr(self, "_split", None)
+        panel = getattr(self, "_panel_config", None)
+        if divisor is None or panel is None:
+            return
+        # En resizeEvent el divisor aún no tiene su altura nueva: se calcula desde la
+        # ventana (descontando barra de herramientas, estado y márgenes).
+        alto_total = max(300, self.height() - 120)
+        necesario = max(170, panel.minimumSizeHint().height())
+        # Hueco mínimo para los resultados (galería + lista + barra de progreso)
+        minimo_resultados = 200
+        alto_form = min(necesario, max(170, alto_total - minimo_resultados))
+        medida = [alto_form, max(0, alto_total - alto_form)]
+        divisor.setSizes(medida)
+        # Qt reparte por proporción justo después del evento: se vuelve a fijar en el
+        # siguiente ciclo para que el formulario reciba EXACTAMENTE lo que necesita y no
+        # aparezca la barra teniendo sitio de sobra.
+        QTimer.singleShot(0, lambda: divisor.setSizes(medida))
+
     def ajustar_a_pantalla(self) -> None:
         """Ajusta la ventana a la zona útil de la pantalla (sin tapar la barra de tareas).
 
