@@ -1,5 +1,24 @@
 # Historial de versiones
 
+## v0.1.5-beta.68 — 11 de octubre de 2026 · la beta definitiva (68.ª entrega)
+
+**Ventana 100 % responsiva: se adapta, no bloquea tamaños**
+- Mínimo de ventana: **640×480** (antes 720 de alto).
+- Las **opciones** (calidad, filtros, cantidad) se **recogen solas** cuando la ventana es
+  baja y se vuelven a desplegar al agrandarla; también se pueden plegar a mano con el botón
+  **⚙️ Opciones**. Así el formulario pasa de 415 a **273 px** cuando hace falta.
+- Sigue **sin ninguna barra** de desplazamiento, y sin recortes: lo que no cabe se recoge,
+  no se corta.
+- Medido con la ventana real (barras V/H siempre no/no):
+
+`
+720x858   -> form 415 · 1360x768 -> form 415 · 1280x720 -> form 393
+1024x600  -> form 273 (opciones recogidas)  · 800x600 -> form 273
+ 640x480  -> form 170  · 1920x1080 -> form 415
+`
+
+---
+
 ## v0.1.5-beta.67 — 11 de octubre de 2026 · la beta definitiva (67.ª entrega)
 
 **Formulario compacto en dos columnas: ya no se corta la carpeta ni los botones**

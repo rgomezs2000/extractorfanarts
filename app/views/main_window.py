@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
         # 700 px de alto = formulario completo (376) + resultados útiles + barra de estado.
         # Es el mínimo con el que TODO se ve sin barras y sin recortes; por debajo habría
         # que elegir entre barra o corte, y se ha decidido no permitir ninguno de los dos.
-        self.setMinimumSize(640, 720)
+        self.setMinimumSize(640, 480)
         self._minimo_alto = max(560, self.minimumSizeHint().height())
 
         # Fuente: fila normal (los campos se estiran con la ventana)
@@ -235,6 +235,18 @@ class MainWindow(QMainWindow):
 
         # Opciones: rejilla estable de 2 columnas (el alto no cambia al redimensionar,
         # así TODO cabe siempre en la ventana sin barras de desplazamiento)
+        # Botón «Opciones»: pliega/despliega el bloque para que la ventana pueda ser
+        # pequeña sin barras ni recortes (100% responsiva). Se recoge solo cuando falta alto.
+        self.btn_opciones = QToolButton()
+        self.btn_opciones.setText("⚙️ Opciones")
+        self.btn_opciones.setCheckable(True)
+        self.btn_opciones.setChecked(True)
+        self.btn_opciones.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.btn_opciones.setAutoRaise(True)
+        self.btn_opciones.setToolTip("Mostrar u ocultar las opciones de calidad y filtros")
+        self.btn_opciones.toggled.connect(self._plegar_opciones)
+        cfg.addWidget(self.btn_opciones)
+
         self.filtros_box = QGroupBox("⚙️ Opciones")
         ov = QVBoxLayout(self.filtros_box)
         ov.setContentsMargins(8, 6, 8, 6)
@@ -1520,6 +1532,17 @@ class MainWindow(QMainWindow):
         self._lightbox.abrir(indice)
 
     # ------------------------------------------------------------------ tamaño en pantalla
+    def _plegar_opciones(self, visible: bool) -> None:
+        """Muestra u oculta el bloque de opciones (para que quepa en ventanas bajas)."""
+        caja = getattr(self, "filtros_box", None)
+        if caja is not None:
+            caja.setVisible(bool(visible))
+        boton = getattr(self, "btn_opciones", None)
+        if boton is not None and boton.isChecked() != bool(visible):
+            boton.blockSignals(True)
+            boton.setChecked(bool(visible))
+            boton.blockSignals(False)
+
     def resizeEvent(self, evento) -> None:  # noqa: N802 (API de Qt)
         """Reparte el divisor al cambiar de tamaño: el formulario recibe lo que necesita.
 
@@ -1543,6 +1566,26 @@ class MainWindow(QMainWindow):
         # Los resultados necesitan poco para ser útiles (galería + lista): así el
         # formulario recibe lo que le falta incluso en ventanas de 660 px.
         minimo_resultados = 150
+        # Auto-plegado: si la ventana es baja, se recogen las opciones para que el
+        # formulario quepa entero; si vuelve a haber sitio, se despliegan.
+        # Referencia FIJA (con opciones desplegadas): si se recalculara con el panel
+        # ya plegado, el tamaño baja y volvería a desplegarse en bucle.
+        if getattr(self, "_alto_con_opciones", 0) <= 0:
+            self._alto_con_opciones = necesario
+        con_opciones = self._alto_con_opciones
+        sin_opciones = necesario - getattr(self, "filtros_box", panel).sizeHint().height() - 8
+        quiere = (alto_total - minimo_resultados) >= con_opciones
+        # Se oculta/muestra la caja directamente y se sincroniza el botón (sin señales,
+        # para no entrar en bucles): así el estado del botón siempre dice la verdad.
+        caja = getattr(self, "filtros_box", None)
+        if caja is not None and caja.isVisible() != quiere:
+            caja.setVisible(quiere)
+        boton = getattr(self, "btn_opciones", None)
+        if boton is not None and boton.isChecked() != quiere:
+            boton.blockSignals(True)
+            boton.setChecked(quiere)
+            boton.blockSignals(False)
+        necesario = con_opciones if quiere else max(170, sin_opciones)
         alto_form = min(necesario, max(170, alto_total - minimo_resultados))
         medida = [alto_form, max(0, alto_total - alto_form)]
         divisor.setSizes(medida)
