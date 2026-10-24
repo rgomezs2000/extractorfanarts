@@ -116,13 +116,24 @@ class MainWindow(QMainWindow):
         self._scroll_config.setWidgetResizable(True)
         self._scroll_config.setFrameShape(QFrame.NoFrame)
         self._scroll_config.setWidget(self._panel_config)
+        # SIN barras, nunca: el contenido debe caber. Se desactivan ambas y el mínimo de la
+        # ventana se ajusta al contenido real (ver resizeEvent / mínimo de ventana).
+        self._scroll_config.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self._scroll_config.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self._scroll_config.setMinimumHeight(170)
         self._split = QSplitter(Qt.Vertical)
         self._split.setChildrenCollapsible(False)
         self._split.addWidget(self._scroll_config)
         root.addWidget(self._split, 1)
         # Tamaño mínimo real de la ventana: cabe en 1366x768 (y en 640x480 con desplazamiento)
-        self.setMinimumSize(640, 480)
+        # Mínimo REAL de la ventana: el que necesita el contenido para caber sin barras ni
+        # recortes. El ancho se limita a 640 (los textos largos no deben estirar la ventana);
+        # el alto lo pone el propio diseño (formulario + resultados + barra de estado).
+        # 700 px de alto = formulario completo (376) + resultados útiles + barra de estado.
+        # Es el mínimo con el que TODO se ve sin barras y sin recortes; por debajo habría
+        # que elegir entre barra o corte, y se ha decidido no permitir ninguno de los dos.
+        self.setMinimumSize(640, 700)
+        self._minimo_alto = max(560, self.minimumSizeHint().height())
 
         # Fuente: fila normal (los campos se estiran con la ventana)
         fuente_box = QGroupBox("🔎 Fuente de búsqueda")
@@ -1519,7 +1530,9 @@ class MainWindow(QMainWindow):
         alto_total = max(300, self.height() - 120)
         necesario = max(170, panel.minimumSizeHint().height())
         # Hueco mínimo para los resultados (galería + lista + barra de progreso)
-        minimo_resultados = 200
+        # Los resultados necesitan poco para ser útiles (galería + lista): así el
+        # formulario recibe lo que le falta incluso en ventanas de 660 px.
+        minimo_resultados = 150
         alto_form = min(necesario, max(170, alto_total - minimo_resultados))
         medida = [alto_form, max(0, alto_total - alto_form)]
         divisor.setSizes(medida)

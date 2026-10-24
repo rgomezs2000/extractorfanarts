@@ -1,5 +1,29 @@
 # Historial de versiones
 
+## v0.1.5-beta.66 — 11 de octubre de 2026 · la beta definitiva (66.ª entrega)
+
+**Ninguna barra de desplazamiento: el contenido siempre entero**
+- Se **desactivan** las barras del panel de búsqueda (vertical y horizontal): el formulario
+  no se desplaza, se ve completo o la ventana no se deja encoger más.
+- El **mínimo de ventana pasa a 640×700**, que es lo que necesita el contenido para caber
+  sin barras **y sin recortes** (formulario 376 + resultados útiles + barra de estado).
+- El divisor reparte el espacio para que el formulario reciba su altura y los resultados el
+  resto; la galería y la lista admiten menos altura para no robar sitio.
+- Medido con la ventana real (formulario completo, sin barras V ni H):
+
+```
+748x852  -> formulario 415 · barras no/no
+1360x768 -> formulario 415 · barras no/no
+1280x720 -> formulario 393 · barras no/no
+1034x914 -> formulario 415 · barras no/no
+1920x1080-> formulario 415 · barras no/no
+```
+
+- Por debajo de ~700 px de alto la ventana **no se encoge** (así nunca hay corte ni barra);
+  en pantallas más bajas, el sistema puede desplazar la ventana entera.
+
+---
+
 ## v0.1.5-beta.65 — 11 de octubre de 2026 · la beta definitiva (65.ª entrega)
 
 **Formulario compacto: sin barra de desplazamiento en pantallas normales**
