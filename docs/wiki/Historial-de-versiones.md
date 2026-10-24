@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.62 — 11 de octubre de 2026 · la beta definitiva (62.ª entrega)
+
+**Las imágenes de Gelbooru ya se ven y se descargan**
+- Gelbooru (sus servidores `img1..img4.gelbooru.com`) exige la cabecera **Referer**: sin
+  ella **no** devuelve la imagen, devuelve una **página HTML** con HTTP 200. De ahí el
+  `UnidentifiedImageError: cannot identify image file` al preparar la vista previa y que la
+  descarga no trajera la imagen.
+- Se añade `gelbooru.com` a `REFERER_DOMAINS`. Comprobado con una imagen real: sin Referer
+  llegaban 30 KB de HTML; con Referer llegan **136 KB de JPEG** y la vista previa se genera
+  en WebP.
+
+---
+
 ## v0.1.5-beta.61 — 11 de octubre de 2026 · la beta definitiva (61.ª entrega)
 
 **Gelbooru: la búsqueda devolvía 0 resultados aunque hubiera posts**

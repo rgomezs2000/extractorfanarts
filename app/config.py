@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.61"
+APP_VERSION = "0.1.5-beta.62"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -207,9 +207,13 @@ UGOIRA_MAX_ZIP_MB = 200      # tamaño máximo del ZIP descargado
 
 # Cabecera Referer obligatoria en algunos CDN: el de Pixiv (i.pximg.net) responde
 # 403 sin ella. Se aplica por sufijo de dominio.
+# Gelbooru (img1..img4.gelbooru.com) también la exige: sin Referer NO devuelve la imagen,
+# devuelve una página HTML (HTTP 200 con text/html), que es lo que hacía que la vista
+# previa y las descargas fallaran con «cannot identify image file».
 REFERER_DOMAINS = {
     "pximg.net": "https://www.pixiv.net/",
     "pixiv.net": "https://www.pixiv.net/",
+    "gelbooru.com": "https://gelbooru.com/",
 }
 
 # X / Twitter: API v2 oficial, DE PAGO por uso desde 2026 (app de desarrollador
