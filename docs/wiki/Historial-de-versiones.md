@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.63 — 11 de octubre de 2026 · la beta definitiva (63.ª entrega)
+
+**Contenido adulto: la casilla manda de verdad (redes, boorus y wikis)**
+- El filtro estaba **invertido**: al **desmarcar** «Contenido adulto» se usaba
+  `ALLOW_ADULT_RATINGS`, que por defecto **permite todo**, así que se colaba contenido
+  explícito igualmente.
+- Ahora:
+  - **sin marcar** → solo `general` y `sensitive` (se omite `questionable` y `explicit`);
+  - **marcada** → se permiten las clasificaciones configuradas (por defecto, todas).
+- Afecta a **todas** las plataformas porque el filtro está en el controlador, común a redes,
+  boorus y wikis.
+- Comprobado con Gelbooru (`rita_loud`, 40 resultados reales: 28 explicit, 6 questionable,
+  5 sensitive, 1 general): **sin** la casilla se quedan **6**, **con** la casilla pasan **40**.
+
+---
+
 ## v0.1.5-beta.62 — 11 de octubre de 2026 · la beta definitiva (62.ª entrega)
 
 **Las imágenes de Gelbooru ya se ven y se descargan**

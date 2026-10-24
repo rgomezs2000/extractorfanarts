@@ -854,10 +854,15 @@ class MainController(QObject):
 
             # Dedupe SOLO dentro de la búsqueda actual: cada Descargar vuelve a
             # descargar todo y sobreescribe los archivos existentes (requisito).
+            # Contenido adulto: la casilla manda.
+            #   · MARCADA   -> se permiten las clasificaciones configuradas
+            #                  (ALLOW_ADULT_RATINGS; por defecto, todas).
+            #   · SIN marcar -> SOLO contenido apto: general y sensitive. Ni
+            #                  questionable (lewd) ni explicit.
             if settings.get("permitir_adulto"):
-                allow = ["general", "sensitive", "questionable", "explicit"]
+                allow = list(config.ALLOW_ADULT_RATINGS)
             else:
-                allow = config.ALLOW_ADULT_RATINGS
+                allow = ["general", "sensitive"]
             kept, rejected = filters.apply_filters(
                 arts,
                 allow_adult_ratings=allow,
