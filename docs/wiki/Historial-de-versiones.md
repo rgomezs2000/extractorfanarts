@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.61 — 11 de octubre de 2026 · la beta definitiva (61.ª entrega)
+
+**Gelbooru: la búsqueda devolvía 0 resultados aunque hubiera posts**
+- La API de Gelbooru contesta con un **objeto** `{"@attributes": …, "post": […]}` y el
+  programa esperaba una **lista**, así que descartaba todo y la ventana decía «Sin
+  resultados» aunque el navegador mostrase miles.
+- Ahora se aceptan **las dos formas**. Comprobado con una cuenta real: `oyama_mahiro` →
+  **15 resultados** (antes 0) y `kuromi` → 15, con las URL de imagen **originales**
+  (`img4.gelbooru.com/images/…`).
+- Además, el aviso de **HTTP 401** dice ahora **qué archivo de configuración se está
+  leyendo** (`config_local.py` junto al ejecutable, no el del código) y, si el sitio da
+  detalle, lo muestra: era justo lo que confundía al revisar las claves.
+
+---
+
 ## v0.1.5-beta.60 — 11 de octubre de 2026 · la beta definitiva (60.ª entrega)
 
 **Asistente de Pixiv: el enlace de continuación ya no sirve (404 de Pixiv)**

@@ -424,9 +424,22 @@ class PoliteClient:
                 continue
 
             if resp.status_code == 401:
+                # Se dice QUÉ archivo de configuración está leyendo de verdad: en una copia
+                # compilada es el que está junto al ejecutable, no app/config_local.py, y
+                # ese detalle ha despistado más de una vez.
+                usado = str(getattr(config, "CONFIG_LOCAL_USADO", "") or "").strip()
+                donde = usado or "app/config_local.py"
+                cuerpo = ""
+                try:
+                    cuerpo = " ".join((resp.text or "").split())[:120]
+                except Exception:  # noqa: BLE001
+                    cuerpo = ""
                 raise ConfigError(
                     f"autenticación rechazada en {domain} (HTTP 401): revisa las claves "
-                    "en app/config_local.py"
+                    f"en {donde}"
+                    + (f"\nEl sitio responde: {cuerpo}" if cuerpo else
+                       "\nEl sitio no da detalle: suele ser una clave caducada, mal copiada "
+                       "o de otro servicio.")
                 )
 
             if resp.status_code == 403:

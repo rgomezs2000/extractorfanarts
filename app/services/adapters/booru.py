@@ -349,6 +349,11 @@ class BooruAdapter(SearchAdapter):
                 **auth,
             }
             data = client.get_json(f"{self.base}/index.php", params=params)
+            # Gelbooru (y sus clones) pasaron de devolver una lista a devolver un objeto
+            # con los posts dentro: {"@attributes": {...}, "post": [...]}. Hay que aceptar
+            # las dos formas o la búsqueda se queda en 0 resultados aunque el sitio tenga.
+            if isinstance(data, dict):
+                return list(data.get("post") or [])
             return data if isinstance(data, list) else []
         if self.family == "danbooru":
             params = {"tags": joined, "limit": "200", "page": str(page + 1)}
