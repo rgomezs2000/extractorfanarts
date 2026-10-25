@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.70 — 11 de octubre de 2026 · la beta definitiva (70.ª entrega)
+
+**El endurecimiento de seguridad se aplica en Windows, macOS y Linux**
+- Medidas comunes a los tres sistemas: tope de imagen de 120 MP, validación de ZIP
+  (entradas, tamaños, rutas sin .. ni absolutas), nombres de archivo saneados, procesos sin
+  shell=True con timeout, topes de descarga y verificación TLS activa.
+- Medidas propias de **macOS y Linux**: el archivo de configuración con claves queda en
+  **0600** (solo su dueño) y ~/.imaginteca en **0700**. En Windows no existe esa semántica
+  POSIX: el archivo vive en el perfil del usuario con las ACL de Windows.
+- La comprobación --seguridad funciona en los tres sistemas y **dice en cuál está
+  corriendo**, con los límites activos y sus fallos (si los hubiera).
+
+---
+
 ## v0.1.5-beta.69 — 11 de octubre de 2026 · la beta definitiva (69.ª entrega)
 
 **Endurecimiento de seguridad del sistema (integridad, no credenciales)**

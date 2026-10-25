@@ -292,6 +292,9 @@ def main() -> int:
             f"  ZIP total        : {seguridad.MAX_ZIP_TOTAL_MB} MB",
             "  rutas            : sin «..» ni absolutas en ZIP, nombres saneados",
             "  procesos         : sin shell=True, con timeouts",
+            f"  sistema          : {seguridad.sistema()}",
+            "  permisos         : archivos con claves a 0600 y ~/.imaginteca a 0700 en "
+            "macOS/Linux; en Windows, ACL del perfil del usuario",
         ):
             print(linea)
         print("  fallos           : " + ("ninguno" if not fallos else "; ".join(fallos)))

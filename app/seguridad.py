@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import sys
 from pathlib import Path
 
 logger = logging.getLogger("imaginteca")
@@ -48,6 +49,45 @@ def endurecer_entorno() -> None:
         logger.info("seguridad: tope de imagen en %d MP", MAX_PIXELES_IMAGEN // 1_000_000)
     except Exception:  # noqa: BLE001
         logger.debug("seguridad: no se pudo fijar el tope de Pillow", exc_info=True)
+
+
+# ---------------------------------------------------------------------- permisos (multiplataforma)
+def proteger_archivo(ruta: Path, solo_lectura_dueno: bool = True) -> bool:
+    """Restringe un archivo con claves a su dueño (0600) en macOS/Linux.
+
+    En Windows no existe esa semántica POSIX: allí el archivo vive en el perfil del usuario
+    y hereda las ACL de Windows. Devuelve True si quedó restringido en este sistema.
+    """
+    if os.name == "nt":
+        return False
+    try:
+        modo = 0o600 if solo_lectura_dueno else 0o644
+        os.chmod(ruta, modo)
+        logger.info("seguridad: permisos %o aplicados a %s", modo, ruta.name)
+        return True
+    except OSError as exc:
+        logger.warning("seguridad: no se pudieron ajustar permisos de %s: %s", ruta, exc)
+        return False
+
+
+def proteger_carpeta(ruta: Path) -> bool:
+    """Carpeta privada del programa (~/.imaginteca): 0700 en macOS/Linux."""
+    if os.name == "nt":
+        return False
+    try:
+        os.chmod(ruta, 0o700)
+        return True
+    except OSError:
+        return False
+
+
+def sistema() -> str:
+    """Nombre legible del sistema para la comprobación de seguridad."""
+    if os.name == "nt":
+        return "Windows"
+    if sys.platform == "darwin":
+        return "macOS"
+    return "Linux/Unix"
 
 
 # ---------------------------------------------------------------------- nombres

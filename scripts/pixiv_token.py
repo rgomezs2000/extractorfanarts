@@ -162,6 +162,13 @@ def _guardar_en_config(token: str) -> Path | None:
                          + "\n\n# --------------------------------------------------- Pixiv\n"
                          + linea + "\n")
         destino.write_text(contenido, encoding="utf-8")
+        # Seguridad (macOS/Linux): el archivo con el token queda solo para su dueño.
+        try:
+            from app.seguridad import proteger_archivo
+
+            proteger_archivo(destino)
+        except Exception:  # noqa: BLE001
+            pass
         return destino
     except OSError as exc:
         print(f"[aviso] no se pudo escribir en {destino}: {exc}")
