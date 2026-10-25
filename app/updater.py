@@ -28,6 +28,8 @@ import tempfile
 import urllib.error
 import urllib.request
 import zipfile
+
+from . import seguridad
 from pathlib import Path
 
 from . import canal, config
@@ -222,11 +224,19 @@ def leer_huella_publicada(activo_huella: dict | None, timeout: int = 30) -> str:
 
 
 def comprobar_paquete(archivo: Path) -> bool:
-    """¿El `.zip` trae de verdad la aplicación? (evita instalar un paquete ajeno)."""
+    """¿El `.zip` trae de verdad la aplicación? (evita instalar un paquete ajeno).
+
+    Además del contenido esperado, se valida por seguridad: rutas absolutas o con `..`
+    (zip-slip), exceso de entradas y tamaño que se expandiría demasiado.
+    """
     try:
         with zipfile.ZipFile(archivo) as comprimido:
             nombres = comprimido.namelist()
+            problemas = seguridad.revisar_zip(comprimido)
     except Exception:  # noqa: BLE001
+        return False
+    if problemas:
+        logger.warning("paquete de actualización rechazado: %s", "; ".join(problemas))
         return False
     prefijos = (f"{config.APP_NAME}/", f"{config.APP_NAME}.app/")
     return any(nombre.startswith(prefijos) for nombre in nombres)

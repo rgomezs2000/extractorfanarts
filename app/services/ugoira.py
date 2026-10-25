@@ -18,6 +18,8 @@ from __future__ import annotations
 import io
 import logging
 import zipfile
+
+from .. import seguridad
 from pathlib import Path
 
 from .. import config
@@ -65,6 +67,12 @@ def convertir_a_webp_animado(
         archivo = zipfile.ZipFile(io.BytesIO(datos_zip))
     except zipfile.BadZipFile as exc:
         raise BlockedError(f"el ZIP de la animación está dañado: {exc}") from exc
+    # Seguridad: un ZIP puede declarar poco y expandirse a gigabytes, o traer rutas con
+    # «..». Se valida ANTES de leer nada.
+    problemas = seguridad.revisar_zip(archivo)
+    if problemas:
+        raise BlockedError("ZIP de animación rechazado por seguridad: "
+                           + "; ".join(problemas))
 
     nombres = set(archivo.namelist())
     if frames:

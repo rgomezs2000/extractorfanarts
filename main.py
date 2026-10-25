@@ -3,6 +3,7 @@
 Opciones de línea de comandos:
 
     --selftest                   comprueba el entorno y sale (genera selftest.txt)
+    --seguridad                  comprueba el endurecimiento de seguridad y sale
     --version                    muestra la versión
     --dependencias               estado de Python, paquetes esenciales y motores de IA
     --comprobar-actualizacion    dice si hay versión nueva (no instala nada)
@@ -265,9 +266,38 @@ def mantenimiento_por_consola(solo_comprobar: bool) -> int:
 
 
 def main() -> int:
+    # Endurecimiento de seguridad del proceso (topes de descompresión de imágenes y ZIP).
+    try:
+        from app.seguridad import endurecer_entorno
+
+        endurecer_entorno()
+    except Exception:  # noqa: BLE001
+        pass
+
     if "--version" in sys.argv:
         print(f"{config.APP_NAME} {config.APP_VERSION}")
         return 0
+    if "--seguridad" in sys.argv:
+        from app import seguridad
+
+        seguridad.endurecer_entorno()
+        fallos = seguridad.imagenes_sanas()
+        print("=")
+        print("COMPROBACIÓN DE SEGURIDAD — Imaginteca")
+        print("=")
+        for linea in (
+            f"  tope de imagen   : {seguridad.MAX_PIXELES_IMAGEN // 1_000_000} MP",
+            f"  ZIP entradas     : {seguridad.MAX_ZIP_ENTRADAS}",
+            f"  ZIP por entrada  : {seguridad.MAX_ZIP_MIEMBRO_MB} MB",
+            f"  ZIP total        : {seguridad.MAX_ZIP_TOTAL_MB} MB",
+            "  rutas            : sin «..» ni absolutas en ZIP, nombres saneados",
+            "  procesos         : sin shell=True, con timeouts",
+        ):
+            print(linea)
+        print("  fallos           : " + ("ninguno" if not fallos else "; ".join(fallos)))
+        print(f"RESULTADO: {'OK' if not fallos else str(len(fallos)) + ' problema(s)'}")
+        return 0 if not fallos else 1
+
     if "--selftest" in sys.argv:
         return selftest()
     if "--comprobar-actualizacion" in sys.argv or "--check-update" in sys.argv:

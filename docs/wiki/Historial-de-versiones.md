@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.69 — 11 de octubre de 2026 · la beta definitiva (69.ª entrega)
+
+**Endurecimiento de seguridad del sistema (integridad, no credenciales)**
+- Nuevo módulo pp/seguridad.py con las medidas y su comprobación:
+  Imaginteca.exe --seguridad.
+- **Bombas de descompresión**: tope de imagen de **120 MP** aplicado a Pillow antes de
+  decodificar (una imagen de pocos KB puede declarar gigapíxeles).
+- **ZIP hostiles** (ugoira de Pixiv y paquetes de actualización): máximo **5000** entradas,
+  **60 MB** por entrada y **400 MB** total; se rechazan rutas con .. o absolutas
+  (zip-slip). Comprobado: un paquete con ../../evil.txt se **rechaza** y uno normal pasa.
+- **Nombres de archivo**: saneado de separadores, .., caracteres prohibidos y nombres
+  reservados de Windows (CON, NUL, COM1…).
+- Auditoría del código: **sin** shell=True, os.system, val, xec, pickle ni
+  erify=False. Las descargas ya tenían tope de bytes y las claves se enmascaran.
+- Documento **SECURITY.md** con la superficie protegida y lo que no se hace.
+
+---
+
 ## v0.1.5-beta.68 — 11 de octubre de 2026 · la beta definitiva (68.ª entrega)
 
 **Ventana 100 % responsiva: se adapta, no bloquea tamaños**
