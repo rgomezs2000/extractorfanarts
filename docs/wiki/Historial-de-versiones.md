@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.71 — 11 de octubre de 2026 · la beta definitiva (71.ª entrega)
+
+**Secciones plegables, formulario en una columna y galería sin solapes**
+- La ventana se organiza en **dos secciones plegables**:
+  - **🔎 Fuente de búsqueda**: tipo/plataforma, campos, **opciones** y los botones
+    Buscar / Descargar / Limpiar.
+  - **🖼️ Resultados**: galería y registro de resultados.
+  El **progreso** y el **estado de conexión** quedan **fijos abajo**, fuera de las secciones.
+- Al **plegar una sección, la otra se expande** (comprobado: plegando Fuente, Resultados
+  pasa de 226 a 931 px y la galería de 100 a 651 px).
+- **Formulario en una sola columna**, con **etiqueta en cada campo** (Usuario, Palabra clave,
+  Hashtag, Instancia). Nada de dos columnas.
+- **Sin barras de desplazamiento**: ya no hay área desplazable; el contenido se reparte solo.
+- **Etiqueta del booru compacta**: el texto largo pasa al tooltip y desaparece el hueco blanco.
+- **Galería**: el visor tiene altura mínima y el pintado está **recortado** a su área, así la
+  muestra no se dibuja encima del carrusel. Al navegar (flechas ◀ ▶, teclado o clic en la
+  tira) la muestra hace un **fundido** de entrada.
+- **Registro de resultados compacto** (máx. 110 px) para dejar sitio a la galería.
+
+---
+
 ## v0.1.5-beta.70 — 11 de octubre de 2026 · la beta definitiva (70.ª entrega)
 
 **El endurecimiento de seguridad se aplica en Windows, macOS y Linux**

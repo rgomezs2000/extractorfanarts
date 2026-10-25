@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import logging
 
-from PySide6.QtCore import QPoint, QSize, Qt, Signal
+from PySide6.QtCore import QVariantAnimation, QEasingCurve, QPoint, QSize, Qt, Signal
 from PySide6.QtGui import QColor, QIcon, QKeySequence, QPainter, QPen, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -80,6 +80,8 @@ def _placeholder(numero: int) -> QPixmap:
 
 class VisorImagen(QLabel):
     """Imagen grande del carrusel; al pulsarla (o con Enter) se abre el visor ampliado."""
+
+    _desliz: float = 0.0   # desplazamiento animado (0 = centrada)
 
     pulsada = Signal()
     peticion_menu = Signal(QPoint)   # clic derecho sobre la imagen (posición global)
@@ -214,13 +216,43 @@ class Lightbox(QWidget):
         if objetivo is None:
             return None
         ancho, alto = objetivo
-        return ((self.width() - ancho) // 2 + self._desplazamiento.x(),
+        return ((self.width() - ancho) // 2 + self._desplazamiento.x()
+                + int(getattr(self, "_desliz", 0)),
                 (self.height() - alto) // 2 + self._desplazamiento.y(),
                 ancho, alto)
 
     # ------------------------------------------------------------------ pintura
+    def _iniciar_animacion(self) -> None:
+        """Animación de desplazamiento de la imagen de muestra."""
+        self._desliz = 0.0
+        self._animacion = QVariantAnimation(self)
+        self._animacion.setDuration(180)
+        self._animacion.setEasingCurve(QEasingCurve.OutCubic)
+        self._animacion.valueChanged.connect(self._animar_paso)
+        self._animacion.finished.connect(lambda: self.update())
+
+    def _animar_paso(self, valor) -> None:
+        try:
+            self._desliz = float(valor)
+        except (TypeError, ValueError):
+            self._desliz = 0.0
+        self.update()
+
+    def deslizar(self, direccion: int) -> None:
+        """Anima la entrada de la imagen: viene desde el lado hacia el que se navega."""
+        animacion = getattr(self, "_animacion", None)
+        if animacion is None:
+            return
+        desde = (1 if direccion >= 0 else -1) * max(60, self.width() // 3)
+        animacion.stop()
+        animacion.setStartValue(float(desde))
+        animacion.setEndValue(0.0)
+        animacion.start()
+
     def paintEvent(self, evento):  # noqa: N802
         pintor = QPainter(self)
+        # Recorte al área del visor: la imagen nunca se dibuja sobre el carrusel.
+        pintor.setClipRect(self.rect())
         pintor.setRenderHint(QPainter.Antialiasing, True)
         pintor.setRenderHint(QPainter.SmoothPixmapTransform, True)
         pintor.fillRect(self.rect(), QColor(0, 0, 0, 215))
@@ -435,6 +467,7 @@ class GaleriaWidget(QWidget):
         self.btn_anterior.setFixedWidth(36)
         self.btn_anterior.setToolTip("Imagen anterior (←)")
         self.visor = VisorImagen()
+        self.visor.setMinimumHeight(120)
         self.btn_siguiente = QPushButton("▶")
         self.btn_siguiente.setFixedWidth(36)
         self.btn_siguiente.setToolTip("Imagen siguiente (→)")
@@ -594,10 +627,39 @@ class GaleriaWidget(QWidget):
             LADO_MINIATURA, LADO_MINIATURA, Qt.KeepAspectRatio,
             Qt.SmoothTransformation)))
 
+    def _animar_muestra(self) -> None:
+        """Fundido al cambiar de imagen (efecto visual al navegar con flechas o teclado)."""
+        try:
+            from PySide6.QtCore import QEasingCurve, QPropertyAnimation
+            from PySide6.QtWidgets import QGraphicsOpacityEffect
+
+            efecto = getattr(self.visor, "_efecto_opacidad", None)
+            if efecto is None:
+                efecto = QGraphicsOpacityEffect(self.visor)
+                efecto.setOpacity(1.0)
+                self.visor.setGraphicsEffect(efecto)
+                self.visor._efecto_opacidad = efecto      # type: ignore[attr-defined]
+            animacion = getattr(self, "_anim_muestra", None)
+            if animacion is None:
+                animacion = QPropertyAnimation(efecto, b"opacity", self)
+                animacion.setDuration(170)
+                animacion.setEasingCurve(QEasingCurve.OutCubic)
+                animacion.setStartValue(0.25)
+                animacion.setEndValue(1.0)
+                self._anim_muestra = animacion
+            animacion.stop()
+            animacion.start()
+        except Exception:  # noqa: BLE001
+            pass
+
     def mostrar(self, indice: int) -> None:
         if not self._pixmaps:
             return
+        anterior = self._indice
         self._indice = indice % len(self._pixmaps)
+        # Efecto de desplazamiento: la muestra entra desde el lado de la navegación.
+        if self._indice != anterior:
+            self._animar_muestra()
         if self.tira.currentRow() != self._indice:
             self._sincronizando = True
             self.tira.setCurrentRow(self._indice)

@@ -108,23 +108,12 @@ class MainWindow(QMainWindow):
         # El formulario de búsqueda va en un panel con DESPLAZAMIENTO propio: en pantallas
         # bajas (1366x768, portátiles, tablets) se desplaza en lugar de cortarse o montarse
         # sobre los resultados. Los resultados quedan siempre anclados abajo.
+        # Sin áreas desplazables: la ventana se organiza en SECCIONES PLEGABLES. Al plegar
+        # una, la otra ocupa su espacio. El progreso y el estado quedan fijos abajo.
         self._panel_config = QWidget()
         cfg = QVBoxLayout(self._panel_config)
         cfg.setContentsMargins(0, 0, 0, 0)
-        cfg.setSpacing(4)   # compacto: que el formulario quepa sin barra en 768 px
-        self._scroll_config = QScrollArea()
-        self._scroll_config.setWidgetResizable(True)
-        self._scroll_config.setFrameShape(QFrame.NoFrame)
-        self._scroll_config.setWidget(self._panel_config)
-        # SIN barras, nunca: el contenido debe caber. Se desactivan ambas y el mínimo de la
-        # ventana se ajusta al contenido real (ver resizeEvent / mínimo de ventana).
-        self._scroll_config.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._scroll_config.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self._scroll_config.setMinimumHeight(170)
-        self._split = QSplitter(Qt.Vertical)
-        self._split.setChildrenCollapsible(False)
-        self._split.addWidget(self._scroll_config)
-        root.addWidget(self._split, 1)
+        cfg.setSpacing(4)
         # Tamaño mínimo real de la ventana: cabe en 1366x768 (y en 640x480 con desplazamiento)
         # Mínimo REAL de la ventana: el que necesita el contenido para caber sin barras ni
         # recortes. El ancho se limita a 640 (los textos largos no deben estirar la ventana);
@@ -183,24 +172,33 @@ class MainWindow(QMainWindow):
         self.ed_hashtag.setToolTip(_ayuda_campos)
         # DOS COLUMNAS: el formulario de redes ocupa la mitad de alto y así no corta la
         # última fila (carpeta y botones) en pantallas de 720-768 px.
-        v.addWidget(self.ed_usuario, 0, 0)
-        v.addWidget(self.ed_keyword, 0, 1)
-        v.addWidget(self.ed_hashtag, 1, 0)
+        # Un campo por fila, cada uno con su etiqueta (como pidió el usuario).
+        v.addWidget(QLabel("👤 Usuario:"), 0, 0)
+        v.addWidget(self.ed_usuario, 0, 1)
+        v.addWidget(QLabel("🔤 Palabra clave:"), 1, 0)
+        v.addWidget(self.ed_keyword, 1, 1)
+        v.addWidget(QLabel("#️⃣ Hashtag:"), 2, 0)
+        v.addWidget(self.ed_hashtag, 2, 1)
         self.ed_instancia = QLineEdit()
         self.ed_instancia.setPlaceholderText(
             "🌐 Instancia (opcional): ej. baraag.net · Misskey: ej. misskey.io — "
             "si escribes @usuario@instancia se usa esa automáticamente"
         )
         self.ed_instancia.setToolTip(_ayuda_campos)
-        v.addWidget(self.ed_instancia, 1, 1)
+        v.addWidget(QLabel("🌐 Instancia:"), 3, 0)
+        v.addWidget(self.ed_instancia, 3, 1)
+        v.setColumnStretch(1, 1)
 
         self.page_booru = QWidget()
         v = QVBoxLayout(self.page_booru)
         v.setContentsMargins(0, 0, 0, 0)
         v.setSpacing(4)
-        v.addWidget(QLabel(
-            "🏷️ Tags del booru (los que quieras: se buscan TODOS a la vez; sepáralos con "
-            "espacios o comas. También valen operadores: -tag, rating:general, score:>10):"))
+        etiqueta_tags = QLabel("🏷️ Tags del booru (se buscan todos a la vez):")
+        etiqueta_tags.setToolTip(
+            "Sepáralos con espacios o comas. También valen operadores: -tag, "
+            "rating:general, score:>10"
+        )
+        v.addWidget(etiqueta_tags)
         self.ed_tags = QLineEdit()
         self.ed_tags.setPlaceholderText("🏷️ ej. lori_loud 1girl solo blonde_hair")
         v.addWidget(self.ed_tags)
@@ -368,24 +366,35 @@ class MainWindow(QMainWindow):
         botones.addStretch(1)
         cfg.addLayout(botones)
 
+        # SECCIÓN 1: fuente de búsqueda (incluye opciones y los botones de acción)
+        self._sec_fuente, self._cuerpo_fuente = self._crear_seccion(
+            "🔎 Fuente de búsqueda", self._panel_config)
+
         # Resultados
         self.galeria = GaleriaWidget()
         self.galeria.setMinimumHeight(100)
         self.lst_resultados = QListWidget()
         self.lst_resultados.setMinimumHeight(38)
+        # El registro de resultados es compacto: la galería se lleva el espacio.
+        self.lst_resultados.setMaximumHeight(110)
 
         res_box = QGroupBox("🖼️ Resultados")
         rv = QVBoxLayout(res_box)
         rv.addWidget(self.galeria, 1)
         rv.addWidget(QLabel("📋 Resultados encontrados:"))
         rv.addWidget(self.lst_resultados)
-        self._split.addWidget(res_box)
-        self._split.setStretchFactor(0, 0)
-        self._split.setStretchFactor(1, 1)
-        # El formulario necesita ~415 px: si se le da menos, aparece la barra. Se le
-        # asignan de entrada los que necesita y el resto para los resultados.
-        alto_form = max(415, self._panel_config.minimumSizeHint().height())
-        self._split.setSizes([alto_form, 320])
+        # SECCIÓN 2: resultados (galería + registro de resultados)
+        self._sec_resultados, self._cuerpo_resultados = self._crear_seccion(
+            "🖼️ Resultados", res_box)
+        # Caja vertical: la sección plegada se queda en su cabecera y la otra se expande.
+        self._caja_secciones = QWidget()
+        caja_v = QVBoxLayout(self._caja_secciones)
+        caja_v.setContentsMargins(0, 0, 0, 0)
+        caja_v.setSpacing(4)
+        caja_v.addWidget(self._sec_fuente, 0)
+        caja_v.addWidget(self._sec_resultados, 1)
+        self._caja_secciones._layout = caja_v      # type: ignore[attr-defined]
+        root.addWidget(self._caja_secciones, 1)
 
         # Progreso: siempre visible (en reposo marca 0 %; al buscar/descargar avanza)
         self.progress = QProgressBar()
@@ -1531,7 +1540,52 @@ class MainWindow(QMainWindow):
             self._lightbox = Lightbox(self.galeria)
         self._lightbox.abrir(indice)
 
-    # ------------------------------------------------------------------ tamaño en pantalla
+    # ------------------------------------------------------------------ secciones plegables
+    def _crear_seccion(self, titulo: str, cuerpo: QWidget):
+        """Sección plegable: cabecera con botón + cuerpo. Al plegar, la otra se expande."""
+        caja = QWidget()
+        caja_layout = QVBoxLayout(caja)
+        caja_layout.setContentsMargins(0, 0, 0, 0)
+        caja_layout.setSpacing(2)
+        boton = QToolButton()
+        boton.setText(titulo)
+        boton.setCheckable(True)
+        boton.setChecked(True)
+        boton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        boton.setArrowType(Qt.DownArrow)
+        boton.setAutoRaise(True)
+        boton.setToolTip("Plegar o desplegar esta sección")
+        boton.toggled.connect(
+            lambda visible, b=boton, c=caja: self._plegar_seccion(b, c, visible)
+        )
+        caja_layout.addWidget(boton)
+        cuerpo.setVisible(True)
+        caja_layout.addWidget(cuerpo, 1)
+        caja._boton = boton      # type: ignore[attr-defined]
+        caja._cuerpo = cuerpo    # type: ignore[attr-defined]
+        return caja, cuerpo
+
+    def _plegar_seccion(self, boton: QToolButton, caja: QWidget, visible: bool) -> None:
+        """Muestra u oculta el cuerpo de una sección; la otra ocupa el espacio libre."""
+        cuerpo = getattr(caja, "_cuerpo", None)
+        if cuerpo is not None:
+            cuerpo.setVisible(bool(visible))
+        boton.setArrowType(Qt.DownArrow if visible else Qt.RightArrow)
+        # El reparto se hace con el factor de expansión: la sección desplegada crece y la
+        # plegada se queda en su cabecera.
+        caja_v = getattr(getattr(self, "_caja_secciones", None), "_layout", None)
+        fuente = getattr(self, "_sec_fuente", None)
+        resultados = getattr(self, "_sec_resultados", None)
+        if caja_v is not None and fuente is not None and resultados is not None:
+            # La sección plegada no se expande; la visible ocupa todo el espacio libre.
+            if caja is resultados:
+                caja_v.setStretchFactor(resultados, 1 if visible else 0)
+                caja_v.setStretchFactor(fuente, 0 if visible else 1)
+            else:
+                caja_v.setStretchFactor(fuente, 1 if visible else 0)
+                caja_v.setStretchFactor(resultados, 0 if visible else 1)
+
+
     def _plegar_opciones(self, visible: bool) -> None:
         """Muestra u oculta el bloque de opciones (para que quepa en ventanas bajas)."""
         caja = getattr(self, "filtros_box", None)
@@ -1544,55 +1598,8 @@ class MainWindow(QMainWindow):
             boton.blockSignals(False)
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 (API de Qt)
-        """Reparte el divisor al cambiar de tamaño: el formulario recibe lo que necesita.
-
-        Si hay sitio, el panel de búsqueda ocupa su altura natural (así no aparece la barra
-        de desplazamiento) y los resultados se quedan con el resto. Si la ventana es muy
-        baja, el formulario se encoge y aparece la barra: antes eso que cortar controles.
-        """
+        """El diseño ya es adaptable: las secciones y el progreso se reparten solos."""
         super().resizeEvent(evento)
-        divisor = getattr(self, "_split", None)
-        panel = getattr(self, "_panel_config", None)
-        if divisor is None or panel is None:
-            return
-        # En resizeEvent el divisor aún no tiene su altura nueva: se calcula desde la
-        # ventana (descontando barra de herramientas, estado y márgenes).
-        alto_total = max(300, self.height() - 120)
-        # La altura que de verdad necesita el formulario: su tamaño natural más un
-        # margen. Usar solo el mínimo declarado dejaba la última fila (carpeta y
-        # botones) fuera en pantallas de 720-768 px.
-        necesario = max(170, panel.sizeHint().height() + 24)
-        # Hueco mínimo para los resultados (galería + lista + barra de progreso)
-        # Los resultados necesitan poco para ser útiles (galería + lista): así el
-        # formulario recibe lo que le falta incluso en ventanas de 660 px.
-        minimo_resultados = 150
-        # Auto-plegado: si la ventana es baja, se recogen las opciones para que el
-        # formulario quepa entero; si vuelve a haber sitio, se despliegan.
-        # Referencia FIJA (con opciones desplegadas): si se recalculara con el panel
-        # ya plegado, el tamaño baja y volvería a desplegarse en bucle.
-        if getattr(self, "_alto_con_opciones", 0) <= 0:
-            self._alto_con_opciones = necesario
-        con_opciones = self._alto_con_opciones
-        sin_opciones = necesario - getattr(self, "filtros_box", panel).sizeHint().height() - 8
-        quiere = (alto_total - minimo_resultados) >= con_opciones
-        # Se oculta/muestra la caja directamente y se sincroniza el botón (sin señales,
-        # para no entrar en bucles): así el estado del botón siempre dice la verdad.
-        caja = getattr(self, "filtros_box", None)
-        if caja is not None and caja.isVisible() != quiere:
-            caja.setVisible(quiere)
-        boton = getattr(self, "btn_opciones", None)
-        if boton is not None and boton.isChecked() != quiere:
-            boton.blockSignals(True)
-            boton.setChecked(quiere)
-            boton.blockSignals(False)
-        necesario = con_opciones if quiere else max(170, sin_opciones)
-        alto_form = min(necesario, max(170, alto_total - minimo_resultados))
-        medida = [alto_form, max(0, alto_total - alto_form)]
-        divisor.setSizes(medida)
-        # Qt reparte por proporción justo después del evento: se vuelve a fijar en el
-        # siguiente ciclo para que el formulario reciba EXACTAMENTE lo que necesita y no
-        # aparezca la barra teniendo sitio de sobra.
-        QTimer.singleShot(0, lambda: divisor.setSizes(medida))
 
     def ajustar_a_pantalla(self) -> None:
         """Ajusta la ventana a la zona útil de la pantalla (sin tapar la barra de tareas).
