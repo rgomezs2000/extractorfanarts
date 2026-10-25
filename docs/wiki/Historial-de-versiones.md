@@ -1,5 +1,19 @@
 # Historial de versiones
 
+## v0.1.5-beta.72 — 11 de octubre de 2026 · la beta definitiva (72.ª entrega)
+
+**Formularios compactos: etiqueta y campo en la misma fila, sin espacios en blanco**
+- **Booru** y **wiki** usan ya el mismo patrón que **redes sociales**: etiqueta a la izquierda
+  y campo a la derecha, una fila por dato.
+- La pila de formularios reservaba la altura de la pestaña más alta y eso dejaba huecos
+  (en booru sobraban ~80 px). Ahora se ajusta a la pestaña visible: booru **24 px**,
+  wiki **74 px**, redes **100 px**.
+- Eliminado el **título duplicado** «Fuente de búsqueda» (lo pone la cabecera de la sección)
+  y el botón **Opciones** repetido (el bloque ya se llama así).
+- El formulario queda pegado arriba y el espacio sobrante se va al final, nunca entre campos.
+
+---
+
 ## v0.1.5-beta.71 — 11 de octubre de 2026 · la beta definitiva (71.ª entrega)
 
 **Secciones plegables, formulario en una columna y galería sin solapes**

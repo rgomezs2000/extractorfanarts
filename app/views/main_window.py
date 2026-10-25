@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
         self._minimo_alto = max(560, self.minimumSizeHint().height())
 
         # Fuente: fila normal (los campos se estiran con la ventana)
-        fuente_box = QGroupBox("🔎 Fuente de búsqueda")
+        fuente_box = QGroupBox()   # el título lo pone la cabecera de la sección
         fl = QHBoxLayout(fuente_box)
         fl.setContentsMargins(8, 6, 8, 6)
         self.cmb_tipo = QComboBox()
@@ -146,6 +146,8 @@ class MainWindow(QMainWindow):
 
         # Filtros por tipo (stacked)
         self.stack = QStackedWidget()
+        # Solo su altura natural: el aire sobrante no se reparte entre campos.
+        self.stack.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
 
         self.page_social = QWidget()
         v = QGridLayout(self.page_social)
@@ -188,37 +190,50 @@ class MainWindow(QMainWindow):
         v.addWidget(QLabel("🌐 Instancia:"), 3, 0)
         v.addWidget(self.ed_instancia, 3, 1)
         v.setColumnStretch(1, 1)
+        # Todo pegado arriba: el espacio sobrante no se reparte entre campos.
+        v.setAlignment(Qt.AlignTop)
+        v.setRowStretch(4, 1)
 
         self.page_booru = QWidget()
-        v = QVBoxLayout(self.page_booru)
+        v = QGridLayout(self.page_booru)
         v.setContentsMargins(0, 0, 0, 0)
-        v.setSpacing(4)
-        etiqueta_tags = QLabel("🏷️ Tags del booru (se buscan todos a la vez):")
+        v.setHorizontalSpacing(6)
+        v.setVerticalSpacing(4)
+        # Igual que el formulario de redes: etiqueta y campo en la misma fila, sin huecos.
+        etiqueta_tags = QLabel("🏷️ Tags:")
         etiqueta_tags.setToolTip(
-            "Sepáralos con espacios o comas. También valen operadores: -tag, "
-            "rating:general, score:>10"
+            "Los tags se buscan todos a la vez. Sepáralos con espacios o comas. "
+            "También valen operadores: -tag, rating:general, score:>10"
         )
-        v.addWidget(etiqueta_tags)
+        v.addWidget(etiqueta_tags, 0, 0)
         self.ed_tags = QLineEdit()
         self.ed_tags.setPlaceholderText("🏷️ ej. lori_loud 1girl solo blonde_hair")
-        v.addWidget(self.ed_tags)
+        self.ed_tags.setToolTip(etiqueta_tags.toolTip())
+        v.addWidget(self.ed_tags, 0, 1)
+        v.setColumnStretch(1, 1)
+        v.setAlignment(Qt.AlignTop)
+        v.setRowStretch(1, 1)
 
         self.page_wiki = QWidget()
-        v = QVBoxLayout(self.page_wiki)
+        v = QGridLayout(self.page_wiki)
         v.setContentsMargins(0, 0, 0, 0)
-        v.setSpacing(4)
-        v.addWidget(QLabel("📚 Fandom (franquicia):"))
+        v.setHorizontalSpacing(6)
+        v.setVerticalSpacing(4)
+        v.addWidget(QLabel("📚 Fandom:"), 0, 0)
         self.ed_fandom = QLineEdit()
         self.ed_fandom.setPlaceholderText("📚 ej. naruto")
-        v.addWidget(self.ed_fandom)
-        v.addWidget(QLabel("🎭 Personaje y/o concepto:"))
+        v.addWidget(self.ed_fandom, 0, 1)
+        v.addWidget(QLabel("🎭 Personaje:"), 1, 0)
         self.ed_character = QLineEdit()
         self.ed_character.setPlaceholderText("🎭 ej. naruto_uzumaki")
-        v.addWidget(self.ed_character)
-        v.addWidget(QLabel("🔗 URL de la wiki (opcional):"))
+        v.addWidget(self.ed_character, 1, 1)
+        v.addWidget(QLabel("🔗 URL de la wiki:"), 2, 0)
         self.ed_wiki_url = QLineEdit()
         self.ed_wiki_url.setPlaceholderText("🔗 ej. https://naruto.fandom.com")
-        v.addWidget(self.ed_wiki_url)
+        v.addWidget(self.ed_wiki_url, 2, 1)
+        v.setColumnStretch(1, 1)
+        v.setAlignment(Qt.AlignTop)
+        v.setRowStretch(3, 1)
 
         # Mínimo pequeño en los campos de texto: así el texto de ayuda (placeholder)
         # o el contenido no imponen el ancho de la ventana (se recorta con scroll).
@@ -229,22 +244,16 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.page_social)
         self.stack.addWidget(self.page_booru)
         self.stack.addWidget(self.page_wiki)
+        # La pila reserva la altura de la pestaña MÁS ALTA y eso dejaba huecos en blanco
+        # (en booru sobraban ~80 px). Se ajusta a la pestaña que esté activa.
+        self.stack.currentChanged.connect(self._ajustar_alto_pila)
+        self._ajustar_alto_pila(self.stack.currentIndex())
         cfg.addWidget(self.stack)
 
         # Opciones: rejilla estable de 2 columnas (el alto no cambia al redimensionar,
         # así TODO cabe siempre en la ventana sin barras de desplazamiento)
         # Botón «Opciones»: pliega/despliega el bloque para que la ventana pueda ser
         # pequeña sin barras ni recortes (100% responsiva). Se recoge solo cuando falta alto.
-        self.btn_opciones = QToolButton()
-        self.btn_opciones.setText("⚙️ Opciones")
-        self.btn_opciones.setCheckable(True)
-        self.btn_opciones.setChecked(True)
-        self.btn_opciones.setToolButtonStyle(Qt.ToolButtonTextOnly)
-        self.btn_opciones.setAutoRaise(True)
-        self.btn_opciones.setToolTip("Mostrar u ocultar las opciones de calidad y filtros")
-        self.btn_opciones.toggled.connect(self._plegar_opciones)
-        cfg.addWidget(self.btn_opciones)
-
         self.filtros_box = QGroupBox("⚙️ Opciones")
         ov = QVBoxLayout(self.filtros_box)
         ov.setContentsMargins(8, 6, 8, 6)
@@ -365,6 +374,9 @@ class MainWindow(QMainWindow):
         botones.addWidget(self.btn_limpiar)
         botones.addStretch(1)
         cfg.addLayout(botones)
+
+        # El formulario va pegado arriba; el aire sobrante se queda al final, no entre campos.
+        cfg.addStretch(1)
 
         # SECCIÓN 1: fuente de búsqueda (incluye opciones y los botones de acción)
         self._sec_fuente, self._cuerpo_fuente = self._crear_seccion(
@@ -1541,6 +1553,18 @@ class MainWindow(QMainWindow):
         self._lightbox.abrir(indice)
 
     # ------------------------------------------------------------------ secciones plegables
+    def _ajustar_alto_pila(self, indice: int) -> None:
+        """Ajusta la altura de la pila de formularios a la pestaña visible (sin huecos)."""
+        pila = getattr(self, "stack", None)
+        if pila is None:
+            return
+        pagina = pila.widget(indice if indice >= 0 else 0)
+        if pagina is None:
+            return
+        alto = max(24, pagina.sizeHint().height())
+        pila.setMinimumHeight(alto)
+        pila.setMaximumHeight(alto)
+
     def _crear_seccion(self, titulo: str, cuerpo: QWidget):
         """Sección plegable: cabecera con botón + cuerpo. Al plegar, la otra se expande."""
         caja = QWidget()
