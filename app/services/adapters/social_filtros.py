@@ -227,8 +227,19 @@ class Criterios:
             return False
             return False
         if self.hashtags:
-            if not self._cumplen([_norm(t) in nombres or f"#{_norm(t)}" in cuerpo
-                                  for t in self.hashtags]):
+            def _casa_etiqueta(etiqueta: str) -> bool:
+                # La etiqueta puede venir como «my_melody», «mymelody», «My Melody» o
+                # «#mymelody»: se comparan sin separadores y sin almohadilla.
+                plano_etiqueta = _plano(etiqueta)
+                if not plano_etiqueta:
+                    return False
+                if plano_etiqueta in plano:
+                    return True
+                if _norm(etiqueta) in nombres or f"#{_norm(etiqueta)}" in cuerpo:
+                    return True
+                return any(_plano(nombre) == plano_etiqueta for nombre in nombres)
+
+            if not self._cumplen([_casa_etiqueta(t) for t in self.hashtags]):
                 return False
         return True
 
@@ -242,8 +253,15 @@ class Criterios:
         plano = _plano(texto)
         faltan = [f"«{p}»" for p in self.palabras
                   if p and p not in cuerpo and _plano(p) not in plano]
-        faltan += [f"#{t}" for t in self.hashtags
-                   if _norm(t) not in nombres and f"#{_norm(t)}" not in cuerpo]
+        for etiqueta in self.hashtags:
+            plano_etiqueta = _plano(etiqueta)
+            if not plano_etiqueta:
+                continue
+            if (plano_etiqueta in plano or _norm(etiqueta) in nombres
+                    or f"#{_norm(etiqueta)}" in cuerpo
+                    or any(_plano(nombre) == plano_etiqueta for nombre in nombres)):
+                continue
+            faltan.append(f"#{etiqueta}")
         return "falta " + ", ".join(faltan) if faltan else ""
 
 

@@ -1,5 +1,28 @@
 # Historial de versiones
 
+## v0.1.5-beta.78 — 11 de octubre de 2026 · la beta definitiva (78.ª entrega)
+
+**Búsqueda por hashtag en DeviantArt («#mymelody», «#my_melody»)**
+- El registro mostraba `HTTP 200` con **102 KB** de respuesta y aun así «sin resultados»: la
+  API devolvía las obras, pero el **filtro local** las descartaba porque comparaba la etiqueta
+  carácter a carácter («my_melody» ≠ «my melody» ≠ «mymelody»).
+- Ahora los hashtags se comparan **sin separadores ni almohadilla**, y la lista de formas que
+  se prueban contra la API incluye también las variantes sin guion bajo (`my_melody` →
+  `mymelody`, `MyMelody`, `my-melody`). Comprobado con la cuenta real:
+
+```
+«#mymelody»   -> 19 obras
+«#my_melody»  -> 19 obras
+«Rita Loud»   -> 20 obras
+«kuromi»      -> 15 obras
+```
+
+- Recordatorio del criterio (igual en todas las redes): **hashtag** filtra por etiqueta,
+  **palabra clave** busca en el texto, **usuario** por autor e **instancia** solo aplica al
+  fediverso.
+
+---
+
 ## v0.1.5-beta.77 — 11 de octubre de 2026 · la beta definitiva (77.ª entrega)
 
 **DeviantArt: buscar «Rita Loud» devolvía cero (la API rechaza tags con espacios)**

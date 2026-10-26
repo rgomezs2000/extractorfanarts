@@ -22,19 +22,27 @@ API_BASE = "https://www.deviantart.com/api/v1/oauth2"
 def _variantes_de_tag(texto: str) -> list[str]:
     """Formas válidas de un tag de DeviantArt a partir de lo que escribe el usuario.
 
-    Su API rechaza los tags con espacios («Tag not found», HTTP 400) mientras que los tags
-    reales van sin separadores o con guion bajo: «Rita Loud» → ritaloud, rita_loud y
-    RitaLoud. Si la frase tiene varias palabras se prueban también por separado.
+    Su API rechaza los tags con espacios o con guiones que no existan («Tag not found»,
+    HTTP 400) mientras que los tags reales van sin separadores o con guion bajo. Por eso se
+    prueban todas las formas razonables: «Rita Loud» → ritaloud / rita_loud / RitaLoud, y
+    «my_melody» → my_melody / mymelody / MyMelody / my-melody. Si la frase tiene varias
+    palabras se prueban también por separado, como último recurso.
     """
     limpio = " ".join(str(texto or "").replace("#", " ").split())
     if not limpio:
         return []
-    partes = limpio.split(" ")
+    partes = [parte for parte in limpio.replace("_", " ").replace("-", " ").split() if parte]
+    if not partes:
+        return []
+    candidatos = [
+        "".join(partes),                              # mymelody / ritaloud
+        "_".join(partes),                             # my_melody / rita_loud
+        "".join(p.capitalize() for p in partes),      # MyMelody / RitaLoud
+        "-".join(partes),                             # my-melody / rita-loud
+        "_".join(p.capitalize() for p in partes),     # My_Melody
+        " ".join(partes),                             # «my melody» (por si acaso)
+    ]
     variantes: list[str] = []
-    candidatos = ["".join(partes), "_".join(partes),
-                  "".join(p.capitalize() for p in partes)]
-    if parte_capitalizada := [p for p in partes if p]:
-        candidatos.append("_".join(p.capitalize() for p in parte_capitalizada))
     for candidato in candidatos:
         if candidato and candidato not in variantes:
             variantes.append(candidato)
