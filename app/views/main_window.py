@@ -390,7 +390,7 @@ class MainWindow(QMainWindow):
         # El registro de resultados es compacto: la galería se lleva el espacio.
         self.lst_resultados.setMaximumHeight(110)
 
-        res_box = QGroupBox("🖼️ Resultados")
+        res_box = QGroupBox()   # el título lo pone la cabecera de la sección
         rv = QVBoxLayout(res_box)
         rv.addWidget(self.galeria, 1)
         rv.addWidget(QLabel("📋 Resultados encontrados:"))
@@ -398,6 +398,8 @@ class MainWindow(QMainWindow):
         # SECCIÓN 2: resultados (galería + registro de resultados)
         self._sec_resultados, self._cuerpo_resultados = self._crear_seccion(
             "🖼️ Resultados", res_box)
+        # Por defecto se ve el formulario; los resultados se despliegan al llegar imágenes.
+        self._sec_resultados._boton.setChecked(False)
         # Caja vertical: la sección plegada se queda en su cabecera y la otra se expande.
         self._caja_secciones = QWidget()
         caja_v = QVBoxLayout(self._caja_secciones)
@@ -1532,6 +1534,9 @@ class MainWindow(QMainWindow):
     def _on_galeria_total(self, total: int) -> None:
         """El controlador anuncia cuántas imágenes tendrá el carrusel."""
         self.galeria.definir_total(total)
+        # Si hay imágenes, se despliega la galería (y se pliega el formulario).
+        if total > 0 and getattr(self, "_sec_resultados", None) is not None:
+            self._sec_resultados._boton.setChecked(True)
         self._actualizar_acciones_imagen()
 
     def _on_galeria_item(self, posicion: int, datos: bytes) -> None:
@@ -1589,6 +1594,15 @@ class MainWindow(QMainWindow):
         caja._cuerpo = cuerpo    # type: ignore[attr-defined]
         return caja, cuerpo
 
+    def _expandir_solo(self, caja: QWidget) -> None:
+        """Acordeón: deja desplegada solo la sección indicada."""
+        for otra in (getattr(self, "_sec_fuente", None), getattr(self, "_sec_resultados", None)):
+            if otra is None or otra is caja:
+                continue
+            otro_boton = getattr(otra, "_boton", None)
+            if otro_boton is not None and otro_boton.isChecked():
+                otro_boton.setChecked(False)
+
     def _plegar_seccion(self, boton: QToolButton, caja: QWidget, visible: bool) -> None:
         """Muestra u oculta el cuerpo de una sección; la otra ocupa el espacio libre."""
         cuerpo = getattr(caja, "_cuerpo", None)
@@ -1597,6 +1611,8 @@ class MainWindow(QMainWindow):
         boton.setArrowType(Qt.DownArrow if visible else Qt.RightArrow)
         # El reparto se hace con el factor de expansión: la sección desplegada crece y la
         # plegada se queda en su cabecera.
+        if visible:
+            self._expandir_solo(caja)
         caja_v = getattr(getattr(self, "_caja_secciones", None), "_layout", None)
         fuente = getattr(self, "_sec_fuente", None)
         resultados = getattr(self, "_sec_resultados", None)

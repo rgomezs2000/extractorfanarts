@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.73 — 11 de octubre de 2026 · la beta definitiva (73.ª entrega)
+
+**Secciones tipo acordeón: una abierta, la otra se pliega**
+- Al arrancar se muestra **solo el formulario** («Fuente de búsqueda»); los resultados
+  empiezan plegados.
+- Cuando una búsqueda trae **imágenes**, la galería («Resultados») **se despliega sola** y el
+  formulario se pliega, para que se vea la muestra a buen tamaño.
+- Al abrir una sección **se pliega la otra** (acordeón): nunca compiten por el espacio.
+- Eliminado el título duplicado «🖼️ Resultados» (lo pone la cabecera de la sección).
+
+Comprobado con la ventana real:
+
+```
+inicio              formulario visible   resultados plegado
+llegan 5 imágenes   formulario plegado   resultados visible   (23 / 627 px)
+abrir formulario    formulario visible   resultados plegado   (627 / 23 px)
+abrir resultados    formulario plegado   resultados visible   (23 / 627 px)
+```
+
+---
+
 ## v0.1.5-beta.72 — 11 de octubre de 2026 · la beta definitiva (72.ª entrega)
 
 **Formularios compactos: etiqueta y campo en la misma fila, sin espacios en blanco**
