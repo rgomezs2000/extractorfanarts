@@ -565,6 +565,16 @@ class MainWindow(QMainWindow):
             if accion == "propiedades":
                 self._mostrar_propiedades(obra)
                 return
+            if accion == "copiar":
+                # Copia inmediata de lo que ya está en pantalla: no depende de la red ni de
+                # volver a procesar, y se puede repetir sin límite.
+                directa = self.galeria.pixmap(indice)
+                if directa is not None and not directa.isNull():
+                    if not directa.isNull() and self._copiar_pixmap(directa, obra.url):
+                        self.statusBar().showMessage(
+                            f"📋 Imagen {indice + 1} copiada al portapapeles")
+                        logger.info("imagen %d copiada desde la vista", indice + 1)
+                        return
             if self.controller.is_busy():
                 self.statusBar().showMessage(
                     "⚠ Hay una operación en curso; espera a que termine o cancélala")
@@ -577,6 +587,7 @@ class MainWindow(QMainWindow):
                 f"⏳ {verbo} la imagen {indice + 1} de {self.galeria.total()}…")
             # La MISMA configuración de la ventana: la calidad (.webp + mejora
             # Lanczos/IA) viaja en `settings`, igual que en la descarga masiva.
+            self._enlace_portapapeles = obra.url or ""
             self._reintentos_de_verificacion = 0
             self._reintento = lambda: self.controller.procesar_individual(
                 indice + 1, self._settings(), accion)
@@ -695,6 +706,25 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"⚠ Imagen {posicion}: {corto}")
         logger.warning("acción individual sobre la imagen %d fallida: %s", posicion, mensaje)
 
+    def _copiar_pixmap(self, pixmap: QPixmap, enlace: str = "") -> bool:
+        """Copia al portapapeles una imagen ya cargada (sin red). Devuelve si funcionó."""
+        try:
+            portapapeles = QApplication.clipboard()
+            if portapapeles is None or pixmap is None or pixmap.isNull():
+                return False
+            imagen = pixmap.toImage()
+            contenido = QMimeData()
+            contenido.setImageData(imagen)
+            if enlace:
+                contenido.setText(str(enlace))
+            portapapeles.setMimeData(contenido)
+            if portapapeles.image().isNull():
+                portapapeles.setImage(imagen)
+            return not portapapeles.image().isNull()
+        except Exception:  # noqa: BLE001
+            logger.exception("no se pudo copiar la imagen de la vista")
+            return False
+
     def _copiar_imagen(self, datos: bytes) -> tuple[bool, str]:
         """Pone en el portapapeles la imagen .webp ya convertida/mejorada.
 
@@ -705,7 +735,7 @@ class MainWindow(QMainWindow):
         portapapeles = QApplication.clipboard()
         if portapapeles is None:      # plataforma sin portapapeles (raro)
             return False, "el sistema no tiene portapapeles"
-        imagen = QImage.fromData(QByteArray(datos), "WEBP")
+        imagen = QImage.fromData(QByteArray(datos))   # detecta el formato real
         if imagen.isNull():
             try:
                 import io
@@ -719,13 +749,24 @@ class MainWindow(QMainWindow):
             except Exception:  # noqa: BLE001
                 logger.warning("no se pudo decodificar el .webp para el portapapeles",
                                exc_info=True)
-        contenido = QMimeData()
-        contenido.setData("image/webp", QByteArray(datos))
-        if not imagen.isNull():
-            contenido.setImageData(imagen)
-        portapapeles.setMimeData(contenido)
         if imagen.isNull():
-            return True, "solo como image/webp (no se pudo decodificar para pegar)"
+            return False, "no se pudo decodificar la imagen para el portapapeles"
+        contenido = QMimeData()
+        # La imagen como imagen (DIB en Windows, PNG en macOS/Linux): es lo que pega en
+        # cualquier programa. Se añade el .webp y el enlace para quien lo prefiera.
+        contenido.setImageData(imagen)
+        contenido.setData("image/webp", QByteArray(datos))
+        enlace = getattr(self, "_enlace_portapapeles", "") or ""
+        if enlace:
+            contenido.setText(enlace)
+            self._enlace_portapapeles = ""
+        portapapeles.setMimeData(contenido)
+        # Verificación real: si el portapapeles no quedó con imagen, se reintenta con
+        # el método clásico (setImage), que en Windows nunca falla.
+        if portapapeles.image().isNull():
+            portapapeles.setImage(imagen)
+        if portapapeles.image().isNull():
+            return False, "el portapapeles del sistema no aceptó la imagen"
         return True, ""
 
     # ------------------------------------------------------------------ conexiones

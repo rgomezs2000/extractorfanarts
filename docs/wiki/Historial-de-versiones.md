@@ -1,5 +1,25 @@
 # Historial de versiones
 
+## v0.1.5-beta.76 — 11 de octubre de 2026 · la beta definitiva (76.ª entrega)
+
+**Propiedades con la fuente original, copiar fiable y arrastrar la imagen**
+- **Propiedades**: nueva línea **🔗 Fuente original** en el grupo «Imagen» con el enlace del
+  artista que publica el booru (Rule34/Gelbooru lo dan en `source`). Si la obra no la tiene,
+  queda **en blanco**. Ejemplo comprobado: `https://www.pixiv.net/en/artworks/146461968`.
+- **Copiar imagen** ahora funciona de verdad y sin límite:
+  - copia **inmediata** de la imagen que ya está en pantalla (sin volver a descargarla), así
+    que se puede repetir cuantas veces se quiera;
+  - el portapapeles recibe la **imagen como imagen** (DIB/PNG, lo que pega en cualquier
+    programa) más el `.webp` y el **enlace** como texto;
+  - se **verifica** que el portapapeles quedó con la imagen y, si no, se reintenta con el
+    método clásico. Antes, si Qt no decodificaba el `.webp`, quedaba un portapapeles vacío.
+- **Arrastrar la imagen a otros programas**:
+  - en la **vista previa**, arrastrar con el botón izquierdo;
+  - en el **visor ampliado**, **Ctrl + arrastrar** (para no chocar con el desplazamiento del
+    zoom). Se indica en la ayuda inferior del visor.
+
+---
+
 ## v0.1.5-beta.75 — 11 de octubre de 2026 · la beta definitiva (75.ª entrega)
 
 **Rule34.xxx: usaba las claves de Gelbooru y parecía «sin resultados»**

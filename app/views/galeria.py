@@ -78,6 +78,31 @@ def _placeholder(numero: int) -> QPixmap:
     return lienzo
 
 
+def _iniciar_arrastre(widget, pixmap, enlace: str = "") -> bool:
+    """Arrastra la imagen fuera de la app (Word, Discord, Telegram, navegador…)."""
+    try:
+        if pixmap is None or pixmap.isNull():
+            return False
+        from PySide6.QtCore import QMimeData, QUrl
+        from PySide6.QtGui import QDrag
+
+        datos = QMimeData()
+        datos.setImageData(pixmap.toImage())
+        if enlace:
+            datos.setUrls([QUrl(str(enlace))])
+            datos.setText(str(enlace))
+        else:
+            datos.setText("imaginteca")
+        arrastre = QDrag(widget)
+        arrastre.setMimeData(datos)
+        arrastre.setPixmap(pixmap.scaled(180, 180, Qt.KeepAspectRatio,
+                                         Qt.SmoothTransformation))
+        arrastre.exec(Qt.CopyAction)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 class VisorImagen(QLabel):
     """Imagen grande del carrusel; al pulsarla (o con Enter) se abre el visor ampliado."""
 
@@ -138,6 +163,29 @@ class VisorImagen(QLabel):
             return
         evento.accept()
         self.peticion_menu.emit(evento.globalPos())
+
+
+    # ---------------------------------------------------------------- arrastrar fuera
+    def mousePressEvent(self, evento):  # noqa: N802
+        if evento.button() == Qt.LeftButton:
+            self._arrastre_desde = evento.position().toPoint()
+            self._puede_arrastrar = True
+        super().mousePressEvent(evento)
+
+    def mouseMoveEvent(self, evento):  # noqa: N802
+        if getattr(self, "_puede_arrastrar", False) and (evento.buttons() & Qt.LeftButton):
+            inicio = getattr(self, "_arrastre_desde", None)
+            if inicio is not None:
+                if (evento.position().toPoint() - inicio).manhattanLength() > 12:
+                    self._puede_arrastrar = False
+                    if _iniciar_arrastre(self, self.pixmap(),
+                                         getattr(self, "enlace", "") or ""):
+                        return
+        super().mouseMoveEvent(evento)
+
+    def mouseReleaseEvent(self, evento):  # noqa: N802
+        self._puede_arrastrar = False
+        super().mouseReleaseEvent(evento)
 
 
 class Lightbox(QWidget):
@@ -285,8 +333,9 @@ class Lightbox(QWidget):
         pintor.setPen(QColor(230, 230, 230, 190))
         pintor.drawText(0, self.height() - 44, self.width(), 30,
                         Qt.AlignHCenter | Qt.AlignVCenter,
-                        "rueda: acercar/alejar · arrastra: mover · doble clic: ajustar · "
-                        "← →: cambiar · Esc o clic fuera: cerrar")
+                        "rueda: acercar/alejar · arrastra: mover · Ctrl+arrastra: llevarla a "
+                        "otro programa · doble clic: ajustar · ← →: cambiar · Esc o clic "
+                        "fuera: cerrar")
 
         if total > 1:
             pintor.setPen(QColor(255, 255, 255, 200))
@@ -333,6 +382,10 @@ class Lightbox(QWidget):
         if not dentro:
             self.cerrar()          # clic fuera de la imagen: cerrar (estilo fancybox)
             return
+        if evento.modifiers() & Qt.ControlModifier:
+            # Ctrl + arrastrar: lleva la imagen a otro programa (no desplaza el zoom).
+            if _iniciar_arrastre(self, self._pixmap(), getattr(self, "enlace", "") or ""):
+                return
         self._arrastrando = True
         self._ultimo = evento.position().toPoint()
         self.setCursor(Qt.ClosedHandCursor)

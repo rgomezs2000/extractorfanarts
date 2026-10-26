@@ -225,6 +225,17 @@ def propiedades(obra) -> list[tuple[str, list[tuple[str, str]]]]:
             valor = datos[clave]
             imagen.append((etiqueta, _numero(valor) if clave.endswith("size")
                            else _limpio(valor)))
+    # Fuente original de la obra (el enlace del artista), no la copia del booru.
+    # Rule34/Gelbooru la publican en «source»; si no la hay, se deja en blanco.
+    fuente_original = ""
+    if isinstance(datos, dict):
+        posible = datos.get("source") or datos.get("source_url") or ""
+        if isinstance(posible, str):
+            fuente_original = posible.split()[0] if posible.split() else ""
+    if fuente_original:
+        imagen.append(("🔗 Fuente original", _limpio(fuente_original, 300)))
+    else:
+        imagen.append(("🔗 Fuente original", ""))
     if obra.url:
         imagen.append(("Enlace de la imagen", str(obra.url)))
     if obra.page_url:
