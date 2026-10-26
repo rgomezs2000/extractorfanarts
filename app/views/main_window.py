@@ -406,7 +406,10 @@ class MainWindow(QMainWindow):
         caja_v.setContentsMargins(0, 0, 0, 0)
         caja_v.setSpacing(4)
         caja_v.addWidget(self._sec_fuente, 0)
-        caja_v.addWidget(self._sec_resultados, 1)
+        # Aire flexible: mantiene la cabecera de Resultados PEGADA AL FINAL mientras está
+        # plegada, y desaparece cuando los resultados se despliegan.
+        caja_v.addStretch(1)
+        caja_v.addWidget(self._sec_resultados, 0)
         self._caja_secciones._layout = caja_v      # type: ignore[attr-defined]
         root.addWidget(self._caja_secciones, 1)
 
@@ -1534,9 +1537,15 @@ class MainWindow(QMainWindow):
     def _on_galeria_total(self, total: int) -> None:
         """El controlador anuncia cuántas imágenes tendrá el carrusel."""
         self.galeria.definir_total(total)
-        # Si hay imágenes, se despliega la galería (y se pliega el formulario).
-        if total > 0 and getattr(self, "_sec_resultados", None) is not None:
-            self._sec_resultados._boton.setChecked(True)
+        seccion = getattr(self, "_sec_resultados", None)
+        if seccion is not None:
+            # La cabecera plegada informa de cuántas imágenes hay.
+            boton = getattr(seccion, "_boton", None)
+            if boton is not None:
+                boton.setText(f"🖼️ Resultados ({total})" if total else "🖼️ Resultados")
+            # Si hay imágenes, se despliega la galería (y se pliega el formulario).
+            if total > 0:
+                boton.setChecked(True)
         self._actualizar_acciones_imagen()
 
     def _on_galeria_item(self, posicion: int, datos: bytes) -> None:
@@ -1618,12 +1627,18 @@ class MainWindow(QMainWindow):
         resultados = getattr(self, "_sec_resultados", None)
         if caja_v is not None and fuente is not None and resultados is not None:
             # La sección plegada no se expande; la visible ocupa todo el espacio libre.
-            if caja is resultados:
-                caja_v.setStretchFactor(resultados, 1 if visible else 0)
-                caja_v.setStretchFactor(fuente, 0 if visible else 1)
-            else:
-                caja_v.setStretchFactor(fuente, 1 if visible else 0)
-                caja_v.setStretchFactor(resultados, 0 if visible else 1)
+            # El formulario no se estira (así no queda aire dentro de su sección); el
+            # espacio libre va al hueco flexible mientras los resultados están plegados,
+            # y a los resultados cuando se despliegan.
+            caja_v.setStretchFactor(fuente, 0)
+            caja_v.setStretchFactor(resultados, 1 if (resultados.isVisible()
+                                                     and getattr(resultados, "_cuerpo", None)
+                                                     is not None
+                                                     and resultados._cuerpo.isVisible()) else 0)
+            for i in range(caja_v.count()):
+                elemento = caja_v.itemAt(i)
+                if elemento is not None and elemento.spacerItem() is not None:
+                    caja_v.setStretch(i, 0 if resultados._cuerpo.isVisible() else 1)
 
 
     def _plegar_opciones(self, visible: bool) -> None:

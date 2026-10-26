@@ -1,5 +1,17 @@
 # Historial de versiones
 
+## v0.1.5-beta.74 — 11 de octubre de 2026 · la beta definitiva (74.ª entrega)
+
+**La cabecera «Resultados» queda al final, no flotando en el centro**
+- El aire sobrante estaba **dentro** de la sección del formulario, así que la cabecera plegada
+  de Resultados aparecía a media altura. Ahora hay un **hueco flexible entre las dos
+  secciones**: con Resultados plegado, su cabecera se queda **pegada al final**, justo encima
+  de la barra de progreso (medido: y=681 de 776 px de ventana).
+- Al desplegar Resultados ese hueco desaparece y la galería ocupa todo el alto.
+- La cabecera plegada **informa del número de imágenes**: «🖼️ Resultados (50)».
+
+---
+
 ## v0.1.5-beta.73 — 11 de octubre de 2026 · la beta definitiva (73.ª entrega)
 
 **Secciones tipo acordeón: una abierta, la otra se pliega**
