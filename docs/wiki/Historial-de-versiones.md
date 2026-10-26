@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.75 — 11 de octubre de 2026 · la beta definitiva (75.ª entrega)
+
+**Rule34.xxx: usaba las claves de Gelbooru y parecía «sin resultados»**
+- Las credenciales se rellenaban **por familia de API**, y Rule34 comparte familia
+  (`gelbooru`) con Gelbooru. Resultado: Rule34 enviaba el `api_key`/`user_id` **de
+  Gelbooru**, su API contestaba `Missing authentication. Go to api.rule34.xxx…` con **HTTP
+  200**, y la app lo interpretaba como búsqueda vacía («La búsqueda no devolvió resultados»).
+- Ahora se elige el juego de claves **por dominio del sitio**: `api.rule34.xxx` →
+  `RULE34_API_KEY`/`RULE34_USER_ID`; `gelbooru.com` → `GELBOORU_…`.
+- Además, si una API de la familia Gelbooru responde **texto** (o un objeto con `error`) en
+  vez de una lista, se muestra **ese mensaje** en lugar de decir que no hay resultados.
+- Comprobado con las claves reales:
+
+```
+Rule34.xxx  «rita_loud»     ->  20 obras · 20 tras filtros
+Gelbooru    «rita_loud»     ->  20 obras · 20 tras filtros
+Safebooru   «blonde_hair»   ->  20 obras · 20 tras filtros
+```
+
+---
+
 ## v0.1.5-beta.74 — 11 de octubre de 2026 · la beta definitiva (74.ª entrega)
 
 **La cabecera «Resultados» queda al final, no flotando en el centro**

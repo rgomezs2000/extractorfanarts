@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.74"
+APP_VERSION = "0.1.5-beta.75"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -696,11 +696,26 @@ def _rellenar_credenciales(sitios: list[dict]) -> list[dict]:
         "moebooru": {"login": "MOEBOORU_LOGIN", "password_hash": "MOEBOORU_PASSWORD_HASH"},
         "philomena": {"api_key": "PHILOMENA_API_KEY"},
     }
+    def _clave_credenciales(sitio: dict) -> str:
+        """Qué juego de claves corresponde al sitio.
+
+        Rule34 y Gelbooru comparten FAMILIA de API («gelbooru») pero son cuentas
+        distintas: eligiendo solo por familia, Rule34 acababa usando las claves de
+        Gelbooru y su API respondía «Missing authentication» (que parecía «sin
+        resultados»). Se decide por el dominio del sitio.
+        """
+        pista = (str(sitio.get("base") or "") + " " + str(sitio.get("name") or "")).lower()
+        if "rule34" in pista and "paheal" not in pista:
+            return "rule34"
+        if "gelbooru" in pista:
+            return "gelbooru"
+        return str(sitio.get("family") or "").lower()
+
     for sitio in sitios:
         auth = sitio.get("auth")
         if not isinstance(auth, dict):
             continue
-        familia = str(sitio.get("family") or "").lower()
+        familia = _clave_credenciales(sitio)
         for campo, constante in equivalencias.get(familia, {}).items():
             if campo in auth and not str(auth.get(campo) or "").strip():
                 valor = globals().get(constante) or ""

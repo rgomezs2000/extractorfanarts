@@ -353,7 +353,14 @@ class BooruAdapter(SearchAdapter):
             # con los posts dentro: {"@attributes": {...}, "post": [...]}. Hay que aceptar
             # las dos formas o la búsqueda se queda en 0 resultados aunque el sitio tenga.
             if isinstance(data, dict):
+                if data.get("error"):
+                    raise ConfigError(f"{self.cfg.get('name')} rechazó las credenciales: "
+                                      f"{data['error']}")
                 return list(data.get("post") or [])
+            if isinstance(data, str):
+                # La API contesta un TEXTO (p. ej. «Missing authentication…») con HTTP 200:
+                # es un problema de credenciales, no una búsqueda vacía.
+                raise ConfigError(f"{self.cfg.get('name')} respondió: {data[:160]}")
             return data if isinstance(data, list) else []
         if self.family == "danbooru":
             params = {"tags": joined, "limit": "200", "page": str(page + 1)}
