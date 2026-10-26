@@ -221,7 +221,10 @@ class Criterios:
             return False
         cuerpo = _norm(texto)
         nombres = {_norm(e).lstrip("#") for e in etiquetas if e}
-        if self.palabras and not self._cumplen([p in cuerpo for p in self.palabras if p]):
+        plano = _plano(texto)
+        if self.palabras and not self._cumplen(
+                [p in cuerpo or _plano(p) in plano for p in self.palabras if p]):
+            return False
             return False
         if self.hashtags:
             if not self._cumplen([_norm(t) in nombres or f"#{_norm(t)}" in cuerpo
@@ -236,10 +239,17 @@ class Criterios:
             return f"autor {autor or '?'} ≠ {self.usuario}"
         cuerpo = _norm(texto)
         nombres = {_norm(e).lstrip("#") for e in etiquetas if e}
-        faltan = [f"«{p}»" for p in self.palabras if p and p not in cuerpo]
+        plano = _plano(texto)
+        faltan = [f"«{p}»" for p in self.palabras
+                  if p and p not in cuerpo and _plano(p) not in plano]
         faltan += [f"#{t}" for t in self.hashtags
                    if _norm(t) not in nombres and f"#{_norm(t)}" not in cuerpo]
         return "falta " + ", ".join(faltan) if faltan else ""
+
+
+def _plano(texto: str) -> str:
+    """Texto normalizado y sin separadores: «rita_loud» y «RitaLoud» quedan igual."""
+    return "".join(caracter for caracter in _norm(texto) if caracter.isalnum())
 
 
 def _autor_coincide(autor: str, criterio: str) -> bool:

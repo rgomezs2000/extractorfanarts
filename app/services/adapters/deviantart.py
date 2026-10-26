@@ -19,6 +19,32 @@ TOKEN_URL = "https://www.deviantart.com/oauth2/token"
 API_BASE = "https://www.deviantart.com/api/v1/oauth2"
 
 
+def _variantes_de_tag(texto: str) -> list[str]:
+    """Formas válidas de un tag de DeviantArt a partir de lo que escribe el usuario.
+
+    Su API rechaza los tags con espacios («Tag not found», HTTP 400) mientras que los tags
+    reales van sin separadores o con guion bajo: «Rita Loud» → ritaloud, rita_loud y
+    RitaLoud. Si la frase tiene varias palabras se prueban también por separado.
+    """
+    limpio = " ".join(str(texto or "").replace("#", " ").split())
+    if not limpio:
+        return []
+    partes = limpio.split(" ")
+    variantes: list[str] = []
+    candidatos = ["".join(partes), "_".join(partes),
+                  "".join(p.capitalize() for p in partes)]
+    if parte_capitalizada := [p for p in partes if p]:
+        candidatos.append("_".join(p.capitalize() for p in parte_capitalizada))
+    for candidato in candidatos:
+        if candidato and candidato not in variantes:
+            variantes.append(candidato)
+    if len(partes) > 1:
+        for parte in partes:
+            if len(parte) > 2 and parte not in variantes:
+                variantes.append(parte)
+    return variantes
+
+
 class DeviantArtAdapter(SearchAdapter):
     name = "DeviantArt"
 
@@ -99,18 +125,24 @@ class DeviantArtAdapter(SearchAdapter):
             if not terminos:
                 return []
             for tag in terminos:
-                try:
-                    data = self._get_api(client, "/browse/tags",
-                                         {"tag": tag, "limit": "24",
-                                          "mature_content": "true"})
-                except Exception as exc:  # noqa: BLE001
-                    logger.info("DeviantArt: «%s» no se pudo consultar (%s)", tag, exc)
-                    continue
-                for item in data.get("results", []) or []:
-                    clave = str(item.get("deviationid"))
-                    if clave not in vistos:
-                        vistos.add(clave)
-                        results.append(item)
+                # La API SOLO acepta tags reales: si se envía «Rita Loud» responde
+                # HTTP 400 «Tag not found». Se prueban las formas que sí existen
+                # (ritaloud, rita_loud, RitaLoud…) y, si ninguna vale, las palabras
+                # sueltas. Así una frase del usuario ya no devuelve cero resultados.
+                for variante in _variantes_de_tag(tag):
+                    try:
+                        data = self._get_api(client, "/browse/tags",
+                                             {"tag": variante, "limit": "24",
+                                              "mature_content": "true"})
+                    except Exception as exc:  # noqa: BLE001
+                        logger.info("DeviantArt: «%s» no se pudo consultar (%s)",
+                                    variante, exc)
+                        continue
+                    for item in data.get("results", []) or []:
+                        clave = str(item.get("deviationid"))
+                        if clave not in vistos:
+                            vistos.add(clave)
+                            results.append(item)
 
         out: list[Artwork] = []
         for item in results:

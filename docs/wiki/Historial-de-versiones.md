@@ -1,5 +1,27 @@
 # Historial de versiones
 
+## v0.1.5-beta.77 — 11 de octubre de 2026 · la beta definitiva (77.ª entrega)
+
+**DeviantArt: buscar «Rita Loud» devolvía cero (la API rechaza tags con espacios)**
+- El registro mostraba `HTTP 400 · {"error":"invalid_request","error_description":"Tag not found."}`. La API de DeviantArt **solo acepta tags reales**: «Rita Loud» con
+espacio no existe como tag, aunque en la web su buscador encuentre 17,9 K resultados.
+- Ahora la frase se prueba en las formas que sí existen: **ritaloud**, **rita_loud** y
+  **RitaLoud**; si ninguna responde, se prueban también sus palabras. Comprobado con la
+  cuenta real:
+
+```
+«Rita Loud»    -> 14 obras
+«ritaloud»     ->  4 obras
+«rita_loud»    -> 11 obras
+«theloudhouse» ->  3 obras
+```
+
+- Además, el filtro local compara **sin separadores**, así `ritaloud` casa con la etiqueta
+  `rita_loud` (antes se descartaba por no coincidir literalmente). Esto vale para todas las
+  redes que usan el mismo filtro.
+
+---
+
 ## v0.1.5-beta.76 — 11 de octubre de 2026 · la beta definitiva (76.ª entrega)
 
 **Propiedades con la fuente original, copiar fiable y arrastrar la imagen**
