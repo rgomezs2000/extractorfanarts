@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.82 — 11 de octubre de 2026 · la beta definitiva (82.ª entrega)
+
+**Con todas las pestañas plegadas, ambas quedan arriba (sin franja blanca en medio)**
+- Antes, al plegar las dos secciones, «Resultados» se quedaba pegada al fondo con un hueco
+  blanco feo en el centro.
+- Ahora el diseño tiene **dos huecos flexibles** y elige cuál crece según el estado:
+  - **todo plegado** → los dos huecos se anulan salvo el de abajo: las **dos cabeceras
+    quedan arriba**;
+  - **formulario abierto** → crece el hueco de en medio y «Resultados» queda **al final**
+    (como se pidió antes);
+  - **resultados abiertos** → la galería ocupa todo el alto.
+- Medido con la ventana real (y = posición vertical de cada cabecera):
+
+```
+todo plegado        fuente y=50 h=23 · resultados y=77  h=23
+formulario abierto  fuente y=50 h=367 · resultados y=681 h=23
+resultados abiertos fuente y=50 h=23 · resultados y=77  h=627
+```
+
+---
+
 ## v0.1.5-beta.81 — 11 de octubre de 2026 · la beta definitiva (81.ª entrega)
 
 **Efecto de agrandado al abrir la imagen ampliada**

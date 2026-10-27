@@ -406,10 +406,14 @@ class MainWindow(QMainWindow):
         caja_v.setContentsMargins(0, 0, 0, 0)
         caja_v.setSpacing(4)
         caja_v.addWidget(self._sec_fuente, 0)
-        # Aire flexible: mantiene la cabecera de Resultados PEGADA AL FINAL mientras está
-        # plegada, y desaparece cuando los resultados se despliegan.
-        caja_v.addStretch(1)
+        # DOS huecos flexibles, para que el reparto sea correcto en todos los estados:
+        #   · entre las secciones  -> con solo el formulario abierto, «Resultados» queda al
+        #     final (como se pidió);
+        #   · al final            -> con TODO plegado, las dos cabeceras quedan arriba y no
+        #     aparece una franja blanca fea en medio.
+        caja_v.addStretch(0)
         caja_v.addWidget(self._sec_resultados, 0)
+        caja_v.addStretch(0)
         self._caja_secciones._layout = caja_v      # type: ignore[attr-defined]
         root.addWidget(self._caja_secciones, 1)
 
@@ -1668,18 +1672,31 @@ class MainWindow(QMainWindow):
         resultados = getattr(self, "_sec_resultados", None)
         if caja_v is not None and fuente is not None and resultados is not None:
             # La sección plegada no se expande; la visible ocupa todo el espacio libre.
-            # El formulario no se estira (así no queda aire dentro de su sección); el
-            # espacio libre va al hueco flexible mientras los resultados están plegados,
-            # y a los resultados cuando se despliegan.
+            visibles_resultados = bool(
+                resultados.isVisible()
+                and getattr(resultados, "_cuerpo", None) is not None
+                and resultados._cuerpo.isVisible()
+            )
+            visibles_fuente = bool(
+                fuente.isVisible()
+                and getattr(fuente, "_cuerpo", None) is not None
+                and fuente._cuerpo.isVisible()
+            )
+            # El formulario nunca se estira; los resultados sí cuando están abiertos.
             caja_v.setStretchFactor(fuente, 0)
-            caja_v.setStretchFactor(resultados, 1 if (resultados.isVisible()
-                                                     and getattr(resultados, "_cuerpo", None)
-                                                     is not None
-                                                     and resultados._cuerpo.isVisible()) else 0)
-            for i in range(caja_v.count()):
-                elemento = caja_v.itemAt(i)
-                if elemento is not None and elemento.spacerItem() is not None:
-                    caja_v.setStretch(i, 0 if resultados._cuerpo.isVisible() else 1)
+            caja_v.setStretchFactor(resultados, 1 if visibles_resultados else 0)
+            # Huecos: el de EN MEDIO crece solo si el formulario está abierto y los
+            # resultados plegados (así «Resultados» queda al final); el de ABAJO crece
+            # cuando las dos están plegadas (para que todo quede arriba).
+            for indice in range(caja_v.count()):
+                elemento = caja_v.itemAt(indice)
+                if elemento is None or elemento.spacerItem() is None:
+                    continue
+                es_ultimo = indice == caja_v.count() - 1
+                if es_ultimo:
+                    caja_v.setStretch(indice, 0 if (visibles_resultados or visibles_fuente) else 1)
+                else:
+                    caja_v.setStretch(indice, 1 if (visibles_fuente and not visibles_resultados) else 0)
 
 
     def _plegar_opciones(self, visible: bool) -> None:
