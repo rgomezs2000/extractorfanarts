@@ -103,6 +103,27 @@ def _iniciar_arrastre(widget, pixmap, enlace: str = "") -> bool:
         return False
 
 
+class _MarcoVisor(QWidget):
+    """Contenedor que recorta: permite DESLIZAR el visor de lado (efecto de página)."""
+
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(parent)
+        self._hijo: QWidget | None = None
+        self.animando = False
+        self.setMinimumHeight(120)
+
+    def poner(self, hijo: QWidget) -> None:
+        self._hijo = hijo
+        hijo.setParent(self)
+        hijo.setGeometry(self.rect())
+
+    def resizeEvent(self, evento):  # noqa: N802
+        super().resizeEvent(evento)
+        # Mientras hay animación manda la animación; si no, el visor ocupa todo el marco.
+        if self._hijo is not None and not self.animando:
+            self._hijo.setGeometry(self.rect())
+
+
 class VisorImagen(QLabel):
     """Imagen grande del carrusel; al pulsarla (o con Enter) se abre el visor ampliado."""
 
@@ -212,6 +233,10 @@ class Lightbox(QWidget):
         self._desplazamiento = QPoint(0, 0)
         self._arrastrando = False
         self._ultimo = QPoint()
+        # Transición de desplazamiento (efecto de página) al cambiar de imagen.
+        self._previa: QPixmap | None = None
+        self._desliz = 0.0
+        self._desliz_dir = 1
         galeria.imagen_lista.connect(self._al_llegar_imagen)
 
     # ------------------------------------------------------------------ API
@@ -239,9 +264,17 @@ class Lightbox(QWidget):
         total = self._galeria.total()
         if total <= 0:
             return
-        self._indice = indice % total
+        anterior = self._indice
+        nueva = indice % total
+        # Se guarda la imagen que se está viendo: sale deslizándose al navegar.
+        previa = self._pixmap()
+        self._previa = previa.copy() if previa is not None and not previa.isNull() else None
+        self._desliz_dir = 1 if (nueva > anterior or (anterior == total - 1 and nueva == 0)) else -1
+        self._indice = nueva
         self._zoom = 1.0
         self._desplazamiento = QPoint(0, 0)
+        if self._previa is not None and nueva != anterior:
+            self._animar_deslizamiento()
         self._galeria.pedir_imagen_de(self._indice)
         self._galeria.pedir_muestra_de(self._indice)     # imagen grande nítida
         self._galeria.proteger_muestra(self._indice)
@@ -272,38 +305,44 @@ class Lightbox(QWidget):
         if objetivo is None:
             return None
         ancho, alto = objetivo
-        return ((self.width() - ancho) // 2 + self._desplazamiento.x()
-                + int(getattr(self, "_desliz", 0)),
+        return ((self.width() - ancho) // 2 + self._desplazamiento.x(),
                 (self.height() - alto) // 2 + self._desplazamiento.y(),
                 ancho, alto)
 
     # ------------------------------------------------------------------ pintura
-    def _iniciar_animacion(self) -> None:
-        """Animación de desplazamiento de la imagen de muestra."""
-        self._desliz = 0.0
-        self._animacion = QVariantAnimation(self)
-        self._animacion.setDuration(180)
-        self._animacion.setEasingCurve(QEasingCurve.OutCubic)
-        self._animacion.valueChanged.connect(self._animar_paso)
-        self._animacion.finished.connect(lambda: self.update())
+    def _animar_deslizamiento(self) -> None:
+        """Anima la entrada de la nueva imagen desde el lado de la navegación."""
+        try:
+            from PySide6.QtCore import QEasingCurve, QVariantAnimation
 
-    def _animar_paso(self, valor) -> None:
+            animacion = getattr(self, "_anim_desliz", None)
+            if animacion is None:
+                animacion = QVariantAnimation(self)
+                animacion.setDuration(190)
+                animacion.setEasingCurve(QEasingCurve.OutCubic)
+                animacion.valueChanged.connect(self._paso_desliz)
+                animacion.finished.connect(self._fin_desliz)
+                self._anim_desliz = animacion
+            animacion.stop()
+            animacion.setStartValue(1.0)
+            animacion.setEndValue(0.0)
+            animacion.start()
+        except Exception:  # noqa: BLE001
+            self._desliz = 0.0
+            self._previa = None
+            self.update()
+
+    def _paso_desliz(self, valor) -> None:
         try:
             self._desliz = float(valor)
         except (TypeError, ValueError):
             self._desliz = 0.0
         self.update()
 
-    def deslizar(self, direccion: int) -> None:
-        """Anima la entrada de la imagen: viene desde el lado hacia el que se navega."""
-        animacion = getattr(self, "_animacion", None)
-        if animacion is None:
-            return
-        desde = (1 if direccion >= 0 else -1) * max(60, self.width() // 3)
-        animacion.stop()
-        animacion.setStartValue(float(desde))
-        animacion.setEndValue(0.0)
-        animacion.start()
+    def _fin_desliz(self) -> None:
+        self._desliz = 0.0
+        self._previa = None
+        self.update()
 
     def paintEvent(self, evento):  # noqa: N802
         pintor = QPainter(self)
@@ -317,9 +356,24 @@ class Lightbox(QWidget):
         zona = self._zona_imagen()
         if zona is not None:
             x, y, ancho, alto = zona
-            pintor.setPen(QColor(245, 245, 245, 220))
-            pintor.drawRect(x - 4, y - 4, ancho + 7, alto + 7)
-            pintor.drawPixmap(x, y, ancho, alto, self._pixmap())
+            # TRANSICIÓN DE DESPLAZAMIENTO: mientras dura, la imagen anterior sale por un
+            # lado y la nueva entra por el otro (efecto de página, no de fundido).
+            progreso = float(getattr(self, "_desliz", 0.0) or 0.0)
+            previa = getattr(self, "_previa", None)
+            direccion = int(getattr(self, "_desliz_dir", 1) or 1)
+            if previa is not None and not previa.isNull() and progreso > 0.001:
+                corrimiento_nueva = int(direccion * progreso * self.width())
+                corrimiento_previa = int(-direccion * (1.0 - progreso) * self.width())
+                pintor.setPen(QColor(245, 245, 245, 160))
+                pintor.drawRect(x - 4 + corrimiento_previa, y - 4, ancho + 7, alto + 7)
+                pintor.drawPixmap(x + corrimiento_previa, y, ancho, alto, previa)
+                pintor.setPen(QColor(245, 245, 245, 220))
+                pintor.drawRect(x - 4 + corrimiento_nueva, y - 4, ancho + 7, alto + 7)
+                pintor.drawPixmap(x + corrimiento_nueva, y, ancho, alto, self._pixmap())
+            else:
+                pintor.setPen(QColor(245, 245, 245, 220))
+                pintor.drawRect(x - 4, y - 4, ancho + 7, alto + 7)
+                pintor.drawPixmap(x, y, ancho, alto, self._pixmap())
         else:
             pintor.setPen(QColor(235, 235, 235, 220))
             fuente = pintor.font()
@@ -527,8 +581,11 @@ class GaleriaWidget(QWidget):
         self.btn_anterior = QPushButton("◀")
         self.btn_anterior.setFixedWidth(36)
         self.btn_anterior.setToolTip("Imagen anterior (←)")
-        self.visor = VisorImagen()
+        # El visor vive dentro de un marco que recorta: así se puede deslizar al navegar.
+        self._marco_visor = _MarcoVisor()
+        self.visor = VisorImagen(self._marco_visor)
         self.visor.setMinimumHeight(120)
+        self._marco_visor.poner(self.visor)
         self.btn_siguiente = QPushButton("▶")
         self.btn_siguiente.setFixedWidth(36)
         self.btn_siguiente.setToolTip("Imagen siguiente (→)")
@@ -554,7 +611,7 @@ class GaleriaWidget(QWidget):
 
         cuadricula.addWidget(self.lbl_contador, 0, 0, 1, 3)
         cuadricula.addWidget(self.btn_anterior, 1, 0, Qt.AlignVCenter)
-        cuadricula.addWidget(self.visor, 1, 1)
+        cuadricula.addWidget(self._marco_visor, 1, 1)
         cuadricula.addWidget(self.btn_siguiente, 1, 2, Qt.AlignVCenter)
         cuadricula.addWidget(self.tira, 2, 1)
         cuadricula.setRowStretch(1, 1)
@@ -688,6 +745,57 @@ class GaleriaWidget(QWidget):
             LADO_MINIATURA, LADO_MINIATURA, Qt.KeepAspectRatio,
             Qt.SmoothTransformation)))
 
+    def _deslizar(self, direccion: int, anterior: int) -> None:
+        """Desliza la imagen: entra desde el lado hacia el que se navega (efecto libro).
+
+        La imagen anterior sale por el lado contrario y la nueva entra desde el lado de la
+        flecha. Se anima la POSICIÓN de los dos widgets dentro del marco que recorta.
+        """
+        marco = getattr(self, "_marco_visor", None)
+        visor = getattr(self, "visor", None)
+        if marco is None or visor is None:
+            return
+        try:
+            from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation
+
+            ancho = max(1, marco.width())
+            alto = max(1, marco.height())
+            # Copia de lo que se estaba viendo, para que salga deslizándose.
+            previa = getattr(self, "_desliz_previa", None)
+            self._desliz_previa = None
+            if previa is None or previa.isNull():
+                return
+            fantasma = QLabel(marco)
+            fantasma.setPixmap(previa)
+            fantasma.setScaledContents(True)
+            fantasma.setGeometry(0, 0, ancho, alto)
+            fantasma.show()
+            fantasma.raise_()
+            visor.raise_()
+            marco.animando = True
+            visor.setGeometry(direccion * ancho, 0, ancho, alto)
+            grupo = QParallelAnimationGroup(self)
+            for objetivo, desde, hasta in ((visor, direccion * ancho, 0),
+                                           (fantasma, 0, -direccion * ancho)):
+                animacion = QPropertyAnimation(objetivo, b"pos", self)
+                animacion.setDuration(190)
+                animacion.setEasingCurve(QEasingCurve.OutCubic)
+                animacion.setStartValue(QPoint(desde, 0))
+                animacion.setEndValue(QPoint(hasta, 0))
+                grupo.addAnimation(animacion)
+
+            def _terminar() -> None:
+                marco.animando = False
+                visor.setGeometry(marco.rect())
+                fantasma.deleteLater()
+
+            grupo.finished.connect(_terminar)
+            self._anim_desliz = grupo      # se guarda para que no lo recoja el GC
+            grupo.start()
+        except Exception:  # noqa: BLE001
+            marco.animando = False
+            visor.setGeometry(marco.rect())
+
     def _animar_muestra(self) -> None:
         """Fundido al cambiar de imagen (efecto visual al navegar con flechas o teclado)."""
         try:
@@ -717,10 +825,33 @@ class GaleriaWidget(QWidget):
         if not self._pixmaps:
             return
         anterior = self._indice
+        # Copia de lo que se está viendo ANTES de cambiarlo: es la imagen que sale
+        # deslizándose hacia el lado contrario al navegar (efecto de página).
+        self._desliz_previa = None
+        visor = getattr(self, "visor", None)
+        if visor is not None and visor.width() > 2 and visor.height() > 2:
+            try:
+                copia = visor.grab()
+                if not copia.isNull():
+                    self._desliz_previa = copia
+            except Exception:  # noqa: BLE001
+                self._desliz_previa = None
         self._indice = indice % len(self._pixmaps)
         # Efecto de desplazamiento: la muestra entra desde el lado de la navegación.
         if self._indice != anterior:
-            self._animar_muestra()
+            direccion = 1 if self._indice > anterior else -1
+            # Casos de borde (0 -> último y último -> 0): se respeta el sentido.
+            if anterior == len(self._pixmaps) - 1 and self._indice == 0:
+                direccion = 1
+            elif anterior == 0 and self._indice == len(self._pixmaps) - 1:
+                direccion = -1
+            if self.tira.currentRow() != self._indice:
+                self._sincronizando = True
+                self.tira.setCurrentRow(self._indice)
+                self._sincronizando = False
+            self._mostrar_actual()
+            self._deslizar(direccion, anterior)
+            return
         if self.tira.currentRow() != self._indice:
             self._sincronizando = True
             self.tira.setCurrentRow(self._indice)

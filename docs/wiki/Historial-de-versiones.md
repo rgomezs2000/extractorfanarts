@@ -1,5 +1,21 @@
 # Historial de versiones
 
+## v0.1.5-beta.80 — 11 de octubre de 2026 · la beta definitiva (80.ª entrega)
+
+**Transición de desplazamiento al pasar imágenes (efecto de página)**
+- Antes la muestra aparecía con un fundido. Ahora **se desplaza**: la imagen que estabas
+  viendo **sale por un lado** y la nueva **entra por el otro**, como pasar la página de un
+  libro.
+- Sentido correcto en cada caso: si avanzas (flecha ▶, tecla →, rueda del carrusel) las
+  imágenes se mueven **hacia la izquierda**; si retrocedes (◀, ←) se mueven **hacia la
+  derecha**. También al saltar del último al primero y viceversa.
+- Se aplica en **los dos modos**:
+  - **galería** (vista previa con el carrusel), con un marco que recorta el deslizamiento;
+  - **visor ampliado**, donde la imagen anterior y la nueva se dibujan desplazándose.
+- Duración 190 ms con suavizado, lo justo para que se note sin retrasar la navegación.
+
+---
+
 ## v0.1.5-beta.79 — 11 de octubre de 2026 · la beta definitiva (79.ª edición)
 
 **Arreglado: hacer clic en la muestra vuelve a abrirla ampliada**
