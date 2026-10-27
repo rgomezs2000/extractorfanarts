@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import logging
 
-from PySide6.QtCore import QVariantAnimation, QEasingCurve, QPoint, QSize, Qt, Signal
+from PySide6.QtCore import QRect, QVariantAnimation, QEasingCurve, QPoint, QSize, Qt, Signal
 from PySide6.QtGui import QColor, QIcon, QKeySequence, QPainter, QPen, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QGridLayout,
@@ -237,6 +237,9 @@ class Lightbox(QWidget):
         self._previa: QPixmap | None = None
         self._desliz = 0.0
         self._desliz_dir = 1
+        # Animación de agrandado al abrirse desde la galería (crece hasta su tamaño final).
+        self._apertura = 1.0
+        self._rect_inicio = None
         galeria.imagen_lista.connect(self._al_llegar_imagen)
 
     # ------------------------------------------------------------------ API
@@ -250,6 +253,7 @@ class Lightbox(QWidget):
         self._galeria.pedir_muestra_de(self._indice)     # imagen grande nítida
         self._galeria.proteger_muestra(self._indice)
         self.setGeometry(self.window().rect())
+        self._preparar_apertura()
         self.show()
         self.raise_()
         self.setFocus(Qt.OtherFocusReason)
@@ -310,6 +314,52 @@ class Lightbox(QWidget):
                 ancho, alto)
 
     # ------------------------------------------------------------------ pintura
+    def _preparar_apertura(self) -> None:
+        """Prepara el agrandado: la imagen arranca en el sitio que ocupa en la galería."""
+        try:
+            origen = getattr(self._galeria, "_marco_visor", None)
+            if origen is None:
+                origen = getattr(self._galeria, "visor", None)
+            self._rect_inicio = None
+            if origen is not None and origen.width() > 2:
+                # El visor no está dentro del visor ampliado (es una capa hermana): se
+                # convierte desde la ventana, que es el sistema de coordenadas común.
+                ventana = self.window()
+                esquina = origen.mapTo(ventana, QPoint(0, 0))
+                esquina = self.mapFrom(ventana, esquina)
+                self._rect_inicio = QRect(esquina, origen.size())
+            self._apertura = 0.0
+            from PySide6.QtCore import QEasingCurve, QVariantAnimation
+
+            animacion = getattr(self, "_anim_apertura", None)
+            if animacion is None:
+                animacion = QVariantAnimation(self)
+                animacion.setDuration(220)
+                animacion.setEasingCurve(QEasingCurve.OutCubic)
+                animacion.valueChanged.connect(self._paso_apertura)
+                animacion.finished.connect(self._fin_apertura)
+                self._anim_apertura = animacion
+            animacion.stop()
+            animacion.setStartValue(0.0)
+            animacion.setEndValue(1.0)
+            animacion.start()
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("no se pudo animar la apertura del visor: %s", exc)
+            self._apertura = 1.0
+            self._rect_inicio = None
+
+    def _paso_apertura(self, valor) -> None:
+        try:
+            self._apertura = float(valor)
+        except (TypeError, ValueError):
+            self._apertura = 1.0
+        self.update()
+
+    def _fin_apertura(self) -> None:
+        self._apertura = 1.0
+        self._rect_inicio = None
+        self.update()
+
     def _animar_deslizamiento(self) -> None:
         """Anima la entrada de la nueva imagen desde el lado de la navegación."""
         try:
@@ -361,6 +411,19 @@ class Lightbox(QWidget):
             progreso = float(getattr(self, "_desliz", 0.0) or 0.0)
             previa = getattr(self, "_previa", None)
             direccion = int(getattr(self, "_desliz_dir", 1) or 1)
+            apertura = float(getattr(self, "_apertura", 1.0) or 1.0)
+            inicio = getattr(self, "_rect_inicio", None)
+            if apertura < 0.999 and inicio is not None:
+                # Efecto de agrandado: se interpola del hueco de la galería al tamaño final.
+                p = apertura
+                ax = int(inicio.x() + (x - inicio.x()) * p)
+                ay = int(inicio.y() + (y - inicio.y()) * p)
+                aw = int(inicio.width() + (ancho - inicio.width()) * p)
+                ah = int(inicio.height() + (alto - inicio.height()) * p)
+                pintor.setPen(QColor(245, 245, 245, int(220 * p)))
+                pintor.drawRect(ax - 4, ay - 4, aw + 7, ah + 7)
+                pintor.drawPixmap(ax, ay, aw, ah, self._pixmap())
+                return
             if previa is not None and not previa.isNull() and progreso > 0.001:
                 corrimiento_nueva = int(direccion * progreso * self.width())
                 corrimiento_previa = int(-direccion * (1.0 - progreso) * self.width())

@@ -1,5 +1,20 @@
 # Historial de versiones
 
+## v0.1.5-beta.81 — 11 de octubre de 2026 · la beta definitiva (81.ª entrega)
+
+**Efecto de agrandado al abrir la imagen ampliada**
+- Al hacer clic en la muestra de la galería, la imagen **crece** desde el hueco que ocupa en
+  la galería hasta su tamaño final en el visor ampliado (220 ms con suavizado), en lugar de
+  aparecer de golpe.
+- El agrandado arranca del rectángulo real del visor de la galería, así que el movimiento
+  «sale» de donde el usuario hizo clic, aunque la ventana esté redimensionada.
+- Comprobado con la ventana real: progreso **0,45 → 0,83 → 0,98 → 1,0** en ~220 ms, y al
+  terminar se libera el rectángulo de origen (sin dejar estado).
+- La navegación dentro del visor mantiene la transición de **desplazamiento** de la entrega
+  anterior: son dos efectos distintos y conviven.
+
+---
+
 ## v0.1.5-beta.80 — 11 de octubre de 2026 · la beta definitiva (80.ª entrega)
 
 **Transición de desplazamiento al pasar imágenes (efecto de página)**
