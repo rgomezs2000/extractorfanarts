@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.79 — 11 de octubre de 2026 · la beta definitiva (79.ª edición)
+
+**Arreglado: hacer clic en la muestra vuelve a abrirla ampliada**
+- Al añadir el arrastre a otros programas se sustituyó el `mouseReleaseEvent` del visor, y
+  ese era justo el que emitía la señal para **abrir la imagen ampliada**. El clic dejó de
+  hacer nada (regresión introducida en la beta.76).
+- Ahora el visor distingue **clic** (abre ampliada) de **arrastre** (lleva la imagen a otro
+  programa): solo el arrastre cancela la apertura. Comprobado con un clic simulado: la señal
+  se emite y la ventana pide el visor ampliado.
+- El clic derecho (menú contextual) y el atajo F3 siguen igual.
+
+---
+
 ## v0.1.5-beta.78 — 11 de octubre de 2026 · la beta definitiva (78.ª entrega)
 
 **Búsqueda por hashtag en DeviantArt («#mymelody», «#my_melody»)**

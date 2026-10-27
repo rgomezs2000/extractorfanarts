@@ -178,13 +178,21 @@ class VisorImagen(QLabel):
             if inicio is not None:
                 if (evento.position().toPoint() - inicio).manhattanLength() > 12:
                     self._puede_arrastrar = False
+                    self._arrastro_hecho = True
                     if _iniciar_arrastre(self, self.pixmap(),
                                          getattr(self, "enlace", "") or ""):
                         return
         super().mouseMoveEvent(evento)
 
     def mouseReleaseEvent(self, evento):  # noqa: N802
+        # Clic normal (sin arrastre) = abrir el visor ampliado, como siempre.
+        if (evento.button() == Qt.LeftButton
+                and not getattr(self, "_arrastro_hecho", False)):
+            pixmap = self.pixmap()
+            if pixmap is not None and not pixmap.isNull():
+                self.pulsada.emit()
         self._puede_arrastrar = False
+        self._arrastro_hecho = False
         super().mouseReleaseEvent(evento)
 
 
