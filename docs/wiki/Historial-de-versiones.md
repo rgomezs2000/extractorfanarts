@@ -1,5 +1,28 @@
 # Historial de versiones
 
+## v0.1.5-beta.83 — 11 de octubre de 2026 · la beta definitiva (83.ª entrega)
+
+**Bluesky: dos fallos corregidos (el 403 del CDN y las imágenes)**
+- **HTTP 403 (BunnyCDN)** al buscar: el dominio `public.api.bsky.app` está detrás de un CDN
+  que rechaza las peticiones de programas. Comprobado: `public.api.bsky.app` → **403** con
+  cualquier User-Agent, y `api.bsky.app` → **200** con el mismo contenido. Ahora se usa
+  `api.bsky.app` y, si falla, se reintenta con el otro.
+- **Cero resultados aunque la API devolvía posts con imágenes**: el adaptador buscaba las
+  imágenes en `record.embed`, pero la API de búsqueda las entrega en `post.embed` con tipos
+  `…images#view`. Ahora se miran los dos sitios y las dos variantes (incluidas las citas con
+  imagen).
+- Comprobado con la API real:
+
+```
+palabra «odalia blight» -> 12 obras
+palabra «odalia»        ->  5 obras
+palabra «kuromi»        ->  5 obras
+hashtag «#kuromi»       ->  7 obras
+hashtag «#odalia_blight»->  9 obras
+```
+
+---
+
 ## v0.1.5-beta.82 — 11 de octubre de 2026 · la beta definitiva (82.ª entrega)
 
 **Con todas las pestañas plegadas, ambas quedan arriba (sin franja blanca en medio)**

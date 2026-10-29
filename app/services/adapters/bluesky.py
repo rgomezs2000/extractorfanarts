@@ -18,7 +18,14 @@ from .social_filtros import Criterios, repartir_en_lotes
 logger = logging.getLogger("imaginteca")
 
 _HASHTAG_RE = re.compile(r"#([\w]+)")
-API_BASE = "https://public.api.bsky.app/xrpc"
+# Bases de la API pública, en orden de preferencia. public.api.bsky.app está
+# detrás de un CDN que devuelve 403 (BunnyCDN) a las peticiones de programas;
+# pi.bsky.app sirve el mismo contenido y responde bien.
+API_BASES = (
+    "https://api.bsky.app/xrpc",
+    "https://public.api.bsky.app/xrpc",
+)
+API_BASE = API_BASES[0]
 # Longitud máxima razonable de la consulta (la API de Bluesky la limita). No limita
 # cuántos valores escribes: si no caben en una consulta, se hacen varias y se unen.
 MAX_CONSULTA = 300
@@ -52,10 +59,25 @@ class BlueskyAdapter(SearchAdapter):
         for lote in repartir_en_lotes(partes, MAX_CONSULTA):
             consulta = " ".join(lote)
             logger.info("Bluesky: %s", consulta)
-            data = client.get_json(
-                f"{API_BASE}/app.bsky.feed.searchPosts",
-                params={"q": consulta, "limit": str(min(query.limit, 25))},
-            )
+            # Las bases se prueban en orden: el CDN que sirve public.api.bsky.app devuelve
+            # 403 Forbidden (BunnyCDN) aunque la petición sea legítima; api.bsky.app sí
+            # responde con el mismo contenido.
+            data = None
+            ultimo_error: Exception | None = None
+            for base in API_BASES:
+                try:
+                    data = client.get_json(
+                        f"{base}/app.bsky.feed.searchPosts",
+                        params={"q": consulta, "limit": str(min(query.limit, 25))},
+                    )
+                    break
+                except Exception as exc:  # noqa: BLE001
+                    ultimo_error = exc
+                    logger.info("Bluesky: %s no respondió (%s); se prueba otra base", base, exc)
+            if data is None:
+                if ultimo_error is not None:
+                    raise ultimo_error
+                continue
             for post in data.get("posts", []) or []:
                 clave = str(post.get("uri") or post.get("cid"))
                 if clave not in vistas:
@@ -83,15 +105,23 @@ class BlueskyAdapter(SearchAdapter):
     # ------------------------------------------------------------------ extracción
     def _post_images(self, post: dict) -> list[Artwork]:
         record = post.get("record", {})
-        embed = record.get("embed") or {}
+        # En `searchPosts` las imágenes NO vienen en `record.embed` (eso es el embebido
+        # «de escritura», con tipos sin sufijo) sino en `post.embed`, ya resuelto por el
+        # servidor con tipos `#view`: app.bsky.embed.images#view. Mirando solo
+        # record.embed no se extraía ninguna imagen y la búsqueda daba cero resultados.
         images: list[dict] = []
-        etype = embed.get("$type", "")
-        if etype == "app.bsky.embed.images":
-            images = embed.get("images", [])
-        elif etype == "app.bsky.embed.recordWithMedia":
-            media = embed.get("media") or {}
-            if media.get("$type") == "app.bsky.embed.images":
-                images = media.get("images", [])
+        for origen in (post.get("embed"), record.get("embed")):
+            if not isinstance(origen, dict) or not origen:
+                continue
+            etype = str(origen.get("$type") or "")
+            if etype.startswith("app.bsky.embed.images"):
+                images = origen.get("images") or []
+            elif etype.startswith("app.bsky.embed.recordWithMedia"):
+                media = origen.get("media") or {}
+                if str(media.get("$type") or "").startswith("app.bsky.embed.images"):
+                    images = media.get("images") or []
+            if images:
+                break
 
         author = post.get("author", {})
         did = author.get("did", "")
