@@ -1,5 +1,30 @@
 # Historial de versiones
 
+## v0.1.5-beta.84 — 11 de octubre de 2026 · la beta definitiva (84.ª entrega)
+
+**Fin de las imágenes «papilla»: suelo de reescalado en 400 px**
+- Las tres imágenes borrosas venían de originales **diminutos** (stickers de 256 px, iconos):
+  la tabla llevaba cualquier imagen de menos de 400 px a **8x o 32x** para alcanzar 1600 px,
+  y eso no añade detalle: convierte el dibujo en una mancha.
+- Ahora, por debajo de **400 px de ancho no se amplía** (se entrega en WebP a su tamaño, con
+  el aviso de «origen diminuto» en el resumen). De 400 px en adelante se mantiene el mínimo
+  de 1600 px como estaba:
+
+```
+ 120 px -> 1x ->  120 px     (antes 16x -> 1920)
+ 256 px -> 1x ->  256 px     (antes  8x -> 2048)
+ 399 px -> 1x ->  399 px     (antes  8x -> 3192)
+ 400 px -> 4x -> 1600 px
+ 700 px -> 3x -> 2100 px
+ 900 px -> 2x -> 1800 px
+```
+
+- Se puede volver a la tabla estricta con `UPSCALE_MIN_SOURCE = 0` en `config_local.py`.
+- Nota de contexto: Bluesky **limita sus imágenes a 1000 px** y publica stickers/iconos de
+  256 px; no existen originales mayores en su CDN, así que ésos nunca darán 1600 px reales.
+
+---
+
 ## v0.1.5-beta.83 — 11 de octubre de 2026 · la beta definitiva (83.ª entrega)
 
 **Bluesky: dos fallos corregidos (el 403 del CDN y las imágenes)**

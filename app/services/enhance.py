@@ -89,7 +89,14 @@ def factor_for(ancho: int) -> int:
 
     El mínimo de 1600 px se mide sobre el ancho: el factor se aplica luego a los dos
     lados, así una imagen vertical también gana ancho de verdad.
+
+    Suelo de calidad: por DEBAJO de `UPSCALE_MIN_SOURCE` no se amplía. Estas imágenes
+    diminutas (stickers de Bluesky de 256 px, iconos, emojis) no ganan detalle al
+    ampliarlas 8x o 32x: solo se convierten en manchas borrosas. Con el suelo en 0 se
+    recupera la tabla estricta.
     """
+    if ancho < int(getattr(config, "UPSCALE_MIN_SOURCE", 0) or 0):
+        return 1
     for low, high, factor in config.UPSCALE_BUCKETS:
         if low <= ancho <= high:
             return factor

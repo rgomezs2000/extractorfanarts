@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.83"
+APP_VERSION = "0.1.5-beta.84"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -457,6 +457,11 @@ WRITE_SIDECAR_JSON = False
 WEBP_ALWAYS = True             # conversión a WebP obligatoria (nunca se guarda el original)
 ENHANCE_DEFAULT_ON = True
 NO_UPSCALE_ABOVE = 1600        # (histórico) umbral antiguo; ahora lo gobiernan UPSCALE_BUCKETS
+# Suelo de calidad: por DEBAJO de este ancho NO se reescala. Ampliar 8x o 32x una imagen
+# de 256 px (stickers de Bluesky, emojis, iconos) no la mejora: la convierte en una mancha
+# borrosa. Antes de esta regla, esos originales salían como papilla al llegar a 1600 px.
+# Con 0 se recupera la tabla estricta (todo se lleva a 1600 px).
+UPSCALE_MIN_SOURCE = 400
 UPSCALE_BUCKETS = [
     # Hasta 599 px el factor CRECE para que el resultado llegue al menos a 1600 px:
     #   0-49 px -> 32x · 50-99 -> 32x · 100-199 -> 16x · 200-399 -> 8x · 400-599 -> 4x
