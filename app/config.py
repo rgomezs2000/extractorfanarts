@@ -338,8 +338,9 @@ BOORU_SITES = [
     {"name": "Danbooru",   "family": "danbooru", "base": "https://danbooru.donmai.us",
      # Con cuenta, Danbooru entrega el archivo ORIGINAL (file_url) en vez de la versión
      # reducida, y la API deja de tratarnos como anónimos. Las claves van en
-     # config_local.py (DANBOORU_API_KEY / DANBOORU_LOGIN).
-     "auth": {"api_key": "DANBOORU_API_KEY", "login": "DANBOORU_LOGIN"},
+     # config_local.py (DANBOORU_API_KEY / DANBOORU_LOGIN); aquí quedan vacías y
+     # `_rellenar_credenciales` las completa con esos valores.
+     "auth": {"api_key": "", "login": ""},
      "view_tpl": "https://danbooru.donmai.us/posts/{id}"},
     {"name": "Safebooru (Donmai)", "family": "danbooru", "base": "https://safebooru.donmai.us",
      "auth": None,
@@ -722,10 +723,17 @@ def _rellenar_credenciales(sitios: list[dict]) -> list[dict]:
             continue
         familia = _clave_credenciales(sitio)
         for campo, constante in equivalencias.get(familia, {}).items():
-            if campo in auth and not str(auth.get(campo) or "").strip():
-                valor = globals().get(constante) or ""
-                if str(valor).strip():
-                    auth[campo] = valor
+            if campo not in auth:
+                continue
+            actual = str(auth.get(campo) or "").strip()
+            # Vacío O con el NOMBRE de la constante en vez de su valor: pasó con Danbooru,
+            # cuya entrada llevaba «DANBOORU_API_KEY»/«DANBOORU_LOGIN» como texto y la app
+            # enviaba esos nombres a la API (que respondía 401).
+            if actual and actual != constante:
+                continue
+            valor = globals().get(constante) or ""
+            if str(valor).strip():
+                auth[campo] = valor
     return sitios
 
 
