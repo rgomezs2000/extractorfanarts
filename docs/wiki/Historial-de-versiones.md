@@ -1,5 +1,23 @@
 # Historial de versiones
 
+## v0.1.5-beta.86 — 11 de octubre de 2026 · la beta definitiva (86.ª entrega)
+
+**Danbooru: 401 por enviar los NOMBRES de las claves en lugar de las claves**
+- La entrada de Danbooru llevaba como credenciales los **nombres** de las constantes,
+  así que la petición salía con `api_key=DANBOORU_API_KEY&login=DANBOORU_LOGIN` y la API
+  respondía **401** (`SessionLoader::AuthenticationFailure`, «Missing `login` o
+  `api_key`»).
+- El relleno de credenciales solo sustituía valores **vacíos**, y aquí el valor era el
+  nombre de la constante. Corregido en dos niveles:
+  - la entrada de Danbooru queda con valores vacíos, que se completan desde
+    `DANBOORU_API_KEY` / `DANBOORU_LOGIN` de `config_local.py`;
+  - el relleno ahora **también resuelve** un valor que sea el nombre de la constante, para
+    que una configuración antigua siga funcionando.
+- Comprobado con la cuenta real: **HTTP 200 · 42,6 KB · 5 obras**. Se revisaron todos los
+  sitios y ninguno más tenía el mismo patrón.
+
+---
+
 ## v0.1.5-beta.85 — 11 de octubre de 2026 · la beta definitiva (85.ª entrega)
 
 **El aviso de «ampliado desde pequeño» ya sale en cualquier plataforma**
