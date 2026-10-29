@@ -24,6 +24,7 @@ TRANSPARENCIA: el alfa se separa, se reescala aparte y se recompone (sin halos).
 from __future__ import annotations
 
 import logging
+import re
 import os
 import shutil
 import subprocess
@@ -1067,9 +1068,25 @@ def resumen_mejora(meta: dict | None) -> str:
     texto = " · ".join(partes) if partes else "sin mejora"
 
     try:
-        lado = max(int(valor) for valor in origen.lower().split("x"))
-    except (ValueError, AttributeError):
+        medidas = [int(valor) for valor in origen.lower().split("x")]
+        lado = max(medidas)
+        ancho_origen = medidas[0]      # la regla de reescalado se basa en el ANCHO
+    except (ValueError, AttributeError, IndexError):
         lado = 0
-    if lado and lado < getattr(config, "AVISO_ORIGEN_PEQUENO", 300):
-        texto += f" · ⚠ origen pequeño ({lado} px, poco detalle real)"
+        ancho_origen = 0
+    # Aviso cuando el resultado es una AMPLIACIÓN de un original pequeño: da igual el
+    # adaptador (DeviantArt, Bluesky, boorus…). Antes solo avisaba por debajo de 300 px y
+    # un original de 426 px ampliado 4x salía blando sin ninguna explicación.
+    umbral = int(getattr(config, "AVISO_ORIGEN_PEQUENO", 300) or 0)
+    factor = 1
+    coincidencia = re.search(r"(\d+)\s*x", modo.lower())
+    if coincidencia:
+        try:
+            factor = int(coincidencia.group(1))
+        except ValueError:
+            factor = 1
+    if ancho_origen and (ancho_origen < umbral or (factor >= 3 and ancho_origen < 700)):
+        texto += (f" · ⚠ origen pequeño ({ancho_origen} px de ancho, ampliado {factor}x: "
+                  "se verá más suave)" if factor > 1
+                  else f" · ⚠ origen pequeño ({ancho_origen} px, poco detalle real)")
     return texto

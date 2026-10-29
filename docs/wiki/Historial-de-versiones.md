@@ -1,5 +1,26 @@
 # Historial de versiones
 
+## v0.1.5-beta.85 — 11 de octubre de 2026 · la beta definitiva (85.ª entrega)
+
+**El aviso de «ampliado desde pequeño» ya sale en cualquier plataforma**
+- El suelo de reescalado de la entrega anterior está en el **núcleo** (`enhance.factor_for`,
+  el mismo que usan todos los adaptadores), pero el aviso del resumen solo aparecía por
+  debajo de 300 px. Por eso un original de DeviantArt de **426 px** ampliado 4x salía blando
+  **sin explicación**.
+- Ahora el resumen avisa siempre que el resultado sea una ampliación de un original pequeño,
+  sea cual sea el adaptador:
+
+```
+426x600  → 1704x2400 · Lanczos 4x · ⚠ origen pequeño (426 px de ancho, ampliado 4x: se verá más suave)
+599x900  → 2396x3600 · Lanczos 4x · ⚠ origen pequeño (599 px de ancho, ampliado 4x: se verá más suave)
+1280x1119→ 2560x2238 · Lanczos 2x      (sin aviso: el origen ya daba detalle)
+```
+
+- El umbral se mide sobre el **ancho**, igual que la regla de reescalado, para que el mensaje
+  no confunda el lado mayor con el que decide el factor.
+
+---
+
 ## v0.1.5-beta.84 — 11 de octubre de 2026 · la beta definitiva (84.ª entrega)
 
 **Fin de las imágenes «papilla»: suelo de reescalado en 400 px**
