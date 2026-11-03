@@ -27,7 +27,7 @@ from PySide6.QtCore import (
     QUrl, Signal,
 )
 from PySide6.QtGui import (
-    QAction, QDesktopServices, QFontDatabase, QImage, QKeySequence, QShortcut,
+    QAction, QClipboard, QDesktopServices, QFontDatabase, QImage, QKeySequence, QShortcut,
 )
 from PySide6.QtWidgets import (
     QApplication, QCheckBox, QComboBox, QDateEdit, QDialog, QDialogButtonBox,
@@ -716,11 +716,12 @@ class MainWindow(QMainWindow):
             portapapeles = QApplication.clipboard()
             if portapapeles is None or pixmap is None or pixmap.isNull():
                 return False
+            portapapeles.clear(QClipboard.Clipboard)
             imagen = pixmap.toImage()
             contenido = QMimeData()
+            # SOLO la imagen: si se añade texto, muchos programas pegan el texto (el
+            # enlace) en vez de la imagen. El enlace tiene su propia acción.
             contenido.setImageData(imagen)
-            if enlace:
-                contenido.setText(str(enlace))
             portapapeles.setMimeData(contenido)
             if portapapeles.image().isNull():
                 portapapeles.setImage(imagen)
@@ -760,10 +761,8 @@ class MainWindow(QMainWindow):
         # cualquier programa. Se añade el .webp y el enlace para quien lo prefiera.
         contenido.setImageData(imagen)
         contenido.setData("image/webp", QByteArray(datos))
-        enlace = getattr(self, "_enlace_portapapeles", "") or ""
-        if enlace:
-            contenido.setText(enlace)
-            self._enlace_portapapeles = ""
+        # Sin texto: «Copiar imagen» debe pegar la IMAGEN; el enlace va en su propia acción.
+        self._enlace_portapapeles = ""
         portapapeles.setMimeData(contenido)
         # Verificación real: si el portapapeles no quedó con imagen, se reintenta con
         # el método clásico (setImage), que en Windows nunca falla.

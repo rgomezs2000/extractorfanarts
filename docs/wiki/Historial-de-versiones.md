@@ -1,5 +1,18 @@
 # Historial de versiones
 
+## v0.1.5-beta.87 — 11 de octubre de 2026 · la beta definitiva (87.ª entrega)
+
+**«Copiar imagen» copiaba el enlace: ahora copia la imagen**
+- Al copiar se ponían en el portapapeles **la imagen y el enlace como texto**. Muchos
+  programas (editores, campos de texto, Telegram…) eligen el texto, así que al pegar
+  aparecía la URL en vez de la imagen.
+- Ahora «Copiar imagen» deja **solo la imagen** (y limpia lo que hubiera antes en el
+  portapapeles, para que no se cuele un texto viejo). El enlace tiene su propia acción:
+  «Copiar enlace de la imagen original» (Ctrl+Shift+C).
+- Comprobado: tras «Copiar imagen» el portapapeles tiene imagen y **texto vacío**.
+
+---
+
 ## v0.1.5-beta.86 — 11 de octubre de 2026 · la beta definitiva (86.ª entrega)
 
 **Danbooru: 401 por enviar los NOMBRES de las claves en lugar de las claves**
