@@ -1,5 +1,37 @@
 # Historial de versiones
 
+## v0.1.5-beta.89 — 11 de octubre de 2026 · la beta definitiva (89.ª entrega)
+
+**Autocompletado de tags en TODAS las familias de booru que lo permiten**
+- Antes solo estaba implementado para **gelbooru** y **danbooru**; ahora también para
+  **moebooru** (Yande.re, Konachan) y **philomena** (Derpibooru), cada uno con su propia
+  ruta y su categoría real:
+
+```
+familia     endpoint                                   resultado
+gelbooru    index.php?page=dapi&s=tag&q=index           JSON (Gelbooru) o XML (clones)
+danbooru    /tags.json?search[name_matches]=prefijo*    JSON con category
+moebooru    /tag.json?name=prefijo                       JSON con type
+philomena   /api/v1/json/search/tags?q=prefijo           JSON con category
+```
+
+Comprobado booru por booru con la ventana real (prefijo «kuromi»):
+
+```
+Safebooru, Gelbooru, Rule34.xxx, TBIB, Xbooru, Hypnohub   ✅ sugerencias con categoría
+Yande.re, Konachan, Konachan (SFW)                        ✅ (incluye meta)
+Derpibooru                                                ✅
+Danbooru / Safebooru Donmai / ATF Booru                   ⚠️ su sitio responde 503, 403
+                                                             o una página anti-bot
+Rule34 Paheal (Shimmie)                                   ⛔ no publica su lista de
+                                                             etiquetas: se avisa en el
+                                                             propio campo
+```
+- Cuando un booru no publica etiquetas, el campo lo dice al pasar el ratón (en lugar de no
+  hacer nada): «no publica su lista de etiquetas: escribe los tags a mano».
+
+---
+
 ## v0.1.5-beta.88 — 11 de octubre de 2026 · la beta definitiva (88.ª entrega)
 
 **Autocompletado de tags en los boorus, con color por categoría**

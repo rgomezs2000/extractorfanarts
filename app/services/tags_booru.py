@@ -67,28 +67,118 @@ def _limpiar(nombre) -> str:
     return str(nombre or "").strip().lower()
 
 
+# ------------------------------------------------------------------ familias con API
+FAMILIAS_CON_API = ("gelbooru", "danbooru", "moebooru", "philomena")
+
+
+def soporta(plataforma: str) -> bool:
+    """¿Este booru publica su lista de etiquetas? (Shimmie no, por ejemplo)."""
+    sitio = sitio_de(plataforma)
+    if sitio is None:
+        return False
+    return str(sitio.get("family") or "").lower() in FAMILIAS_CON_API
+
+
+def url_para(plataforma: str, prefijo: str, limite: int = MAX_SUGERENCIAS) -> str:
+    """URL de consulta de etiquetas para esa plataforma ("" si no hay API)."""
+    import urllib.parse
+
+    sitio = sitio_de(plataforma)
+    if sitio is None:
+        return ""
+    base = str(sitio.get("base") or "").rstrip("/")
+    familia = str(sitio.get("family") or "").lower()
+    credenciales = credenciales_de(sitio)
+    prefijo = _limpiar(prefijo).replace(" ", "_")
+    if familia == "danbooru":
+        consulta = {
+            "search[name_matches]": f"{prefijo}*",
+            "search[order]": "count",
+            "limit": str(limite),
+            **credenciales,
+        }
+        return f"{base}/tags.json?" + urllib.parse.urlencode(consulta)
+    if familia == "moebooru":
+        consulta = {"name": prefijo, "limit": str(limite), **credenciales}
+        return f"{base}/tag.json?" + urllib.parse.urlencode(consulta)
+    if familia == "philomena":
+        consulta = {"q": prefijo, "limit": str(limite), **credenciales}
+        return f"{base}/api/v1/json/search/tags?" + urllib.parse.urlencode(consulta)
+    if familia == "gelbooru":
+        consulta = {
+            "page": "dapi", "s": "tag", "q": "index", "json": "1",
+            "name_pattern": f"{prefijo}%", "limit": str(limite),
+            **credenciales,
+        }
+        return f"{base}/index.php?" + urllib.parse.urlencode(consulta)
+    return ""
+
+
+def credenciales_de(sitio: dict) -> dict:
+    """Alias público de las credenciales del sitio."""
+    return credenciales(sitio)
+
+
+def interpretar(texto: str, plataforma: str = "", limite: int = MAX_SUGERENCIAS) -> list[dict]:
+    """Lee la respuesta (JSON de cualquier familia o XML de los clones de Gelbooru)."""
+    familia = ""
+    sitio = sitio_de(plataforma) if plataforma else None
+    if sitio is not None:
+        familia = str(sitio.get("family") or "").lower()
+    if familia == "philomena":
+        filas = _desde_philomena(texto, limite)
+        if filas:
+            return filas
+    filas = desde_json(texto, limite)
+    if filas:
+        return filas
+    return desde_xml(texto, limite)
+
+
+def _desde_philomena(texto: str, limite: int) -> list[dict]:
+    import json
+
+    try:
+        datos = json.loads(texto)
+    except (ValueError, TypeError):
+        return []
+    filas = datos.get("tags") if isinstance(datos, dict) else datos
+    if not isinstance(filas, list):
+        return []
+    salida = []
+    for fila in filas[:limite]:
+        if not isinstance(fila, dict):
+            continue
+        nombre = _limpiar(fila.get("name"))
+        if not nombre:
+            continue
+        categoria = str(fila.get("category") or "").strip().lower()
+        categorias = {"general", "artist", "copyright", "character", "meta", "oc"}
+        if categoria not in categorias:
+            categoria = "general"
+        if categoria == "oc":
+            categoria = "meta"
+        salida.append({"tag": nombre, "categoria": categoria})
+    return salida
+
+
 def sugerir(cliente, plataforma: str, prefijo: str,
             limite: int = MAX_SUGERENCIAS) -> list[dict]:
-    """Etiquetas que empiezan por `prefijo` en la biblioteca de ese booru.
-
-    Devuelve [{"tag": str, "categoria": str}] ordenado por popularidad cuando el sitio
-    la ofrece. Nunca lanza: si el sitio falla, devuelve [].
-    """
+    """Etiquetas que empiezan por `prefijo` en la biblioteca de ese booru."""
     prefijo = _limpiar(prefijo).replace(" ", "_")
     if len(prefijo) < 2:
         return []
-    sitio = sitio_de(plataforma)
-    if sitio is None:
+    url = url_para(plataforma, prefijo, limite)
+    if not url:
+        logger.info("autocompletado: %s no publica lista de etiquetas", plataforma)
         return []
-    base, familia = _familias(sitio)
-    if not base:
-        return []
-    limite = max(1, min(int(limite or MAX_SUGERENCIAS), 50))
-
     try:
-        if familia == "danbooru":
-            return _danbooru(cliente, base, sitio, prefijo, limite)
-        return _gelbooru(cliente, base, sitio, prefijo, limite)
+        try:
+            texto = cliente.get_text(url)
+        except AttributeError:
+            datos = cliente.get_json(url)
+            texto = __import__("json").dumps(datos)
+        return interpretar(texto, plataforma, limite)
     except Exception as exc:  # noqa: BLE001
         logger.info("autocompletado: %s no respondió (%s)", plataforma, exc)
         return []

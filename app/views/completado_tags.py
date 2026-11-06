@@ -68,6 +68,16 @@ class CompletadorTags(QObject):
         self._plataforma = str(nombre or "")
         if not self._plataforma:
             self.ocultar()
+            return
+        if not tags_booru.soporta(self._plataforma):
+            # Hay boorus (Shimmie: Rule34 Paheal) que no publican su lista de etiquetas.
+            self._campo.setToolTip(
+                f"{self._plataforma} no publica su lista de etiquetas: escribe los tags a mano")
+        else:
+            self._campo.setToolTip(
+                "Escribe y verás los tags del booru · general azul · artista rojo · "
+                "copyright morado · personaje verde · meta ámbar")
+        self.ocultar()
 
     def ocultar(self) -> None:
         try:
@@ -97,26 +107,7 @@ class CompletadorTags(QObject):
         self._temporizador.start()
 
     def _url(self, plataforma: str, prefijo: str) -> str:
-        sitio = tags_booru.sitio_de(plataforma)
-        if sitio is None:
-            return ""
-        base = str(sitio.get("base") or "").rstrip("/")
-        familia = str(sitio.get("family") or "").lower()
-        credenciales = tags_booru.credenciales(sitio)
-        if familia == "danbooru":
-            consulta = {
-                "search[name_matches]": f"{prefijo}*",
-                "search[order]": "count",
-                "limit": "12",
-                **credenciales,
-            }
-            return f"{base}/tags.json?" + urllib.parse.urlencode(consulta)
-        consulta = {
-            "page": "dapi", "s": "tag", "q": "index", "json": "1",
-            "name_pattern": f"{prefijo}%", "limit": "12",
-            **credenciales,
-        }
-        return f"{base}/index.php?" + urllib.parse.urlencode(consulta)
+        return tags_booru.url_para(plataforma, prefijo)
 
     def _consultar(self) -> None:
         prefijo = self._pendiente or self._token()
@@ -142,7 +133,7 @@ class CompletadorTags(QObject):
         try:
             datos = bytes(respuesta.readAll())
             texto = datos.decode("utf-8", "replace")
-            filas = tags_booru.desde_json(texto) or tags_booru.desde_xml(texto)
+            filas = tags_booru.interpretar(texto, self._plataforma)
         except Exception as exc:  # noqa: BLE001
             logger.info("autocompletado: respuesta ilegible (%s)", exc)
         if prefijo:
