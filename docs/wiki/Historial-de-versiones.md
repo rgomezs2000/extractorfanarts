@@ -1,5 +1,32 @@
 # Historial de versiones
 
+## v0.1.5-beta.88 — 11 de octubre de 2026 · la beta definitiva (88.ª entrega)
+
+**Autocompletado de tags en los boorus, con color por categoría**
+- Al escribir en el campo **Tags** (tipo Booru) aparece la lista de etiquetas del booru
+  seleccionado: **personajes, franquicias, artistas y metadatos** de su propia biblioteca,
+  filtradas mientras escribes. No hay que hacer clic en el campo para que aparezca.
+- Colores: **general azul · artista rojo · copyright morado · personaje verde · meta ámbar**.
+- Fuentes usadas (cada una con su categoría real):
+  - **Gelbooru** → `page=dapi&s=tag&q=index` (JSON)
+  - **Rule34.xxx** y **Safebooru** → el mismo endpoint, que responde **XML**
+  - **Danbooru** → `/tags.json?search[name_matches]=…` (ahora mismo su sitio devuelve 503;
+    cuando vuelva, funciona sin tocar nada)
+- La consulta es **asíncrona** (QNetworkAccessManager): la ventana no se bloquea mientras
+  escribes, con 260 ms de retardo para no pedir en cada tecla y caché por prefijo.
+- El desplegable se cierra al cambiar de plataforma o al elegir una etiqueta.
+
+Comprobado con la ventana real escribiendo «yumeno» y «kuromi»:
+
+```
+Rule34.xxx  12 sugerencias  (yumenokuro · general, yumeno_torii · artist,
+                             yumeno_suzu · character, …)
+Gelbooru    12 sugerencias  {character: 4, general: 6, artist: 1, copyright: 1}
+Safebooru   12 sugerencias  {character: 4, general: 6, artist: 1, copyright: 1}
+```
+
+---
+
 ## v0.1.5-beta.87 — 11 de octubre de 2026 · la beta definitiva (87.ª entrega)
 
 **«Copiar imagen» copiaba el enlace: ahora copia la imagen**

@@ -210,6 +210,13 @@ class MainWindow(QMainWindow):
         self.ed_tags.setPlaceholderText("🏷️ ej. lori_loud 1girl solo blonde_hair")
         self.ed_tags.setToolTip(etiqueta_tags.toolTip())
         v.addWidget(self.ed_tags, 0, 1)
+        # Autocompletado con la biblioteca del booru seleccionado (coloreado por categoría).
+        try:
+            from .completado_tags import CompletadorTags
+
+            self._completado_tags = CompletadorTags(self.ed_tags, self)
+        except Exception:  # noqa: BLE001
+            self._completado_tags = None
         v.setColumnStretch(1, 1)
         v.setAlignment(Qt.AlignTop)
         v.setRowStretch(1, 1)
@@ -902,6 +909,7 @@ class MainWindow(QMainWindow):
 
     def _connect(self) -> None:
         self.cmb_tipo.currentTextChanged.connect(self._set_tipo)
+        self.cmb_plataforma.currentTextChanged.connect(self._al_cambiar_plataforma)
         self.btn_carpeta.clicked.connect(self._elegir_carpeta)
         self.btn_buscar.clicked.connect(self._on_buscar)
         self.btn_descargar.clicked.connect(self._on_descargar)
@@ -936,6 +944,14 @@ class MainWindow(QMainWindow):
         c.individual_error.connect(self._on_individual_error)
 
     # ------------------------------------------------------------------ dinámica
+    def _al_cambiar_plataforma(self, plataforma: str) -> None:
+        """El autocompletado de tags sigue a la plataforma seleccionada (solo boorus)."""
+        completador = getattr(self, "_completado_tags", None)
+        if completador is None:
+            return
+        es_booru = getattr(self, "cmb_tipo", None) is not None and             self.cmb_tipo.currentText() == "Booru"
+        completador.plataforma(plataforma if es_booru else "")
+
     def _set_tipo(self, tipo: str) -> None:
         if tipo == "Red social":
             self.cmb_plataforma.clear()
@@ -945,6 +961,7 @@ class MainWindow(QMainWindow):
             self.cmb_plataforma.clear()
             self.cmb_plataforma.addItems(list(BOORU_ADAPTERS))
             self.stack.setCurrentWidget(self.page_booru)
+            self._al_cambiar_plataforma(self.cmb_plataforma.currentText())
         else:
             self.cmb_plataforma.clear()
             self.cmb_plataforma.addItems(list(WIKI_ADAPTERS))
