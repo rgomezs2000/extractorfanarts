@@ -16,7 +16,7 @@ De cero a tener imágenes guardadas, en cinco pasos.
 | **Wiki** | el fandom, el personaje y/o la URL de la wiki |
 
 **En el fediverso** no hace falta elegir servidor: escribe `@usuario@servidor`
-(por ejemplo `@alguien@baraag.net`); o escribe `@usuario` y rellena *Instancia*.
+(por ejemplo `@alguien@pain.moe`); o escribe `@usuario` y rellena *Instancia*.
 
 ## 3. Busca y revisa
 

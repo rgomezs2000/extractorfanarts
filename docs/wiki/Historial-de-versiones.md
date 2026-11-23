@@ -1,5 +1,38 @@
 # Historial de versiones
 
+## v0.1.5-beta.90 — 22 de noviembre de 2026 · la beta definitiva (90.ª entrega)
+
+**Fediverso: se retira baraag.net (caído) y entra pain.moe**
+- `baraag.net` deja de figurar entre las instancias que comprueba el programa; en su
+  lugar entra **pain.moe** (Mastodon **4.7.6**), verificado con su API real.
+- Qué se comprobó en pain.moe antes de añadirlo:
+
+```
+/api/v1/instance           200 · Mastodon 4.7.6
+/api/v1/trends/statuses    200 · público, con medios
+/api/v1/timelines/tag/x    422 · «This method requires an authenticated user»
+/api/v2/search             200 · 0 resultados sin sesión
+/tags/<etiqueta>.rss       200 · feed vacío
+```
+
+- Por eso se añadieron **dos** cosas al adaptador de Mastodon:
+  1. **Token opcional por instancia**: `FEDIVERSE_TOKENS = {"pain.moe": "TU_TOKEN"}` en
+     `config_local.py`. Con él, hashtags y búsqueda funcionan como en cualquier instancia.
+  2. **Respaldo por tendencias**: sin token, si la timeline de la etiqueta falla y el RSS
+     viene vacío, se usan los estados **en tendencia** (públicos y con imágenes) y tus
+     filtros se aplican en local. Así pain.moe devuelve contenido desde el primer día.
+- Comprobado con el adaptador real:
+
+```
+#art    -> 2 obras      #nsfw -> 4 obras      «art» -> 2 obras
+descargas: 1395x869 (55 KB) · 1061x1397 (73 KB) · 1164x1331 (76 KB)
+```
+
+- Documentado en `Redes-sociales.md` cómo obtener el token (Preferencias → Desarrollo →
+  Nueva aplicación, permiso de lectura) y la plantilla de `config_local.py` ya lo incluye.
+
+---
+
 ## v0.1.5-beta.89 — 11 de octubre de 2026 · la beta definitiva (89.ª entrega)
 
 **Autocompletado de tags en TODAS las familias de booru que lo permiten**

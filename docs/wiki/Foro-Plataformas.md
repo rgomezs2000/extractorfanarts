@@ -9,7 +9,7 @@ plataforma, o una plataforma nueva que te gustaría ver.
 ```markdown
 **@tu-usuario** · AAAA-MM-DD
 
-**Plataforma o sitio:** (Gelbooru · baraag.net · una wiki de Fandom…)
+**Plataforma o sitio:** (Gelbooru · pain.moe · una wiki de Fandom…)
 
 **Qué ocurre:** (desde cuándo y qué mensaje aparece, sin claves)
 

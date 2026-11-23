@@ -15,7 +15,7 @@ APP_NAME = "Imaginteca"
 # nuevas y estado de las plataformas. Minimizada la ventana, se muestran como
 # notificación del sistema y con el número en la insignia del icono.
 NOTIFICACIONES = True
-APP_VERSION = "0.1.5-beta.89"
+APP_VERSION = "0.1.5-beta.90"
 
 # ------------------------------------------------------------------ autoría
 # Lo que se muestra al usuario como autor. NO se publica ningún dato personal:
@@ -403,9 +403,17 @@ SOCIAL_MAX_CANDIDATOS = 2000   # publicaciones que se revisan como máximo
 # Misskey, CherryPick…). Esta lista se puede ampliar en config_local.py con las tuyas:
 #     FEDIVERSE_INSTANCIAS = ["baraag.net", "misskey.io", "mi.servidor"]
 FEDIVERSE_INSTANCIAS = [
-    "baraag.net", "misskey.io", "pawoo.net", "pisskey.io", "dill.burggit.moe",
+    # pain.moe: Mastodon 4.7.6. Sus tendencias son públicas (traen medios) y, con un token
+    # de la instancia en FEDIVERSE_TOKENS, también funcionan hashtags y búsqueda.
+    "pain.moe", "misskey.io", "pawoo.net", "pisskey.io", "dill.burggit.moe",
     "shota.house", "mastodon.social", "mstdn.jp", "misskey.design", "pleroma.site",
 ]
+
+# Tokens opcionales por instancia (Mastodon): {"pain.moe": "TU_TOKEN"}.
+# Se envían como `Authorization: Bearer …`. Sirven para las instancias que exigen sesión
+# para buscar (pain.moe responde 422 «This method requires an authenticated user»).
+# En pain.moe: Preferencias → Desarrollo → Nueva aplicación → token de lectura.
+FEDIVERSE_TOKENS: dict[str, str] = {}
 # Con VARIOS valores dentro de un mismo campo (varios hashtags o varias palabras clave):
 #   "alguno"  → vale cualquiera de ellos (unión: más resultados)   ← por defecto
 #               p. ej. «#lola_loud #the_loud_house» = arte con una u otra etiqueta

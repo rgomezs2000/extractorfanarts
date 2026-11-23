@@ -301,11 +301,34 @@ class MastodonAdapter(SearchAdapter):
                 union.setdefault(clave, estado)
         return list(union.values())
 
+    # ------------------------------------------------------------------ credenciales
+    @staticmethod
+    def _host(base: str) -> str:
+        from urllib.parse import urlparse
+
+        return (urlparse(base).hostname or base).lower()
+
+    def _token(self, base: str) -> str:
+        """Token opcional de la instancia (FEDIVERSE_TOKENS)."""
+        tokens = getattr(config, "FEDIVERSE_TOKENS", {}) or {}
+        if not isinstance(tokens, dict):
+            return ""
+        host = self._host(base)
+        for clave, valor in tokens.items():
+            if str(clave).lower().strip() == host and str(valor or "").strip():
+                return str(valor).strip()
+        return ""
+
+    def _cabeceras(self, base: str) -> dict | None:
+        token = self._token(base)
+        return {"Authorization": f"Bearer {token}"} if token else None
+
     def _por_hashtag(self, client: PoliteClient, base: str, tag: str) -> list[dict]:
         try:
             return client.get_json(
                 f"{base}/api/v1/timelines/tag/{quote(tag)}",
                 params={"limit": str(config.SOCIAL_PAGINA), "only_media": "true"},
+                headers=self._cabeceras(base),
             )
         except (BlockedError, ConfigError) as exc:
             # Instancias como baraag.net exigen token para esta timeline:
@@ -314,13 +337,35 @@ class MastodonAdapter(SearchAdapter):
                 "timeline por hashtag no disponible en %s (%s); se intenta el RSS público",
                 self._host(base), exc,
             )
-        return self._hashtag_por_rss(client, base, tag)
+        estados = self._hashtag_por_rss(client, base, tag)
+        if estados:
+            return estados
+        # Instancias como pain.moe: RSS vacío y timelines cerradas, pero sus TENDENCIAS son
+        # públicas y traen medios. Se usan como respaldo; el filtro local decide después.
+        return self._tendencias(client, base)
+
+    def _tendencias(self, client: PoliteClient, base: str) -> list[dict]:
+        """Estados en tendencia (público en la mayoría de instancias), con medios."""
+        try:
+            datos = client.get_json(
+                f"{base}/api/v1/trends/statuses",
+                params={"limit": "20"},
+                headers=self._cabeceras(base),
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.info("tendencias no disponibles en %s (%s)", self._host(base), exc)
+            return []
+        if not isinstance(datos, list):
+            return []
+        logger.info("%s: %d estados en tendencia como respaldo", self._host(base), len(datos))
+        return [st for st in datos if st.get("media_attachments")]
 
     def _buscar_texto(self, client: PoliteClient, base: str, termino: str) -> list[dict]:
         """Búsqueda de publicaciones por texto (puede no estar disponible sin token)."""
         datos = client.get_json(
             f"{base}/api/v2/search",
             params={"q": termino, "type": "statuses", "limit": str(config.SOCIAL_PAGINA)},
+            headers=self._cabeceras(base),
         )
         return datos.get("statuses", []) if isinstance(datos, dict) else []
 

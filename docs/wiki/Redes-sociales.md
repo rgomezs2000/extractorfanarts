@@ -22,8 +22,22 @@ todo lo que hace y lo que no hace cada una.
 
 La red descentralizada: **miles de servidores** independientes. No hay que elegir
 instancia de antemano: escribe `@usuario@servidor` (por ejemplo
-`@alguien@baraag.net`) y se consulta **su** servidor; o escribe `@usuario` y
+`@alguien@pain.moe`) y se consulta **su** servidor; o escribe `@usuario` y
 rellena el campo *Instancia*.
+
+> **Instancias que exigen sesión** (por ejemplo **pain.moe**, Mastodon 4.7): su API
+> devuelve 422 This method requires an authenticated user para hashtags y búsqueda, y su
+> RSS público sale vacío. Sin token, el programa usa sus **tendencias** (que sí son
+> públicas y traen imágenes) y aplica tus filtros en local. Para buscar de verdad ahí,
+> pon un token de lectura en config_local.py:
+>
+> `python
+> FEDIVERSE_TOKENS = {"pain.moe": "TU_TOKEN"}
+> `
+>
+> El token se obtiene en la propia instancia: *Preferencias → Desarrollo → Nueva
+> aplicación* (permiso 
+ead).
 
 - **Se puede buscar:** publicaciones de un usuario, y por `#hashtag` o palabras
   clave (si la instancia lo permite sin cuenta).
